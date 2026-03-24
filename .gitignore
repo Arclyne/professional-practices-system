@@ -1,0 +1,17 @@
+# For MacOs
+.DS_Store
+
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# VS Code
+.idea/
+.vscode/
+*.iml
+bin/
+
+# Java
+*.class
