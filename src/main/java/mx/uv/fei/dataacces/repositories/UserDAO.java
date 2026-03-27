@@ -1,14 +1,17 @@
 package mx.uv.fei.dataacces.repositories;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 import mx.uv.fei.dataacces.database.DatabaseConnection;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.exceptions.DAOException;
+
 
 public class UserDAO {
     public int insertUser(User user) throws DAOException {
