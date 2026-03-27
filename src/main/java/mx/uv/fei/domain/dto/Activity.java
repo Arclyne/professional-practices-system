@@ -10,18 +10,6 @@ public class Activity {
     private String description;
     private String manager;
 
-    public Activity() {
-    }
-
-    public Activity(int activityId, String name, Date startDate, Date endDate, String description, String manager) {
-        this.activityId = activityId;
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.description = description;
-        this.manager = manager;
-    }
-
     public int getActivityId() {
         return activityId;
     }
