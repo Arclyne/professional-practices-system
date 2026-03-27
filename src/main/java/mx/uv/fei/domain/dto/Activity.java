@@ -2,7 +2,7 @@ package mx.uv.fei.domain.dto;
 
 import java.sql.Date;
 
-public class ActivityDTO {
+public class Activity {
     private int activityId;
     private String name;
     private Date startDate;
@@ -10,10 +10,10 @@ public class ActivityDTO {
     private String description;
     private String manager;
 
-    public ActivityDTO() {
+    public Activity() {
     }
 
-    public ActivityDTO(int activityId, String name, Date startDate, Date endDate, String description, String manager) {
+    public Activity(int activityId, String name, Date startDate, Date endDate, String description, String manager) {
         this.activityId = activityId;
         this.name = name;
         this.startDate = startDate;

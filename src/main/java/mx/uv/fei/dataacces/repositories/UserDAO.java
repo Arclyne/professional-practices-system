@@ -13,11 +13,11 @@ import mx.uv.fei.exceptions.DAOException;
 public class UserDAO {
     public int insertUser(User user) throws DAOException {
         int generatedId = -1;
-        
+
         String query = "INSERT INTO USUARIO (PASSWORD, NOMBRE, APELLIDOS, ESTADO, GENERO) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, user.getName());
             statement.setString(2, user.getPassword());
@@ -29,8 +29,7 @@ public class UserDAO {
 
             if (affectedRows > 0) {
                 try (
-                    ResultSet generatedKeys = statement.getGeneratedKeys()
-                ) {
+                        ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         generatedId = generatedKeys.getInt(1);
                     }
