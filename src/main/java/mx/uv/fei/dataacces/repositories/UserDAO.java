@@ -9,11 +9,12 @@ import java.sql.Statement;
 
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
+import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.exceptions.DAOException;
 
 
-public class UserDAO {
+public class UserDAO implements IUserDAO {
     public int insertUser(User user) throws DAOException {
         int generatedId = -1;
 
