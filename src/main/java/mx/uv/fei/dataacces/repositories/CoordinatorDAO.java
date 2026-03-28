@@ -8,11 +8,12 @@ import java.sql.Timestamp;
 
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
+import mx.uv.fei.dataacces.interfaces.CoordinatorDAOInterface;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.exceptions.DAOException;
 
 
-public class CoordinatorDAO {
+public class CoordinatorDAO implements CoordinatorDAOInterface {
     private final UserDAO userDAO = new UserDAO();
 
     public boolean insertCoordinador(Coordinator coordinator) throws DAOException {
