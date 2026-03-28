@@ -13,8 +13,11 @@ public class ProjectDAO implements IPorjectDAO {
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_EMPRESA) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     public boolean insert(Project project) throws DAOException {
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+        try (
+                Connection connection = DatabaseConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)
+
+        ) {
 
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
