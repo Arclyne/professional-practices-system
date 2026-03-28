@@ -14,8 +14,11 @@ public class ActivityDAO implements IActivityDAO {
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
 
     public boolean insert(Activity activity) throws DAOException {
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+        try (
+                Connection connection = DatabaseConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)
+
+        ) {
             statement.setString(1, activity.getName());
             statement.setDate(2, activity.getStartDate());
             statement.setDate(3, activity.getEndDate());
