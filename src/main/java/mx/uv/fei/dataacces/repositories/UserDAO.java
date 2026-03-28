@@ -33,7 +33,8 @@ public class UserDAO implements IUserDAO {
 
             if (affectedRows > 0) {
                 try (
-                        ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                        ResultSet generatedKeys = statement.getGeneratedKeys()
+                    ) {
                     if (generatedKeys.next()) {
                         generatedId = generatedKeys.getInt(1);
                     }
