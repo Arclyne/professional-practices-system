@@ -3,15 +3,13 @@ package mx.uv.fei.dataacces.repositories;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
+import mx.uv.fei.dataacces.interfaces.IActivityDAO;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.exceptions.DAOException;
 
-public class ActivityDAO {
+public class ActivityDAO implements IActivityDAO {
 
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
 
