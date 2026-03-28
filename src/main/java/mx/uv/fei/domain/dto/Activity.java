@@ -1,6 +1,8 @@
 package mx.uv.fei.domain.dto;
 
+
 import java.sql.Date;
+
 
 public class Activity {
     private int activityId;
