@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
+import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
 import mx.uv.fei.domain.dto.Coordinator;
-import mx.uv.fei.exceptions.DAOException;
 
 
 public class CoordinatorDAO implements ICoordinatorDAO {
@@ -25,7 +25,8 @@ public class CoordinatorDAO implements ICoordinatorDAO {
 
         try (
                 Connection connection = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)
+            ) {
             statement.setInt(1, userId);
 
             if (coordinator.getDischargeDate() != null) {
