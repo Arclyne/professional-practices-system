@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import mx.uv.fei.TestApp;
 import mx.uv.fei.TestConfig;
@@ -29,6 +33,9 @@ public class ActivityDAOIT {
     private IActivityDAO activityDAOTest;
 
     private Activity expectedActivity;
+    private Activity dummy1;
+    private Activity dummy2;
+    List<Activity> expectedList;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +43,21 @@ public class ActivityDAOIT {
         expectedActivity.setActivityId(1);
         expectedActivity.setName("Test");
         expectedActivity.setManager("Test");
+
+        dummy1 = new Activity();
+        dummy1.setActivityId(2);
+        dummy1.setName("Dummy 1");
+        dummy1.setManager("Dummy 1");
+
+        dummy2 = new Activity();
+        dummy2.setActivityId(3);
+        dummy2.setName("Dummy 2");
+        dummy2.setManager("Dummy 2");
+
+        expectedList = new ArrayList<Activity>();
+        expectedList.add(expectedActivity);
+        expectedList.add(dummy1);
+        expectedList.add(dummy2);
 
     }
 
@@ -69,6 +91,19 @@ public class ActivityDAOIT {
 
             String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
             fail("La prueba falló por : " + motivoReal);
+        }
+    }
+
+    @Test
+    void testRecoverALL() {
+        try {
+            List<Activity> resultTest = activityDAOTest.getAllActivity();
+            assertNotNull(resultTest);
+            assertTrue(resultTest.size() > 0);
+            assertEquals(expectedList.size(), resultTest.size());
+            assertEquals(expectedList, resultTest);
+        } catch (DAOException e) {
+            fail("La prueba falló: " + e.getMessage());
         }
     }
 }
