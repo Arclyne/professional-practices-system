@@ -3,33 +3,32 @@ package mx.uv.fei.dataacces.repositories;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
-import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.dataacces.interfaces.IPracticanteDAO;
+import mx.uv.fei.domain.dto.Practicante;
 
-public class CoordinatorDAO implements ICoordinatorDAO {
+public class PracticanteDAO implements IPracticanteDAO {
 
     @Override
-    public int insertCoordinator(Coordinator coordinator) throws DAOException {
+    public int insertPracticante(Practicante practicante) throws DAOException {
         int resultId = -1;
-
+        
         UserDAO userDAO = new UserDAO();
 
-        int generatedUserId = userDAO.insertUser(coordinator);
+        int generatedUserId = userDAO.insertUser(practicante);
 
         if (generatedUserId > 0) {
-            String query = "INSERT INTO COORDINADOR (ID_COORDINADOR, FECHA_REGISTRO) VALUES (?, ?)";
+            String query = "INSERT INTO PRACTICANTE (ID_PRACTICANTE, LENGUA_INDIGENA, CALIFICACION) VALUES (?, ?, ?)";
 
             try (
                 Connection connection = DatabaseConnection.getInstance().getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)
             ) {
                 statement.setInt(1, generatedUserId);
-                
-                statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+                statement.setString(2, practicante.getLenguaIndigena());
+                statement.setInt(3, practicante.getCalificacion());
 
                 int affectedRows = statement.executeUpdate();
 
@@ -37,7 +36,7 @@ public class CoordinatorDAO implements ICoordinatorDAO {
                     resultId = generatedUserId;
                 }
             } catch (SQLException e) {
-                throw new DAOException("Error al intentar insertar el coordinador en la base de datos.", e);
+                throw new DAOException("Error al intentar insertar el practicante en la base de datos.", e);
             }
         }
 
