@@ -1,76 +1,76 @@
 package mx.uv.fei.domain.dto;
 
 public class Organization {
-    private int idEmpresa;
-    private String nombreEmpresa;
-    private String estado;
-    private String direccion;
-    private String ciudad;
-    private String sector;
-    private String correo;
-    private String telefono;
+    private int idOrganization;
+    private String nameOrganization;
+    private String region;
+    private String adress;
+    private String city;
+    private String business;
+    private String mail;
+    private String cellphone;
 
-    public int getIdEmpresa() {
-        return idEmpresa;
+    public int getIdOrganization() {
+        return idOrganization;
     }
 
-    public void setIdEmpresa(int idEmpresa) {
-        this.idEmpresa = idEmpresa;
+    public void setIdOrganization(int idEmpresa) {
+        this.idOrganization = idEmpresa;
     }
 
-    public String getNombreEmpresa() {
-        return nombreEmpresa;
+    public String getNameOrganization() {
+        return nameOrganization;
     }
 
-    public void setNombreEmpresa(String nombreEmpresa) {
-        this.nombreEmpresa = nombreEmpresa;
+    public void setNameOrganization(String nombreEmpresa) {
+        this.nameOrganization = nombreEmpresa;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getRegion() {
+        return region;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setRegion(String estado) {
+        this.region = estado;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getAdress() {
+        return adress;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setAdress(String direccion) {
+        this.adress = direccion;
     }
 
-    public String getCiudad() {
-        return ciudad;
+    public String getCity() {
+        return city;
     }
 
-    public void setCiudad(String ciudad) {
-        this.ciudad = ciudad;
+    public void setCity(String ciudad) {
+        this.city = ciudad;
     }
 
-    public String getSector() {
-        return sector;
+    public String getBusiness() {
+        return business;
     }
 
-    public void setSector(String sector) {
-        this.sector = sector;
+    public void setBusiness(String sector) {
+        this.business = sector;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getMail() {
+        return mail;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setMail(String correo) {
+        this.mail = correo;
     }
 
-    public String getTelefono() {
-        return telefono;
+    public String getCellphone() {
+        return cellphone;
     }
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setCellphone(String telefono) {
+        this.cellphone = telefono;
     }
 }

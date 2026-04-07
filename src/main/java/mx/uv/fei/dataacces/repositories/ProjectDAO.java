@@ -5,14 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
-import mx.uv.fei.dataacces.interfaces.IPorjectDAO;
+import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.exceptions.DAOException;
 
-public class ProjectDAO implements IPorjectDAO {
+public class ProjectDAO implements IProjectDAO {
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_EMPRESA) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    public boolean insert(Project project) throws DAOException {
+    public boolean insertProject(Project project) throws DAOException {
         try (
                 Connection connection = DatabaseConnection.getInstance().getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)
