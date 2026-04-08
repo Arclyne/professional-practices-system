@@ -10,7 +10,9 @@ public class FileConfigLoader {
     public static Properties loadProperties(String fileName) {
         Properties properties = new Properties();
 
-        try (InputStream input = FileConfigLoader.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (
+            InputStream input = FileConfigLoader.class.getClassLoader().getResourceAsStream(fileName)
+        ) {
             if (input == null) {
                 throw new IllegalArgumentException("The configuration file was not found: " + fileName);
             }
