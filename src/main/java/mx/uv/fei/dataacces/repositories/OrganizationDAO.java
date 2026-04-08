@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import mx.uv.fei.dataacces.database.DatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Organization;
-import mx.uv.fei.exceptions.DAOException;
+import mx.uv.fei.dataacces.exceptions.DAOException;
 
 public class OrganizationDAO implements IOrganizationDAO {
 
