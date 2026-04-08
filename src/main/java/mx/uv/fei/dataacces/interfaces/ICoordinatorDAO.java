@@ -1,8 +1,8 @@
 package mx.uv.fei.dataacces.interfaces;
 
+import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Coordinator;
-import mx.uv.fei.exceptions.DAOException;
 
 public interface ICoordinatorDAO {
-    boolean insertCoordinador(Coordinator coordinator) throws DAOException;
+    int insertCoordinator(Coordinator coordinator) throws DAOException;
 }

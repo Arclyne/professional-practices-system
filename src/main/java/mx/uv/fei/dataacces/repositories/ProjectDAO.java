@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
+import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
-import mx.uv.fei.exceptions.DAOException;
 
 public class ProjectDAO implements IProjectDAO {
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_EMPRESA) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -15,10 +15,7 @@ public class ProjectDAO implements IProjectDAO {
     public boolean insertProject(Project project) throws DAOException {
         try (
                 Connection connection = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)
-
-        ) {
-
+                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
             statement.setInt(3, project.getParticipantCapacity());
