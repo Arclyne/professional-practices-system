@@ -4,5 +4,5 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Activity;
 
 public interface IActivityDAO {
-    boolean insert(Activity activity) throws DAOException;
+    boolean insertActivity(Activity activity) throws DAOException;
 }
