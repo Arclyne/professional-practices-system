@@ -11,7 +11,7 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 
 public class OrganizationDAO implements IOrganizationDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO EMPRESA_VINCULADA (NOMBRE_EMPRESA, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     public boolean insertOrganization(Organization organization) throws DAOException {
         try (
