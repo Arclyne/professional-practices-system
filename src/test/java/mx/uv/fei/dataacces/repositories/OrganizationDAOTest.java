@@ -25,7 +25,26 @@ public class OrganizationDAOTest {
             boolean result = orgDao.insertOrganization(org);
             assertNotNull(result);
         } catch (DAOException e) {
-            fail("La prueba falló. MySQL dice: " + e);
+            e.printStackTrace();
+
+            // Extraemos el mensaje real de MySQL usando getCause()
+            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            fail("La prueba falló. MySQL dice: " + motivoReal);
+        }
+    }
+
+    @Test
+    void testRecoverOrganization() {
+        OrganizationDAO organizationDAO = new OrganizationDAO();
+        try {
+            Organization test = organizationDAO.recoverOrganization("PyhtonScryps");
+            assertNotNull(test);
+        } catch (DAOException e) {
+            e.printStackTrace();
+
+            // Extraemos el mensaje real de MySQL usando getCause()
+            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            fail("La prueba falló. MySQL dice: " + motivoReal);
         }
     }
 }
