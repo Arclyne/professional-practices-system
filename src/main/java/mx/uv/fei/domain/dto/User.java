@@ -1,5 +1,6 @@
 package mx.uv.fei.domain.dto;
 
+import java.time.LocalDateTime;
 
 public class User {
     private int id;
@@ -8,6 +9,8 @@ public class User {
     private String lastName;
     private String status;
     private String gender;
+    private LocalDateTime registrationDate;
+    private LocalDateTime unsubscriptionDate;
 
     public User() {
     }
@@ -58,5 +61,21 @@ public class User {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDateTime getUnsubscriptionDate() {
+        return unsubscriptionDate;
+    }
+
+    public void setUnsubscriptionDate(LocalDateTime unsubscriptionDate) {
+        this.unsubscriptionDate = unsubscriptionDate;
     }
 }
