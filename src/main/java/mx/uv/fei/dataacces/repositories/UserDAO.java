@@ -15,16 +15,18 @@ import mx.uv.fei.domain.dto.User;
 
 
 public class UserDAO implements IUserDAO {
+    
+    @Override
     public int insertUser(User user) throws DAOException {
         int generatedId = -1;
-
+    
         String query = "INSERT INTO USUARIO (PASSWORD, NOMBRE, APELLIDOS, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?)";
 
         try (
             Connection connection = DatabaseConnection.getInstance().getConnection();
             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
         ) {
-           statement.setString(1, user.getPassword());
+            statement.setString(1, user.getPassword());
             statement.setString(2, user.getName());  
             statement.setString(3, user.getLastName());
             statement.setString(4, user.getStatus());
@@ -33,9 +35,7 @@ public class UserDAO implements IUserDAO {
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows > 0) {
-                try (
-                        ResultSet generatedKeys = statement.getGeneratedKeys()
-                    ) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         generatedId = generatedKeys.getInt(1);
                     }
@@ -46,5 +46,25 @@ public class UserDAO implements IUserDAO {
         }
 
         return generatedId;
+    }
+
+    public boolean deactivateUser(int idUsuario) throws DAOException {
+        String query = "UPDATE USUARIO SET ESTADO = 'no activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
+        boolean isDeactivated = false;
+
+        try (
+            Connection connection = DatabaseConnection.getInstance().getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)
+        ) {
+            statement.setInt(1, idUsuario);
+            
+            int affectedRows = statement.executeUpdate();
+            isDeactivated = (affectedRows > 0);
+            
+        } catch (SQLException e) {
+            throw new DAOException("Error al desactivar el usuario con ID: " + idUsuario, e);
+        }
+        
+        return isDeactivated;
     }
 }
