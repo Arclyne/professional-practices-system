@@ -44,10 +44,8 @@ public class AuthenticationTokenDAO {
                 if (resultSet.next()) {
                     token = new AuthenticationToken();
 
-                    // Mapeo de info de la BD al DTO
                     token.setValueToken(resultSet.getInt("TOKEN_VALUE"));
 
-                    // Extraemos el DATETIME de MySQL como LocalDateTime de Java
                     token.setTimeCreation(resultSet.getObject("CREATION_TIME", LocalDateTime.class));
 
                     token.setUserId(resultSet.getInt("ID_USUARIO"));
