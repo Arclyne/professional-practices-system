@@ -14,6 +14,7 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
 
     private DatabaseConnection() {
+
         Map<String, String> config = FileConfigLoader.loadUseConfig("database.properties", "ssh");
 
         this.url = config.get("db.url");
@@ -22,6 +23,7 @@ public class DatabaseConnection {
     }
 
     public static DatabaseConnection getInstance() {
+
         if (instance == null) {
             instance = new DatabaseConnection();
         }

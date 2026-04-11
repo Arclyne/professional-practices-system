@@ -19,6 +19,7 @@ public class OrganizationDAO implements IOrganizationDAO {
         try (
                 Connection connection = DatabaseConnection.getInstance().getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+
             statement.setString(1, organization.getNameOrganization());
             statement.setString(2, organization.getRegion());
             statement.setString(3, organization.getAdress());
@@ -33,27 +34,31 @@ public class OrganizationDAO implements IOrganizationDAO {
         }
     }
 
-    public Organization recoverOrganization(String nombreOrganizacion) throws DAOException {
-        Organization orgTemporal = null;
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
-            statement.setString(1, nombreOrganizacion);
-            try (ResultSet resultSet = statement.executeQuery()) {
+    public Organization recoverOrganization(String organizationName) throws DAOException {
+        Organization organizationToSearch = null;
+        try (
+                Connection connection = DatabaseConnection.getInstance().getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECT)
+
+        ) {
+            statement.setString(1, organizationName);
+            try (
+                    ResultSet resultSet = statement.executeQuery()) {
 
                 if (resultSet.next()) {
-                    orgTemporal = new Organization();
-                    orgTemporal.setNameOrganization(nombreOrganizacion);
-                    orgTemporal.setRegion(resultSet.getString("ESTADO"));
-                    orgTemporal.setAdress(resultSet.getString("DIRECCION"));
-                    orgTemporal.setCity(resultSet.getString("CIUDAD"));
-                    orgTemporal.setBusiness(resultSet.getString("SECTOR"));
-                    orgTemporal.setMail(resultSet.getString("CORREO"));
-                    orgTemporal.setCellphone(resultSet.getString("TELEFONO"));
+                    organizationToSearch = new Organization();
+                    organizationToSearch.setNameOrganization(organizationName);
+                    organizationToSearch.setRegion(resultSet.getString("ESTADO"));
+                    organizationToSearch.setAdress(resultSet.getString("DIRECCION"));
+                    organizationToSearch.setCity(resultSet.getString("CIUDAD"));
+                    organizationToSearch.setBusiness(resultSet.getString("SECTOR"));
+                    organizationToSearch.setMail(resultSet.getString("CORREO"));
+                    organizationToSearch.setCellphone(resultSet.getString("TELEFONO"));
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
         }
-        return orgTemporal;
+        return organizationToSearch;
     }
 }
