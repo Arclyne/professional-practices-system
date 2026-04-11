@@ -1,17 +1,22 @@
 package mx.uv.fei.dataacces.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Organization;
 
 public class OrganizationDAOTest {
-    @Test
-    void testInsertOrganization() {
-        OrganizationDAO orgDao = new OrganizationDAO();
+
+    OrganizationDAO orgDao;
+    Organization org;
+
+    @BeforeAll
+    static void setup() {
         Organization org = new Organization();
         org.setAdress("Av.Xalapa");
         org.setBusiness("Finansas");
@@ -21,30 +26,33 @@ public class OrganizationDAOTest {
         org.setNameOrganization("PyhtonScryps");
         org.setRegion("Veracruz");
 
-        try {
-            boolean result = orgDao.insertOrganization(org);
-            assertNotNull(result);
-        } catch (DAOException e) {
-            e.printStackTrace();
+    }
 
-            // Extraemos el mensaje real de MySQL usando getCause()
+    @Test
+    void testInsertOrganization() {
+        try {
+
+            boolean result = orgDao.insertOrganization(org);
+            assertTrue(result);
+
+        } catch (DAOException e) {
+
             String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló. MySQL dice: " + motivoReal);
+            fail("La prueba falló por : " + motivoReal);
+
         }
     }
 
     @Test
     void testRecoverOrganization() {
-        OrganizationDAO organizationDAO = new OrganizationDAO();
-        try {
-            Organization test = organizationDAO.recoverOrganization("PyhtonScryps");
-            assertNotNull(test);
-        } catch (DAOException e) {
-            e.printStackTrace();
 
-            // Extraemos el mensaje real de MySQL usando getCause()
+        Organization expectedResult = org;
+        try {
+            Organization test = orgDao.recoverOrganization("PyhtonScryps");
+            assertEquals(expectedResult, test);
+        } catch (DAOException e) {
             String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló. MySQL dice: " + motivoReal);
+            fail("La prueba falló por: " + motivoReal);
         }
     }
 }
