@@ -27,17 +27,20 @@ public class FileConfigLoader {
     }
 
     public static Map<String, String> loadUseConfig(String fileName, String useConfig) throws ConfigExeption {
+
         Properties Allproperties = loadProperties(fileName);
         Map<String, String> useConfigMap = new HashMap<>();
         String prefix = useConfig + ".";
 
         for (String key : Allproperties.stringPropertyNames()) {
+
             if (key.startsWith(prefix)) {
                 String propety = key.substring(prefix.length());
                 useConfigMap.put(propety, Allproperties.getProperty(key));
             }
         }
         if (useConfigMap.isEmpty()) {
+
             throw new ConfigExeption("No existe la configuracion");
         }
         return useConfigMap;
