@@ -4,17 +4,28 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 
+@Repository
 public class ProjectDAO implements IProjectDAO {
+    private final IDatabaseConnection dbConnection;
+
+    @Autowired
+    public ProjectDAO(IDatabaseConnection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
+
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_EMPRESA) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     public boolean insertProject(Project project) throws DAOException {
         try (
-                Connection connection = DatabaseConnection.getInstance().getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());

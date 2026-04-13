@@ -3,22 +3,36 @@ package mx.uv.fei.dataacces.repositories;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
+@Repository
 public class CoordinatorDAO {
-    private final UserDAO userDAO = new UserDAO();
+
+    private final IDatabaseConnection dbconnection;
+
+    private final UserDAO userDAO;
+
+    @Autowired
+    public CoordinatorDAO(IDatabaseConnection dbconnection, UserDAO userDAO) {
+        this.dbconnection = dbconnection;
+        this.userDAO = userDAO;
+    }
 
     public boolean insertCoordinator(Coordinator coordinator) throws DAOException {
         boolean isSuccess = false;
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection()) {
+        try (Connection connection = dbconnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
                 int userId = userDAO.insertUser(coordinator, connection);
-                
+
                 if (userId == -1) {
                     throw new SQLException("Falló la inserción en la tabla base Usuario.");
                 }
@@ -30,8 +44,8 @@ public class CoordinatorDAO {
                 }
 
                 connection.commit();
-                
-                coordinator.setId(userId); 
+
+                coordinator.setId(userId);
 
             } catch (SQLException e) {
                 connection.rollback();
@@ -39,7 +53,7 @@ public class CoordinatorDAO {
             } finally {
                 connection.setAutoCommit(true);
             }
-            
+
         } catch (SQLException e) {
             throw new DAOException("Error de conexión a la base de datos.", e);
         }

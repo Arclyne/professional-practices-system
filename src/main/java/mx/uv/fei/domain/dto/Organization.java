@@ -1,5 +1,7 @@
 package mx.uv.fei.domain.dto;
 
+import java.util.Objects;
+
 public class Organization {
     private int idOrganization;
     private String nameOrganization;
@@ -72,5 +74,26 @@ public class Organization {
 
     public void setCellphone(String telefono) {
         this.cellphone = telefono;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Organization that = (Organization) o;
+
+        return idOrganization == that.getIdOrganization() &&
+                Objects.equals(nameOrganization, that.getNameOrganization()) &&
+                Objects.equals(region, that.getRegion()) &&
+                Objects.equals(mail, that.getMail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idOrganization, nameOrganization, region, mail);
     }
 }
