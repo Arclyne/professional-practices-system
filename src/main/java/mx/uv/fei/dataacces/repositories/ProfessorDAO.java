@@ -4,19 +4,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IProfessorDAO;
 import mx.uv.fei.domain.dto.Professor;
 
+@Repository
 public class ProfessorDAO implements IProfessorDAO {
+
+    private final IDatabaseConnection dbConnection;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public ProfessorDAO(IDatabaseConnection dbConnection, UserDAO userDAO) {
+        this.dbConnection = dbConnection;
+        this.userDAO = userDAO;
+    }
 
     @Override
     public int insertProfessor(Professor professor) throws DAOException {
         int resultId = -1;
-        UserDAO userDAO = new UserDAO();
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection()) {
+        try (Connection connection = dbConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -34,9 +46,9 @@ public class ProfessorDAO implements IProfessorDAO {
                             resultId = generatedUserId;
                         }
                     }
-                    
+
                     connection.commit();
-                    
+
                 } else {
                     connection.rollback();
                 }

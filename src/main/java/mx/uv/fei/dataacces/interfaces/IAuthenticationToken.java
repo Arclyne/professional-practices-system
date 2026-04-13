@@ -4,5 +4,7 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.AuthenticationToken;
 
 public interface IAuthenticationToken {
-    public boolean insterToken(AuthenticationToken token) throws DAOException;
+    boolean insertToken(AuthenticationToken token) throws DAOException;
+
+    AuthenticationToken recoverToken(int tokenValue) throws DAOException;
 }

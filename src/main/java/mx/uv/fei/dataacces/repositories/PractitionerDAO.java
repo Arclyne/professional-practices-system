@@ -4,19 +4,30 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IPractitionerDAO;
 import mx.uv.fei.domain.dto.Practitioner;
 
+@Repository
 public class PractitionerDAO implements IPractitionerDAO {
+    private final IDatabaseConnection dbconnection;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public PractitionerDAO(IDatabaseConnection dbconnection, UserDAO userDAO) {
+        this.dbconnection = dbconnection;
+        this.userDAO = userDAO;
+    }
 
     @Override
     public int insertPractitioner(Practitioner practitioner) throws DAOException {
         int resultId = -1;
-        UserDAO userDAO = new UserDAO();
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection()) {
+        try (Connection connection = dbconnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -36,9 +47,9 @@ public class PractitionerDAO implements IPractitionerDAO {
                             resultId = generatedUserId;
                         }
                     }
-                    
+
                     connection.commit();
-                    
+
                 } else {
                     connection.rollback();
                 }

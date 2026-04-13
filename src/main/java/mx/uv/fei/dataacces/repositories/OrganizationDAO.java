@@ -5,19 +5,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 
+@Repository
 public class OrganizationDAO implements IOrganizationDAO {
 
+    private final IDatabaseConnection dbConnection;
     private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_SELECT = "SELECT ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
 
+    @Autowired
+    public OrganizationDAO(IDatabaseConnection dbconnfig) {
+        this.dbConnection = dbconnfig;
+    }
+
     public boolean insertOrganization(Organization organization) throws DAOException {
         try (
-                Connection connection = DatabaseConnection.getInstance().getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setString(1, organization.getNameOrganization());
@@ -37,7 +47,7 @@ public class OrganizationDAO implements IOrganizationDAO {
     public Organization recoverOrganization(String organizationName) throws DAOException {
         Organization organizationToSearch = null;
         try (
-                Connection connection = DatabaseConnection.getInstance().getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT)
 
         ) {

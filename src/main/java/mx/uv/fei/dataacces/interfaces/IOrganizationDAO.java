@@ -5,4 +5,7 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 
 public interface IOrganizationDAO {
     boolean insertOrganization(Organization organizacion) throws DAOException;
+
+    Organization recoverOrganization(String organizationName) throws DAOException;
+
 }

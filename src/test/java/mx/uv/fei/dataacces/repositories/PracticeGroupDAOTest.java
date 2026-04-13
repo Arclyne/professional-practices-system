@@ -7,27 +7,39 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.dto.SchoolPeriod;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.repositories.PracticeGroupDAO;
+import mx.uv.fei.dataacces.repositories.ProfessorDAO;
+import mx.uv.fei.dataacces.repositories.SchoolPeriodDAO;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class PracticeGroupDAOTest {
+    @Autowired
     private PracticeGroupDAO groupDAO;
+    @Autowired
     private PracticeGroup testGroup;
+    @Autowired
+    private ProfessorDAO professorDAO;
+    @Autowired
+    private SchoolPeriodDAO periodDAO;
 
     @BeforeEach
     void setUp() {
-        groupDAO = new PracticeGroupDAO();
-        testGroup = new PracticeGroup();
         testGroup.setSection("NRC-84932");
     }
 
     @Test
     void testInsertPracticeGroupSuccess() {
         try {
-            ProfessorDAO professorDAO = new ProfessorDAO();
+
             Professor tempProf = new Professor();
             tempProf.setName("Profesor");
             tempProf.setLastName("Prueba Grupo");
@@ -36,7 +48,6 @@ public class PracticeGroupDAOTest {
             tempProf.setGender("Masculino");
             int validProfessorId = professorDAO.insertProfessor(tempProf);
 
-            SchoolPeriodDAO periodDAO = new SchoolPeriodDAO();
             SchoolPeriod tempPeriod = new SchoolPeriod();
             tempPeriod.setPeriodName("Periodo Prueba Grupo");
             tempPeriod.setStartDate(LocalDate.of(2026, 8, 15));
@@ -50,9 +61,9 @@ public class PracticeGroupDAOTest {
             testGroup.setPeriodId(validPeriodId);
 
             int resultId = groupDAO.insertPracticeGroup(testGroup);
-            
+
             assertTrue(resultId > 0, "El grupo de prácticas debió registrarse exitosamente y devolver un ID mayor a 0");
-            
+
         } catch (DAOException e) {
             fail("Falló la prueba del grupo de prácticas: " + e.getMessage());
         }
