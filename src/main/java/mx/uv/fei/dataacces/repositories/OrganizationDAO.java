@@ -18,7 +18,7 @@ public class OrganizationDAO implements IOrganizationDAO {
 
     private final IDatabaseConnection dbConnection;
     private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT = "SELECT ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
+    private static final String SQL_SELECT = "SELECT ID_ORGANIZACION,ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
 
     @Autowired
     public OrganizationDAO(IDatabaseConnection dbconnfig) {
@@ -56,7 +56,9 @@ public class OrganizationDAO implements IOrganizationDAO {
                     ResultSet resultSet = statement.executeQuery()) {
 
                 if (resultSet.next()) {
+
                     organizationToSearch = new Organization();
+                    organizationToSearch.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
                     organizationToSearch.setNameOrganization(organizationName);
                     organizationToSearch.setRegion(resultSet.getString("ESTADO"));
                     organizationToSearch.setAdress(resultSet.getString("DIRECCION"));

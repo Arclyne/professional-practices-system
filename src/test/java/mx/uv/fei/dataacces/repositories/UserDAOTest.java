@@ -11,22 +11,24 @@ import org.junit.jupiter.api.BeforeEach;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.repositories.UserDAO;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class UserDAOTest {
 
-    @Autowired
     private IDatabaseConnection dbconnection;
-    @Autowired
     private UserDAO userDAO;
-    @Autowired
     private User testUser;
+
+    @Autowired
+    public UserDAOTest(IDatabaseConnection dbconnection, UserDAO userDAO, User testUser) {
+        this.dbconnection = dbconnection;
+        this.userDAO = userDAO;
+        this.testUser = testUser;
+    }
 
     @BeforeEach
     void setUp() {

@@ -15,9 +15,6 @@ import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.dto.SchoolPeriod;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.repositories.PracticeGroupDAO;
-import mx.uv.fei.dataacces.repositories.ProfessorDAO;
-import mx.uv.fei.dataacces.repositories.SchoolPeriodDAO;
 
 @SpringBootTest
 @ActiveProfiles("test")

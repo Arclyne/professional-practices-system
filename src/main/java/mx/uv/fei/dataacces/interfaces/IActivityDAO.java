@@ -5,4 +5,6 @@ import mx.uv.fei.domain.dto.Activity;
 
 public interface IActivityDAO {
     boolean insertActivity(Activity activity) throws DAOException;
+
+    Activity recoverActivity(String activityName, String manager) throws DAOException;
 }
