@@ -3,6 +3,7 @@ package mx.uv.fei.dataacces.repositories;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,9 @@ public class ActivityDAO implements IActivityDAO {
     }
 
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
 
+    @Override
     public boolean insertActivity(Activity activity) throws DAOException {
         try (
                 Connection connection = dbConnection.getConnection();
@@ -37,5 +40,28 @@ public class ActivityDAO implements IActivityDAO {
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar el usuario en la base de datos.", e);
         }
+    }
+
+    @Override
+    public Activity recoverActivity(String activityName, String manager) throws DAOException {
+        Activity activityToSearch = new Activity();
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH);) {
+            statement.setString(1, activityName);
+            statement.setString(2, manager);
+
+            try (
+                    ResultSet resultset = statement.executeQuery()) {
+                if (resultset.next()) {
+                    activityToSearch.setName(resultset.getString("NOMBRE"));
+                    activityToSearch.setActivityId(resultset.getInt("ID_ACTIVIDAD"));
+                    activityToSearch.setManager(resultset.getString("ENCARGADO"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
+        }
+        return activityToSearch;
     }
 }

@@ -16,64 +16,64 @@ public class Organization {
         return idOrganization;
     }
 
-    public void setIdOrganization(int idEmpresa) {
-        this.idOrganization = idEmpresa;
+    public void setIdOrganization(int idOrganization) {
+        this.idOrganization = idOrganization;
     }
 
     public String getNameOrganization() {
         return nameOrganization;
     }
 
-    public void setNameOrganization(String nombreEmpresa) {
-        this.nameOrganization = nombreEmpresa;
+    public void setNameOrganization(String nameOrganization) {
+        this.nameOrganization = nameOrganization;
     }
 
     public String getRegion() {
         return region;
     }
 
-    public void setRegion(String estado) {
-        this.region = estado;
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getAdress() {
         return adress;
     }
 
-    public void setAdress(String direccion) {
-        this.adress = direccion;
+    public void setAdress(String adress) {
+        this.adress = adress;
     }
 
     public String getCity() {
         return city;
     }
 
-    public void setCity(String ciudad) {
-        this.city = ciudad;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getBusiness() {
         return business;
     }
 
-    public void setBusiness(String sector) {
-        this.business = sector;
+    public void setBusiness(String business) {
+        this.business = business;
     }
 
     public String getMail() {
         return mail;
     }
 
-    public void setMail(String correo) {
-        this.mail = correo;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getCellphone() {
         return cellphone;
     }
 
-    public void setCellphone(String telefono) {
-        this.cellphone = telefono;
+    public void setCellphone(String cellphone) {
+        this.cellphone = cellphone;
     }
 
     @Override

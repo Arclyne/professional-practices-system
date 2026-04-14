@@ -11,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.repositories.PractitionerDAO;
 
 @SpringBootTest
 @ActiveProfiles("test")

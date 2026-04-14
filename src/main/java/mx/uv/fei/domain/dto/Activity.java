@@ -1,8 +1,7 @@
 package mx.uv.fei.domain.dto;
 
-
 import java.sql.Date;
-
+import java.util.Objects;
 
 public class Activity {
     private int activityId;
@@ -58,5 +57,25 @@ public class Activity {
 
     public void setManager(String manager) {
         this.manager = manager;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Activity that = (Activity) o;
+
+        return activityId == that.getActivityId() &&
+                name == that.getName() &&
+                manager == that.getManager();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(activityId, name, manager);
     }
 }

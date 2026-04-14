@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import mx.uv.fei.TestApp;
 import mx.uv.fei.TestConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-
+import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Organization;
 
 @SpringBootTest(classes = TestApp.class)
@@ -26,7 +26,7 @@ import mx.uv.fei.domain.dto.Organization;
 public class OrganizationDAOIT {
 
     @Autowired
-    private OrganizationDAO organizationTest;
+    private IOrganizationDAO organizationTest;
 
     private Organization expectedOrganization;
 
@@ -36,7 +36,7 @@ public class OrganizationDAOIT {
         expectedOrganization.setIdOrganization(1);
         expectedOrganization.setNameOrganization("UV Soft");
         expectedOrganization.setMail("contacto@uv.mx");
-        expectedOrganization.setRegion("Xalapa");
+        expectedOrganization.setRegion("Veracruz");
     }
 
     @Test
