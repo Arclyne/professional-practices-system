@@ -1,5 +1,7 @@
 package mx.uv.fei.dataacces.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -59,6 +61,14 @@ public class ActivityDAOIT {
 
     @Test
     void testRecoverActivity() {
+        try {
+            Activity resultTest = activityDAOTest.recoverActivity("Test", "Test");
+            assertNotNull(resultTest);
+            assertEquals(expectedActivity, resultTest);
+        } catch (DAOException e) {
 
+            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            fail("La prueba falló por : " + motivoReal);
+        }
     }
 }
