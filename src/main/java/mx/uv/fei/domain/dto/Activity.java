@@ -70,8 +70,8 @@ public class Activity {
         Activity that = (Activity) o;
 
         return activityId == that.getActivityId() &&
-                name == that.getName() &&
-                manager == that.getManager();
+                Objects.equals(name, that.getName()) &&
+                Objects.equals(manager, that.getManager());
     }
 
     @Override

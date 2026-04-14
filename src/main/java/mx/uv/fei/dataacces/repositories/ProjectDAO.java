@@ -2,6 +2,7 @@ package mx.uv.fei.dataacces.repositories;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 
@@ -22,7 +24,9 @@ public class ProjectDAO implements IProjectDAO {
     }
 
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_EMPRESA) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTONE = "SELECT ID_PROYECTO, NOMBRE_PROYECTO, ENCARGADO, ID_ORGANIZACION FROM PROYECTO WHERE NOMBRE PROYECTO = ? AND ENCARGADO = ?";
 
+    @Override
     public boolean insertProject(Project project) throws DAOException {
         try (
                 Connection connection = dbConnection.getConnection();
@@ -40,5 +44,28 @@ public class ProjectDAO implements IProjectDAO {
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar el proyecto en la base de datos.", e);
         }
+    }
+
+    public Project recoverProject(String projectName, String manager) throws DAOException {
+        Project proectToSearch = new Project();
+
+        try (
+                Connection connection = dbConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECTONE)) {
+            statement.setString(1, projectName);
+            statement.setString(2, manager);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    proectToSearch.setProjectId(resultSet.getInt("ID_PROYECTO"));
+                    proectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
+                    proectToSearch.setManager(resultSet.getString("ENCARGADO"));
+                    proectToSearch.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
+        }
+        return proectToSearch;
     }
 }
