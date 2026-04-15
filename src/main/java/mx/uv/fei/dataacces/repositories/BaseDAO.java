@@ -18,14 +18,15 @@ abstract class BaseDAO {
         this.dbconnection = dbconnection;
     }
 
-    protected <T> List<T> recoverALL(String sql, IRowMapper<T> rowMapper, Object... paramObjects) throws DAOException {
+    protected <T> List<T> recoverALL(String sql, IRowMapper<T> rowMapper, Object... parameterObjects)
+            throws DAOException {
         List<T> results = new ArrayList<T>();
 
         try (
                 Connection connection = dbconnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)) {
             int index = 1;
-            for (Object parameters : paramObjects) {
+            for (Object parameters : parameterObjects) {
                 statement.setObject(index++, parameters);
             }
 

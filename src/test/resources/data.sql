@@ -10,6 +10,6 @@ VALUES ('UV Soft', 'Veracruz', 'contacto@uv.mx');
 INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, ID_USUARIO) VALUES (123456, 1);
 
 INSERT INTO ACTIVIDAD (ID_ACTIVIDAD, NOMBRE, ENCARGADO) VALUES 
-(1, 'Test', 'Test'),
+(1, 'toRecover', 'toRecover'),
 (2, 'Dummy 1', 'Dummy 1'),
 (3, 'Dummy 2', 'Dummy 2');

@@ -32,32 +32,32 @@ public class ActivityDAOIT {
     @Autowired
     private IActivityDAO activityDAOTest;
 
-    private Activity expectedActivity;
-    private Activity dummy1;
-    private Activity dummy2;
+    private Activity expectedActivityInserted;
+    private Activity activityToCompare01;
+    private Activity activityToCompare02;
     List<Activity> expectedList;
 
     @BeforeEach
     void setUp() {
-        expectedActivity = new Activity();
-        expectedActivity.setActivityId(1);
-        expectedActivity.setName("Test");
-        expectedActivity.setManager("Test");
+        expectedActivityInserted = new Activity();
+        expectedActivityInserted.setActivityId(1);
+        expectedActivityInserted.setName("toRecover");
+        expectedActivityInserted.setManager("toRecover");
 
-        dummy1 = new Activity();
-        dummy1.setActivityId(2);
-        dummy1.setName("Dummy 1");
-        dummy1.setManager("Dummy 1");
+        activityToCompare01 = new Activity();
+        activityToCompare01.setActivityId(2);
+        activityToCompare01.setName("Dummy 1");
+        activityToCompare01.setManager("Dummy 1");
 
-        dummy2 = new Activity();
-        dummy2.setActivityId(3);
-        dummy2.setName("Dummy 2");
-        dummy2.setManager("Dummy 2");
+        activityToCompare02 = new Activity();
+        activityToCompare02.setActivityId(3);
+        activityToCompare02.setName("Dummy 2");
+        activityToCompare02.setManager("Dummy 2");
 
         expectedList = new ArrayList<Activity>();
-        expectedList.add(expectedActivity);
-        expectedList.add(dummy1);
-        expectedList.add(dummy2);
+        expectedList.add(expectedActivityInserted);
+        expectedList.add(activityToCompare01);
+        expectedList.add(activityToCompare02);
 
     }
 
@@ -84,9 +84,8 @@ public class ActivityDAOIT {
     @Test
     void testRecoverActivity() {
         try {
-            Activity resultTest = activityDAOTest.recoverActivity("Test", "Test");
-            assertNotNull(resultTest);
-            assertEquals(expectedActivity, resultTest);
+            Activity resultTest = activityDAOTest.recoverActivity("toRecover", "toRecover");
+            assertEquals(expectedActivityInserted, resultTest);
         } catch (DAOException e) {
 
             String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
@@ -98,9 +97,6 @@ public class ActivityDAOIT {
     void testRecoverALL() {
         try {
             List<Activity> resultTest = activityDAOTest.getAllActivity();
-            assertNotNull(resultTest);
-            assertTrue(resultTest.size() > 0);
-            assertEquals(expectedList.size(), resultTest.size());
             assertEquals(expectedList, resultTest);
         } catch (DAOException e) {
             fail("La prueba falló: " + e.getMessage());
