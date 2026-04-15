@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 
@@ -47,7 +46,7 @@ public class ProjectDAO implements IProjectDAO {
     }
 
     public Project recoverProject(String projectName, String manager) throws DAOException {
-        Project proectToSearch = new Project();
+        Project projectToSearch = new Project();
 
         try (
                 Connection connection = dbConnection.getConnection();
@@ -57,15 +56,15 @@ public class ProjectDAO implements IProjectDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    proectToSearch.setProjectId(resultSet.getInt("ID_PROYECTO"));
-                    proectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
-                    proectToSearch.setManager(resultSet.getString("ENCARGADO"));
-                    proectToSearch.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
+                    projectToSearch.setProjectId(resultSet.getInt("ID_PROYECTO"));
+                    projectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
+                    projectToSearch.setManager(resultSet.getString("ENCARGADO"));
+                    projectToSearch.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
         }
-        return proectToSearch;
+        return projectToSearch;
     }
 }
