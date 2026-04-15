@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class AuthenticationToken {
     private int valueToken;
@@ -35,4 +36,23 @@ public class AuthenticationToken {
         return this.UserID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        AuthenticationToken that = (AuthenticationToken) o;
+
+        return valueToken == that.getValueToken() &&
+                UserID == that.getUserId();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(valueToken, UserID);
+    }
 }

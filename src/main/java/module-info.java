@@ -1,8 +1,21 @@
 module mx.uv.fei {
     requires javafx.controls;
     requires javafx.fxml;
-    requires java.sql;
+    requires transitive java.sql;
+    requires spring.context;
+    requires spring.beans;
+    requires spring.core;
+    requires spring.boot;
+    requires spring.boot.autoconfigure;
 
-    opens mx.uv.fei to javafx.fxml;
+    opens mx.uv.fei to spring.core, spring.beans, spring.context;
+    opens mx.uv.fei.config to spring.core, spring.beans, spring.context, spring.boot;
+    opens mx.uv.fei.dataacces.database to spring.core, spring.beans, spring.context;
+    opens mx.uv.fei.dataacces.repositories to spring.core, spring.beans, spring.context;
+
     exports mx.uv.fei;
+    exports mx.uv.fei.dataacces.interfaces;
+    exports mx.uv.fei.domain.dto;
+    exports mx.uv.fei.dataacces.exceptions;
+
 }

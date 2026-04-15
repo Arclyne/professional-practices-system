@@ -1,8 +1,7 @@
 package mx.uv.fei.domain.dto;
 
-
 import java.sql.Date;
-
+import java.util.Objects;
 
 public class Project {
     private int projectId;
@@ -85,5 +84,25 @@ public class Project {
 
     public void setCompanyId(int companyId) {
         this.companyId = companyId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() == o.getClass())
+            return false;
+
+        Project that = (Project) o;
+        return projectId == that.getProjectId() &&
+                Objects.equals(projectName, that.getProjectName()) &&
+                Objects.equals(manager, that.getManager()) &&
+                Objects.equals(companyId, that.getCompanyId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projectId, projectName, manager, companyId);
     }
 }
