@@ -1,14 +1,25 @@
 package mx.uv.fei;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 
-
+@SpringBootApplication
 public class App extends Application {
+
+    private ConfigurableApplicationContext springContext;
+
+    @Override
+    public void init() throws Exception {
+        springContext = SpringApplication.run(App.class);
+    }
 
     @Override
     public void start(Stage stage) {
@@ -16,7 +27,7 @@ public class App extends Application {
         String javafxVersion = System.getProperty("javafx.version");
 
         Label label = new Label("SPP - UV \nRunning on Java: " + javaVersion + "\nJavaFX: " + javafxVersion);
-        
+
         String welcomeMessage = """
                 Welcome to the Professional Practices System.
                 Faculty of Statistics and Informatics (FEI).
@@ -29,7 +40,13 @@ public class App extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        springContext.close();
+        Platform.exit();
+    }
+
     public static void main(String[] args) {
-        launch();
+        launch(App.class, args);
     }
 }

@@ -6,17 +6,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import mx.uv.fei.dataacces.database.DatabaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import mx.uv.fei.domain.dto.AuthenticationToken;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-public class AuthenticationTokenDAO {
-    private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, ID_USUARIO ) VALUES (?, ?, ?)";
+@Repository
+public class AuthenticationTokenDAO implements IAuthenticationToken {
+    private final IDatabaseConnection dbConnection;
+    private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, ID_USUARIO) VALUES (?, ?, ?)";
     private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, ID_USUARIO FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ?";
+
+    @Autowired
+    public AuthenticationTokenDAO(IDatabaseConnection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
 
     public boolean insertToken(AuthenticationToken token) throws DAOException {
         try (
-                Connection connection = DatabaseConnection.getInstance().getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setInt(1, token.getValueToken());
@@ -35,7 +46,7 @@ public class AuthenticationTokenDAO {
         AuthenticationToken token = null;
 
         try (
-                Connection connection = DatabaseConnection.getInstance().getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
 
             statement.setInt(1, tokenValue);
