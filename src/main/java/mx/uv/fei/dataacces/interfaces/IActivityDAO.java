@@ -11,4 +11,6 @@ public interface IActivityDAO {
     Activity recoverActivity(String activityName, String manager) throws DAOException;
 
     List<Activity> getAllActivity() throws DAOException;
+
+    boolean updateActivity(Activity activity, int ID) throws DAOException;
 }

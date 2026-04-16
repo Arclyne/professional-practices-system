@@ -1,7 +1,6 @@
 package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -98,6 +97,20 @@ public class ActivityDAOIT {
         try {
             List<Activity> resultTest = activityDAOTest.getAllActivity();
             assertEquals(expectedList, resultTest);
+        } catch (DAOException e) {
+            fail("La prueba falló: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testUpdateTupla() {
+        try {
+            Activity toUpdateActivity = activityDAOTest.recoverActivity("toRecover", "toRecover");
+            activityDAOTest.updateActivity(activityToCompare01, toUpdateActivity.getActivityId());
+            toUpdateActivity = activityDAOTest.recoverActivity(activityToCompare01.getName(),
+                    activityToCompare01.getManager());
+
+            assertEquals(activityToCompare01, toUpdateActivity);
         } catch (DAOException e) {
             fail("La prueba falló: " + e.getMessage());
         }

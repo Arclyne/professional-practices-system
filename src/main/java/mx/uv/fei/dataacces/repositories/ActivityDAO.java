@@ -25,6 +25,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM ACTIVIDAD";
+    private static final String SQL_UPDATE = "UPDATE ACTIVIDAD SET NOMBRE = ? , FECHA_INICIO = ?, FECHA_END = ?, DESCRIPCION = ?, ENCARGADO = ? WHERE ID_ACTIVIDAD =?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
@@ -80,5 +81,18 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
                     return activityRecovered;
                 });
+    }
+
+    @Override
+    public boolean updateActivity(Activity activity, int ID) throws DAOException {
+        return updateTuple(SQL_UPDATE, statemnt -> {
+            statemnt.setString(1, activity.getName());
+            statemnt.setObject(2, activity.getStartDate());
+            statemnt.setObject(3, activity.getEndDate());
+            statemnt.setString(4, activity.getDescription());
+            statemnt.setString(5, activity.getManager());
+            statemnt.setInt(6, ID);
+
+        });
     }
 }
