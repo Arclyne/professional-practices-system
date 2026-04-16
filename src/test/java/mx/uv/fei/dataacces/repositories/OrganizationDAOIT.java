@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,51 +31,103 @@ public class OrganizationDAOIT {
     @Autowired
     private IOrganizationDAO organizationTest;
 
-    private Organization expectedOrganization;
+    private Organization expectedOrganizationInserted;
+    private Organization organizationToCompare01;
+    private Organization organizationToCompare02;
+    List<Organization> expectedList;
 
     @BeforeEach
     void setUp() {
-        expectedOrganization = new Organization();
-        expectedOrganization.setIdOrganization(1);
-        expectedOrganization.setNameOrganization("UV Soft");
-        expectedOrganization.setMail("contacto@uv.mx");
-        expectedOrganization.setRegion("Veracruz");
+        expectedOrganizationInserted = new Organization();
+        expectedOrganizationInserted.setIdOrganization(1);
+        expectedOrganizationInserted.setNameOrganization("toRecover");
+        expectedOrganizationInserted.setMail("torecover@uv.mx");
+        expectedOrganizationInserted.setRegion("Veracruz");
+        expectedOrganizationInserted.setBusiness("Technology");
+
+        organizationToCompare01 = new Organization();
+        organizationToCompare01.setIdOrganization(2);
+        organizationToCompare01.setNameOrganization("Dummy 1");
+        organizationToCompare01.setMail("dummy1@uv.mx");
+        organizationToCompare01.setRegion("Veracruz");
+        organizationToCompare01.setBusiness("Technology");
+
+        organizationToCompare02 = new Organization();
+        organizationToCompare02.setIdOrganization(3);
+        organizationToCompare02.setNameOrganization("Dummy 2");
+        organizationToCompare02.setMail("dummy2@uv.mx");
+        organizationToCompare02.setRegion("Veracruz");
+        organizationToCompare02.setBusiness("Technology");
+
+        expectedList = new ArrayList<Organization>();
+        expectedList.add(expectedOrganizationInserted);
+        expectedList.add(organizationToCompare01);
+        expectedList.add(organizationToCompare02);
     }
 
     @Test
     void testInsertOrganization() {
-
-        Organization test = new Organization();
-        test.setNameOrganization("Phython Software");
-        test.setRegion("Veracruz");
-        test.setAdress("Av. Xalapa");
-        test.setCity("Xalapa");
-        test.setBusiness("Derecho");
-        test.setMail("python@softwareuv.mx");
-        test.setCellphone("7485961234");
+        Organization testOrganization = new Organization();
+        testOrganization.setNameOrganization("Phython Software");
+        testOrganization.setRegion("Veracruz");
+        testOrganization.setAdress("Av. Xalapa");
+        testOrganization.setCity("Xalapa");
+        testOrganization.setBusiness("Derecho");
+        testOrganization.setMail("python@softwareuv.mx");
+        testOrganization.setCellphone("7485961234");
 
         try {
-            boolean result = organizationTest.insertOrganization(test);
-            assertTrue(result);
+            boolean resultTest = organizationTest.insertOrganization(testOrganization);
+            assertTrue(resultTest);
         } catch (DAOException e) {
-
-            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló por : " + motivoReal);
-
+            String realCause = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            fail("Test failed due to: " + realCause);
         }
     }
 
     @Test
     void testRecoverOrganization() {
-
         try {
-            Organization result = organizationTest.recoverOrganization("UV Soft");
-
-            assertNotNull(result);
-            assertEquals(expectedOrganization, result);
+            Organization resultTest = organizationTest.recoverOrganization("toRecover");
+            assertNotNull(resultTest);
+            assertEquals(expectedOrganizationInserted, resultTest);
         } catch (DAOException e) {
-            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló por: " + motivoReal);
+            fail("Test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testRecoverALL() {
+        try {
+            List<Organization> resultTest = organizationTest.getAllOrganization();
+            assertEquals(expectedList, resultTest);
+        } catch (DAOException e) {
+            fail("Test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testUpdateTupla() {
+        try {
+            Organization toUpdateOrganization = organizationTest.recoverOrganization("toRecover");
+
+            Organization toUpdatedData = new Organization();
+            toUpdatedData.setNameOrganization("UV Soft Updated");
+            toUpdatedData.setRegion("Veracruz");
+            toUpdatedData.setAdress("Nueva Direccion");
+            toUpdatedData.setCity("Xalapa");
+            toUpdatedData.setBusiness("Technology");
+            toUpdatedData.setMail("nuevo_correo@uv.mx");
+            toUpdatedData.setCellphone("1234567890");
+
+            organizationTest.updateOrganization(toUpdatedData, toUpdateOrganization.getIdOrganization());
+
+            toUpdateOrganization = organizationTest.recoverOrganization("UV Soft Updated");
+
+            assertEquals(toUpdatedData, toUpdateOrganization);
+
+        } catch (DAOException e) {
+            fail("Test failed: " + e.getMessage());
         }
     }
 }
