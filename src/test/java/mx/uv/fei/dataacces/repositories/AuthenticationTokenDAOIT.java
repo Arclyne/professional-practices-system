@@ -50,11 +50,7 @@ public class AuthenticationTokenDAOIT {
             boolean result = tokenDAO.insertToken(token);
             assertTrue(result);
         } catch (DAOException e) {
-            if (e.getCause() != null) {
-                System.err.println("CAUSA REAL: " + e.getCause().getMessage());
-            }
-            e.printStackTrace();
-            fail("La prueba falló. Causa: " + (e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
+            fail("Test failed: " + e.getMessage());
         }
 
     }
