@@ -91,18 +91,17 @@ public class Project {
         if (this == o)
             return true;
 
-        if (o == null || getClass() == o.getClass())
+        if (o == null || getClass() != o.getClass())
             return false;
 
         Project that = (Project) o;
-        return projectId == that.getProjectId() &&
-                Objects.equals(projectName, that.getProjectName()) &&
+        return Objects.equals(projectName, that.getProjectName()) &&
                 Objects.equals(manager, that.getManager()) &&
                 Objects.equals(companyId, that.getCompanyId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectId, projectName, manager, companyId);
+        return Objects.hash(projectName, manager, companyId);
     }
 }

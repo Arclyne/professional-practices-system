@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,15 +15,16 @@ import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 
 @Repository
-public class OrganizationDAO implements IOrganizationDAO {
+public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
 
-    private final IDatabaseConnection dbConnection;
     private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT = "SELECT ID_ORGANIZACION,ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
+    private static final String SQL_SELECT = "SELECT ID_ORGANIZACION, NOMBRE_ORGANIZACION ,ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
+    private static final String SQL_SELECTALL = "SELECT * FROM ORGANIZACION_VINCULADA";
+    private static final String SQL_UPDATE = "UPDATE ORGANIZACION_VINCULADA SET NOMBRE_ORGANIZACION = ?, ESTADO = ?, DIRECCION = ?, CIUDAD = ?, SECTOR = ?, CORREO = ?, TELEFONO = ? WHERE ID_ORGANIZACION = ?";
 
     @Autowired
-    public OrganizationDAO(IDatabaseConnection dbconnfig) {
-        this.dbConnection = dbconnfig;
+    public OrganizationDAO(IDatabaseConnection dbConnection) {
+        super(dbConnection);
     }
 
     public boolean insertOrganization(Organization organization) throws DAOException {
@@ -44,6 +46,7 @@ public class OrganizationDAO implements IOrganizationDAO {
         }
     }
 
+    @Override
     public Organization recoverOrganization(String organizationName) throws DAOException {
         Organization organizationToSearch = null;
         try (
@@ -59,7 +62,7 @@ public class OrganizationDAO implements IOrganizationDAO {
 
                     organizationToSearch = new Organization();
                     organizationToSearch.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
-                    organizationToSearch.setNameOrganization(organizationName);
+                    organizationToSearch.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
                     organizationToSearch.setRegion(resultSet.getString("ESTADO"));
                     organizationToSearch.setAdress(resultSet.getString("DIRECCION"));
                     organizationToSearch.setCity(resultSet.getString("CIUDAD"));
@@ -72,5 +75,36 @@ public class OrganizationDAO implements IOrganizationDAO {
             throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
         }
         return organizationToSearch;
+    }
+
+    @Override
+    public List<Organization> getAllOrganization() throws DAOException {
+        return recoverALL(SQL_SELECTALL, resultSet -> {
+            Organization organizationRecover = new Organization();
+            organizationRecover.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
+            organizationRecover.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
+            organizationRecover.setRegion(resultSet.getString("ESTADO"));
+            organizationRecover.setAdress(resultSet.getString("DIRECCION"));
+            organizationRecover.setCity(resultSet.getString("CIUDAD"));
+            organizationRecover.setBusiness(resultSet.getString("SECTOR"));
+            organizationRecover.setMail(resultSet.getString("CORREO"));
+            organizationRecover.setCellphone(resultSet.getString("TELEFONO"));
+
+            return organizationRecover;
+        });
+    }
+
+    @Override
+    public boolean updateOrganization(Organization upDateOrganization, int ID) throws DAOException {
+        return updateTuple(SQL_UPDATE, statement -> {
+            statement.setString(1, upDateOrganization.getNameOrganization());
+            statement.setString(2, upDateOrganization.getRegion());
+            statement.setString(3, upDateOrganization.getAdress());
+            statement.setString(4, upDateOrganization.getCity());
+            statement.setString(5, upDateOrganization.getBusiness());
+            statement.setString(6, upDateOrganization.getMail());
+            statement.setString(7, upDateOrganization.getCellphone());
+            statement.setInt(8, ID);
+        });
     }
 }
