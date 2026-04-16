@@ -86,14 +86,13 @@ public class Organization {
 
         Organization that = (Organization) o;
 
-        return idOrganization == that.getIdOrganization() &&
-                Objects.equals(nameOrganization, that.getNameOrganization()) &&
+        return Objects.equals(nameOrganization, that.getNameOrganization()) &&
                 Objects.equals(region, that.getRegion()) &&
                 Objects.equals(mail, that.getMail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idOrganization, nameOrganization, region, mail);
+        return Objects.hash(nameOrganization, region, mail);
     }
 }

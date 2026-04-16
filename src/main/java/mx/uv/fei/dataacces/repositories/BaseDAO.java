@@ -13,10 +13,10 @@ import mx.uv.fei.dataacces.interfaces.IInsterGeneric;
 import mx.uv.fei.dataacces.interfaces.ISelectedList;
 
 abstract class BaseDAO {
-    protected final IDatabaseConnection dbconnection;
+    protected final IDatabaseConnection dbConnection;
 
-    public BaseDAO(IDatabaseConnection dbconnection) {
-        this.dbconnection = dbconnection;
+    public BaseDAO(IDatabaseConnection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 
     protected <T> List<T> recoverALL(String stament, ISelectedList<T> rowMapper, Object... parameterObjects)
@@ -24,7 +24,7 @@ abstract class BaseDAO {
         List<T> results = new ArrayList<T>();
 
         try (
-                Connection connection = dbconnection.getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(stament)) {
             int index = 1;
             for (Object parameters : parameterObjects) {
@@ -45,7 +45,7 @@ abstract class BaseDAO {
     protected boolean updateTuple(String sqlStatement, IInsterGeneric insertGeneric)
             throws DAOException {
         try (
-                Connection connection = dbconnection.getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlStatement)) {
 
             if (insertGeneric != null) {

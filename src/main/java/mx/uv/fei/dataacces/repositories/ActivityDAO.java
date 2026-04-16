@@ -23,14 +23,15 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     }
 
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
+    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM ACTIVIDAD";
     private static final String SQL_UPDATE = "UPDATE ACTIVIDAD SET NOMBRE = ? , FECHA_INICIO = ?, FECHA_END = ?, DESCRIPCION = ?, ENCARGADO = ? WHERE ID_ACTIVIDAD =?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
+
         try (
-                Connection connection = dbconnection.getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, activity.getName());
             statement.setDate(2, activity.getStartDate());
@@ -46,9 +47,10 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public Activity recoverActivity(String activityName, String manager) throws DAOException {
+
         Activity activityToSearch = new Activity();
         try (
-                Connection connection = dbconnection.getConnection();
+                Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH);) {
             statement.setString(1, activityName);
             statement.setString(2, manager);
@@ -56,8 +58,11 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             try (
                     ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    activityToSearch.setName(resultSet.getString("NOMBRE"));
                     activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
+                    activityToSearch.setName(resultSet.getString("NOMBRE"));
+                    activityToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
+                    activityToSearch.setEndDate(resultSet.getDate("FECHA_END"));
+                    activityToSearch.setDescription(resultSet.getString("DESCRIPCION"));
                     activityToSearch.setManager(resultSet.getString("ENCARGADO"));
                 }
             }
@@ -69,6 +74,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public List<Activity> getAllActivity() throws DAOException {
+
         return recoverALL(SQL_SELECTALL,
                 resultSet -> {
                     Activity activityRecovered = new Activity();
@@ -85,13 +91,14 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public boolean updateActivity(Activity activity, int ID) throws DAOException {
-        return updateTuple(SQL_UPDATE, statemnt -> {
-            statemnt.setString(1, activity.getName());
-            statemnt.setObject(2, activity.getStartDate());
-            statemnt.setObject(3, activity.getEndDate());
-            statemnt.setString(4, activity.getDescription());
-            statemnt.setString(5, activity.getManager());
-            statemnt.setInt(6, ID);
+
+        return updateTuple(SQL_UPDATE, statement -> {
+            statement.setString(1, activity.getName());
+            statement.setObject(2, activity.getStartDate());
+            statement.setObject(3, activity.getEndDate());
+            statement.setString(4, activity.getDescription());
+            statement.setString(5, activity.getManager());
+            statement.setInt(6, ID);
 
         });
     }

@@ -74,9 +74,7 @@ public class ActivityDAOIT {
             boolean resultTest = activityDAOTest.insertActivity(testActivity);
             assertTrue(resultTest);
         } catch (DAOException e) {
-
-            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló por : " + motivoReal);
+            fail("Test failed: " + e.getMessage());
         }
     }
 
@@ -87,8 +85,7 @@ public class ActivityDAOIT {
             assertEquals(expectedActivityInserted, resultTest);
         } catch (DAOException e) {
 
-            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("La prueba falló por : " + motivoReal);
+            fail("Test failed: " + e.getMessage());
         }
     }
 
