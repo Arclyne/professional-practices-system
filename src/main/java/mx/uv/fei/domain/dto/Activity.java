@@ -69,13 +69,12 @@ public class Activity {
 
         Activity that = (Activity) o;
 
-        return activityId == that.getActivityId() &&
-                Objects.equals(name, that.getName()) &&
+        return Objects.equals(name, that.getName()) &&
                 Objects.equals(manager, that.getManager());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(activityId, name, manager);
+        return Objects.hash(name, manager);
     }
 }
