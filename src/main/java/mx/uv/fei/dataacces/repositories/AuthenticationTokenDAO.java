@@ -25,14 +25,14 @@ public class AuthenticationTokenDAO implements IAuthenticationToken {
         this.dbConnection = dbConnection;
     }
 
-    public boolean insertToken(AuthenticationToken token) throws DAOException {
+    public boolean insertToken(AuthenticationToken tokenToInsert) throws DAOException {
         try (
                 Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
-            statement.setInt(1, token.getValueToken());
-            statement.setObject(2, token.getTimeCreation());
-            statement.setInt(3, token.getUserId());
+            statement.setInt(1, tokenToInsert.getValueToken());
+            statement.setObject(2, tokenToInsert.getTimeCreation());
+            statement.setInt(3, tokenToInsert.getUserId());
 
             return statement.executeUpdate() > 0;
 
@@ -43,7 +43,7 @@ public class AuthenticationTokenDAO implements IAuthenticationToken {
 
     public AuthenticationToken recoverToken(int tokenValue) throws DAOException {
 
-        AuthenticationToken token = null;
+        AuthenticationToken tokenRecovered = null;
 
         try (
                 Connection connection = dbConnection.getConnection();
@@ -53,18 +53,18 @@ public class AuthenticationTokenDAO implements IAuthenticationToken {
             try (ResultSet resultSet = statement.executeQuery()) {
 
                 if (resultSet.next()) {
-                    token = new AuthenticationToken();
+                    tokenRecovered = new AuthenticationToken();
 
-                    token.setValueToken(resultSet.getInt("TOKEN_VALUE"));
+                    tokenRecovered.setValueToken(resultSet.getInt("TOKEN_VALUE"));
 
-                    token.setTimeCreation(resultSet.getObject("CREATION_TIME", LocalDateTime.class));
+                    tokenRecovered.setTimeCreation(resultSet.getObject("CREATION_TIME", LocalDateTime.class));
 
-                    token.setUserId(resultSet.getInt("ID_USUARIO"));
+                    tokenRecovered.setUserId(resultSet.getInt("ID_USUARIO"));
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar el token en la base de datos.", e);
         }
-        return token;
+        return tokenRecovered;
     }
 }

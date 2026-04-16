@@ -25,6 +25,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM ACTIVIDAD";
+    private static final String SQL_UPDATE = "UPDATE ACTIVIDAD SET NOMBRE = ? , FECHA_INICIO = ?, FECHA_END = ?, DESCRIPCION = ?, ENCARGADO = ? WHERE ID_ACTIVIDAD =?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
@@ -53,11 +54,11 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             statement.setString(2, manager);
 
             try (
-                    ResultSet resultset = statement.executeQuery()) {
-                if (resultset.next()) {
-                    activityToSearch.setName(resultset.getString("NOMBRE"));
-                    activityToSearch.setActivityId(resultset.getInt("ID_ACTIVIDAD"));
-                    activityToSearch.setManager(resultset.getString("ENCARGADO"));
+                    ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    activityToSearch.setName(resultSet.getString("NOMBRE"));
+                    activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
+                    activityToSearch.setManager(resultSet.getString("ENCARGADO"));
                 }
             }
         } catch (SQLException e) {
@@ -69,16 +70,29 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     @Override
     public List<Activity> getAllActivity() throws DAOException {
         return recoverALL(SQL_SELECTALL,
-                rs -> {
-                    Activity activity = new Activity();
-                    activity.setActivityId(rs.getInt("ID_ACTIVIDAD"));
-                    activity.setName(rs.getString("NOMBRE"));
-                    activity.setStartDate(rs.getDate("FECHA_INICIO"));
-                    activity.setEndDate(rs.getDate("FECHA_END"));
-                    activity.setDescription(rs.getString("DESCRIPCION"));
-                    activity.setManager(rs.getString("ENCARGADO"));
+                resultSet -> {
+                    Activity activityRecovered = new Activity();
+                    activityRecovered.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
+                    activityRecovered.setName(resultSet.getString("NOMBRE"));
+                    activityRecovered.setStartDate(resultSet.getDate("FECHA_INICIO"));
+                    activityRecovered.setEndDate(resultSet.getDate("FECHA_END"));
+                    activityRecovered.setDescription(resultSet.getString("DESCRIPCION"));
+                    activityRecovered.setManager(resultSet.getString("ENCARGADO"));
 
-                    return activity;
+                    return activityRecovered;
                 });
+    }
+
+    @Override
+    public boolean updateActivity(Activity activity, int ID) throws DAOException {
+        return updateTuple(SQL_UPDATE, statemnt -> {
+            statemnt.setString(1, activity.getName());
+            statemnt.setObject(2, activity.getStartDate());
+            statemnt.setObject(3, activity.getEndDate());
+            statemnt.setString(4, activity.getDescription());
+            statemnt.setString(5, activity.getManager());
+            statemnt.setInt(6, ID);
+
+        });
     }
 }
