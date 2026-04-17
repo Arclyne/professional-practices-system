@@ -25,7 +25,8 @@ abstract class BaseDAO {
 
         try (
                 Connection connection = dbConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(stament)) {
+                PreparedStatement statement = connection.prepareStatement(stament)
+            ) {
             int index = 1;
             for (Object parameters : parameterObjects) {
                 statement.setObject(index++, parameters);
