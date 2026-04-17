@@ -58,4 +58,13 @@ abstract class BaseDAO {
             throw new DAOException("Error BD ejecutando sentencia: " + e.getMessage(), e);
         }
     }
+
+    protected boolean updateTuple(Connection sharedConnection, String sqlStatement, IInsterGeneric insertGeneric) throws SQLException {
+        try (PreparedStatement statement = sharedConnection.prepareStatement(sqlStatement)) {
+            if (insertGeneric != null) {
+                insertGeneric.insertGeneric(statement);
+            }
+            return statement.executeUpdate() > 0;
+        }
+    }
 }
