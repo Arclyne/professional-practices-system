@@ -75,7 +75,7 @@ public class User {
         return unsubscriptionDate;
     }
 
-    public void setUnsubscriptionDate(LocalDateTime unsubscriptionDate) {
+    public void setDischargeDate(LocalDateTime unsubscriptionDate) {
         this.unsubscriptionDate = unsubscriptionDate;
     }
 }
