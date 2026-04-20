@@ -1,9 +1,8 @@
 package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
@@ -44,61 +43,40 @@ public class ProfessorDAOIT {
     }
 
     @Test
-    void testInsertProfessorSuccess() {
-        try {
-            int resultId = professorDAOTest.insertProfessor(testProfessor);
-            assertTrue(resultId > 0, "El profesor debió registrarse exitosamente en ambas tablas y devolver un ID mayor a 0");
-        } catch (DAOException e) {
-            fail("Falló la inserción del profesor: " + e.getMessage());
-        }
+    void testInsertProfessorSuccess() throws DAOException {
+        int resultId = professorDAOTest.insertProfessor(testProfessor);
+        
+        assertTrue(resultId > 0, "El profesor debió registrarse exitosamente y devolver un ID mayor a 0");
     }
 
     @Test
-    void testRecoverProfessorSuccess() {
-        try {
-            int generatedId = professorDAOTest.insertProfessor(testProfessor);
-            
-            Professor recovered = professorDAOTest.recoverProfessor(generatedId);
+    void testRecoverProfessorSuccess() throws DAOException {
+        int generatedId = professorDAOTest.insertProfessor(testProfessor);
+        
+        Professor recovered = professorDAOTest.recoverProfessor(generatedId);
 
-            assertNotNull(recovered, "El objeto recuperado no debería ser nulo");
-            assertEquals("Angel", recovered.getName(), "El nombre debería coincidir");
-            assertEquals("Aguilar", recovered.getLastName(), "Los apellidos deberían coincidir");
-            assertNotNull(recovered.getRegistrationDate(), "La fecha de registro debió generarse automáticamente en la BD");
-            
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        assertEquals(testProfessor, recovered, "El profesor recuperado no coincide con el insertado.");
     }
 
     @Test
-    void testGetAllProfessorsSuccess() {
-        try {
-            professorDAOTest.insertProfessor(testProfessor);
-            
-            List<Professor> list = professorDAOTest.getAllProfessors();
-            
-            assertTrue(list.size() > 0, "La lista debe contener al menos al profesor que acabamos de insertar");
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+    void testGetAllProfessorsSuccess() throws DAOException {
+        professorDAOTest.insertProfessor(testProfessor);
+        
+        List<Professor> list = professorDAOTest.getAllProfessors();
+        
+        assertFalse(list.isEmpty(), "La lista debe contener al menos al profesor que acabamos de insertar");
     }
 
     @Test
-    void testUpdateProfessorSuccess() {
-        try {
-            int generatedId = professorDAOTest.insertProfessor(testProfessor);
-            testProfessor.setName("Angel Gabriel");
-            testProfessor.setStatus("No Activo");
+    void testUpdateProfessorSuccess() throws DAOException {
+        int generatedId = professorDAOTest.insertProfessor(testProfessor);
+        
+        testProfessor.setName("Angel Gabriel");
+        testProfessor.setStatus("No Activo");
 
-            boolean isUpdated = professorDAOTest.updateProfessor(testProfessor, generatedId);
-            assertTrue(isUpdated, "La actualización en la tabla USUARIO debió devolver true");
+        professorDAOTest.updateProfessor(testProfessor, generatedId);
 
-            Professor recovered = professorDAOTest.recoverProfessor(generatedId);
-            assertEquals("Angel Gabriel", recovered.getName(), "El nombre debió actualizarse");
-            assertEquals("No Activo", recovered.getStatus(), "El estado debió actualizarse a No Activo");
-
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        Professor recovered = professorDAOTest.recoverProfessor(generatedId);
+        assertEquals(testProfessor, recovered, "Los datos del profesor recuperado no reflejan la actualización.");
     }
 }

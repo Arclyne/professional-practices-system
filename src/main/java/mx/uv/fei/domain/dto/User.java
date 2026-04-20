@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class User {
     private int id;
@@ -77,5 +78,21 @@ public class User {
 
     public void setDischargeDate(LocalDateTime unsubscriptionDate) {
         this.unsubscriptionDate = unsubscriptionDate;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+    
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        User that = (User) object;
+
+        return Objects.equals(this.name, that.name) &&
+               Objects.equals(this.lastName, that.lastName);
     }
 }

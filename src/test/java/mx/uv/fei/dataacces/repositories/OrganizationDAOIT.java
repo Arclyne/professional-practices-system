@@ -89,7 +89,6 @@ public class OrganizationDAOIT {
     void testRecoverOrganizationSuccess() {
         try {
             Organization resultTest = organizationTest.recoverOrganization("toRecover");
-            assertNotNull(resultTest);
             assertEquals(expectedOrganizationInserted, resultTest);
         } catch (DAOException e) {
             fail("Test failed: " + e.getMessage());
