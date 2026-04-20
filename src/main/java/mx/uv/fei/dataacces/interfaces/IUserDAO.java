@@ -8,4 +8,5 @@ import mx.uv.fei.domain.dto.User;
 public interface IUserDAO {
     int insertUser(User user, Connection sharedConnection) throws DAOException;
     boolean deactivateUser(int idUsuario) throws DAOException;
+    boolean updateUser(User user, Connection sharedConnection) throws DAOException;
 }

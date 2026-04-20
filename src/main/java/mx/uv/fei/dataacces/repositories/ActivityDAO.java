@@ -99,7 +99,6 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             statement.setString(4, activity.getDescription());
             statement.setString(5, activity.getManager());
             statement.setInt(6, ID);
-
         });
     }
 }
