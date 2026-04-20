@@ -61,7 +61,7 @@ public class ActivityDAOIT {
     }
 
     @Test
-    void testInsertActivitySuccess() {
+    void testInsertActivitySuccess() throws DAOException {
         Activity testActivity = new Activity();
 
         testActivity.setName("Diseño de la Base de Datos");
@@ -70,46 +70,36 @@ public class ActivityDAOIT {
         testActivity.setStartDate(java.sql.Date.valueOf("2026-04-15"));
         testActivity.setEndDate(java.sql.Date.valueOf("2026-04-30"));
 
-        try {
-            boolean resultTest = activityDAOTest.insertActivity(testActivity);
-            assertTrue(resultTest);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+        boolean resultTest = activityDAOTest.insertActivity(testActivity);
+        assertTrue(resultTest);
+
     }
 
     @Test
-    void testRecoverActivitySuccess() {
-        try {
-            Activity resultTest = activityDAOTest.recoverActivity("toRecover", "toRecover");
-            assertEquals(expectedActivityInserted, resultTest);
-        } catch (DAOException e) {
+    void testRecoverActivitySuccess() throws DAOException {
 
-            fail("Test failed: " + e.getMessage());
-        }
+        Activity resultTest = activityDAOTest.recoverActivity("toRecover", "toRecover");
+        assertEquals(expectedActivityInserted, resultTest);
+
     }
 
     @Test
-    void testRecoverALSuccessL() {
-        try {
-            List<Activity> resultTest = activityDAOTest.getAllActivity();
-            assertEquals(expectedList, resultTest);
-        } catch (DAOException e) {
-            fail("La prueba falló: " + e.getMessage());
-        }
+    void testRecoverALSuccessL() throws DAOException {
+
+        List<Activity> resultTest = activityDAOTest.getAllActivity();
+        assertEquals(expectedList, resultTest);
+
     }
 
     @Test
-    void testUpdateTuplaSuccess() {
-        try {
-            Activity toUpdateActivity = activityDAOTest.recoverActivity("toRecover", "toRecover");
-            activityDAOTest.updateActivity(activityToCompare01, toUpdateActivity.getActivityId());
-            toUpdateActivity = activityDAOTest.recoverActivity(activityToCompare01.getName(),
-                    activityToCompare01.getManager());
+    void testUpdateTuplaSuccess() throws DAOException {
 
-            assertEquals(activityToCompare01, toUpdateActivity);
-        } catch (DAOException e) {
-            fail("La prueba falló: " + e.getMessage());
-        }
+        Activity toUpdateActivity = activityDAOTest.recoverActivity("toRecover", "toRecover");
+        activityDAOTest.updateActivity(activityToCompare01, toUpdateActivity.getActivityId());
+        toUpdateActivity = activityDAOTest.recoverActivity(activityToCompare01.getName(),
+                activityToCompare01.getManager());
+
+        assertEquals(activityToCompare01, toUpdateActivity);
+
     }
 }
