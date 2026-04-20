@@ -61,7 +61,7 @@ public class ActivityDAOIT {
     }
 
     @Test
-    void testInsertActivity() {
+    void testInsertActivitySuccess() {
         Activity testActivity = new Activity();
 
         testActivity.setName("Diseño de la Base de Datos");
@@ -79,7 +79,7 @@ public class ActivityDAOIT {
     }
 
     @Test
-    void testRecoverActivity() {
+    void testRecoverActivitySuccess() {
         try {
             Activity resultTest = activityDAOTest.recoverActivity("toRecover", "toRecover");
             assertEquals(expectedActivityInserted, resultTest);
@@ -90,7 +90,7 @@ public class ActivityDAOIT {
     }
 
     @Test
-    void testRecoverALL() {
+    void testRecoverALSuccessL() {
         try {
             List<Activity> resultTest = activityDAOTest.getAllActivity();
             assertEquals(expectedList, resultTest);
@@ -100,7 +100,7 @@ public class ActivityDAOIT {
     }
 
     @Test
-    void testUpdateTupla() {
+    void testUpdateTuplaSuccess() {
         try {
             Activity toUpdateActivity = activityDAOTest.recoverActivity("toRecover", "toRecover");
             activityDAOTest.updateActivity(activityToCompare01, toUpdateActivity.getActivityId());
