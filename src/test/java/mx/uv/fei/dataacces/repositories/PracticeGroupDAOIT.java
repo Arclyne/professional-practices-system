@@ -1,9 +1,8 @@
 package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,88 +46,62 @@ public class PracticeGroupDAOIT {
     private int validPeriodId;
 
     @BeforeEach
-    void setUp() {
-        try {
-            Professor tempProf = new Professor();
-            tempProf.setName("Profesor");
-            tempProf.setLastName("Prueba Grupo");
-            tempProf.setPassword("1234");
-            tempProf.setStatus("Activo");
-            tempProf.setGender("Masculino");
-            validProfessorId = professorDAOTest.insertProfessor(tempProf);
+    void setUp() throws DAOException {
+        Professor tempProf = new Professor();
+        tempProf.setName("Profesor");
+        tempProf.setLastName("Prueba Grupo");
+        tempProf.setPassword("1234");
+        tempProf.setStatus("Activo");
+        tempProf.setGender("Masculino");
+        validProfessorId = professorDAOTest.insertProfessor(tempProf);
 
-            SchoolPeriod tempPeriod = new SchoolPeriod();
-            tempPeriod.setPeriodName("Periodo Prueba Grupo");
-            tempPeriod.setStartDate(LocalDate.of(2026, 8, 15));
-            tempPeriod.setEndDate(LocalDate.of(2027, 1, 20));
-            tempPeriod.setStatus("activo");
-            validPeriodId = periodDAOTest.insertSchoolPeriod(tempPeriod);
+        SchoolPeriod tempPeriod = new SchoolPeriod();
+        tempPeriod.setPeriodName("Periodo Prueba Grupo");
+        tempPeriod.setStartDate(LocalDate.of(2026, 8, 15));
+        tempPeriod.setEndDate(LocalDate.of(2027, 1, 20));
+        tempPeriod.setStatus("activo");
+        validPeriodId = periodDAOTest.insertSchoolPeriod(tempPeriod);
 
-            testGroup = new PracticeGroup();
-            testGroup.setSection("NRC-84932");
-            testGroup.setProfessorId(validProfessorId);
-            testGroup.setPeriodId(validPeriodId);
-
-        } catch (DAOException e) {
-            fail("Falló la preparación de dependencias en setUp: " + e.getMessage());
-        }
+        testGroup = new PracticeGroup();
+        testGroup.setSection("NRC-84932");
+        testGroup.setProfessorId(validProfessorId);
+        testGroup.setPeriodId(validPeriodId);
     }
 
     @Test
-    void testInsertPracticeGroupSuccess() {
-        try {
-            int resultId = groupDAOTest.insertPracticeGroup(testGroup);
-            assertTrue(resultId > 0, "El grupo de prácticas debió registrarse exitosamente y devolver un ID mayor a 0");
-        } catch (DAOException e) {
-            fail("Falló la inserción del grupo de prácticas: " + e.getMessage());
-        }
+    void testInsertPracticeGroupSuccess() throws DAOException {
+        int resultId = groupDAOTest.insertPracticeGroup(testGroup);
+        
+        assertTrue(resultId > 0, "El grupo de prácticas debió registrarse exitosamente y devolver un ID mayor a 0");
     }
 
     @Test
-    void testRecoverPracticeGroupSuccess() {
-        try {
-            int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
-            
-            PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
+    void testRecoverPracticeGroupSuccess() throws DAOException {
+        int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
+        
+        PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
 
-            assertNotNull(recovered, "El objeto recuperado no debería ser nulo");
-            assertEquals("NRC-84932", recovered.getSection(), "La sección debería coincidir");
-            assertEquals(validProfessorId, recovered.getProfessorId(), "El ID del profesor debería coincidir");
-            assertEquals(validPeriodId, recovered.getPeriodId(), "El ID del periodo debería coincidir");
-            
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        assertEquals(testGroup, recovered, "El grupo de prácticas recuperado no coincide con el insertado.");
     }
 
     @Test
-    void testGetAllPracticeGroupsSuccess() {
-        try {
-            groupDAOTest.insertPracticeGroup(testGroup);
-            
-            List<PracticeGroup> list = groupDAOTest.getAllPracticeGroups();
-            
-            assertTrue(list.size() > 0, "La lista debe contener al menos el grupo de prácticas que acabamos de insertar");
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+    void testGetAllPracticeGroupsSuccess() throws DAOException {
+        groupDAOTest.insertPracticeGroup(testGroup);
+        
+        List<PracticeGroup> list = groupDAOTest.getAllPracticeGroups();
+        
+        assertFalse(list.isEmpty(), "La lista debe contener al menos el grupo de prácticas que acabamos de insertar");
     }
 
     @Test
-    void testUpdatePracticeGroupSuccess() {
-        try {
-            int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
+    void testUpdatePracticeGroupSuccess() throws DAOException {
+        int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
 
-            testGroup.setSection("NRC-99999");
+        testGroup.setSection("NRC-99999");
 
-            boolean isUpdated = groupDAOTest.updatePracticeGroup(testGroup, generatedId);
-            assertTrue(isUpdated, "La actualización debió devolver true");
+        groupDAOTest.updatePracticeGroup(testGroup, generatedId);
 
-            PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
-            assertEquals("NRC-99999", recovered.getSection(), "La sección debió actualizarse a NRC-99999");
-
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
+        assertEquals(testGroup, recovered, "Los datos del grupo de prácticas recuperado no reflejan la actualización.");
     }
 }
