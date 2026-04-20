@@ -62,7 +62,7 @@ public class ProjectDAOIT {
     }
 
     @Test
-    void testInsertProject() {
+    void testInsertProjectSuccess() {
         Project testProject = new Project();
         testProject.setProjectName("New Project Test");
         testProject.setDescription("Testing insertion logic");
@@ -83,7 +83,7 @@ public class ProjectDAOIT {
     }
 
     @Test
-    void testRecoverProject() {
+    void testRecoverProjectSuccess() {
         try {
             Project resultTest = projectDAOTest.recoverProject("toRecover", "toRecover");
             assertEquals(expectedProjectInserted, resultTest);
@@ -94,7 +94,7 @@ public class ProjectDAOIT {
     }
 
     @Test
-    void testRecoverALL() {
+    void testRecoverALLSuccess() {
         try {
             List<Project> resultTest = projectDAOTest.getAllProjects();
             assertEquals(expectedList, resultTest);
@@ -104,7 +104,7 @@ public class ProjectDAOIT {
     }
 
     @Test
-    void testUpdateTupla() {
+    void testUpdateTuplaSuccess() {
         try {
             Project toUpdateProject = projectDAOTest.recoverProject("toRecover", "toRecover");
 

@@ -66,7 +66,7 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testInsertOrganization() {
+    void testInsertOrganizationSuccess() {
         Organization testOrganization = new Organization();
         testOrganization.setNameOrganization("Phython Software");
         testOrganization.setRegion("Veracruz");
@@ -86,7 +86,7 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testRecoverOrganization() {
+    void testRecoverOrganizationSuccess() {
         try {
             Organization resultTest = organizationTest.recoverOrganization("toRecover");
             assertNotNull(resultTest);
@@ -97,7 +97,7 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testRecoverALL() {
+    void testRecoverALLSuccess() {
         try {
             List<Organization> resultTest = organizationTest.getAllOrganization();
             assertEquals(expectedList, resultTest);
@@ -107,7 +107,7 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testUpdateTupla() {
+    void testUpdateTuplaSuccess() {
         try {
             Organization toUpdateOrganization = organizationTest.recoverOrganization("toRecover");
 
