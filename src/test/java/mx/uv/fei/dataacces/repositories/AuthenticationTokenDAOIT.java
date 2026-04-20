@@ -40,7 +40,7 @@ public class AuthenticationTokenDAOIT {
     }
 
     @Test
-    void testInsertToken() {
+    void testInsertTokenSuccess() {
 
         AuthenticationToken token = new AuthenticationToken();
         token.setValueToken(12345);
@@ -56,7 +56,7 @@ public class AuthenticationTokenDAOIT {
     }
 
     @Test
-    void testRecoverTokenNull() {
+    void testSelectTokenNullSuccess() {
         try {
             AuthenticationToken tokenTest = tokenDAO.recoverToken(999999);
             assertNull(tokenTest);
@@ -66,7 +66,7 @@ public class AuthenticationTokenDAOIT {
     }
 
     @Test
-    void testRecoverTokenTrue() {
+    void testSelectTokenSucces() {
         try {
             AuthenticationToken tokenTest = tokenDAO.recoverToken(123456);
             assertNotNull(tokenTest);
