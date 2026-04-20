@@ -3,7 +3,6 @@ package mx.uv.fei.dataacces.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testInsertOrganizationSuccess() {
+    void testInsertOrganizationSuccess() throws DAOException {
         Organization testOrganization = new Organization();
         testOrganization.setNameOrganization("Phython Software");
         testOrganization.setRegion("Veracruz");
@@ -76,58 +75,46 @@ public class OrganizationDAOIT {
         testOrganization.setMail("python@softwareuv.mx");
         testOrganization.setCellphone("7485961234");
 
-        try {
-            boolean resultTest = organizationTest.insertOrganization(testOrganization);
-            assertTrue(resultTest);
-        } catch (DAOException e) {
-            String realCause = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("Test failed due to: " + realCause);
-        }
+        boolean resultTest = organizationTest.insertOrganization(testOrganization);
+        assertTrue(resultTest);
+
     }
 
     @Test
-    void testRecoverOrganizationSuccess() {
-        try {
-            Organization resultTest = organizationTest.recoverOrganization("toRecover");
-            assertNotNull(resultTest);
-            assertEquals(expectedOrganizationInserted, resultTest);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+    void testRecoverOrganizationSuccess() throws DAOException {
+
+        Organization resultTest = organizationTest.recoverOrganization("toRecover");
+        assertEquals(expectedOrganizationInserted, resultTest);
+
     }
 
     @Test
-    void testRecoverALLSuccess() {
-        try {
-            List<Organization> resultTest = organizationTest.getAllOrganization();
-            assertEquals(expectedList, resultTest);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+    void testRecoverALLSuccess() throws DAOException {
+
+        List<Organization> resultTest = organizationTest.getAllOrganization();
+        assertEquals(expectedList, resultTest);
+
     }
 
     @Test
-    void testUpdateTuplaSuccess() {
-        try {
-            Organization toUpdateOrganization = organizationTest.recoverOrganization("toRecover");
+    void testUpdateTuplaSuccess() throws DAOException {
 
-            Organization toUpdatedData = new Organization();
-            toUpdatedData.setNameOrganization("UV Soft Updated");
-            toUpdatedData.setRegion("Veracruz");
-            toUpdatedData.setAdress("Nueva Direccion");
-            toUpdatedData.setCity("Xalapa");
-            toUpdatedData.setBusiness("Technology");
-            toUpdatedData.setMail("nuevo_correo@uv.mx");
-            toUpdatedData.setCellphone("1234567890");
+        Organization toUpdateOrganization = organizationTest.recoverOrganization("toRecover");
 
-            organizationTest.updateOrganization(toUpdatedData, toUpdateOrganization.getIdOrganization());
+        Organization toUpdatedData = new Organization();
+        toUpdatedData.setNameOrganization("UV Soft Updated");
+        toUpdatedData.setRegion("Veracruz");
+        toUpdatedData.setAdress("Nueva Direccion");
+        toUpdatedData.setCity("Xalapa");
+        toUpdatedData.setBusiness("Technology");
+        toUpdatedData.setMail("nuevo_correo@uv.mx");
+        toUpdatedData.setCellphone("1234567890");
 
-            toUpdateOrganization = organizationTest.recoverOrganization("UV Soft Updated");
+        organizationTest.updateOrganization(toUpdatedData, toUpdateOrganization.getIdOrganization());
 
-            assertEquals(toUpdatedData, toUpdateOrganization);
+        toUpdateOrganization = organizationTest.recoverOrganization("UV Soft Updated");
 
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+        assertEquals(toUpdatedData, toUpdateOrganization);
+
     }
 }

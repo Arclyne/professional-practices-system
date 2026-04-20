@@ -2,7 +2,6 @@ package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class ProjectDAOIT {
     }
 
     @Test
-    void testInsertProjectSuccess() {
+    void testInsertProjectSuccess() throws DAOException {
         Project testProject = new Project();
         testProject.setProjectName("New Project Test");
         testProject.setDescription("Testing insertion logic");
@@ -73,58 +72,47 @@ public class ProjectDAOIT {
         testProject.setEndDate(java.sql.Date.valueOf("2026-12-01"));
         testProject.setCompanyId(1);
 
-        try {
-            boolean resultTest = projectDAOTest.insertProject(testProject);
-            assertTrue(resultTest);
-        } catch (DAOException e) {
-            String realCause = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("Test failed due to: " + realCause);
-        }
+        boolean resultTest = projectDAOTest.insertProject(testProject);
+        assertTrue(resultTest);
+
     }
 
     @Test
-    void testRecoverProjectSuccess() {
-        try {
-            Project resultTest = projectDAOTest.recoverProject("toRecover", "toRecover");
-            assertEquals(expectedProjectInserted, resultTest);
-        } catch (DAOException e) {
-            String realCause = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
-            fail("Test failed due to: " + realCause);
-        }
+    void testRecoverProjectSuccess() throws DAOException {
+
+        Project resultTest = projectDAOTest.recoverProject("toRecover", "toRecover");
+        assertEquals(expectedProjectInserted, resultTest);
+
     }
 
     @Test
-    void testRecoverALLSuccess() {
-        try {
-            List<Project> resultTest = projectDAOTest.getAllProjects();
-            assertEquals(expectedList, resultTest);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+    void testRecoverALLSuccess() throws DAOException {
+
+        List<Project> resultTest = projectDAOTest.getAllProjects();
+        assertEquals(expectedList, resultTest);
+
     }
 
     @Test
-    void testUpdateTuplaSuccess() {
-        try {
-            Project toUpdateProject = projectDAOTest.recoverProject("toRecover", "toRecover");
+    void testUpdateTuplaSuccess() throws DAOException {
 
-            Project toUpdatedData = new Project();
-            toUpdatedData.setProjectName("Updated Project Name");
-            toUpdatedData.setManager("Updated Manager");
-            toUpdatedData.setDescription("Updated Description");
-            toUpdatedData.setParticipantCapacity(10);
-            toUpdatedData.setStatus("Inactive");
-            toUpdatedData.setStartDate(java.sql.Date.valueOf("2026-06-01"));
-            toUpdatedData.setEndDate(java.sql.Date.valueOf("2026-11-01"));
-            toUpdatedData.setCompanyId(1);
+        Project toUpdateProject = projectDAOTest.recoverProject("toRecover", "toRecover");
 
-            projectDAOTest.updateProject(toUpdatedData, toUpdateProject.getProjectId());
+        Project toUpdatedData = new Project();
+        toUpdatedData.setProjectName("Updated Project Name");
+        toUpdatedData.setManager("Updated Manager");
+        toUpdatedData.setDescription("Updated Description");
+        toUpdatedData.setParticipantCapacity(10);
+        toUpdatedData.setStatus("Inactive");
+        toUpdatedData.setStartDate(java.sql.Date.valueOf("2026-06-01"));
+        toUpdatedData.setEndDate(java.sql.Date.valueOf("2026-11-01"));
+        toUpdatedData.setCompanyId(1);
 
-            Project resultTest = projectDAOTest.recoverProject("Updated Project Name", "Updated Manager");
+        projectDAOTest.updateProject(toUpdatedData, toUpdateProject.getProjectId());
 
-            assertEquals(toUpdatedData, resultTest);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+        Project resultTest = projectDAOTest.recoverProject("Updated Project Name", "Updated Manager");
+
+        assertEquals(toUpdatedData, resultTest);
+
     }
 }
