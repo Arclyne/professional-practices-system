@@ -6,18 +6,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.sql.ResultSet;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IActivityDAO;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Activity;
 
-@Repository
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
-    @Autowired
     public ActivityDAO(IDatabaseConnection dbConnection) {
         super(dbConnection);
     }

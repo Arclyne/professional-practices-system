@@ -6,21 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import mx.uv.fei.domain.dto.AuthenticationToken;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-@Repository
 public class AuthenticationTokenDAO implements IAuthenticationToken {
     private final IDatabaseConnection dbConnection;
     private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, ID_USUARIO) VALUES (?, ?, ?)";
     private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, ID_USUARIO FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ?";
 
-    @Autowired
     public AuthenticationTokenDAO(IDatabaseConnection dbConnection) {
         this.dbConnection = dbConnection;
     }

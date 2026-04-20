@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class FileConfigLoaderTest {
     @Test
-    void testLoadProperties() {
+    void testLoadPropertiesSuccess() {
 
         Properties baseProperties = FileConfigLoader.loadProperties("database.properties");
         assertNotNull(baseProperties);
