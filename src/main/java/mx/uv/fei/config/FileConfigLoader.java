@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import mx.uv.fei.dataacces.exceptions.ConfigExeption;
-
 public class FileConfigLoader {
     public static Properties loadProperties(String fileName) {
         Properties properties = new Properties();
@@ -26,7 +24,7 @@ public class FileConfigLoader {
         return properties;
     }
 
-    public static Map<String, String> loadUseConfig(String fileName, String useConfig) throws ConfigExeption {
+    public Map<String, String> loadUseConfig(String fileName, String useConfig) {
 
         Properties Allproperties = loadProperties(fileName);
         Map<String, String> useConfigMap = new HashMap<>();
@@ -39,10 +37,7 @@ public class FileConfigLoader {
                 useConfigMap.put(propety, Allproperties.getProperty(key));
             }
         }
-        if (useConfigMap.isEmpty()) {
 
-            throw new ConfigExeption("No existe la configuracion");
-        }
         return useConfigMap;
     }
 }

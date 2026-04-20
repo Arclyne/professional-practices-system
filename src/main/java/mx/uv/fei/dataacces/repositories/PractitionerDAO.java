@@ -6,15 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IPractitionerDAO;
 import mx.uv.fei.domain.dto.Practitioner;
 
-@Repository
 public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private final UserDAO userDAO;
@@ -25,9 +21,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO";
     private static final String SQL_UPDATE_PRACTITIONER = "UPDATE PRACTICANTE SET LENGUA_INDIGENA = ?, CALIFICACION = ? WHERE ID_PRACTICANTE = ?";
 
-    @Autowired
     public PractitionerDAO(IDatabaseConnection dbConnection, UserDAO userDAO) {
-        super(dbConnection); 
+        super(dbConnection);
         this.userDAO = userDAO;
     }
 
@@ -50,7 +45,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                         int affectedRows = statement.executeUpdate();
 
                         if (affectedRows > 0) {
-                            resultId = generatedUserId; 
+                            resultId = generatedUserId;
                         }
                     }
                     connection.commit();
@@ -75,11 +70,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     @Override
     public Practitioner recoverPractitioner(int practitionerId) throws DAOException {
         Practitioner practitionerToSearch = new Practitioner();
-        
+
         try (
                 Connection connection = dbConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE);) {
-            
+
             statement.setInt(1, practitionerId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -90,7 +85,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     practitionerToSearch.setLastName(resultSet.getString("APELLIDOS"));
                     practitionerToSearch.setStatus(resultSet.getString("ESTADO"));
                     practitionerToSearch.setGender(resultSet.getString("GENERO"));
-                    
+
                     practitionerToSearch.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
                     practitionerToSearch.setGrade(resultSet.getDouble("CALIFICACION"));
                 }
@@ -105,14 +100,14 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     public List<Practitioner> getAllPractitioners() throws DAOException {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             Practitioner practitionerRecovered = new Practitioner();
-            
+
             practitionerRecovered.setId(resultSet.getInt("ID_USUARIO"));
             practitionerRecovered.setPassword(resultSet.getString("PASSWORD"));
             practitionerRecovered.setName(resultSet.getString("NOMBRE"));
             practitionerRecovered.setLastName(resultSet.getString("APELLIDOS"));
             practitionerRecovered.setStatus(resultSet.getString("ESTADO"));
             practitionerRecovered.setGender(resultSet.getString("GENERO"));
-            
+
             practitionerRecovered.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
             practitionerRecovered.setGrade(resultSet.getDouble("CALIFICACION"));
 

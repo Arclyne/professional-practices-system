@@ -6,15 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 
-@Repository
 public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
 
     private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -22,7 +18,6 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     private static final String SQL_SELECTALL = "SELECT * FROM ORGANIZACION_VINCULADA";
     private static final String SQL_UPDATE = "UPDATE ORGANIZACION_VINCULADA SET NOMBRE_ORGANIZACION = ?, ESTADO = ?, DIRECCION = ?, CIUDAD = ?, SECTOR = ?, CORREO = ?, TELEFONO = ? WHERE ID_ORGANIZACION = ?";
 
-    @Autowired
     public OrganizationDAO(IDatabaseConnection dbConnection) {
         super(dbConnection);
     }

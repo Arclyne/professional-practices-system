@@ -8,27 +8,20 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IActivityDAO;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Activity;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class ActivityDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
     private IActivityDAO activityDAOTest;
 
     private Activity expectedActivityInserted;
@@ -38,6 +31,9 @@ public class ActivityDAOIT {
 
     @BeforeEach
     void setUp() {
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        activityDAOTest = new ActivityDAO(dbConnection);
         expectedActivityInserted = new Activity();
         expectedActivityInserted.setActivityId(1);
         expectedActivityInserted.setName("toRecover");
@@ -74,7 +70,8 @@ public class ActivityDAOIT {
             boolean resultTest = activityDAOTest.insertActivity(testActivity);
             assertTrue(resultTest);
         } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
+            String motivoReal = (e.getCause() != null) ? e.getCause().getMessage() : e.getMessage();
+            fail("Test failed: " + motivoReal);
         }
     }
 
