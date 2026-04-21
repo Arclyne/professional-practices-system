@@ -3,12 +3,14 @@ package mx.uv.fei.dataacces.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.DatabasePropeties;
 import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
@@ -28,9 +30,10 @@ public class OrganizationDAOIT {
     List<Organization> expectedList;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         propeties = new DatabasePropeties();
         dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
         organizationTest = new OrganizationDAO(dbConnection);
 
         expectedOrganizationInserted = new Organization();

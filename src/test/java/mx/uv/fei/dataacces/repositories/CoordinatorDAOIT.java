@@ -4,12 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.DatabasePropeties;
 import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
@@ -25,10 +27,11 @@ public class CoordinatorDAOIT {
     private Coordinator testCoordinator;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         userTestDao = new UserDAO(dbConnection);
         propeties = new DatabasePropeties();
         dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
         coordinatorDAOTest = new CoordinatorDAO(dbConnection, userTestDao);
         testCoordinator = new Coordinator();
 
