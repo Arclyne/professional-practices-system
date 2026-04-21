@@ -3,6 +3,7 @@ package mx.uv.fei.dataacces.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.DatabasePropeties;
 import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
@@ -29,9 +31,10 @@ public class ActivityDAOIT {
     List<Activity> expectedList;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         propeties = new DatabasePropeties();
         dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
         activityDAOTest = new ActivityDAO(dbConnection);
         expectedActivityInserted = new Activity();
         expectedActivityInserted.setActivityId(1);

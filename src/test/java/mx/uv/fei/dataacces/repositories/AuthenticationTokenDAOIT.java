@@ -4,12 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.DatabasePropeties;
 import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
@@ -25,9 +26,10 @@ public class AuthenticationTokenDAOIT {
     private AuthenticationToken expectedToken;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         propeties = new DatabasePropeties();
         dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
         tokenDAO = new AuthenticationTokenDAO(dbConnection);
         expectedToken = new AuthenticationToken();
         expectedToken.setUserId(1);
