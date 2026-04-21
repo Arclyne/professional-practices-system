@@ -5,21 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
 
-@Repository
 public class UserDAO extends BaseDAO implements IUserDAO {
     private static final String SQL_INSERT = "INSERT INTO USUARIO (PASSWORD, NOMBRE, APELLIDOS, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'no activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
     private static final String SQL_UPDATE = "UPDATE USUARIO SET PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
 
-    @Autowired
     public UserDAO(IDatabaseConnection dbConnection) {
         super(dbConnection);
     }
@@ -28,7 +23,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     public int insertUser(User user, Connection sharedConnection) throws DAOException {
         int generatedId = -1;
 
-        try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT,
+                Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getPassword());
             statement.setString(2, user.getName());
             statement.setString(3, user.getLastName());
@@ -65,7 +61,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 statement.setString(3, user.getLastName());
                 statement.setString(4, user.getStatus());
                 statement.setString(5, user.getGender());
-                statement.setInt(6, user.getId()); 
+                statement.setInt(6, user.getId());
             });
         } catch (SQLException e) {
             throw new DAOException("Error al actualizar el usuario en la transacción.", e);
