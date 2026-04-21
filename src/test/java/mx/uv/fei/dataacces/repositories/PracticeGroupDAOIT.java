@@ -4,49 +4,51 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.TestDatabaseSetup;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.dto.SchoolPeriod;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IPracticeGroupDAO;
 import mx.uv.fei.dataacces.interfaces.IProfessorDAO;
 import mx.uv.fei.dataacces.interfaces.ISchoolPeriodDAO;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class PracticeGroupDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
+
+    private UserDAO userDAOTest;
     private IPracticeGroupDAO groupDAOTest;
-    
-    @Autowired
     private IProfessorDAO professorDAOTest;
-    
-    @Autowired
     private ISchoolPeriodDAO periodDAOTest;
 
     private PracticeGroup testGroup;
-    
+
     private int validProfessorId;
     private int validPeriodId;
 
     @BeforeEach
-    void setUp() throws DAOException {
+    void setUp() throws DAOException, SQLException {
+
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
+        userDAOTest = new UserDAO(dbConnection);
+        groupDAOTest = new PracticeGroupDAO(dbConnection);
+        professorDAOTest = new ProfessorDAO(dbConnection, userDAOTest);
+        periodDAOTest = new SchoolPeriodDAO(dbConnection);
+
         Professor tempProf = new Professor();
         tempProf.setName("Profesor");
         tempProf.setLastName("Prueba Grupo");
@@ -71,14 +73,14 @@ public class PracticeGroupDAOIT {
     @Test
     void testInsertPracticeGroupSuccess() throws DAOException {
         int resultId = groupDAOTest.insertPracticeGroup(testGroup);
-        
+
         assertTrue(resultId > 0, "El grupo de prácticas debió registrarse exitosamente y devolver un ID mayor a 0");
     }
 
     @Test
     void testRecoverPracticeGroupSuccess() throws DAOException {
         int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
-        
+
         PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
 
         assertEquals(testGroup, recovered, "El grupo de prácticas recuperado no coincide con el insertado.");
@@ -87,9 +89,9 @@ public class PracticeGroupDAOIT {
     @Test
     void testGetAllPracticeGroupsSuccess() throws DAOException {
         groupDAOTest.insertPracticeGroup(testGroup);
-        
+
         List<PracticeGroup> list = groupDAOTest.getAllPracticeGroups();
-        
+
         assertFalse(list.isEmpty(), "La lista debe contener al menos el grupo de prácticas que acabamos de insertar");
     }
 

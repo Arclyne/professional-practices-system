@@ -4,37 +4,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.TestDatabaseSetup;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class CoordinatorDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
     private ICoordinatorDAO coordinatorDAOTest;
-
+    private UserDAO userTestDao;
     private Coordinator testCoordinator;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        userTestDao = new UserDAO(dbConnection);
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
+        coordinatorDAOTest = new CoordinatorDAO(dbConnection, userTestDao);
         testCoordinator = new Coordinator();
-        
+
         testCoordinator.setName("Angel");
         testCoordinator.setLastName("Aguilar");
         testCoordinator.setPassword("securepass");
@@ -45,25 +45,25 @@ public class CoordinatorDAOIT {
     @Test
     void testInsertCoordinatorSuccess() throws DAOException {
         int resultId = coordinatorDAOTest.insertCoordinator(testCoordinator);
-        
+
         assertTrue(resultId > 0, "El coordinador debió registrarse exitosamente y devolver un ID mayor a 0");
     }
 
     @Test
     void testRecoverCoordinatorSuccess() throws DAOException {
         int generatedId = coordinatorDAOTest.insertCoordinator(testCoordinator);
-        
+
         Coordinator recovered = coordinatorDAOTest.recoverCoordinator(generatedId);
-        
+
         assertEquals(testCoordinator, recovered, "El coordinador recuperado no coincide con el insertado.");
     }
 
     @Test
     void testGetAllCoordinatorsSuccess() throws DAOException {
         coordinatorDAOTest.insertCoordinator(testCoordinator);
-        
+
         List<Coordinator> list = coordinatorDAOTest.getAllCoordinators();
-        
+
         assertFalse(list.isEmpty(), "La lista debe contener al menos al coordinador que acabamos de insertar");
     }
 

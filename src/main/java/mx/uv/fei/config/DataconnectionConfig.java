@@ -1,25 +1,24 @@
 package mx.uv.fei.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import java.util.Map;
 
 import mx.uv.fei.dataacces.database.DatabaseConnection;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-@Configuration
-@Profile("!test")
 public class DataconnectionConfig {
 
-    private DatabasePropeties propeties;
+    private DatabasePropeties properties;
 
-    public DataconnectionConfig(DatabasePropeties propeties) {
-        this.propeties = propeties;
+    public DataconnectionConfig(DatabasePropeties properties, String profile) {
+        this.properties = properties;
+        FileConfigLoader configurator = new FileConfigLoader();
+        Map<String, String> propetiesLoad = configurator.loadUseConfig("database.properties", profile);
+        properties.setUrl(propetiesLoad.get("db.url"));
+        properties.setUser(propetiesLoad.get("db.user"));
+        properties.setPassword(propetiesLoad.get("db.password"));
     }
 
-    @Bean
-    public IDatabaseConnection databaseConnection() {
+    public DatabaseConnection databaseConnection() {
 
-        return new DatabaseConnection(propeties.getUrl(), propeties.getUser(), propeties.getPassword());
+        return new DatabaseConnection(properties.getUrl(), properties.getUser(), properties.getPassword());
     }
 }

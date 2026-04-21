@@ -3,30 +3,26 @@ package mx.uv.fei.dataacces.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.TestDatabaseSetup;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class ProjectDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
+
     private IProjectDAO projectDAOTest;
 
     private Project expectedProjectInserted;
@@ -35,7 +31,12 @@ public class ProjectDAOIT {
     private List<Project> expectedList;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
+
+        projectDAOTest = new ProjectDAO(dbConnection);
         expectedProjectInserted = new Project();
         expectedProjectInserted.setProjectId(1);
         expectedProjectInserted.setProjectName("toRecover");

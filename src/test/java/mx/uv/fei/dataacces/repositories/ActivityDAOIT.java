@@ -3,31 +3,26 @@ package mx.uv.fei.dataacces.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.TestDatabaseSetup;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IActivityDAO;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Activity;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class ActivityDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
     private IActivityDAO activityDAOTest;
 
     private Activity expectedActivityInserted;
@@ -36,7 +31,11 @@ public class ActivityDAOIT {
     List<Activity> expectedList;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
+        activityDAOTest = new ActivityDAO(dbConnection);
         expectedActivityInserted = new Activity();
         expectedActivityInserted.setActivityId(1);
         expectedActivityInserted.setName("toRecover");
