@@ -10,30 +10,26 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.AuthenticationToken;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class AuthenticationTokenDAOIT {
-    @Autowired
+
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
     private AuthenticationTokenDAO tokenDAO;
 
     private AuthenticationToken expectedToken;
 
     @BeforeEach
     void setUp() {
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        tokenDAO = new AuthenticationTokenDAO(dbConnection);
         expectedToken = new AuthenticationToken();
         expectedToken.setUserId(1);
         expectedToken.setValueToken(123456);

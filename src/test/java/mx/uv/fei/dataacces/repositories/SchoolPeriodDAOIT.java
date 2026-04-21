@@ -5,38 +5,38 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
+import mx.uv.fei.TestDatabaseSetup;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.domain.dto.SchoolPeriod;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.ISchoolPeriodDAO;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class SchoolPeriodDAOIT {
 
-    @Autowired
-    private ISchoolPeriodDAO periodDAOTest;
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
 
+    private ISchoolPeriodDAO periodDAOTest;
     private SchoolPeriod testPeriod;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        TestDatabaseSetup.initialize(dbConnection);
+
+        periodDAOTest = new SchoolPeriodDAO(dbConnection);
         testPeriod = new SchoolPeriod();
-        
+
         testPeriod.setPeriodName("Febrero - Julio 2026");
         testPeriod.setStartDate(LocalDate.of(2026, 2, 10));
         testPeriod.setEndDate(LocalDate.of(2026, 7, 15));
@@ -57,13 +57,13 @@ public class SchoolPeriodDAOIT {
     void testRecoverSchoolPeriodSuccess() {
         try {
             int generatedId = periodDAOTest.insertSchoolPeriod(testPeriod);
-            
+
             SchoolPeriod recovered = periodDAOTest.recoverSchoolPeriod(generatedId);
 
             assertNotNull(recovered, "El objeto recuperado no debería ser nulo");
             assertEquals("Febrero - Julio 2026", recovered.getPeriodName(), "El nombre del periodo debería coincidir");
             assertEquals(LocalDate.of(2026, 2, 10), recovered.getStartDate(), "La fecha de inicio debería coincidir");
-            
+
         } catch (DAOException e) {
             fail("La prueba falló por una excepción: " + e.getMessage());
         }
@@ -73,9 +73,9 @@ public class SchoolPeriodDAOIT {
     void testGetAllSchoolPeriodsSuccess() {
         try {
             periodDAOTest.insertSchoolPeriod(testPeriod);
-            
+
             List<SchoolPeriod> list = periodDAOTest.getAllSchoolPeriods();
-            
+
             assertTrue(list.size() > 0, "La lista debe contener al menos el periodo escolar que acabamos de insertar");
         } catch (DAOException e) {
             fail("La prueba falló por una excepción: " + e.getMessage());
