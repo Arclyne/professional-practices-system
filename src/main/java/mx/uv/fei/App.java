@@ -1,25 +1,13 @@
 package mx.uv.fei;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.application.Platform;
 
-@SpringBootApplication
 public class App extends Application {
-
-    private ConfigurableApplicationContext springContext;
-
-    @Override
-    public void init() throws Exception {
-        springContext = SpringApplication.run(App.class);
-    }
 
     @Override
     public void start(Stage stage) {
@@ -35,18 +23,17 @@ public class App extends Application {
         System.out.println(welcomeMessage);
 
         Scene scene = new Scene(new StackPane(label), 400, 200);
-        stage.setTitle("Java 25 Environment Test");
+        stage.setTitle("Java Environment Test"); 
         stage.setScene(scene);
         stage.show();
     }
 
     @Override
     public void stop() throws Exception {
-        springContext.close();
         Platform.exit();
     }
 
     public static void main(String[] args) {
-        launch(App.class, args);
+        launch(args);
     }
 }
