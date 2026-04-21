@@ -9,33 +9,30 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import mx.uv.fei.TestApp;
-import mx.uv.fei.TestConfig;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.config.DatabasePropeties;
+import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-@SpringBootTest(classes = TestApp.class)
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@Transactional
 public class CoordinatorDAOIT {
 
-    @Autowired
+    private IDatabaseConnection dbConnection;
+    private DatabasePropeties propeties;
     private ICoordinatorDAO coordinatorDAOTest;
-
+    private UserDAO userTestDao;
     private Coordinator testCoordinator;
 
     @BeforeEach
     void setUp() {
+        userTestDao = new UserDAO(dbConnection);
+        propeties = new DatabasePropeties();
+        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        coordinatorDAOTest = new CoordinatorDAO(dbConnection, userTestDao);
         testCoordinator = new Coordinator();
-        
+
         testCoordinator.setName("Angel");
         testCoordinator.setLastName("Aguilar");
         testCoordinator.setPassword("securepass");
@@ -47,7 +44,8 @@ public class CoordinatorDAOIT {
     void testInsertCoordinatorSuccess() {
         try {
             int resultId = coordinatorDAOTest.insertCoordinator(testCoordinator);
-            assertTrue(resultId > 0, "El coordinador debió registrarse exitosamente en ambas tablas y devolver un ID mayor a 0");
+            assertTrue(resultId > 0,
+                    "El coordinador debió registrarse exitosamente en ambas tablas y devolver un ID mayor a 0");
         } catch (DAOException e) {
             fail("Falló la inserción del coordinador: " + e.getMessage());
         }
@@ -57,14 +55,15 @@ public class CoordinatorDAOIT {
     void testRecoverCoordinatorSuccess() {
         try {
             int generatedId = coordinatorDAOTest.insertCoordinator(testCoordinator);
-            
+
             Coordinator recovered = coordinatorDAOTest.recoverCoordinator(generatedId);
 
             assertNotNull(recovered, "El objeto recuperado no debería ser nulo");
             assertEquals("Angel", recovered.getName(), "El nombre debería coincidir");
             assertEquals("Aguilar", recovered.getLastName(), "Los apellidos deberían coincidir");
-            assertNotNull(recovered.getRegistrationDate(), "La fecha de registro debió generarse automáticamente en la BD");
-            
+            assertNotNull(recovered.getRegistrationDate(),
+                    "La fecha de registro debió generarse automáticamente en la BD");
+
         } catch (DAOException e) {
             fail("La prueba falló por una excepción: " + e.getMessage());
         }
@@ -74,9 +73,9 @@ public class CoordinatorDAOIT {
     void testGetAllCoordinatorsSuccess() {
         try {
             coordinatorDAOTest.insertCoordinator(testCoordinator);
-            
+
             List<Coordinator> list = coordinatorDAOTest.getAllCoordinators();
-            
+
             assertTrue(list.size() > 0, "La lista debe contener al menos al coordinador que acabamos de insertar");
         } catch (DAOException e) {
             fail("La prueba falló por una excepción: " + e.getMessage());
