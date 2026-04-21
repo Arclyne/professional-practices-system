@@ -1,9 +1,8 @@
 package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.sql.SQLException;
@@ -48,64 +47,41 @@ public class PractitionerDAOIT {
     }
 
     @Test
-    void testInsertPractitionerSuccess() {
-        try {
-            int resultId = practitionerDAOTest.insertPractitioner(testPractitioner);
-            assertTrue(resultId > 0,
-                    "El practicante debió registrarse exitosamente en ambas tablas y devolver un ID mayor a 0");
-        } catch (DAOException e) {
-            fail("Falló la inserción del practicante: " + e.getMessage());
-        }
+    void testInsertPractitionerSuccess() throws DAOException {
+        int resultId = practitionerDAOTest.insertPractitioner(testPractitioner);
+
+        assertTrue(resultId > 0, "El practicante debió registrarse exitosamente y devolver un ID mayor a 0");
     }
 
     @Test
-    void testRecoverPractitionerSuccess() {
-        try {
-            int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
+    void testRecoverPractitionerSuccess() throws DAOException {
+        int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
 
-            Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
+        Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
 
-            assertNotNull(recovered, "El objeto recuperado no debería ser nulo");
-            assertEquals("Angel Gabriel", recovered.getName(), "El nombre debería coincidir");
-            assertEquals("Náhuatl", recovered.getIndigenousLanguage(), "La lengua debería coincidir");
-
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        assertEquals(testPractitioner, recovered, "El practicante recuperado no coincide con el insertado.");
     }
 
     @Test
-    void testGetAllPractitionersSuccess() {
-        try {
-            practitionerDAOTest.insertPractitioner(testPractitioner);
+    void testGetAllPractitionersSuccess() throws DAOException {
+        practitionerDAOTest.insertPractitioner(testPractitioner);
 
-            List<Practitioner> list = practitionerDAOTest.getAllPractitioners();
+        List<Practitioner> list = practitionerDAOTest.getAllPractitioners();
 
-            assertTrue(list.size() > 0, "La lista debe contener al menos al practicante que acabamos de insertar");
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        assertFalse(list.isEmpty(), "La lista debe contener al menos al practicante que acabamos de insertar");
     }
 
     @Test
-    void testUpdatePractitionerSuccess() {
-        try {
-            int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
+    void testUpdatePractitionerSuccess() throws DAOException {
+        int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
 
-            testPractitioner.setGrade(10.0);
-            testPractitioner.setIndigenousLanguage("Maya");
-            testPractitioner.setStatus("No Activo");
+        testPractitioner.setGrade(10.0);
+        testPractitioner.setIndigenousLanguage("Maya");
+        testPractitioner.setStatus("No Activo");
 
-            boolean isUpdated = practitionerDAOTest.updatePractitioner(testPractitioner, generatedId);
-            assertTrue(isUpdated, "La actualización en ambas tablas debió devolver true");
+        practitionerDAOTest.updatePractitioner(testPractitioner, generatedId);
 
-            Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
-            assertEquals(10.0, recovered.getGrade(), "La calificación debió actualizarse a 10.0");
-            assertEquals("Maya", recovered.getIndigenousLanguage(), "La lengua debió actualizarse a Maya");
-            assertEquals("No Activo", recovered.getStatus(), "El estado del usuario debió actualizarse");
-
-        } catch (DAOException e) {
-            fail("La prueba falló por una excepción: " + e.getMessage());
-        }
+        Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
+        assertEquals(testPractitioner, recovered, "Los datos del practicante recuperado no reflejan la actualización.");
     }
 }

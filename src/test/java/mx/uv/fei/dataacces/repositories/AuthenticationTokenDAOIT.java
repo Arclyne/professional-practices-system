@@ -1,10 +1,9 @@
 package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
 
 import java.time.LocalDateTime;
 
@@ -36,40 +35,31 @@ public class AuthenticationTokenDAOIT {
     }
 
     @Test
-    void testInsertTokenSuccess() {
+    void testInsertTokenSuccess() throws DAOException {
 
         AuthenticationToken token = new AuthenticationToken();
         token.setValueToken(12345);
         token.setUserId(1);
         token.setTimeCreation(LocalDateTime.now());
-        try {
-            boolean result = tokenDAO.insertToken(token);
-            assertTrue(result);
-        } catch (DAOException e) {
-            fail("Test failed: " + e.getMessage());
-        }
+
+        boolean result = tokenDAO.insertToken(token);
+        assertTrue(result);
 
     }
 
     @Test
-    void testSelectTokenNullSuccess() {
-        try {
-            AuthenticationToken tokenTest = tokenDAO.recoverToken(999999);
-            assertNull(tokenTest);
-        } catch (DAOException e) {
-            fail("La prueba falló. MySQL dice: " + e);
-        }
+    void testSelectTokenNullSuccess() throws DAOException {
+
+        AuthenticationToken tokenTest = tokenDAO.recoverToken(999999);
+        assertNull(tokenTest);
+
     }
 
     @Test
-    void testSelectTokenSucces() {
-        try {
-            AuthenticationToken tokenTest = tokenDAO.recoverToken(123456);
-            assertNotNull(tokenTest);
+    void testSelectTokenSucces() throws DAOException {
 
-            assertEquals(expectedToken, tokenTest);
-        } catch (DAOException e) {
-            fail("La prueba falló. MySQL dice: " + e);
-        }
+        AuthenticationToken tokenTest = tokenDAO.recoverToken(123456);
+        assertEquals(expectedToken, tokenTest);
+
     }
 }
