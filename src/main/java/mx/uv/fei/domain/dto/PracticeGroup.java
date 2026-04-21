@@ -1,5 +1,7 @@
 package mx.uv.fei.domain.dto;
 
+import java.util.Objects;
+
 public class PracticeGroup {
     private int groupIndex;
     private String section;
@@ -38,5 +40,22 @@ public class PracticeGroup {
     
     public void setPeriodId(int periodId) { 
         this.periodId = periodId; 
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+    
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        PracticeGroup that = (PracticeGroup) object;
+
+        return this.professorId == that.professorId &&
+               this.periodId == that.periodId &&
+               Objects.equals(this.section, that.section);
     }
 }
