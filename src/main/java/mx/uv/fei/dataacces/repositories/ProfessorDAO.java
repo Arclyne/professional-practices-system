@@ -19,8 +19,8 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.FECHA_REGISTRO, P.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO WHERE P.ID_PROFESOR = ?";
     private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.FECHA_REGISTRO, P.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO";
 
-    public ProfessorDAO(IDatabaseConnection dbConnection, UserDAO userDAO) {
-        super(dbConnection);
+    public ProfessorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
+        super(databaseConnection);
         this.userDAO = userDAO;
     }
 
@@ -28,7 +28,7 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     public int insertProfessor(Professor professor) throws DAOException {
         int resultId = -1;
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -66,7 +66,7 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         Professor professorToSearch = new Professor();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
 
             statement.setInt(1, professorId);
@@ -119,7 +119,7 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         boolean isUpdated = false;
         professorToUpdate.setId(id);
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {

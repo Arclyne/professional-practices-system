@@ -19,8 +19,8 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE C.ID_COORDINADOR = ?";
     private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO";
 
-    public CoordinatorDAO(IDatabaseConnection dbConnection, UserDAO userDAO) {
-        super(dbConnection);
+    public CoordinatorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
+        super(databaseConnection);
         this.userDAO = userDAO;
     }
 
@@ -28,7 +28,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     public int insertCoordinator(Coordinator coordinator) throws DAOException {
         int resultId = -1;
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -66,7 +66,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         Coordinator coordinatorToSearch = new Coordinator();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
 
             statement.setInt(1, coordinatorId);
@@ -119,7 +119,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         boolean isUpdated = false;
         coordinatorToUpdate.setId(id);
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {

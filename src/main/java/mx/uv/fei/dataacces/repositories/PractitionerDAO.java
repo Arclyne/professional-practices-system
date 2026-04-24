@@ -21,8 +21,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO";
     private static final String SQL_UPDATE_PRACTITIONER = "UPDATE PRACTICANTE SET LENGUA_INDIGENA = ?, CALIFICACION = ? WHERE ID_PRACTICANTE = ?";
 
-    public PractitionerDAO(IDatabaseConnection dbConnection, UserDAO userDAO) {
-        super(dbConnection);
+    public PractitionerDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
+        super(databaseConnection);
         this.userDAO = userDAO;
     }
 
@@ -30,7 +30,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     public int insertPractitioner(Practitioner practitioner) throws DAOException {
         int resultId = -1;
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -72,7 +72,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         Practitioner practitionerToSearch = new Practitioner();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE);) {
 
             statement.setInt(1, practitionerId);
@@ -121,7 +121,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
         practitionerToUpdate.setId(id);
 
-        try (Connection connection = dbConnection.getConnection()) {
+        try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {

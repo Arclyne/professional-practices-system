@@ -13,8 +13,8 @@ import mx.uv.fei.domain.dto.Activity;
 
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
-    public ActivityDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    public ActivityDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
@@ -26,7 +26,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     public boolean insertActivity(Activity activity) throws DAOException {
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, activity.getName());
             statement.setDate(2, activity.getStartDate());
@@ -45,7 +45,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
         Activity activityToSearch = new Activity();
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH);) {
             statement.setString(1, activityName);
             statement.setString(2, manager);

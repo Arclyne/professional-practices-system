@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import mx.uv.fei.presentation.components.FormComboBox?>
+<?import mx.uv.fei.presentation.components.FormField?>
+
+<AnchorPane prefHeight="750.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterActivityController">
+   <children>
+      <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+         </padding>
+
+         <Label styleClass="form-title" text="Registro de Actividad" />
+
+         <FormField fx:id="nameTextField" labelText="Nombre:" promptText="Nombre de la actividad" />
+
+         <FormComboBox fx:id="organizationChoiceBox" labelText="Organización:" />
+         
+         <FormComboBox fx:id="managerChoiceBox" labelText="Encargado:" />
+
+         <VBox spacing="5.0">
+            <children>
+               <Label text="Inicio:" />
+               <HBox alignment="CENTER_LEFT" spacing="10.0">
+                  <children>
+                     <TextField fx:id="startDayTextField" prefWidth="60.0" promptText="DD" />
+                     <Label text="/" />
+                     <TextField fx:id="startMonthTextField" prefWidth="60.0" promptText="MM" />
+                     <Label text="/" />
+                     <TextField fx:id="startYearTextField" prefWidth="80.0" promptText="AAAA" />
+                  </children>
+               </HBox>
+            </children>
+         </VBox>
+
+         <VBox spacing="5.0">
+            <children>
+               <Label text="Termina:" />
+               <HBox alignment="CENTER_LEFT" spacing="10.0">
+                  <children>
+                     <TextField fx:id="deadLineDayTextField" prefWidth="60.0" promptText="DD" />
+                     <Label text="/" />
+                     <TextField fx:id="deadLineMonthTextField" prefWidth="60.0" promptText="MM" />
+                     <Label text="/" />
+                     <TextField fx:id="deadLineYearTextField" prefWidth="80.0" promptText="AAAA" />
+                  </children>
+               </HBox>
+            </children>
+         </VBox>
+
+         <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+            <children>
+               <Label text="Descripción:" />
+               <TextArea fx:id="descriptionTextArea" prefHeight="100.0" wrapText="true" />
+            </children>
+         </VBox>
+
+         <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction" styleClass="primary-button" text="Guardar">
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+         </Button>
+         
+         <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
+            <VBox.margin>
+               <Insets top="5.0" />
+            </VBox.margin>
+         </Button>
+         
+      </VBox>
+   </children>
+</AnchorPane>
