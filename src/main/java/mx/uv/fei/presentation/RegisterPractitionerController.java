@@ -5,60 +5,97 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.scene.control.Button;
+import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
+import mx.uv.fei.domain.manager.RegisterPractitionerManager;
+import mx.uv.fei.domain.exceptions.ManagerExeption;
 
 public class RegisterPractitionerController implements Initializable {
 
-    public Button registerButton;
-    public Button cancelButton;
-    @FXML private FormField fieldStudentId;
-    @FXML private FormField fieldName;
-    @FXML private FormField fieldEmail;
+    @FXML private FormField fieldMatricula;
+    @FXML private FormField fieldNombre;
+    @FXML private FormField fieldApellido;
+    @FXML private FormField fieldCorreo;
 
     @FXML private FormComboBox comboSexo;
-    @FXML private FormComboBox comboLengua;
+    @FXML private FormField fieldLengua;
+
+    private RegisterPractitionerManager manager;
+
+    public void setManager(RegisterPractitionerManager manager) {
+        this.manager = manager;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
-                "Masculino", "Femenino", "Prefiero no decirlo"
+                "Masculino", "Femenino", "Otro"
         );
         comboSexo.setItems(opcionesSexo);
-
-        ObservableList<String> opcionesLengua = FXCollections.observableArrayList(
-                "Ninguna", "Náhuatl", "Totonaco", "Zapoteco", "Otra"
-        );
-        comboLengua.setItems(opcionesLengua);
     }
 
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
-        String matricula = fieldStudentId.getText();
-        String nombre = fieldName.getText();
-        String correo = fieldEmail.getText();
-        String sexo = comboSexo.getValue();
-        String lengua = comboLengua.getValue();
+        if (manager == null) {
+            showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
+            return;
+        }
 
-        System.out.println("--- Intento de Registro en Sistema FEI ---");
-        System.out.println("Matrícula: " + matricula);
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Correo: " + correo);
-        System.out.println("Sexo: " + sexo);
-        System.out.println("Lengua Indígena: " + lengua);
-        System.out.println("------------------------------------------");
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboSexo.getValue() == null) {
+            showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            return;
+        }
+
+        Practitioner newPractitioner = new Practitioner();
+
+        newPractitioner.setName(fieldNombre.getText());
+        newPractitioner.setLastName(fieldApellido.getText());
+        newPractitioner.setGender(comboSexo.getValue());
+
+        String lengua = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();
+        newPractitioner.setIndigenousLanguage(lengua);
+
+        try {
+            String generatedPassword = manager.registerNewPractitioner(newPractitioner);
+
+            showAlert("Registro Exitoso",
+                    "El practicante fue registrado correctamente.\nContraseña temporal generada: " + generatedPassword,
+                    AlertType.INFORMATION);
+
+            clearForm();
+
+        } catch (ManagerExeption e) {
+            showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+        }
     }
 
     @FXML
     private void handleCancelButtonAction(ActionEvent event) {
-        System.out.println("--- Operación Cancelada por el Usuario ---");
-
+        System.out.println("--- Operación Cancelada ---");
         javafx.scene.Node source = (javafx.scene.Node) event.getSource();
         javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
         stage.close();
+    }
+
+    private void showAlert(String title, String message, AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void clearForm() {
+        if (fieldMatricula != null) fieldMatricula.setText("");
+        if (fieldNombre != null) fieldNombre.setText("");
+        if (fieldApellido != null) fieldApellido.setText("");
+        if (fieldCorreo != null) fieldCorreo.setText("");
+        if (fieldLengua != null) fieldLengua.setText("");
     }
 }
