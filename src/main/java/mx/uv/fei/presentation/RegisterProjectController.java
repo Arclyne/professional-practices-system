@@ -125,18 +125,18 @@ public class RegisterProjectController implements Initializable {
             throw new IllegalArgumentException("Campos de fecha nulos");
         }
 
-        String d = dayString.trim();
-        String m = monthString.trim();
-        String y = yearString.trim();
+        String day = dayString.trim();
+        String month = monthString.trim();
+        String year = yearString.trim();
 
-        if (d.isEmpty() || m.isEmpty() || y.isEmpty()) {
+        if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
             throw new IllegalArgumentException("Campos de fecha vacíos");
         }
 
         try {
-            int parsedDay = Integer.parseInt(d);
-            int parsedMonth = Integer.parseInt(m);
-            int parsedYear = Integer.parseInt(y);
+            int parsedDay = Integer.parseInt(day);
+            int parsedMonth = Integer.parseInt(month);
+            int parsedYear = Integer.parseInt(year);
 
             LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
             return Date.valueOf(convertedLocalDate);
