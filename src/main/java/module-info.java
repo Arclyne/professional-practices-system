@@ -12,5 +12,7 @@ module mx.uv.fei {
     exports mx.uv.fei.dataacces.interfaces;
     exports mx.uv.fei.domain.dto;
     exports mx.uv.fei.dataacces.exceptions;
+    exports mx.uv.fei.presentation.components;
 
+    opens mx.uv.fei.presentation.components to javafx.fxml;
 }
