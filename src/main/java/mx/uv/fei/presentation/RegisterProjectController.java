@@ -88,10 +88,13 @@ public class RegisterProjectController implements Initializable {
 
             projectInformation.setStartDate(projectStartDate);
             projectInformation.setEndDate(projectEndDate);
+            projectInformation.setStatus("Activo");
+            projectInformation.setCompanyId(1);
 
             boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
             if (isProjectSavedSuccessfully) {
+                showErrorAlert("exceptions", "exito");
                 closeCurrentWindow(actionEvent);
             }
 
@@ -117,17 +120,30 @@ public class RegisterProjectController implements Initializable {
 
     private Date parseDate(String dayString, String monthString, String yearString)
             throws IllegalArgumentException, DateTimeParseException {
-        if (dayString == null || dayString.isEmpty() || monthString == null || monthString.isEmpty()
-                || yearString == null || yearString.isEmpty()) {
+
+        if (dayString == null || monthString == null || yearString == null) {
+            throw new IllegalArgumentException("Campos de fecha nulos");
+        }
+
+        String day = dayString.trim();
+        String month = monthString.trim();
+        String year = yearString.trim();
+
+        if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
             throw new IllegalArgumentException("Campos de fecha vacíos");
         }
 
-        int parsedDay = Integer.parseInt(dayString);
-        int parsedMonth = Integer.parseInt(monthString);
-        int parsedYear = Integer.parseInt(yearString);
+        try {
+            int parsedDay = Integer.parseInt(day);
+            int parsedMonth = Integer.parseInt(month);
+            int parsedYear = Integer.parseInt(year);
 
-        LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
-        return Date.valueOf(convertedLocalDate);
+            LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
+            return Date.valueOf(convertedLocalDate);
+
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Los valores de fecha deben ser numéricos");
+        }
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {

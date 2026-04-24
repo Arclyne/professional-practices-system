@@ -87,6 +87,7 @@ public class RegisterActivityController implements Initializable {
             boolean isActivitySavedSuccessfully = projectManager.registerNewActivity(activityInformation);
 
             if (isActivitySavedSuccessfully) {
+                showErrorAlert("exceptions", "exito");
                 closeCurrentWindow(actionEvent);
             }
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
