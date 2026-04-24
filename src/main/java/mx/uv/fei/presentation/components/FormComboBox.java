@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionModel;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 
@@ -33,5 +34,12 @@ public class FormComboBox extends VBox {
 
     public String getValue() {
         return comboBox.getValue();
+    }
+
+
+    public void clearSelection() {
+        if (comboBox != null) {
+            comboBox.getSelectionModel().clearSelection();
+        }
     }
 }
