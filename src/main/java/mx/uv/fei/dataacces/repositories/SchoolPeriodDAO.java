@@ -19,8 +19,8 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
     private static final String SQL_SELECT_ALL = "SELECT ID_PERIODO, NOMBRE_PERIODO, FECHA_INICIO, FECHA_FIN, ESTADO_PERIODO FROM PERIODO_ESCOLAR";
     private static final String SQL_UPDATE = "UPDATE PERIODO_ESCOLAR SET NOMBRE_PERIODO = ?, FECHA_INICIO = ?, FECHA_FIN = ?, ESTADO_PERIODO = ? WHERE ID_PERIODO = ?";
 
-    public SchoolPeriodDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    public SchoolPeriodDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         int generatedId = -1;
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT,
                         Statement.RETURN_GENERATED_KEYS)) {
 
@@ -56,7 +56,7 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         SchoolPeriod periodToSearch = new SchoolPeriod();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
 
             statement.setInt(1, periodId);

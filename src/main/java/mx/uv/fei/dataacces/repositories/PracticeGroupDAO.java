@@ -19,8 +19,8 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     private static final String SQL_SELECT_ALL = "SELECT INDEX_GRUPO, SECCION, ID_PROFESOR, ID_PERIODO FROM GRUPO_PRACTICAS";
     private static final String SQL_UPDATE = "UPDATE GRUPO_PRACTICAS SET SECCION = ?, ID_PROFESOR = ?, ID_PERIODO = ? WHERE INDEX_GRUPO = ?";
 
-    public PracticeGroupDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    public PracticeGroupDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         int generatedIndex = -1;
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT,
                         Statement.RETURN_GENERATED_KEYS)) {
 
@@ -56,7 +56,7 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         PracticeGroup groupToSearch = new PracticeGroup();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
 
             statement.setInt(1, groupIndex);

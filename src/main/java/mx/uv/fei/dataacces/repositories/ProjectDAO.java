@@ -13,8 +13,8 @@ import mx.uv.fei.domain.dto.Project;
 
 public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
-    public ProjectDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    public ProjectDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -24,7 +24,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
     public boolean insertProject(Project project) throws DAOException {
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
@@ -46,7 +46,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         Project projectToSearch = new Project();
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECTONE)) {
             statement.setString(1, projectName);
             statement.setString(2, manager);
