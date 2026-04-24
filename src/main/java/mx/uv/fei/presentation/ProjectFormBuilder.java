@@ -7,22 +7,24 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-public class ActivityFormBuilder {
+public class ProjectFormBuilder {
 
     private final ProjectManager projectManager;
     @FXML
-    private TextField nameTextField;
+    private TextField projectNameTextField;
     @FXML
     private ChoiceBox<String> organizationChoiceBox;
     @FXML
     private ChoiceBox<String> managerChoiceBox;
+    @FXML
+    private TextField capacityTextField;
     @FXML
     private TextField startDayTextField;
     @FXML
@@ -42,7 +44,7 @@ public class ActivityFormBuilder {
     @FXML
     private Button saveButton;
 
-    public ActivityFormBuilder(ProjectManager projectManager) {
+    public ProjectFormBuilder(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
 
@@ -51,43 +53,50 @@ public class ActivityFormBuilder {
         organizationChoiceBox.getItems().addAll("Organización A", "Organización B", "Organización C");
         managerChoiceBox.getItems().addAll("Juan Pérez", "Ana Gómez", "Luis Martínez");
 
-        saveButton.setOnAction(event -> handleSaveAction());
-        cancelButton.setOnAction(event -> handleCancelAction());
+        saveButton.setOnAction(actionEvent -> handleSaveAction());
+        cancelButton.setOnAction(actionEvent -> handleCancelAction());
     }
 
     @FXML
     private void handleSaveAction() {
         try {
-            Activity activity = new Activity();
+            Project projectInformation = new Project();
 
-            activity.setName(nameTextField.getText());
-            activity.setDescription(descriptionTextArea.getText());
-            activity.setManager(managerChoiceBox.getValue());
+            projectInformation.setProjectName(projectNameTextField.getText());
+            projectInformation.setDescription(descriptionTextArea.getText());
+            projectInformation.setManager(managerChoiceBox.getValue());
 
-            Date startDate = parseDate(startDayTextField.getText(), startMonthTextField.getText(),
+            int projectCapacity = Integer.parseInt(capacityTextField.getText());
+            projectInformation.setParticipantCapacity(projectCapacity);
+
+            Date projectStartDate = parseDate(startDayTextField.getText(), startMonthTextField.getText(),
                     startYearTextField.getText());
-            Date endDate = parseDate(deadLineDayTextField.getText(), deadLineMonthTextField.getText(),
+            Date projectEndDate = parseDate(deadLineDayTextField.getText(), deadLineMonthTextField.getText(),
                     deadLineYearTextField.getText());
 
-            activity.setStartDate(startDate);
-            activity.setEndDate(endDate);
+            projectInformation.setStartDate(projectStartDate);
+            projectInformation.setEndDate(projectEndDate);
 
-            boolean isActivitySavedSuccessfully = projectManager.registerNewActivity(activity);
+            boolean isActivitySavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
             if (isActivitySavedSuccessfully) {
                 handleCancelAction();
             }
-        } catch (IllegalArgumentException | DateTimeParseException e) {
+
+        } catch (NumberFormatException capacityFormatMismatchException) {
+            showErrorAlert("Error de formato", "El cupo de participantes debe ser un número entero válido.");
+        } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
             showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
         } catch (DAOException e) {
-            showErrorAlert("Fallo en la coneccion", "Fallo de connecion, intentelo más tarde");
+            showErrorAlert("Error de coneccion", "Hubo un error en la coneccion, intentelo más tarde");
         }
     }
 
     @FXML
     private void handleCancelAction() {
-        nameTextField.clear();
+        projectNameTextField.clear();
         descriptionTextArea.clear();
+        capacityTextField.clear();
         organizationChoiceBox.getSelectionModel().clearSelection();
         managerChoiceBox.getSelectionModel().clearSelection();
         startDayTextField.clear();
@@ -101,8 +110,7 @@ public class ActivityFormBuilder {
     private Date parseDate(String dayString, String monthString, String yearString)
             throws IllegalArgumentException, DateTimeParseException {
         if (dayString == null || dayString.isEmpty() || monthString == null || monthString.isEmpty()
-                || yearString == null
-                || yearString.isEmpty()) {
+                || yearString == null || yearString.isEmpty()) {
             throw new IllegalArgumentException("Campos de fecha vacíos");
         }
 
@@ -114,11 +122,11 @@ public class ActivityFormBuilder {
         return Date.valueOf(localDate);
     }
 
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void showErrorAlert(String alertTitle, String alertMessage) {
+        Alert userAlert = new Alert(Alert.AlertType.ERROR);
+        userAlert.setTitle(alertTitle);
+        userAlert.setHeaderText(null);
+        userAlert.setContentText(alertMessage);
+        userAlert.showAndWait();
     }
 }
