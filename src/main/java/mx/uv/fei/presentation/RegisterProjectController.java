@@ -88,10 +88,13 @@ public class RegisterProjectController implements Initializable {
 
             projectInformation.setStartDate(projectStartDate);
             projectInformation.setEndDate(projectEndDate);
+            projectInformation.setStatus("Activo");
+            projectInformation.setCompanyId(1);
 
             boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
             if (isProjectSavedSuccessfully) {
+                showErrorAlert("exceptions", "exito");
                 closeCurrentWindow(actionEvent);
             }
 
