@@ -6,7 +6,7 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.ProfessorDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.domain..ManagerExeption;
+import mx.uv.fei.domain.exceptions.ManagerExeption;
 
 public class RegisterProfessorManager {
 
