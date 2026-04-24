@@ -27,7 +27,7 @@ public class GuiSandboxTwo extends Application {
         ProjectManager sharedProjectManager = new ProjectManager(databaseConnection);
 
         FXMLLoader activityInterfaceLoader = new FXMLLoader(
-                getClass().getResource("/mx/uv/fei/presentation/ActivityForm.fxml"));
+                getClass().getResource("/mx/uv/fei/presentation/activityForms.fxml"));
 
         activityInterfaceLoader.setControllerFactory(controllerClassType -> {
             if (controllerClassType == RegisterActivityController.class) {
@@ -49,7 +49,7 @@ public class GuiSandboxTwo extends Application {
 
         Stage secondaryApplicationStage = new Stage();
         FXMLLoader projectInterfaceLoader = new FXMLLoader(
-                getClass().getResource("/mx/uv/fei/presentation/ProjectForm.fxml"));
+                getClass().getResource("/mx/uv/fei/presentation/projectForm.fxml"));
 
         projectInterfaceLoader.setControllerFactory(controllerClassType -> {
             if (controllerClassType == RegisterProjectController.class) {
