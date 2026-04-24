@@ -8,6 +8,8 @@
 <?import mx.uv.fei.presentation.components.FormField?>
 <?import javafx.scene.control.Button?>
 
+<?import mx.uv.fei.presentation.components.FormCheckBox?>
+<?import javafx.scene.layout.HBox?>
 <AnchorPane prefHeight="600.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterPractitionerController">
    <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
@@ -17,27 +19,31 @@
          <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
       </padding>
 
-      <Label styleClass="form-title" text="Registro de Practicante"/>
+      <Label styleClass="form-title" text="Registro de Practicante" />
 
-      <FormField fx:id="fieldStudentId" labelText="Matrícula" promptText="S200..."/>
-      <FormField fx:id="fieldName" labelText="Nombre Completo" promptText="Nombre Apellido"/>
-      <FormField fx:id="fieldEmail" labelText="Correo Institucional" promptText="ejemplo@estudiantes.uv.mx"/>
-
-      <FormComboBox fx:id="comboSexo" labelText="Sexo"/>
-      <FormComboBox fx:id="comboLengua" labelText="Lengua Indígena"/>
-
-      <Button fx:id="registerButton" styleClass="primary-button" text="Registrar Practicante"
-              maxWidth="1.7976931348623157E308" onAction="#handleRegisterButtonAction">
+      <Label text="Capture la información del nuevo practicante" textFill="#6b7280">
          <VBox.margin>
-            <javafx.geometry.Insets top="10.0"/>
+            <Insets bottom="10.0" />
          </VBox.margin>
-      </Button>
+      </Label>
 
-      <Button fx:id="cancelButton" styleClass="secondary-button" text="Cancelar" maxWidth="1.7976931348623157E308"
-              onAction="#handleCancelButtonAction">
+      <FormField fx:id="fieldMatricula" labelText="Matrícula del Practicante" promptText="Ingrese la matrícula" />
+      <FormField fx:id="fieldNombre" labelText="Nombre del Practicante" promptText="Ingrese el nombre" />
+      <FormField fx:id="fieldApellido" labelText="Apellido del Practicante" promptText="Ingrese el apellido" />
+      <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="Ingrese el correo electrónico" />
+
+      <FormComboBox fx:id="comboSexo" labelText="Sexo del Practicante" />
+
+      <FormField fx:id="fieldLengua" labelText="Lengua Indígena (Opcional)" promptText="Ej. Náhuatl, Totonaco..." />
+
+      <HBox spacing="15.0">
          <VBox.margin>
-            <javafx.geometry.Insets top="5.0"/>
+            <Insets top="15.0"/>
          </VBox.margin>
-      </Button>
+         <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" onAction="#handleCancelButtonAction"
+                 styleClass="secondary-button" text="Cancelar" HBox.hgrow="ALWAYS"/>
+         <Button fx:id="registerButton" maxWidth="1.7976931348623157E308" onAction="#handleRegisterButtonAction"
+                 styleClass="primary-button" text="Registrar Practicante" HBox.hgrow="ALWAYS"/>
+      </HBox>
    </VBox>
 </AnchorPane>
