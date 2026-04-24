@@ -18,13 +18,13 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     private static final String SQL_SELECTALL = "SELECT * FROM ORGANIZACION_VINCULADA";
     private static final String SQL_UPDATE = "UPDATE ORGANIZACION_VINCULADA SET NOMBRE_ORGANIZACION = ?, ESTADO = ?, DIRECCION = ?, CIUDAD = ?, SECTOR = ?, CORREO = ?, TELEFONO = ? WHERE ID_ORGANIZACION = ?";
 
-    public OrganizationDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    public OrganizationDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     public boolean insertOrganization(Organization organization) throws DAOException {
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setString(1, organization.getNameOrganization());
@@ -45,7 +45,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     public Organization recoverOrganization(String organizationName) throws DAOException {
         Organization organizationToSearch = null;
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT)
 
         ) {

@@ -13,10 +13,10 @@ import mx.uv.fei.dataacces.interfaces.IInsterGeneric;
 import mx.uv.fei.dataacces.interfaces.ISelectedList;
 
 abstract class BaseDAO {
-    protected final IDatabaseConnection dbConnection;
+    protected final IDatabaseConnection databaseConnection;
 
-    public BaseDAO(IDatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public BaseDAO(IDatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
     }
 
     protected <T> List<T> recoverALL(String stament, ISelectedList<T> rowMapper, Object... parameterObjects)
@@ -24,9 +24,8 @@ abstract class BaseDAO {
         List<T> results = new ArrayList<T>();
 
         try (
-                Connection connection = dbConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(stament)
-            ) {
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(stament)) {
             int index = 1;
             for (Object parameters : parameterObjects) {
                 statement.setObject(index++, parameters);
@@ -46,7 +45,7 @@ abstract class BaseDAO {
     protected boolean updateTuple(String sqlStatement, IInsterGeneric insertGeneric)
             throws DAOException {
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sqlStatement)) {
 
             if (insertGeneric != null) {
@@ -59,7 +58,8 @@ abstract class BaseDAO {
         }
     }
 
-    protected boolean updateTuple(Connection sharedConnection, String sqlStatement, IInsterGeneric insertGeneric) throws SQLException {
+    protected boolean updateTuple(Connection sharedConnection, String sqlStatement, IInsterGeneric insertGeneric)
+            throws SQLException {
         try (PreparedStatement statement = sharedConnection.prepareStatement(sqlStatement)) {
             if (insertGeneric != null) {
                 insertGeneric.insertGeneric(statement);

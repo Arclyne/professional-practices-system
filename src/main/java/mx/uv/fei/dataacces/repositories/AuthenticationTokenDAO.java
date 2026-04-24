@@ -11,18 +11,18 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
-public class AuthenticationTokenDAO implements IAuthenticationToken {
-    private final IDatabaseConnection dbConnection;
+public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationToken {
+
     private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, ID_USUARIO) VALUES (?, ?, ?)";
     private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, ID_USUARIO FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ?";
 
-    public AuthenticationTokenDAO(IDatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
+    public AuthenticationTokenDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     public boolean insertToken(AuthenticationToken tokenToInsert) throws DAOException {
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setInt(1, tokenToInsert.getValueToken());
@@ -41,7 +41,7 @@ public class AuthenticationTokenDAO implements IAuthenticationToken {
         AuthenticationToken tokenRecovered = null;
 
         try (
-                Connection connection = dbConnection.getConnection();
+                Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
 
             statement.setInt(1, tokenValue);
