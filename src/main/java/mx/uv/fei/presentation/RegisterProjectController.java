@@ -1,30 +1,40 @@
 package mx.uv.fei.presentation;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
+import mx.uv.fei.presentation.components.FormComboBox;
+import mx.uv.fei.presentation.components.FormField;
 
+import java.net.URL;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ResourceBundle;
 
-public class ProjectFormBuilder {
+public class RegisterProjectController implements Initializable {
 
     private final ProjectManager projectManager;
+
     @FXML
-    private TextField projectNameTextField;
+    private FormField projectNameTextField;
     @FXML
-    private ChoiceBox<String> organizationChoiceBox;
+    private FormComboBox organizationChoiceBox;
     @FXML
-    private ChoiceBox<String> managerChoiceBox;
+    private FormComboBox managerChoiceBox;
     @FXML
-    private TextField capacityTextField;
+    private FormField capacityTextField;
     @FXML
     private TextField startDayTextField;
     @FXML
@@ -44,30 +54,32 @@ public class ProjectFormBuilder {
     @FXML
     private Button saveButton;
 
-    public ProjectFormBuilder(ProjectManager projectManager) {
+    public RegisterProjectController(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
 
-    @FXML
-    public void initialize() {
-        organizationChoiceBox.getItems().addAll("Organización A", "Organización B", "Organización C");
-        managerChoiceBox.getItems().addAll("Juan Pérez", "Ana Gómez", "Luis Martínez");
+    @Override
+    public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
+        ObservableList<String> organizationOptions = FXCollections.observableArrayList(
+                "Organización A", "Organización B", "Organización C");
+        organizationChoiceBox.setItems(organizationOptions);
 
-        saveButton.setOnAction(actionEvent -> handleSaveAction());
-        cancelButton.setOnAction(actionEvent -> handleCancelAction());
+        ObservableList<String> managerOptions = FXCollections.observableArrayList(
+                "Juan Pérez", "Ana Gómez", "Luis Martínez");
+        managerChoiceBox.setItems(managerOptions);
     }
 
     @FXML
-    private void handleSaveAction() {
+    private void handleSaveAction(ActionEvent actionEvent) {
         try {
             Project projectInformation = new Project();
 
             projectInformation.setProjectName(projectNameTextField.getText());
             projectInformation.setDescription(descriptionTextArea.getText());
-            projectInformation.setManager(managerChoiceBox.getValue());
+            projectInformation.setManager((String) managerChoiceBox.getValue());
 
-            int projectCapacity = Integer.parseInt(capacityTextField.getText());
-            projectInformation.setParticipantCapacity(projectCapacity);
+            int parsedProjectCapacity = Integer.parseInt(capacityTextField.getText());
+            projectInformation.setParticipantCapacity(parsedProjectCapacity);
 
             Date projectStartDate = parseDate(startDayTextField.getText(), startMonthTextField.getText(),
                     startYearTextField.getText());
@@ -77,34 +89,30 @@ public class ProjectFormBuilder {
             projectInformation.setStartDate(projectStartDate);
             projectInformation.setEndDate(projectEndDate);
 
-            boolean isActivitySavedSuccessfully = projectManager.registerNewProject(projectInformation);
+            boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
-            if (isActivitySavedSuccessfully) {
-                handleCancelAction();
+            if (isProjectSavedSuccessfully) {
+                closeCurrentWindow(actionEvent);
             }
 
         } catch (NumberFormatException capacityFormatMismatchException) {
             showErrorAlert("Error de formato", "El cupo de participantes debe ser un número entero válido.");
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
             showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
-        } catch (DAOException e) {
-            showErrorAlert("Error de coneccion", "Hubo un error en la coneccion, intentelo más tarde");
+        } catch (DAOException databaseConnectionException) {
+            showErrorAlert("Error de conexión", "Hubo un error en la conexión, inténtelo más tarde.");
         }
     }
 
     @FXML
-    private void handleCancelAction() {
-        projectNameTextField.clear();
-        descriptionTextArea.clear();
-        capacityTextField.clear();
-        organizationChoiceBox.getSelectionModel().clearSelection();
-        managerChoiceBox.getSelectionModel().clearSelection();
-        startDayTextField.clear();
-        startMonthTextField.clear();
-        startYearTextField.clear();
-        deadLineDayTextField.clear();
-        deadLineMonthTextField.clear();
-        deadLineYearTextField.clear();
+    private void handleCancelAction(ActionEvent actionEvent) {
+        closeCurrentWindow(actionEvent);
+    }
+
+    private void closeCurrentWindow(ActionEvent actionEvent) {
+        Node eventSourceNode = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
+        currentStage.close();
     }
 
     private Date parseDate(String dayString, String monthString, String yearString)
@@ -114,12 +122,12 @@ public class ProjectFormBuilder {
             throw new IllegalArgumentException("Campos de fecha vacíos");
         }
 
-        int day = Integer.parseInt(dayString);
-        int month = Integer.parseInt(monthString);
-        int year = Integer.parseInt(yearString);
+        int parsedDay = Integer.parseInt(dayString);
+        int parsedMonth = Integer.parseInt(monthString);
+        int parsedYear = Integer.parseInt(yearString);
 
-        LocalDate localDate = LocalDate.of(year, month, day);
-        return Date.valueOf(localDate);
+        LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
+        return Date.valueOf(convertedLocalDate);
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {

@@ -11,22 +11,22 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 
 public class ProjectManager {
 
-    private final IActivityDAO activityDAO;
-    private final IProjectDAO projectDAO;
+    private final IActivityDAO activityDataAccessObject;
+    private final IProjectDAO projectDataAccessObject;
 
-    public ProjectManager(IDatabaseConnection databaseConnection) {
-        this.activityDAO = new ActivityDAO(databaseConnection);
-        this.projectDAO = new ProjectDAO(databaseConnection);
+    public ProjectManager(IDatabaseConnection DatabaseConnection) {
+        this.activityDataAccessObject = new ActivityDAO(DatabaseConnection);
+        this.projectDataAccessObject = new ProjectDAO(DatabaseConnection);
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws DAOException {
         validateActivityData(activityToRegister);
-        return activityDAO.insertActivity(activityToRegister);
+        return activityDataAccessObject.insertActivity(activityToRegister);
     }
 
     public boolean registerNewProject(Project projectToRegister) throws DAOException {
         validateProjectData(projectToRegister);
-        return projectDAO.insertProject(projectToRegister);
+        return projectDataAccessObject.insertProject(projectToRegister);
     }
 
     private void validateActivityData(Activity activityToValidate) {
@@ -47,11 +47,11 @@ public class ProjectManager {
 
     private void validateProjectData(Project projectToValidate) {
         if (projectToValidate.getProjectName() == null || projectToValidate.getProjectName().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de la actividad es obligatorio.");
+            throw new IllegalArgumentException("El nombre del proyecto es obligatorio.");
         }
 
         if (projectToValidate.getManager() == null || projectToValidate.getManager().trim().isEmpty()) {
-            throw new IllegalArgumentException("El encargado de la actividad es obligatorio.");
+            throw new IllegalArgumentException("El encargado del proyecto es obligatorio.");
         }
 
         if (projectToValidate.getStartDate() != null && projectToValidate.getEndDate() != null) {
