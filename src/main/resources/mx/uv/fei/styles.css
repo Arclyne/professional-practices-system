@@ -1,0 +1,77 @@
+.root {
+    -fx-background-color: #FFFFFF;
+}
+
+.form-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #374151;
+}
+
+.text-input, .combo-box {
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px;
+}
+
+.text-input {
+    -fx-prompt-text-fill: #9CA3AF;
+}
+
+.primary-button {
+    -fx-background-color: #0A0A14;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #2D2D3A;
+}
+
+.text-input:focused, .combo-box:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+}
+
+.text-input-error {
+    -fx-border-color: #EF4444;
+    -fx-background-color: #FEF2F2;
+}
+
+.error-label {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 11px;
+}
+
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4B5563;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #F9FAFB;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #374151;
+    -fx-padding: 5px 10px;
+}
+
+.combo-box-base:focused {
+    -fx-background-color: #F3F4F6, #FFFFFF; /* Efecto de borde */
+}
