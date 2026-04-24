@@ -117,17 +117,30 @@ public class RegisterProjectController implements Initializable {
 
     private Date parseDate(String dayString, String monthString, String yearString)
             throws IllegalArgumentException, DateTimeParseException {
-        if (dayString == null || dayString.isEmpty() || monthString == null || monthString.isEmpty()
-                || yearString == null || yearString.isEmpty()) {
+
+        if (dayString == null || monthString == null || yearString == null) {
+            throw new IllegalArgumentException("Campos de fecha nulos");
+        }
+
+        String d = dayString.trim();
+        String m = monthString.trim();
+        String y = yearString.trim();
+
+        if (d.isEmpty() || m.isEmpty() || y.isEmpty()) {
             throw new IllegalArgumentException("Campos de fecha vacíos");
         }
 
-        int parsedDay = Integer.parseInt(dayString);
-        int parsedMonth = Integer.parseInt(monthString);
-        int parsedYear = Integer.parseInt(yearString);
+        try {
+            int parsedDay = Integer.parseInt(d);
+            int parsedMonth = Integer.parseInt(m);
+            int parsedYear = Integer.parseInt(y);
 
-        LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
-        return Date.valueOf(convertedLocalDate);
+            LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
+            return Date.valueOf(convertedLocalDate);
+
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Los valores de fecha deben ser numéricos");
+        }
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {
