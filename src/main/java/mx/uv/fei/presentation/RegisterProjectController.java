@@ -16,10 +16,10 @@ import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.domain.common.CommonParse;
 
 import java.net.URL;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
@@ -70,7 +70,7 @@ public class RegisterProjectController implements Initializable {
     }
 
     @FXML
-    private void handleSaveAction(ActionEvent actionEvent) {
+    private void handleActionSaveButton(ActionEvent actionEvent) {
         try {
             Project projectInformation = new Project();
 
@@ -81,9 +81,10 @@ public class RegisterProjectController implements Initializable {
             int parsedProjectCapacity = Integer.parseInt(capacityTextField.getText());
             projectInformation.setParticipantCapacity(parsedProjectCapacity);
 
-            Date projectStartDate = parseDate(startDayTextField.getText(), startMonthTextField.getText(),
+            Date projectStartDate = CommonParse.parseDate(startDayTextField.getText(), startMonthTextField.getText(),
                     startYearTextField.getText());
-            Date projectEndDate = parseDate(deadLineDayTextField.getText(), deadLineMonthTextField.getText(),
+            Date projectEndDate = CommonParse.parseDate(deadLineDayTextField.getText(),
+                    deadLineMonthTextField.getText(),
                     deadLineYearTextField.getText());
 
             projectInformation.setStartDate(projectStartDate);
@@ -116,34 +117,6 @@ public class RegisterProjectController implements Initializable {
         Node eventSourceNode = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
         currentStage.close();
-    }
-
-    private Date parseDate(String dayString, String monthString, String yearString)
-            throws IllegalArgumentException, DateTimeParseException {
-
-        if (dayString == null || monthString == null || yearString == null) {
-            throw new IllegalArgumentException("Campos de fecha nulos");
-        }
-
-        String day = dayString.trim();
-        String month = monthString.trim();
-        String year = yearString.trim();
-
-        if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
-            throw new IllegalArgumentException("Campos de fecha vacíos");
-        }
-
-        try {
-            int parsedDay = Integer.parseInt(day);
-            int parsedMonth = Integer.parseInt(month);
-            int parsedYear = Integer.parseInt(year);
-
-            LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
-            return Date.valueOf(convertedLocalDate);
-
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Los valores de fecha deben ser numéricos");
-        }
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {
