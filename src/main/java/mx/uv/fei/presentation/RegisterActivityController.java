@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
@@ -27,30 +28,22 @@ public class RegisterActivityController implements Initializable {
 
     private final ProjectManager projectManager;
 
-    @FXML
-    private FormField nameTextField;
-    @FXML
-    private FormComboBox organizationChoiceBox;
-    @FXML
-    private FormComboBox managerChoiceBox;
-    @FXML
-    private TextField startDayTextField;
-    @FXML
-    private TextField startMonthTextField;
-    @FXML
-    private TextField startYearTextField;
-    @FXML
-    private TextField deadLineDayTextField;
-    @FXML
-    private TextField deadLineMonthTextField;
-    @FXML
-    private TextField deadLineYearTextField;
-    @FXML
-    private TextArea descriptionTextArea;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button saveButton;
+    @FXML private FormField fieldActivityName;
+    @FXML private FormComboBox comboBoxOrganization;
+    @FXML private FormComboBox comboBoxManager;
+
+    @FXML private TextField textFieldStartDay;
+    @FXML private TextField textFieldStartMonth;
+    @FXML private TextField textFieldStartYear;
+
+    @FXML private TextField textFieldDeadlineDay;
+    @FXML private TextField textFieldDeadlineMonth;
+    @FXML private TextField textFieldDeadlineYear;
+
+    @FXML private TextArea textAreaDescription;
+
+    @FXML private Button buttonSave;
+    @FXML private Button buttonCancel;
 
     public RegisterActivityController(ProjectManager projectManager) {
         this.projectManager = projectManager;
@@ -60,11 +53,11 @@ public class RegisterActivityController implements Initializable {
     public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
         ObservableList<String> organizationOptions = FXCollections.observableArrayList(
                 "Organización A", "Organización B", "Organización C");
-        organizationChoiceBox.setItems(organizationOptions);
+        comboBoxOrganization.setItems(organizationOptions);
 
         ObservableList<String> managerOptions = FXCollections.observableArrayList(
                 "Juan Pérez", "Ana Gómez", "Luis Martínez");
-        managerChoiceBox.setItems(managerOptions);
+        comboBoxManager.setItems(managerOptions);
     }
 
     @FXML
@@ -72,15 +65,20 @@ public class RegisterActivityController implements Initializable {
         try {
             Activity activityInformation = new Activity();
 
-            activityInformation.setName(nameTextField.getText());
-            activityInformation.setDescription(descriptionTextArea.getText());
-            activityInformation.setManager((String) managerChoiceBox.getValue());
+            activityInformation.setName(fieldActivityName.getText());
+            activityInformation.setDescription(textAreaDescription.getText());
+            activityInformation.setManager(comboBoxManager.getValue());
 
-            Date activityStartDate = CommonParse.parseDate(startDayTextField.getText(), startMonthTextField.getText(),
-                    startYearTextField.getText());
-            Date activityEndDate = CommonParse.parseDate(deadLineDayTextField.getText(),
-                    deadLineMonthTextField.getText(),
-                    deadLineYearTextField.getText());
+            Date activityStartDate = CommonParse.parseDate(
+                    textFieldStartDay.getText(),
+                    textFieldStartMonth.getText(),
+                    textFieldStartYear.getText()
+            );
+            Date activityEndDate = CommonParse.parseDate(
+                    textFieldDeadlineDay.getText(),
+                    textFieldDeadlineMonth.getText(),
+                    textFieldDeadlineYear.getText()
+            );
 
             activityInformation.setStartDate(activityStartDate);
             activityInformation.setEndDate(activityEndDate);
@@ -88,13 +86,14 @@ public class RegisterActivityController implements Initializable {
             boolean isActivitySavedSuccessfully = projectManager.registerNewActivity(activityInformation);
 
             if (isActivitySavedSuccessfully) {
-                showErrorAlert("exceptions", "exito");
+                showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
                 closeCurrentWindow(actionEvent);
             }
+
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
             showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
         } catch (DAOException databaseConnectionException) {
-            showErrorAlert("Fallo en la conexión", "Fallo de conexión, inténtelo más tarde.");
+            showErrorAlert("Fallo en la conexión", "No se pudo conectar con la base de datos, inténtelo más tarde.");
         }
     }
 
@@ -107,6 +106,14 @@ public class RegisterActivityController implements Initializable {
         Node eventSourceNode = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
         currentStage.close();
+    }
+
+    private void showInfoAlert(String alertTitle, String alertMessage) {
+        Alert userAlert = new Alert(Alert.AlertType.INFORMATION);
+        userAlert.setTitle(alertTitle);
+        userAlert.setHeaderText(null);
+        userAlert.setContentText(alertMessage);
+        userAlert.showAndWait();
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {

@@ -27,7 +27,7 @@
 
         <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
 
-        <FormComboBox fx:id="comboSexo" labelText="Sexo / Género"/>
+        <FormComboBox fx:id="comboBoxSexo" labelText="Sexo / Género"/>
 
         <VBox VBox.vgrow="ALWAYS"/>
 
