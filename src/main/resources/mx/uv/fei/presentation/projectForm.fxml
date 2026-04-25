@@ -20,24 +20,24 @@
 
          <Label styleClass="form-title" text="Registro de Proyecto" />
 
-         <FormField fx:id="projectNameTextField" labelText="Nombre:" promptText="Nombre del proyecto" />
+         <FormField fx:id="fieldProjectName" labelText="Nombre:" promptText="Nombre del proyecto" />
 
-         <FormComboBox fx:id="organizationChoiceBox" labelText="Organización:" />
-         
-         <FormComboBox fx:id="managerChoiceBox" labelText="Encargado:" />
-         
-         <FormField fx:id="capacityTextField" labelText="Participantes (Cupo):" promptText="Ej. 10" />
+         <FormComboBox fx:id="comboBoxOrganization" labelText="Organización:" />
+
+         <FormComboBox fx:id="comboBoxManager" labelText="Encargado:" />
+
+         <FormField fx:id="fieldCapacity" labelText="Participantes (Cupo):" promptText="Ej. 10" />
 
          <VBox spacing="5.0">
             <children>
                <Label text="Inicio:" />
                <HBox alignment="CENTER_LEFT" spacing="10.0">
                   <children>
-                     <TextField fx:id="startDayTextField" prefWidth="60.0" promptText="DD" />
+                     <TextField fx:id="textFieldStartDay" prefWidth="60.0" promptText="DD" />
                      <Label text="/" />
-                     <TextField fx:id="startMonthTextField" prefWidth="60.0" promptText="MM" />
+                     <TextField fx:id="textFieldStartMonth" prefWidth="60.0" promptText="MM" />
                      <Label text="/" />
-                     <TextField fx:id="startYearTextField" prefWidth="80.0" promptText="AAAA" />
+                     <TextField fx:id="textFieldStartYear" prefWidth="80.0" promptText="AAAA" />
                   </children>
                </HBox>
             </children>
@@ -48,11 +48,11 @@
                <Label text="Termina:" />
                <HBox alignment="CENTER_LEFT" spacing="10.0">
                   <children>
-                     <TextField fx:id="deadLineDayTextField" prefWidth="60.0" promptText="DD" />
+                     <TextField fx:id="textFieldDeadlineDay" prefWidth="60.0" promptText="DD" />
                      <Label text="/" />
-                     <TextField fx:id="deadLineMonthTextField" prefWidth="60.0" promptText="MM" />
+                     <TextField fx:id="textFieldDeadlineMonth" prefWidth="60.0" promptText="MM" />
                      <Label text="/" />
-                     <TextField fx:id="deadLineYearTextField" prefWidth="80.0" promptText="AAAA" />
+                     <TextField fx:id="textFieldDeadlineYear" prefWidth="80.0" promptText="AAAA" />
                   </children>
                </HBox>
             </children>
@@ -61,22 +61,22 @@
          <VBox spacing="5.0" VBox.vgrow="ALWAYS">
             <children>
                <Label text="Descripción:" />
-               <TextArea fx:id="descriptionTextArea" prefHeight="100.0" wrapText="true" />
+               <TextArea fx:id="textAreaDescription" prefHeight="100.0" wrapText="true" />
             </children>
          </VBox>
 
-         <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction" styleClass="primary-button" text="Guardar">
+         <Button fx:id="buttonSave" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction" styleClass="primary-button" text="Guardar">
             <VBox.margin>
                <Insets top="10.0" />
             </VBox.margin>
          </Button>
-         
-         <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
+
+         <Button fx:id="buttonCancel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
             <VBox.margin>
                <Insets top="5.0" />
             </VBox.margin>
          </Button>
-         
+
       </VBox>
    </children>
 </AnchorPane>

@@ -20,8 +20,8 @@ public class RegisterPractitionerManager {
     }
 
     public String registerNewPractitioner(Practitioner practitioner) throws ManagerExeption {
-        String tempPassword = "temp-" + UUID.randomUUID().toString().substring(0, 8);
-        practitioner.setPassword(tempPassword);
+        String temporalPassword = "temp-" + UUID.randomUUID().toString().substring(0, 8);
+        practitioner.setPassword(temporalPassword);
         practitioner.setStatus("no activo");
         practitioner.setGrade(0.0);
 
@@ -35,10 +35,9 @@ public class RegisterPractitionerManager {
                 throw new ManagerExeption("No se pudo completar el registro del practicante en el sistema.");
             }
 
-            return tempPassword;
+            return temporalPassword;
 
         } catch (DAOException e) {
-            e.printStackTrace();
             throw new ManagerExeption("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
