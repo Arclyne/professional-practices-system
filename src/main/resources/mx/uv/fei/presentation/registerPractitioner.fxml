@@ -32,7 +32,7 @@
       <FormField fx:id="fieldApellido" labelText="Apellido del Practicante" promptText="Ingrese el apellido" />
       <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="Ingrese el correo electrónico" />
 
-      <FormComboBox fx:id="comboSexo" labelText="Sexo del Practicante" />
+      <FormComboBox fx:id="comboBoxSexo" labelText="Sexo del Practicante" />
 
       <FormField fx:id="fieldLengua" labelText="Lengua Indígena (Opcional)" promptText="Ej. Náhuatl, Totonaco..." />
 
