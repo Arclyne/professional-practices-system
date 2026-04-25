@@ -16,10 +16,10 @@ import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.domain.common.CommonParse;
 
 import java.net.URL;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
@@ -76,9 +76,10 @@ public class RegisterActivityController implements Initializable {
             activityInformation.setDescription(descriptionTextArea.getText());
             activityInformation.setManager((String) managerChoiceBox.getValue());
 
-            Date activityStartDate = parseDate(startDayTextField.getText(), startMonthTextField.getText(),
+            Date activityStartDate = CommonParse.parseDate(startDayTextField.getText(), startMonthTextField.getText(),
                     startYearTextField.getText());
-            Date activityEndDate = parseDate(deadLineDayTextField.getText(), deadLineMonthTextField.getText(),
+            Date activityEndDate = CommonParse.parseDate(deadLineDayTextField.getText(),
+                    deadLineMonthTextField.getText(),
                     deadLineYearTextField.getText());
 
             activityInformation.setStartDate(activityStartDate);
@@ -106,21 +107,6 @@ public class RegisterActivityController implements Initializable {
         Node eventSourceNode = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
         currentStage.close();
-    }
-
-    private Date parseDate(String dayString, String monthString, String yearString)
-            throws IllegalArgumentException, DateTimeParseException {
-        if (dayString == null || dayString.isEmpty() || monthString == null || monthString.isEmpty()
-                || yearString == null || yearString.isEmpty()) {
-            throw new IllegalArgumentException("Campos de fecha vacíos");
-        }
-
-        int parsedDay = Integer.parseInt(dayString);
-        int parsedMonth = Integer.parseInt(monthString);
-        int parsedYear = Integer.parseInt(yearString);
-
-        LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
-        return Date.valueOf(convertedLocalDate);
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {
