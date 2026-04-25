@@ -20,6 +20,7 @@ import mx.uv.fei.domain.common.CommonParse;
 
 import java.net.URL;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
@@ -27,32 +28,23 @@ public class RegisterProjectController implements Initializable {
 
     private final ProjectManager projectManager;
 
-    @FXML
-    private FormField projectNameTextField;
-    @FXML
-    private FormComboBox organizationChoiceBox;
-    @FXML
-    private FormComboBox managerChoiceBox;
-    @FXML
-    private FormField capacityTextField;
-    @FXML
-    private TextField startDayTextField;
-    @FXML
-    private TextField startMonthTextField;
-    @FXML
-    private TextField startYearTextField;
-    @FXML
-    private TextField deadLineDayTextField;
-    @FXML
-    private TextField deadLineMonthTextField;
-    @FXML
-    private TextField deadLineYearTextField;
-    @FXML
-    private TextArea descriptionTextArea;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button saveButton;
+    @FXML private FormField fieldProjectName;
+    @FXML private FormField fieldCapacity;
+    @FXML private FormComboBox comboBoxOrganization;
+    @FXML private FormComboBox comboBoxManager;
+
+    @FXML private TextField textFieldStartDay;
+    @FXML private TextField textFieldStartMonth;
+    @FXML private TextField textFieldStartYear;
+
+    @FXML private TextField textFieldDeadlineDay;
+    @FXML private TextField textFieldDeadlineMonth;
+    @FXML private TextField textFieldDeadlineYear;
+
+    @FXML private TextArea textAreaDescription;
+
+    @FXML private Button buttonSave;
+    @FXML private Button buttonCancel;
 
     public RegisterProjectController(ProjectManager projectManager) {
         this.projectManager = projectManager;
@@ -62,30 +54,36 @@ public class RegisterProjectController implements Initializable {
     public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
         ObservableList<String> organizationOptions = FXCollections.observableArrayList(
                 "Organización A", "Organización B", "Organización C");
-        organizationChoiceBox.setItems(organizationOptions);
+        comboBoxOrganization.setItems(organizationOptions);
 
         ObservableList<String> managerOptions = FXCollections.observableArrayList(
                 "Juan Pérez", "Ana Gómez", "Luis Martínez");
-        managerChoiceBox.setItems(managerOptions);
+
+        comboBoxManager.setItems(managerOptions);
     }
 
     @FXML
-    private void handleActionSaveButton(ActionEvent actionEvent) {
+    private void handleSaveAction(ActionEvent actionEvent) {
         try {
             Project projectInformation = new Project();
 
-            projectInformation.setProjectName(projectNameTextField.getText());
-            projectInformation.setDescription(descriptionTextArea.getText());
-            projectInformation.setManager((String) managerChoiceBox.getValue());
+            projectInformation.setProjectName(fieldProjectName.getText());
+            projectInformation.setDescription(textAreaDescription.getText());
+            projectInformation.setManager(comboBoxManager.getValue());
 
-            int parsedProjectCapacity = Integer.parseInt(capacityTextField.getText());
+            int parsedProjectCapacity = Integer.parseInt(fieldCapacity.getText());
             projectInformation.setParticipantCapacity(parsedProjectCapacity);
 
-            Date projectStartDate = CommonParse.parseDate(startDayTextField.getText(), startMonthTextField.getText(),
-                    startYearTextField.getText());
-            Date projectEndDate = CommonParse.parseDate(deadLineDayTextField.getText(),
-                    deadLineMonthTextField.getText(),
-                    deadLineYearTextField.getText());
+            Date projectStartDate = CommonParse.parseDate(
+                    textFieldStartDay.getText(),
+                    textFieldStartMonth.getText(),
+                    textFieldStartYear.getText()
+            );
+            Date projectEndDate = CommonParse.parseDate(
+                    textFieldDeadlineDay.getText(),
+                    textFieldDeadlineMonth.getText(),
+                    textFieldDeadlineYear.getText()
+            );
 
             projectInformation.setStartDate(projectStartDate);
             projectInformation.setEndDate(projectEndDate);
@@ -95,14 +93,14 @@ public class RegisterProjectController implements Initializable {
             boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
             if (isProjectSavedSuccessfully) {
-                showErrorAlert("exceptions", "exito");
+                showSuccessAlert("Registro Exitoso", "El proyecto ha sido guardado correctamente.");
                 closeCurrentWindow(actionEvent);
             }
 
         } catch (NumberFormatException capacityFormatMismatchException) {
             showErrorAlert("Error de formato", "El cupo de participantes debe ser un número entero válido.");
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
-            showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
+            showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas (DD/MM/AAAA).");
         } catch (DAOException databaseConnectionException) {
             showErrorAlert("Error de conexión", "Hubo un error en la conexión, inténtelo más tarde.");
         }
@@ -117,6 +115,37 @@ public class RegisterProjectController implements Initializable {
         Node eventSourceNode = (Node) actionEvent.getSource();
         Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
         currentStage.close();
+    }
+
+    private Date parseDate(String dayString, String monthString, String yearString)
+            throws IllegalArgumentException, DateTimeParseException {
+
+        if (dayString == null || monthString == null || yearString == null) {
+            throw new IllegalArgumentException("Campos de fecha nulos");
+        }
+
+        String day = dayString.trim();
+        String month = monthString.trim();
+        String year = yearString.trim();
+
+        if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
+            throw new IllegalArgumentException("Campos de fecha vacíos");
+        }
+
+        int parsedDay = Integer.parseInt(day);
+        int parsedMonth = Integer.parseInt(month);
+        int parsedYear = Integer.parseInt(year);
+
+        LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
+        return Date.valueOf(convertedLocalDate);
+    }
+
+    private void showSuccessAlert(String alertTitle, String alertMessage) {
+        Alert userAlert = new Alert(Alert.AlertType.INFORMATION);
+        userAlert.setTitle(alertTitle);
+        userAlert.setHeaderText(null);
+        userAlert.setContentText(alertMessage);
+        userAlert.showAndWait();
     }
 
     private void showErrorAlert(String alertTitle, String alertMessage) {

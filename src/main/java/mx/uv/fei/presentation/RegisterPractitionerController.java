@@ -23,7 +23,7 @@ public class RegisterPractitionerController implements Initializable {
     @FXML private FormField fieldApellido;
     @FXML private FormField fieldCorreo;
 
-    @FXML private FormComboBox comboSexo;
+    @FXML private FormComboBox comboBoxSexo;
     @FXML private FormField fieldLengua;
 
     private RegisterPractitionerManager manager;
@@ -37,7 +37,7 @@ public class RegisterPractitionerController implements Initializable {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
                 "Masculino", "Femenino", "Otro"
         );
-        comboSexo.setItems(opcionesSexo);
+        comboBoxSexo.setItems(opcionesSexo);
     }
 
     @FXML
@@ -47,7 +47,7 @@ public class RegisterPractitionerController implements Initializable {
             return;
         }
 
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboSexo.getValue() == null) {
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
             showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
             return;
         }
@@ -56,7 +56,7 @@ public class RegisterPractitionerController implements Initializable {
 
         newPractitioner.setName(fieldNombre.getText());
         newPractitioner.setLastName(fieldApellido.getText());
-        newPractitioner.setGender(comboSexo.getValue());
+        newPractitioner.setGender(comboBoxSexo.getValue());
 
         String lengua = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();
         newPractitioner.setIndigenousLanguage(lengua);

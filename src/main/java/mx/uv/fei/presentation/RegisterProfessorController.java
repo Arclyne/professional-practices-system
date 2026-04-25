@@ -21,7 +21,7 @@ public class RegisterProfessorController implements Initializable {
     @FXML private FormField fieldNombre;
     @FXML private FormField fieldApellido;
     @FXML private FormField fieldCorreo;
-    @FXML private FormComboBox comboSexo;
+    @FXML private FormComboBox comboBoxSexo;
 
     private RegisterProfessorManager manager;
 
@@ -34,8 +34,9 @@ public class RegisterProfessorController implements Initializable {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
                 "Masculino", "Femenino", "Otro"
         );
-        comboSexo.setItems(opcionesSexo);
+        comboBoxSexo.setItems(opcionesSexo);
     }
+
 
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
@@ -44,7 +45,7 @@ public class RegisterProfessorController implements Initializable {
             return;
         }
 
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboSexo.getValue() == null) {
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
             showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios del docente.", AlertType.WARNING);
             return;
         }
@@ -52,7 +53,7 @@ public class RegisterProfessorController implements Initializable {
         Professor newProfessor = new Professor();
         newProfessor.setName(fieldNombre.getText());
         newProfessor.setLastName(fieldApellido.getText());
-        newProfessor.setGender(comboSexo.getValue());
+        newProfessor.setGender(comboBoxSexo.getValue());
 
         try {
             String generatedPassword = manager.registerNewProfessor(newProfessor);
@@ -87,6 +88,6 @@ public class RegisterProfessorController implements Initializable {
         if (fieldNombre != null) fieldNombre.setText("");
         if (fieldApellido != null) fieldApellido.setText("");
         if (fieldCorreo != null) fieldCorreo.setText("");
-        if (comboSexo != null) comboSexo.clearSelection();
+        if (comboBoxSexo != null) comboBoxSexo.clearSelection();
     }
 }
