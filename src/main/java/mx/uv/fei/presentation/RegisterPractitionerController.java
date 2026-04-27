@@ -14,7 +14,7 @@ import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterPractitionerManager;
 import mx.uv.fei.domain.manager.SceneManager;
-import mx.uv.fei.domain.exceptions.ManagerExeption;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.common.CommonControler;
 
 public class RegisterPractitionerController implements Initializable {
@@ -78,7 +78,7 @@ public class RegisterPractitionerController implements Initializable {
 
             clearForm();
 
-        } catch (ManagerExeption e) {
+        } catch (ManagerException e) {
             CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }

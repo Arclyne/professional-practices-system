@@ -10,7 +10,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.common.CommonControler;
-import mx.uv.fei.domain.common.CommonValidator;
 import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.manager.StartSessionManager;
 
@@ -37,9 +36,6 @@ public class StartSessionController {
     private void handleActionConnectButton(ActionEvent actionEvent) {
         String userNameInput = textFieldUser.getText().trim();
         String userPasswordInput = passwordFieldUser.getText().trim();
-
-        CommonValidator.validateNoEmptyString(userNameInput, "Introdusca un usuario");
-        CommonValidator.validateNoEmptyString(userPasswordInput, "Introdusca una contraseña");
 
         Map<String, String> credential = new HashMap<>();
         credential.put("User", userNameInput);
