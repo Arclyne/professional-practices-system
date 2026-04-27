@@ -77,14 +77,14 @@ public class Organization {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object object) {
+        if (this == object)
             return true;
 
-        if (o == null || getClass() != o.getClass())
+        if (object == null || getClass() != object.getClass())
             return false;
 
-        Organization that = (Organization) o;
+        Organization that = (Organization) object;
 
         return Objects.equals(nameOrganization, that.getNameOrganization()) &&
                 Objects.equals(region, that.getRegion()) &&

@@ -5,19 +5,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
+import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.common.CommonControler;
 
 import java.net.URL;
 import java.sql.Date;
@@ -28,22 +27,34 @@ public class RegisterActivityController implements Initializable {
 
     private final ProjectManager projectManager;
 
-    @FXML private FormField fieldActivityName;
-    @FXML private FormComboBox comboBoxOrganization;
-    @FXML private FormComboBox comboBoxManager;
+    @FXML
+    private FormField fieldActivityName;
+    @FXML
+    private FormComboBox comboBoxOrganization;
+    @FXML
+    private FormComboBox comboBoxManager;
 
-    @FXML private TextField textFieldStartDay;
-    @FXML private TextField textFieldStartMonth;
-    @FXML private TextField textFieldStartYear;
+    @FXML
+    private TextField textFieldStartDay;
+    @FXML
+    private TextField textFieldStartMonth;
+    @FXML
+    private TextField textFieldStartYear;
 
-    @FXML private TextField textFieldDeadlineDay;
-    @FXML private TextField textFieldDeadlineMonth;
-    @FXML private TextField textFieldDeadlineYear;
+    @FXML
+    private TextField textFieldDeadlineDay;
+    @FXML
+    private TextField textFieldDeadlineMonth;
+    @FXML
+    private TextField textFieldDeadlineYear;
 
-    @FXML private TextArea textAreaDescription;
+    @FXML
+    private TextArea textAreaDescription;
 
-    @FXML private Button buttonSave;
-    @FXML private Button buttonCancel;
+    @FXML
+    private Button buttonSave;
+    @FXML
+    private Button buttonCancel;
 
     public RegisterActivityController(ProjectManager projectManager) {
         this.projectManager = projectManager;
@@ -61,7 +72,7 @@ public class RegisterActivityController implements Initializable {
     }
 
     @FXML
-    private void handleSaveAction(ActionEvent actionEvent) {
+    private void handleActionSaveButton(ActionEvent actionEvent) {
         try {
             Activity activityInformation = new Activity();
 
@@ -72,13 +83,11 @@ public class RegisterActivityController implements Initializable {
             Date activityStartDate = CommonParse.parseDate(
                     textFieldStartDay.getText(),
                     textFieldStartMonth.getText(),
-                    textFieldStartYear.getText()
-            );
+                    textFieldStartYear.getText());
             Date activityEndDate = CommonParse.parseDate(
                     textFieldDeadlineDay.getText(),
                     textFieldDeadlineMonth.getText(),
-                    textFieldDeadlineYear.getText()
-            );
+                    textFieldDeadlineYear.getText());
 
             activityInformation.setStartDate(activityStartDate);
             activityInformation.setEndDate(activityEndDate);
@@ -86,41 +95,21 @@ public class RegisterActivityController implements Initializable {
             boolean isActivitySavedSuccessfully = projectManager.registerNewActivity(activityInformation);
 
             if (isActivitySavedSuccessfully) {
-                showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
-                closeCurrentWindow(actionEvent);
+                CommonControler.showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
+                SceneManager.closeCurrentWindow(actionEvent);
             }
 
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
-            showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
+            CommonControler.showErrorAlert("Error de fecha",
+                    "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
         } catch (ManagerException managerException) {
-            showErrorAlert("Fallo en el registro", managerException.getMessage());
+            CommonControler.showErrorAlert("Fallo en el registro", managerException.getMessage());
         }
     }
 
     @FXML
-    private void handleCancelAction(ActionEvent actionEvent) {
-        closeCurrentWindow(actionEvent);
+    private void handleActionCancelButton(ActionEvent actionEvent) {
+        SceneManager.closeCurrentWindow(actionEvent);
     }
 
-    private void closeCurrentWindow(ActionEvent actionEvent) {
-        Node eventSourceNode = (Node) actionEvent.getSource();
-        Stage currentStage = (Stage) eventSourceNode.getScene().getWindow();
-        currentStage.close();
-    }
-
-    private void showInfoAlert(String alertTitle, String alertMessage) {
-        Alert userAlert = new Alert(Alert.AlertType.INFORMATION);
-        userAlert.setTitle(alertTitle);
-        userAlert.setHeaderText(null);
-        userAlert.setContentText(alertMessage);
-        userAlert.showAndWait();
-    }
-
-    private void showErrorAlert(String alertTitle, String alertMessage) {
-        Alert userAlert = new Alert(Alert.AlertType.ERROR);
-        userAlert.setTitle(alertTitle);
-        userAlert.setHeaderText(null);
-        userAlert.setContentText(alertMessage);
-        userAlert.showAndWait();
-    }
 }

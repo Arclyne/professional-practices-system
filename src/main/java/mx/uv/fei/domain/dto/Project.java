@@ -87,14 +87,14 @@ public class Project {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object object) {
+        if (this == object)
             return true;
 
-        if (o == null || getClass() != o.getClass())
+        if (object == null || getClass() != object.getClass())
             return false;
 
-        Project that = (Project) o;
+        Project that = (Project) object;
         return Objects.equals(projectName, that.getProjectName()) &&
                 Objects.equals(manager, that.getManager()) &&
                 Objects.equals(companyId, that.getCompanyId());

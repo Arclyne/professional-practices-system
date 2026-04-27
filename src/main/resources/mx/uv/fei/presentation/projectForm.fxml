@@ -54,7 +54,7 @@
          <TextArea fx:id="textAreaDescription" prefHeight="100.0" wrapText="true"/>
       </VBox>
 
-      <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction"
+      <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleActionSaveButton"
               styleClass="primary-button" text="Guardar">
          <VBox.margin>
             <Insets top="10.0"/>
@@ -62,7 +62,7 @@
       </Button>
 
       <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-              onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
+              onAction="#handleActionCancelButton" styleClass="secondary-button" text="Cancelar">
          <VBox.margin>
             <Insets top="5.0"/>
          </VBox.margin>
