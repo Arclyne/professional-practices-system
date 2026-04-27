@@ -2,6 +2,8 @@ package mx.uv.fei.domain.manager;
 
 
 import java.util.UUID;
+
+import mx.uv.fei.domain.common.CommonValidator;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.PractitionerDAO;
@@ -9,36 +11,36 @@ import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 
 
-import mx.uv.fei.domain.exceptions.ManagerExeption;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class RegisterPractitionerManager {
 
-    private final IDatabaseConnection dbConnection;
+    private PractitionerDAO practitionerDAO;
 
     public RegisterPractitionerManager(IDatabaseConnection dbConnection) {
-        this.dbConnection = dbConnection;
+        UserDAO userDAO = new UserDAO(dbConnection);
+        practitionerDAO = new PractitionerDAO(dbConnection, userDAO);
     }
 
-    public String registerNewPractitioner(Practitioner practitioner) throws ManagerExeption {
+    public String registerNewPractitioner(Practitioner practitioner) throws ManagerException {
         String temporalPassword = "temp-" + UUID.randomUUID().toString().substring(0, 8);
         practitioner.setPassword(temporalPassword);
         practitioner.setStatus("no activo");
         practitioner.setGrade(0.0);
 
-        try {
-            UserDAO userDAO = new UserDAO(dbConnection);
-            PractitionerDAO practitionerDAO = new PractitionerDAO(dbConnection, userDAO);
+        CommonValidator.validatePractitioner(practitioner);
 
-            int resultId = practitionerDAO.insertPractitioner(practitioner);
+        try {
+            int resultId = this.practitionerDAO.insertPractitioner(practitioner);
 
             if (resultId <= 0) {
-                throw new ManagerExeption("No se pudo completar el registro del practicante en el sistema.");
+                throw new ManagerException("No se pudo completar el registro del practicante en el sistema.");
             }
 
             return temporalPassword;
 
         } catch (DAOException e) {
-            throw new ManagerExeption("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 }

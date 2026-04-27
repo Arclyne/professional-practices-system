@@ -10,6 +10,7 @@ import mx.uv.fei.dataacces.repositories.ProjectDAO;
 
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.common.CommonValidator;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class ProjectManager {
 
@@ -21,14 +22,35 @@ public class ProjectManager {
         this.projectDataAccessObject = new ProjectDAO(DatabaseConnection);
     }
 
-    public boolean registerNewActivity(Activity activityToRegister) throws DAOException {
+    public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
         CommonValidator.validateActivityData(activityToRegister);
-        return activityDataAccessObject.insertActivity(activityToRegister);
+
+        try {
+            boolean isRegistered = activityDataAccessObject.insertActivity(activityToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException("No se pudo completar el registro de la actividad en el sistema.");
+            }
+            return true;
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
+        }
     }
 
-    public boolean registerNewProject(Project projectToRegister) throws DAOException {
+    public boolean registerNewProject(Project projectToRegister) throws ManagerException {
         CommonValidator.validateProjectData(projectToRegister);
-        return projectDataAccessObject.insertProject(projectToRegister);
-    }
 
+        try {
+            boolean isRegistered = projectDataAccessObject.insertProject(projectToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException("No se pudo completar el registro del proyecto en el sistema.");
+            }
+            return true;
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
+        }
+    }
 }
