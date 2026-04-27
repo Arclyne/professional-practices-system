@@ -1,54 +1,54 @@
 package mx.uv.fei.domain.common;
 
 import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.dto.Project;
+import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
-import java.util.Map;
+import java.util.Date;
 
 public class CommonValidator {
 
-    public static void validateActivityData(Activity activityToValidate) {
-        if (activityToValidate.getName() == null || activityToValidate.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de la actividad es obligatorio.");
-        }
+    public static void validateActivityData(Activity activityToValidate) throws ManagerException {
+        validateString(activityToValidate.getName(), "El nombre de la actividad es obligatorio.");
+        validateString(activityToValidate.getManager(), "El encargado de la actividad es obligatorio.");
+        validateDateRange(activityToValidate.getStartDate(), activityToValidate.getEndDate());
+    }
 
-        if (activityToValidate.getManager() == null || activityToValidate.getManager().trim().isEmpty()) {
-            throw new IllegalArgumentException("El encargado de la actividad es obligatorio.");
-        }
+    public static void validateProjectData(Project projectToValidate) throws ManagerException {
+        validateString(projectToValidate.getProjectName(), "El nombre del proyecto es obligatorio.");
+        validateString(projectToValidate.getManager(), "El encargado del proyecto es obligatorio.");
+        validateDateRange(projectToValidate.getStartDate(), projectToValidate.getEndDate());
+    }
 
-        if (activityToValidate.getStartDate() != null && activityToValidate.getEndDate() != null) {
-            if (activityToValidate.getEndDate().before(activityToValidate.getStartDate())) {
-                throw new IllegalArgumentException("La fecha de término no puede ser anterior a la fecha de inicio.");
-            }
+    public static void validateProfessorData(Professor professorToValidate) throws ManagerException {
+        validateUser(professorToValidate, "profesor");
+        validateString(professorToValidate.getStaffNumber(), "El No. personal es obligatorio");
+    }
+
+    public static void validatePractitioner(Practitioner practitionerToValidate) throws ManagerException {
+        validateUser(practitionerToValidate, "practicante");
+        validateString(practitionerToValidate.getEnrollment(), "La matricula del practicante es obligatoria");
+    }
+
+    private static void validateUser(User userToValidate, String rol) throws ManagerException {
+        validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
+        validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
+        validateString(userToValidate.getGender(), "El género del " + rol + " es obligatorio.");
+        validateString(userToValidate.getEmail(), "El Correo del " + rol + "es obligatorio");
+    }
+
+    private static void validateString(String value, String errorMessage) throws ManagerException {
+        if (value == null || value.trim().isEmpty()) {
+            throw new ManagerException(errorMessage);
         }
     }
 
-    public static void validateProjectData(Project projectToValidate) {
-        if (projectToValidate.getProjectName() == null || projectToValidate.getProjectName().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del proyecto es obligatorio.");
-        }
-
-        if (projectToValidate.getManager() == null || projectToValidate.getManager().trim().isEmpty()) {
-            throw new IllegalArgumentException("El encargado del proyecto es obligatorio.");
-        }
-
-        if (projectToValidate.getStartDate() != null && projectToValidate.getEndDate() != null) {
-            if (projectToValidate.getEndDate().before(projectToValidate.getStartDate())) {
-                throw new IllegalArgumentException("La fecha de término no puede ser anterior a la fecha de inicio.");
-            }
+    private static void validateDateRange(Date startDate, Date endDate) throws ManagerException {
+        if (startDate != null && endDate != null && endDate.before(startDate)) {
+            throw new ManagerException("La fecha de término no puede ser anterior a la fecha de inicio.");
         }
     }
-
-    public static void validateNoEmptyString(String stringToValidate, String messeng) {
-        if (stringToValidate == null || stringToValidate.trim().isEmpty()) {
-            throw new IllegalArgumentException(messeng);
-        }
-    }
-
-    public static void validateNoEmptyListString(Map<String, String> listToCheck) {
-        for (Map.Entry<String, String> stringToCheck : listToCheck.entrySet()) {
-            validateNoEmptyString(stringToCheck.getKey(), stringToCheck.getValue());
-        }
-    }
-
 }

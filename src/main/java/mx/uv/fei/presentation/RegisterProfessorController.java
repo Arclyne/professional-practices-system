@@ -14,7 +14,7 @@ import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterProfessorManager;
-import mx.uv.fei.domain.exceptions.ManagerExeption;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class RegisterProfessorController implements Initializable {
 
@@ -24,6 +24,8 @@ public class RegisterProfessorController implements Initializable {
     private FormField fieldApellido;
     @FXML
     private FormField fieldCorreo;
+    @FXML
+    private FormField fieldNoPersonal;
     @FXML
     private FormComboBox comboBoxSexo;
 
@@ -57,6 +59,8 @@ public class RegisterProfessorController implements Initializable {
         Professor newProfessor = new Professor();
         newProfessor.setName(fieldNombre.getText());
         newProfessor.setLastName(fieldApellido.getText());
+        newProfessor.setEmail(fieldCorreo.getText());
+        newProfessor.setStaffNumber(fieldNoPersonal.getText());
         newProfessor.setGender(comboBoxSexo.getValue());
 
         try {
@@ -68,8 +72,7 @@ public class RegisterProfessorController implements Initializable {
                     AlertType.INFORMATION);
 
             clearForm();
-
-        } catch (ManagerExeption e) {
+        } catch (ManagerException e) {
             CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
@@ -88,6 +91,8 @@ public class RegisterProfessorController implements Initializable {
             fieldApellido.setText("");
         if (fieldCorreo != null)
             fieldCorreo.setText("");
+        if (fieldNoPersonal != null)
+            fieldNoPersonal.setText("");
         if (comboBoxSexo != null)
             comboBoxSexo.clearSelection();
     }

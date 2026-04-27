@@ -8,13 +8,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import mx.uv.fei.dataacces.exceptions.DAOException;
+import javafx.stage.Stage;
+
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.common.CommonControler;
 
 import java.net.URL;
@@ -111,8 +113,8 @@ public class RegisterProjectController implements Initializable {
                     "El cupo de participantes debe ser un número entero válido.");
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
             CommonControler.showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas (DD/MM/AAAA).");
-        } catch (DAOException databaseConnectionException) {
-            CommonControler.showErrorAlert("Error de conexión", "Hubo un error en la conexión, inténtelo más tarde.");
+        } catch (ManagerException managerException) {
+            CommonControler.showErrorAlert("Error al guardar", managerException.getMessage());
         }
     }
 

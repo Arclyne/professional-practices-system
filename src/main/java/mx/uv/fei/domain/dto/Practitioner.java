@@ -6,6 +6,7 @@ public class Practitioner extends User {
     
     private String indigenousLanguage;
     private double grade;
+    private String getEnrollment;
 
     public Practitioner() {
         super();
@@ -26,6 +27,12 @@ public class Practitioner extends User {
     public void setGrade(double grade) {
         this.grade = grade;
     }
+
+    public void setEnrollment(String getEnrollment) {
+        this.getEnrollment = getEnrollment;
+    }
+
+    public String getEnrollment() { return this.getEnrollment; }
 
     @Override
     public boolean equals(Object object) {

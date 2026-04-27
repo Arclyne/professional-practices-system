@@ -60,9 +60,10 @@ public class RegisterPractitionerController implements Initializable {
         }
 
         Practitioner newPractitioner = new Practitioner();
-
+        newPractitioner.setEnrollment(fieldMatricula.getText());
         newPractitioner.setName(fieldNombre.getText());
         newPractitioner.setLastName(fieldApellido.getText());
+        newPractitioner.setEmail(fieldCorreo.getText());
         newPractitioner.setGender(comboBoxSexo.getValue());
 
         String lengua = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();

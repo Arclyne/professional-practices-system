@@ -15,9 +15,10 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO PROFESOR (ID_PROFESOR) VALUES (?)";
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.FECHA_REGISTRO, P.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO WHERE P.ID_PROFESOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.FECHA_REGISTRO, P.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO";
+    private static final String SQL_INSERT = "INSERT INTO PROFESOR (ID_PROFESOR, NUMERO_PERSONAL) VALUES (?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA, P.NUMERO_PERSONAL FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO WHERE P.ID_PROFESOR = ?";
+    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA, P.NUMERO_PERSONAL FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO";
+    private static final String SQL_UPDATE_PROFESSOR = "UPDATE PROFESOR SET NUMERO_PERSONAL = ? WHERE ID_PROFESOR = ?";
 
     public ProfessorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
         super(databaseConnection);
@@ -37,6 +38,7 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
                 if (generatedUserId > 0) {
                     try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
                         statement.setInt(1, generatedUserId);
+                        statement.setString(2, professor.getStaffNumber());
 
                         if (statement.executeUpdate() > 0) {
                             resultId = generatedUserId;
@@ -77,10 +79,15 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
                     professorToSearch.setPassword(resultSet.getString("PASSWORD"));
                     professorToSearch.setName(resultSet.getString("NOMBRE"));
                     professorToSearch.setLastName(resultSet.getString("APELLIDOS"));
+                    professorToSearch.setEmail(resultSet.getString("CORREO")); // Recuperamos Correo
                     professorToSearch.setStatus(resultSet.getString("ESTADO"));
                     professorToSearch.setGender(resultSet.getString("GENERO"));
 
-                    professorToSearch.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    professorToSearch.setStaffNumber(resultSet.getString("NUMERO_PERSONAL")); // Recuperamos No. Personal
+
+                    if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                        professorToSearch.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    }
 
                     if (resultSet.getTimestamp("FECHA_BAJA") != null) {
                         professorToSearch.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
@@ -102,10 +109,15 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
             professorRecovered.setPassword(resultSet.getString("PASSWORD"));
             professorRecovered.setName(resultSet.getString("NOMBRE"));
             professorRecovered.setLastName(resultSet.getString("APELLIDOS"));
+            professorRecovered.setEmail(resultSet.getString("CORREO"));
             professorRecovered.setStatus(resultSet.getString("ESTADO"));
             professorRecovered.setGender(resultSet.getString("GENERO"));
 
-            professorRecovered.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+            professorRecovered.setStaffNumber(resultSet.getString("NUMERO_PERSONAL")); // Recuperamos No. Personal
+
+            if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                professorRecovered.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+            }
             if (resultSet.getTimestamp("FECHA_BAJA") != null) {
                 professorRecovered.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
             }
@@ -123,10 +135,23 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
             connection.setAutoCommit(false);
 
             try {
-                isUpdated = userDAO.updateUser(professorToUpdate, connection);
+                boolean userUpdated = userDAO.updateUser(professorToUpdate, connection);
 
-                if (isUpdated) {
-                    connection.commit();
+                if (userUpdated) {
+                    try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PROFESSOR)) {
+                        statement.setString(1, professorToUpdate.getStaffNumber());
+                        statement.setInt(2, id);
+
+                        if (statement.executeUpdate() >= 0) {
+                            isUpdated = true;
+                        }
+                    }
+
+                    if (isUpdated) {
+                        connection.commit();
+                    } else {
+                        connection.rollback();
+                    }
                 } else {
                     connection.rollback();
                 }
