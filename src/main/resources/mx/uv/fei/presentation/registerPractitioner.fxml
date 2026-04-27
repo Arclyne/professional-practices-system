@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -8,7 +9,7 @@
 <?import mx.uv.fei.presentation.components.FormField?>
 <?import javafx.scene.control.Button?>
 
-<?import mx.uv.fei.presentation.components.FormCheckBox?>
+
 <?import javafx.scene.layout.HBox?>
 <AnchorPane prefHeight="600.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterPractitionerController">

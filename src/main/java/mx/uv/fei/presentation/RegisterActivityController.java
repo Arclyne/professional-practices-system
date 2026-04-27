@@ -9,14 +9,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
-import mx.uv.fei.domain.common.CommonControler;
-import mx.uv.fei.domain.manager.SceneManager;
+import mx.uv.fei.domain.exceptions.ManagerException;
+
 import java.net.URL;
 import java.sql.Date;
 import java.time.format.DateTimeParseException;
@@ -99,11 +98,9 @@ public class RegisterActivityController implements Initializable {
             }
 
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
-            CommonControler.showErrorAlert("Error de fecha",
-                    "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
-        } catch (DAOException databaseConnectionException) {
-            CommonControler.showErrorAlert("Fallo en la conexión",
-                    "No se pudo conectar con la base de datos, inténtelo más tarde.");
+            showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
+        } catch (ManagerException managerException) {
+            showErrorAlert("Fallo en el registro", managerException.getMessage());
         }
     }
 
