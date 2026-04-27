@@ -27,7 +27,7 @@ public class GuiSandboxTwo extends Application {
         ProjectManager sharedProjectManager = new ProjectManager(databaseConnection);
 
         FXMLLoader activityInterfaceLoader = new FXMLLoader(
-                getClass().getResource("/mx/uv/fei/presentation/activityForms.fxml"));
+                getClass().getResource("/mx/uv/fei/presentation/StartSeasonForms.fxml"));
 
         activityInterfaceLoader.setControllerFactory(controllerClassType -> {
             if (controllerClassType == RegisterActivityController.class) {
