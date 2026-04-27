@@ -4,7 +4,6 @@ import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.Project;
 
 import java.util.Map;
-import java.util.HashMap;
 
 public class CommonValidator {
 

@@ -5,16 +5,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionModel;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 public class FormComboBox extends VBox {
-    @FXML private Label label;
-    @FXML private ComboBox<String> comboBox;
+    @FXML
+    private Label label;
+    @FXML
+    private ComboBox<String> comboBox;
 
     public FormComboBox() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/mx/uv/fei/presentation/components/FormComboBox.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                getClass().getResource("/mx/uv/fei/presentation/components/FormComboBox.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
@@ -25,8 +27,13 @@ public class FormComboBox extends VBox {
         }
     }
 
-    public void setLabelText(String value) { label.setText(value); }
-    public String getLabelText() { return label.getText(); }
+    public void setLabelText(String value) {
+        label.setText(value);
+    }
+
+    public String getLabelText() {
+        return label.getText();
+    }
 
     public void setItems(ObservableList<String> items) {
         comboBox.setItems(items);
@@ -35,7 +42,6 @@ public class FormComboBox extends VBox {
     public String getValue() {
         return comboBox.getValue();
     }
-
 
     public void clearSelection() {
         if (comboBox != null) {

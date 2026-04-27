@@ -13,6 +13,7 @@ import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterPractitionerManager;
+import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.exceptions.ManagerExeption;
 import mx.uv.fei.domain.common.CommonControler;
 
@@ -84,9 +85,7 @@ public class RegisterPractitionerController implements Initializable {
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
         System.out.println("--- Operación Cancelada ---");
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        SceneManager.closeCurrentWindow(event);
     }
 
     private void clearForm() {

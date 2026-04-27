@@ -60,14 +60,14 @@ public class Activity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object object) {
+        if (this == object)
             return true;
 
-        if (o == null || getClass() != o.getClass())
+        if (object == null || getClass() != object.getClass())
             return false;
 
-        Activity that = (Activity) o;
+        Activity that = (Activity) object;
 
         return Objects.equals(name, that.getName()) &&
                 Objects.equals(manager, that.getManager());
