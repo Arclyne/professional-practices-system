@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,16 +14,23 @@ import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterPractitionerManager;
 import mx.uv.fei.domain.exceptions.ManagerExeption;
+import mx.uv.fei.domain.common.CommonControler;
 
 public class RegisterPractitionerController implements Initializable {
 
-    @FXML private FormField fieldMatricula;
-    @FXML private FormField fieldNombre;
-    @FXML private FormField fieldApellido;
-    @FXML private FormField fieldCorreo;
+    @FXML
+    private FormField fieldMatricula;
+    @FXML
+    private FormField fieldNombre;
+    @FXML
+    private FormField fieldApellido;
+    @FXML
+    private FormField fieldCorreo;
 
-    @FXML private FormComboBox comboBoxSexo;
-    @FXML private FormField fieldLengua;
+    @FXML
+    private FormComboBox comboBoxSexo;
+    @FXML
+    private FormField fieldLengua;
 
     private RegisterPractitionerManager manager;
 
@@ -35,20 +41,20 @@ public class RegisterPractitionerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
-                "Masculino", "Femenino", "Otro"
-        );
+                "Masculino", "Femenino", "Otro");
         comboBoxSexo.setItems(opcionesSexo);
     }
 
     @FXML
-    private void handleRegisterButtonAction(ActionEvent event) {
+    private void handleActionRegisterButton(ActionEvent event) {
         if (manager == null) {
-            showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
+            CommonControler.showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
             return;
         }
 
         if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-            showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            CommonControler.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.",
+                    AlertType.WARNING);
             return;
         }
 
@@ -64,38 +70,35 @@ public class RegisterPractitionerController implements Initializable {
         try {
             String generatedPassword = manager.registerNewPractitioner(newPractitioner);
 
-            showAlert("Registro Exitoso",
+            CommonControler.showAlert("Registro Exitoso",
                     "El practicante fue registrado correctamente.\nContraseña temporal generada: " + generatedPassword,
                     AlertType.INFORMATION);
 
             clearForm();
 
         } catch (ManagerExeption e) {
-            showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleCancelButtonAction(ActionEvent event) {
+    private void handleActionCancelButton(ActionEvent event) {
         System.out.println("--- Operación Cancelada ---");
         javafx.scene.Node source = (javafx.scene.Node) event.getSource();
         javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
         stage.close();
     }
 
-    private void showAlert(String title, String message, AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void clearForm() {
-        if (fieldMatricula != null) fieldMatricula.setText("");
-        if (fieldNombre != null) fieldNombre.setText("");
-        if (fieldApellido != null) fieldApellido.setText("");
-        if (fieldCorreo != null) fieldCorreo.setText("");
-        if (fieldLengua != null) fieldLengua.setText("");
+        if (fieldMatricula != null)
+            fieldMatricula.setText("");
+        if (fieldNombre != null)
+            fieldNombre.setText("");
+        if (fieldApellido != null)
+            fieldApellido.setText("");
+        if (fieldCorreo != null)
+            fieldCorreo.setText("");
+        if (fieldLengua != null)
+            fieldLengua.setText("");
     }
 }

@@ -3,6 +3,9 @@ package mx.uv.fei.domain.common;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.Project;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class CommonValidator {
 
     public static void validateActivityData(Activity activityToValidate) {
@@ -36,4 +39,17 @@ public class CommonValidator {
             }
         }
     }
+
+    public static void validateNoEmptyString(String stringToValidate, String messeng) {
+        if (stringToValidate == null || stringToValidate.trim().isEmpty()) {
+            throw new IllegalArgumentException(messeng);
+        }
+    }
+
+    public static void validateNoEmptyListString(Map<String, String> listToCheck) {
+        for (Map.Entry<String, String> stringToCheck : listToCheck.entrySet()) {
+            validateNoEmptyString(stringToCheck.getKey(), stringToCheck.getValue());
+        }
+    }
+
 }
