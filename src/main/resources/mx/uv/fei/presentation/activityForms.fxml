@@ -11,70 +11,61 @@
 <?import mx.uv.fei.presentation.components.FormComboBox?>
 <?import mx.uv.fei.presentation.components.FormField?>
 
-<AnchorPane prefHeight="750.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterActivityController">
-   <children>
-      <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <padding>
-            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-         </padding>
+<AnchorPane prefHeight="750.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterActivityController">
+   <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+         AnchorPane.topAnchor="0.0">
+      <padding>
+         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+      </padding>
 
-         <Label styleClass="form-title" text="Registro de Actividad" />
+      <Label styleClass="form-title" text="Registro de Actividad"/>
 
-         <FormField fx:id="fieldActivityName" labelText="Nombre:" promptText="Nombre de la actividad" />
+      <FormField fx:id="fieldActivityName" labelText="Nombre:" promptText="Nombre de la actividad"/>
 
-         <FormComboBox fx:id="comboBoxOrganization" labelText="Organización:" />
+      <FormComboBox fx:id="comboBoxOrganization" labelText="Organización:"/>
+      <FormComboBox fx:id="comboBoxManager" labelText="Encargado:"/>
 
-         <FormComboBox fx:id="comboBoxManager" labelText="Encargado:" />
-
-         <VBox spacing="5.0">
-            <children>
-               <Label text="Inicio:" />
-               <HBox alignment="CENTER_LEFT" spacing="10.0">
-                  <children>
-                     <TextField fx:id="textFieldStartDay" prefWidth="60.0" promptText="DD" />
-                     <Label text="/" />
-                     <TextField fx:id="textFieldStartMonth" prefWidth="60.0" promptText="MM" />
-                     <Label text="/" />
-                     <TextField fx:id="textFieldStartYear" prefWidth="80.0" promptText="AAAA" />
-                  </children>
-               </HBox>
-            </children>
-         </VBox>
-
-         <VBox spacing="5.0">
-            <children>
-               <Label text="Termina:" />
-               <HBox alignment="CENTER_LEFT" spacing="10.0">
-                  <children>
-                     <TextField fx:id="textFieldDeadlineDay" prefWidth="60.0" promptText="DD" />
-                     <Label text="/" />
-                     <TextField fx:id="textFieldDeadlineMonth" prefWidth="60.0" promptText="MM" />
-                     <Label text="/" />
-                     <TextField fx:id="textFieldDeadlineYear" prefWidth="80.0" promptText="AAAA" />
-                  </children>
-               </HBox>
-            </children>
-         </VBox>
-
-         <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-            <children>
-               <Label text="Descripción:" />
-               <TextArea fx:id="textAreaDescription" prefHeight="100.0" wrapText="true" />
-            </children>
-         </VBox>
-
-         <Button fx:id="buttonSave" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction" styleClass="primary-button" text="Guardar">
-            <VBox.margin>
-               <Insets top="10.0" />
-            </VBox.margin>
-         </Button>
-
-         <Button fx:id="buttonCancel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
-            <VBox.margin>
-               <Insets top="5.0" />
-            </VBox.margin>
-         </Button>
-
+      <VBox spacing="5.0">
+         <Label text="Inicio:"/>
+         <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="textFieldStartDay" prefWidth="60.0" promptText="DD"/>
+            <Label text="/"/>
+            <TextField fx:id="textFieldStartMonth" prefWidth="60.0" promptText="MM"/>
+            <Label text="/"/>
+            <TextField fx:id="textFieldStartYear" prefWidth="80.0" promptText="AAAA"/>
+         </HBox>
       </VBox>
-   </children>
+
+      <VBox spacing="5.0">
+         <Label text="Termina:"/>
+         <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="textFieldDeadlineDay" prefWidth="60.0" promptText="DD"/>
+            <Label text="/"/>
+            <TextField fx:id="textFieldDeadlineMonth" prefWidth="60.0" promptText="MM"/>
+            <Label text="/"/>
+            <TextField fx:id="textFieldDeadlineYear" prefWidth="80.0" promptText="AAAA"/>
+         </HBox>
+      </VBox>
+
+      <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+         <Label text="Descripción:"/>
+         <TextArea fx:id="textAreaDescription" prefHeight="100.0" wrapText="true"/>
+      </VBox>
+
+      <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveAction"
+              styleClass="primary-button" text="Guardar">
+         <VBox.margin>
+            <Insets top="10.0"/>
+         </VBox.margin>
+      </Button>
+
+      <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+              onAction="#handleCancelAction" styleClass="secondary-button" text="Cancelar">
+         <VBox.margin>
+            <Insets top="5.0"/>
+         </VBox.margin>
+      </Button>
+
+   </VBox>
 </AnchorPane>

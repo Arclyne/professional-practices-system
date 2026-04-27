@@ -14,13 +14,14 @@ import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterProfessorManager;
-import mx.uv.fei.domain.exceptions.ManagerExeption;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class RegisterProfessorController implements Initializable {
 
     @FXML private FormField fieldNombre;
     @FXML private FormField fieldApellido;
     @FXML private FormField fieldCorreo;
+    @FXML private FormField fieldNoPersonal;
     @FXML private FormComboBox comboBoxSexo;
 
     private RegisterProfessorManager manager;
@@ -37,22 +38,13 @@ public class RegisterProfessorController implements Initializable {
         comboBoxSexo.setItems(opcionesSexo);
     }
 
-
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
-        if (manager == null) {
-            showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
-            return;
-        }
-
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-            showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios del docente.", AlertType.WARNING);
-            return;
-        }
-
         Professor newProfessor = new Professor();
         newProfessor.setName(fieldNombre.getText());
         newProfessor.setLastName(fieldApellido.getText());
+        newProfessor.setEmail(fieldCorreo.getText());
+        newProfessor.setStaffNumber(fieldNoPersonal.getText());
         newProfessor.setGender(comboBoxSexo.getValue());
 
         try {
@@ -63,8 +55,7 @@ public class RegisterProfessorController implements Initializable {
                     AlertType.INFORMATION);
 
             clearForm();
-
-        } catch (ManagerExeption e) {
+        } catch (ManagerException e) {
             showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
@@ -88,6 +79,7 @@ public class RegisterProfessorController implements Initializable {
         if (fieldNombre != null) fieldNombre.setText("");
         if (fieldApellido != null) fieldApellido.setText("");
         if (fieldCorreo != null) fieldCorreo.setText("");
+        if (fieldNoPersonal != null) fieldNoPersonal.setText("");
         if (comboBoxSexo != null) comboBoxSexo.clearSelection();
     }
 }
