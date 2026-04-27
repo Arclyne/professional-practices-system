@@ -12,12 +12,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
+import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.net.URL;
 import java.sql.Date;
@@ -92,8 +92,8 @@ public class RegisterActivityController implements Initializable {
 
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
             showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
-        } catch (DAOException databaseConnectionException) {
-            showErrorAlert("Fallo en la conexión", "No se pudo conectar con la base de datos, inténtelo más tarde.");
+        } catch (ManagerException managerException) {
+            showErrorAlert("Fallo en el registro", managerException.getMessage());
         }
     }
 
