@@ -27,6 +27,8 @@
 
         <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
 
+        <FormField fx:id="fieldNoPersonal" labelText="Número de Personal" promptText="Ingrese el número de personal"/>
+
         <FormComboBox fx:id="comboBoxSexo" labelText="Sexo / Género"/>
 
         <VBox VBox.vgrow="ALWAYS"/>

@@ -10,6 +10,7 @@ public class User {
     private String lastName;
     private String status;
     private String gender;
+    private String email;
     private LocalDateTime registrationDate;
     private LocalDateTime unsubscriptionDate;
 
@@ -63,6 +64,10 @@ public class User {
     public void setGender(String gender) {
         this.gender = gender;
     }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getEmail() { return this.email; }
 
     public LocalDateTime getRegistrationDate() {
         return registrationDate;

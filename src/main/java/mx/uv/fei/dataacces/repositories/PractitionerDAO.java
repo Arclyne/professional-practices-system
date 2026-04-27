@@ -15,11 +15,10 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO PRACTICANTE (ID_PRACTICANTE, LENGUA_INDIGENA, CALIFICACION) VALUES (?, ?, ?)";
-
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO WHERE P.ID_PRACTICANTE = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO";
-    private static final String SQL_UPDATE_PRACTITIONER = "UPDATE PRACTICANTE SET LENGUA_INDIGENA = ?, CALIFICACION = ? WHERE ID_PRACTICANTE = ?";
+    private static final String SQL_INSERT = "INSERT INTO PRACTICANTE (ID_PRACTICANTE, MATRICULA, LENGUA_INDIGENA, CALIFICACION) VALUES (?, ?, ?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, P.MATRICULA, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO WHERE P.ID_PRACTICANTE = ?";
+    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, P.MATRICULA, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO";
+    private static final String SQL_UPDATE_PRACTITIONER = "UPDATE PRACTICANTE SET MATRICULA = ?, LENGUA_INDIGENA = ?, CALIFICACION = ? WHERE ID_PRACTICANTE = ?";
 
     public PractitionerDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
         super(databaseConnection);
@@ -39,12 +38,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                 if (generatedUserId > 0) {
                     try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
                         statement.setInt(1, generatedUserId);
-                        statement.setString(2, practitioner.getIndigenousLanguage());
-                        statement.setDouble(3, practitioner.getGrade());
+                        statement.setString(2, practitioner.getEnrollment()); // Matrícula
+                        statement.setString(3, practitioner.getIndigenousLanguage());
+                        statement.setDouble(4, practitioner.getGrade());
 
-                        int affectedRows = statement.executeUpdate();
-
-                        if (affectedRows > 0) {
+                        if (statement.executeUpdate() > 0) {
                             resultId = generatedUserId;
                         }
                     }
@@ -83,9 +81,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     practitionerToSearch.setPassword(resultSet.getString("PASSWORD"));
                     practitionerToSearch.setName(resultSet.getString("NOMBRE"));
                     practitionerToSearch.setLastName(resultSet.getString("APELLIDOS"));
+                    practitionerToSearch.setEmail(resultSet.getString("CORREO")); // Correo
                     practitionerToSearch.setStatus(resultSet.getString("ESTADO"));
                     practitionerToSearch.setGender(resultSet.getString("GENERO"));
 
+                    practitionerToSearch.setEnrollment(resultSet.getString("MATRICULA")); // Matrícula
                     practitionerToSearch.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
                     practitionerToSearch.setGrade(resultSet.getDouble("CALIFICACION"));
                 }
@@ -105,9 +105,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             practitionerRecovered.setPassword(resultSet.getString("PASSWORD"));
             practitionerRecovered.setName(resultSet.getString("NOMBRE"));
             practitionerRecovered.setLastName(resultSet.getString("APELLIDOS"));
+            practitionerRecovered.setEmail(resultSet.getString("CORREO")); // Correo
             practitionerRecovered.setStatus(resultSet.getString("ESTADO"));
             practitionerRecovered.setGender(resultSet.getString("GENERO"));
 
+            practitionerRecovered.setEnrollment(resultSet.getString("MATRICULA")); // Matrícula
             practitionerRecovered.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
             practitionerRecovered.setGrade(resultSet.getDouble("CALIFICACION"));
 
@@ -118,7 +120,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     @Override
     public boolean updatePractitioner(Practitioner practitionerToUpdate, int id) throws DAOException {
         boolean isUpdated = false;
-
         practitionerToUpdate.setId(id);
 
         try (Connection connection = databaseConnection.getConnection()) {
@@ -129,9 +130,10 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
                 if (userUpdated) {
                     try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
-                        statement.setString(1, practitionerToUpdate.getIndigenousLanguage());
-                        statement.setDouble(2, practitionerToUpdate.getGrade());
-                        statement.setInt(3, id);
+                        statement.setString(1, practitionerToUpdate.getEnrollment());
+                        statement.setString(2, practitionerToUpdate.getIndigenousLanguage());
+                        statement.setDouble(3, practitionerToUpdate.getGrade());
+                        statement.setInt(4, id);
 
                         if (statement.executeUpdate() > 0) {
                             isUpdated = true;
