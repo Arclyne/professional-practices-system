@@ -13,6 +13,7 @@ public class User {
     private String email;
     private LocalDateTime registrationDate;
     private LocalDateTime unsubscriptionDate;
+    private String role;
 
     public User() {
     }
@@ -85,12 +86,20 @@ public class User {
         this.unsubscriptionDate = unsubscriptionDate;
     }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
         }
-    
+
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
@@ -98,6 +107,6 @@ public class User {
         User that = (User) object;
 
         return Objects.equals(this.name, that.name) &&
-               Objects.equals(this.lastName, that.lastName);
+                Objects.equals(this.lastName, that.lastName);
     }
 }

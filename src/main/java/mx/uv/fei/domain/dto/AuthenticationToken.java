@@ -37,14 +37,14 @@ public class AuthenticationToken {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(Object object) {
+        if (this == object)
             return true;
 
-        if (o == null || getClass() != o.getClass())
+        if (object == null || getClass() != object.getClass())
             return false;
 
-        AuthenticationToken that = (AuthenticationToken) o;
+        AuthenticationToken that = (AuthenticationToken) object;
 
         return valueToken == that.getValueToken() &&
                 UserID == that.getUserId();

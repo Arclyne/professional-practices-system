@@ -37,7 +37,7 @@ public class CommonValidator {
         validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
         validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
         validateString(userToValidate.getGender(), "El género del " + rol + " es obligatorio.");
-        validateString(userToValidate.getEmail(),"El Correo del " + rol + "es obligatorio");
+        validateString(userToValidate.getEmail(), "El Correo del " + rol + "es obligatorio");
     }
 
     private static void validateString(String value, String errorMessage) throws ManagerException {
