@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import mx.uv.fei.config.DatabasePropeties;
 import mx.uv.fei.config.DataconnectionConfig;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.dto.User;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -17,13 +18,14 @@ public class SceneManager {
 
     private final IDatabaseConnection databaseConnection;
     private final Stage applicationPrimaryStage;
+    private final User userInSession;
 
     public SceneManager(Stage applicationPrimaryStage) {
         this.applicationPrimaryStage = applicationPrimaryStage;
 
         DatabasePropeties databaseProperties = new DatabasePropeties();
         this.databaseConnection = new DataconnectionConfig(databaseProperties, "SHH").databaseConnection();
-
+        this.userInSession = new User();
         this.applicationPrimaryStage.setUserData(this);
     }
 
@@ -48,11 +50,21 @@ public class SceneManager {
             for (Constructor<?> specificConstructor : availableConstructors) {
                 if (specificConstructor.getParameterCount() == 1) {
                     Class<?> managerClassType = specificConstructor.getParameterTypes()[0];
-                    Constructor<?> managerConstructor = managerClassType
-                            .getDeclaredConstructor(IDatabaseConnection.class);
-                    Object managerInstance = managerConstructor.newInstance(databaseConnection);
 
-                    return specificConstructor.newInstance(managerInstance);
+                    try {
+                        Constructor<?> managerConstructor = managerClassType
+                                .getDeclaredConstructor(IDatabaseConnection.class, User.class);
+                        Object managerInstance = managerConstructor.newInstance(databaseConnection, userInSession);
+
+                        return specificConstructor.newInstance(managerInstance);
+
+                    } catch (NoSuchMethodException constructorNotFoundException) {
+                        Constructor<?> managerConstructor = managerClassType
+                                .getDeclaredConstructor(IDatabaseConnection.class);
+                        Object managerInstance = managerConstructor.newInstance(databaseConnection);
+
+                        return specificConstructor.newInstance(managerInstance);
+                    }
                 }
             }
 

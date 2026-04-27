@@ -1,10 +1,7 @@
 package mx.uv.fei.domain.common;
 
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.stage.Stage;
 
 public class CommonControler {
 
