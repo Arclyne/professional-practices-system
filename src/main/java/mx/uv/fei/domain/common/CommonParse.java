@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-
 public class CommonParse {
 
     public static Date parseDate(String dayString, String monthString, String yearString)
@@ -21,5 +20,4 @@ public class CommonParse {
         LocalDate convertedLocalDate = LocalDate.of(parsedYear, parsedMonth, parsedDay);
         return Date.valueOf(convertedLocalDate);
     }
-
-
+}
