@@ -53,12 +53,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             try (
                     ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
-                    activityToSearch.setName(resultSet.getString("NOMBRE"));
-                    activityToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
-                    activityToSearch.setEndDate(resultSet.getDate("FECHA_END"));
-                    activityToSearch.setDescription(resultSet.getString("DESCRIPCION"));
-                    activityToSearch.setManager(resultSet.getString("ENCARGADO"));
+                    mapActivity(activityToSearch, resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -67,18 +62,22 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         return activityToSearch;
     }
 
+    private void mapActivity(Activity activityToSearch, ResultSet resultSet) throws SQLException {
+        activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
+        activityToSearch.setName(resultSet.getString("NOMBRE"));
+        activityToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
+        activityToSearch.setEndDate(resultSet.getDate("FECHA_END"));
+        activityToSearch.setDescription(resultSet.getString("DESCRIPCION"));
+        activityToSearch.setManager(resultSet.getString("ENCARGADO"));
+    }
+
     @Override
     public List<Activity> getAllActivity() throws DAOException {
 
         return recoverALL(SQL_SELECTALL,
                 resultSet -> {
                     Activity activityRecovered = new Activity();
-                    activityRecovered.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
-                    activityRecovered.setName(resultSet.getString("NOMBRE"));
-                    activityRecovered.setStartDate(resultSet.getDate("FECHA_INICIO"));
-                    activityRecovered.setEndDate(resultSet.getDate("FECHA_END"));
-                    activityRecovered.setDescription(resultSet.getString("DESCRIPCION"));
-                    activityRecovered.setManager(resultSet.getString("ENCARGADO"));
+                    mapActivity(activityRecovered, resultSet);
 
                     return activityRecovered;
                 });
