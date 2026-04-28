@@ -1,8 +1,10 @@
 package mx.uv.fei.config;
 
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.manager.RegisterAdminManager;
 import mx.uv.fei.presentation.MainController;
+import mx.uv.fei.domain.statemachine.Store;
 
 import java.lang.reflect.Constructor;
 
@@ -25,23 +27,38 @@ public class DependencyInjector {
             for (Constructor<?> constructor : constructors) {
 
                 if (constructor.getParameterCount() == 1) {
-
                     Class<?> managerClass = constructor.getParameterTypes()[0];
-                    Constructor<?> managerConstructor = managerClass.getDeclaredConstructor(IDatabaseConnection.class);
-                    Object managerInstance = managerConstructor.newInstance(this.dbConnection);
+                    Constructor<?>[] managerConstructors = managerClass.getConstructors();
 
-                    return constructor.newInstance(managerInstance);
+                    for (Constructor<?> managerConstructor : managerConstructors) {
+
+                        if (managerConstructor.getParameterCount() == 1
+                                && managerConstructor.getParameterTypes()[0] == IDatabaseConnection.class) {
+                            Object managerInstance = managerConstructor.newInstance(this.dbConnection);
+                            return constructor.newInstance(managerInstance);
+                        }
+
+                        else if (managerConstructor.getParameterCount() == 2 &&
+                                managerConstructor.getParameterTypes()[0] == IDatabaseConnection.class &&
+                                managerConstructor.getParameterTypes()[1] == User.class) {
+
+                            User currentUser = Store.getInstance().getState().authState().currentUser();
+
+                            Object managerInstance = managerConstructor.newInstance(this.dbConnection, currentUser);
+                            return constructor.newInstance(managerInstance);
+                        }
+                    }
                 }
             }
 
             return controllerClass.getDeclaredConstructor().newInstance();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error fatal de Inyección de Dependencias al construir: " + controllerClass.getName(), e);
+            throw new RuntimeException(
+                    "Error fatal de Inyección de Dependencias al construir: " + controllerClass.getName(), e);
         }
     }
 
-    // Método auxiliar mantenido para la carga inicial del MainController
     public RegisterAdminManager getRegisterAdminManager() {
         return new RegisterAdminManager(this.dbConnection);
     }

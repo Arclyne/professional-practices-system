@@ -4,5 +4,7 @@ public enum AppSection {
     SPLASH_SCREEN,
     ADMIN_REGISTRATION,
     LOGIN,
-    DASHBOARD
+    DASHBOARD,
+    PASSWORD_RESET,
+    TOKEN_VERIFICATION
 }

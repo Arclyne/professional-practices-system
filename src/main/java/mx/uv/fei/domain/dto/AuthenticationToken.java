@@ -6,7 +6,7 @@ import java.util.Objects;
 public class AuthenticationToken {
     private int valueToken;
     private LocalDateTime timeCreation;
-    private int UserID;
+    private String userName;
 
     public AuthenticationToken() {
         this.timeCreation = LocalDateTime.now();
@@ -16,24 +16,24 @@ public class AuthenticationToken {
         return valueToken;
     }
 
-    public void setTimeCreation(LocalDateTime time) {
-        this.timeCreation = time;
+    public void setValueToken(int value) {
+        this.valueToken = value;
     }
 
     public LocalDateTime getTimeCreation() {
         return timeCreation;
     }
 
-    public void setValueToken(int value) {
-        this.valueToken = value;
+    public void setTimeCreation(LocalDateTime time) {
+        this.timeCreation = time;
     }
 
-    public void setUserId(int UserID) {
-        this.UserID = UserID;
+    public String getUserName() {
+        return userName;
     }
 
-    public int getUserId() {
-        return this.UserID;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Override
@@ -47,12 +47,11 @@ public class AuthenticationToken {
         AuthenticationToken that = (AuthenticationToken) object;
 
         return valueToken == that.getValueToken() &&
-                UserID == that.getUserId();
+                Objects.equals(userName, that.getUserName());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(valueToken, UserID);
+        return Objects.hash(valueToken, userName);
     }
 }

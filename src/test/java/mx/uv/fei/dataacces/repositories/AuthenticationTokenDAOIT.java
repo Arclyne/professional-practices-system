@@ -32,7 +32,7 @@ public class AuthenticationTokenDAOIT {
         TestDatabaseSetup.initialize(dbConnection);
         tokenDAO = new AuthenticationTokenDAO(dbConnection);
         expectedToken = new AuthenticationToken();
-        expectedToken.setUserId(1);
+        expectedToken.setUserName("Test");
         expectedToken.setValueToken(123456);
     }
 
@@ -41,7 +41,7 @@ public class AuthenticationTokenDAOIT {
 
         AuthenticationToken token = new AuthenticationToken();
         token.setValueToken(12345);
-        token.setUserId(1);
+        token.setUserName("test");
         token.setTimeCreation(LocalDateTime.now());
 
         boolean result = tokenDAO.insertToken(token);
