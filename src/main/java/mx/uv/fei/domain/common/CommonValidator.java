@@ -25,7 +25,7 @@ public class CommonValidator {
 
     public static void validateProfessorData(Professor professorToValidate) throws ManagerException {
         validateUser(professorToValidate, "profesor");
-        validateString(professorToValidate.getStaffNumber(), "El No. personal es obligatorio");
+        validateString(professorToValidate.getUserName(), "El No. personal es obligatorio");
     }
 
     public static void validatePractitioner(Practitioner practitionerToValidate) throws ManagerException {

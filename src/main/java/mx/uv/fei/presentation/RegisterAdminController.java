@@ -74,7 +74,7 @@ public class RegisterAdminController implements Initializable {
         newAdmin.setName(fieldNombre.getText());
         newAdmin.setLastName(fieldApellido.getText());
         newAdmin.setEmail(fieldCorreo.getText());
-        newAdmin.setStaffNumber(fieldNoPersonal.getText());
+        newAdmin.setUserName(fieldNoPersonal.getText());
         newAdmin.setPassword(fieldPassword.getText());
         newAdmin.setGender((String) comboBoxSexo.getValue());
 
