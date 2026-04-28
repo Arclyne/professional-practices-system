@@ -2,11 +2,11 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-public class Professor extends User {
+public class Administrator extends User {
 
     private String staffNumber;
     
-    public Professor() {
+    public Administrator() {
         super();
     }
 
@@ -20,7 +20,7 @@ public class Professor extends User {
             return false;
         }
 
-        Professor that = (Professor) object;
+        Administrator that = (Administrator) object;
 
         return Objects.equals(this.getName(), that.getName()) &&
                Objects.equals(this.getLastName(), that.getLastName());
