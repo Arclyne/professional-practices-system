@@ -13,13 +13,13 @@ import mx.uv.fei.domain.dto.User;
 
 public class UserDAO extends BaseDAO implements IUserDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO USUARIO (USER, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_INSERT = "INSERT INTO USUARIO (NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'No Activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
-    private static final String SQL_UPDATE = "UPDATE USUARIO SET USER = ?, PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, NOMBRE_ROL = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
-    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, USER, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE USER = ?";
+    private static final String SQL_UPDATE = "UPDATE USUARIO SET NOMBRE_USUARIO = ?, PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, NOMBRE_ROL = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
+    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE NOMBRE_USUARIO = ?";
 
-    private static final String SQL_VERIFY_CREDENTIALS = "SELECT COUNT(*) FROM USUARIO WHERE USER = ? AND PASSWORD = ?";
-    private static final String SQL_GET_USER_ROLE = "SELECT NOMBRE_ROL FROM USUARIO WHERE USER = ?";
+    private static final String SQL_VERIFY_CREDENTIALS = "SELECT COUNT(*) FROM USUARIO WHERE NOMBRE_USUARIO = ? AND PASSWORD = ?";
+    private static final String SQL_GET_USER_ROLE = "SELECT NOMBRE_ROL FROM USUARIO WHERE NOMBRE_USUARIO = ?";
 
     public UserDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);

@@ -10,7 +10,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryApplicationStage) throws Exception {
         SceneManager applicationSceneManager = new SceneManager(primaryApplicationStage);
-        applicationSceneManager.changeApplicationScene("/mx/uv/fei/presentation/StartSession.fxml",
+        applicationSceneManager.changeApplicationScene("/mx/uv/fei/presentation/PasswordReset.fxml",
                 "Iniciar Sesión");
     }
 

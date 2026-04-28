@@ -10,7 +10,6 @@ import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.manager.TokenManager;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.dto.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,7 +17,6 @@ import java.util.ResourceBundle;
 public class TokenVerificationController implements Initializable {
 
     private final TokenManager tokenManager;
-    private final User userInSession;
 
     @FXML
     private TextField textFieldToken;
@@ -30,9 +28,9 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private Button buttonSend;
 
-    public TokenVerificationController(TokenManager tokenManager, User userInSession) {
+    // ¡Regla cumplida! Solo 1 parámetro en el constructor
+    public TokenVerificationController(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
-        this.userInSession = userInSession;
     }
 
     @Override
@@ -42,7 +40,7 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private void handleActionVerifyButton(ActionEvent actionEvent) {
         try {
-            tokenManager.verifyToken(textFieldToken.getText(), userInSession.getId());
+            tokenManager.verifyToken(textFieldToken.getText());
 
             CommonControler.showSuccessAlert("Éxito", "Autenticación completada correctamente.");
             SceneManager.closeCurrentWindow(actionEvent);
@@ -56,10 +54,10 @@ public class TokenVerificationController implements Initializable {
     private void handleActionSendButton(ActionEvent actionEvent) {
         try {
             tokenManager.generateToken();
-
-            CommonControler.showSuccessAlert("Enviado", "Se ha enviado un nuevo código.");
+            CommonControler.showSuccessAlert("Enviado",
+                    "Se ha generado un nuevo código (por ahora no se envía al correo).");
         } catch (Exception exception) {
-            CommonControler.showErrorAlert("Error", "No se pudo enviar el token.");
+            CommonControler.showErrorAlert("Error", "No se pudo generar el token.");
         }
     }
 

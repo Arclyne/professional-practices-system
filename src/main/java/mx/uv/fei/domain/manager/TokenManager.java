@@ -5,6 +5,8 @@ import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.AuthenticationTokenDAO;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.dto.AuthenticationToken;
+import mx.uv.fei.domain.dto.User;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -13,17 +15,30 @@ import java.time.temporal.ChronoUnit;
 public class TokenManager {
 
     private final IAuthenticationToken tokenDAO;
+    private final User userInSession;
 
-    public TokenManager(IDatabaseConnection databaseConnection) {
+    public TokenManager(IDatabaseConnection databaseConnection, User userInSession) {
         this.tokenDAO = new AuthenticationTokenDAO(databaseConnection);
+        this.userInSession = userInSession;
     }
 
-    public int generateToken() {
+    public void generateToken() throws ManagerException {
         SecureRandom secureRandom = new SecureRandom();
-        return 100000 + secureRandom.nextInt(900000);
+        int newToken = 100000 + secureRandom.nextInt(900000);
+        AuthenticationToken token = new AuthenticationToken();
+        token.setUserName("Test");
+        token.setValueToken(newToken);
+        token.setTimeCreation(LocalDateTime.now());
+        try {
+            tokenDAO.insertToken(token);
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
+        }
+
     }
 
-    public void verifyToken(String tokenInput, int userId) throws ManagerException {
+    public void verifyToken(String tokenInput) throws ManagerException {
         if (tokenInput == null || tokenInput.trim().isEmpty()) {
             throw new ManagerException("Por favor, ingrese el código de 6 dígitos.");
         }
@@ -36,7 +51,7 @@ public class TokenManager {
         }
 
         try {
-            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken, userId);
+            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken, "Test");
 
             if (tokenCreationTime == null) {
                 throw new ManagerException("El token ingresado es incorrecto.");
