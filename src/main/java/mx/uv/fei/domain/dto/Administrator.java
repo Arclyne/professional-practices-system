@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Professor extends User {
 
     private String staffNumber;
-
+    
     public Professor() {
         super();
     }
@@ -15,7 +15,7 @@ public class Professor extends User {
         if (this == object) {
             return true;
         }
-
+    
         if (object == null || getClass() != object.getClass()){
             return false;
         }
@@ -23,7 +23,7 @@ public class Professor extends User {
         Professor that = (Professor) object;
 
         return Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getLastName(), that.getLastName());
+               Objects.equals(this.getLastName(), that.getLastName());
     }
 
     public void setStaffNumber(String staffNumber) {
