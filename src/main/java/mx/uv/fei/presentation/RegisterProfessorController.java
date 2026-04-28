@@ -60,7 +60,7 @@ public class RegisterProfessorController implements Initializable {
         newProfessor.setName(fieldNombre.getText());
         newProfessor.setLastName(fieldApellido.getText());
         newProfessor.setEmail(fieldCorreo.getText());
-        newProfessor.setStaffNumber(fieldNoPersonal.getText());
+        newProfessor.setUserName(fieldNoPersonal.getText());
         newProfessor.setGender(comboBoxSexo.getValue());
 
         try {
