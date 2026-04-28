@@ -3,8 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.util.Objects;
 
 public class Administrator extends User {
-
-    private String staffNumber;
     
     public Administrator() {
         super();
@@ -24,13 +22,5 @@ public class Administrator extends User {
 
         return Objects.equals(this.getName(), that.getName()) &&
                Objects.equals(this.getLastName(), that.getLastName());
-    }
-
-    public void setStaffNumber(String staffNumber) {
-        this.staffNumber = staffNumber;
-    }
-
-    public String getStaffNumber() {
-        return this.staffNumber;
     }
 }

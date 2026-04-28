@@ -30,7 +30,9 @@ public class RegisterAdminManager {
     }
 
     public void registerInitialAdmin(Administrator administrator) throws ManagerException {
-        administrator.setStatus("activo");
+        administrator.setStatus("Activo");
+        administrator.setRole("Administrador");
+
         this.validateAdminBusinessRules(administrator);
 
         try {
@@ -48,6 +50,10 @@ public class RegisterAdminManager {
     }
 
     private void validateAdminBusinessRules(Administrator admin) throws ManagerException {
+        if (admin.getUserName() == null || admin.getUserName().trim().isEmpty()) {
+            throw new ManagerException("El nombre de usuario/identificador es obligatorio.");
+        }
+
         if (admin.getPassword() == null || admin.getPassword().length() < 8) {
             throw new ManagerException("Por normativas de seguridad, la contraseña debe tener al menos 8 caracteres.");
         }
@@ -56,9 +62,8 @@ public class RegisterAdminManager {
         if (!Pattern.compile(emailRegex).matcher(admin.getEmail()).matches()) {
             throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
         }
-
-        if (!admin.getStaffNumber().matches("\\d+")) {
-            throw new ManagerException("El número de personal debe contener únicamente dígitos numéricos.");
+        if (!admin.getUserName().matches("\\d+")) {
+            throw new ManagerException("El identificador debe contener únicamente dígitos numéricos.");
         }
     }
 }

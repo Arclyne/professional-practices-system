@@ -47,8 +47,10 @@ public class Store {
 
         this.state = rootReducer.reduce(this.state, action);
 
+        System.out.println(this.state);
+
         for (BiConsumer<RootState, RootState> listener : listeners) {
-            listener.accept(this.state, previousState);
+            listener.accept(previousState, this.state);
         }
     }
 
