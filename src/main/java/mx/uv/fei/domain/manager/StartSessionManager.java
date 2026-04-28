@@ -53,7 +53,6 @@ public class StartSessionManager {
                 throw new ManagerException("Usuario o Contraseña no valida.");
             }
         } catch (DAOException e) {
-            e.printStackTrace();
             throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
         }
     }
