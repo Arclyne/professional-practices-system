@@ -2,6 +2,7 @@ module mx.uv.fei {
     requires javafx.controls;
     requires javafx.fxml;
     requires transitive java.sql;
+    requires java.naming;
 
     opens mx.uv.fei to spring.core, spring.beans, spring.context;
     opens mx.uv.fei.config to spring.core, spring.beans, spring.context, spring.boot;
