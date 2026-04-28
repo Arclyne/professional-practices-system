@@ -2,6 +2,7 @@ package mx.uv.fei.dataacces.repositories;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -11,12 +12,17 @@ import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
 
 public class UserDAO extends BaseDAO implements IUserDAO {
-    private static final String SQL_INSERT = "INSERT INTO USUARIO (PASSWORD, NOMBRE, APELLIDOS, CORREO, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'no activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
-    private static final String SQL_UPDATE = "UPDATE USUARIO SET PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
 
-    public UserDAO(IDatabaseConnection dbConnection) {
-        super(dbConnection);
+    private static final String SQL_INSERT = "INSERT INTO USUARIO (USER, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'No Activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
+    private static final String SQL_UPDATE = "UPDATE USUARIO SET USER = ?, PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, NOMBRE_ROL = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
+    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, USER, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE USER = ?";
+
+    private static final String SQL_VERIFY_CREDENTIALS = "SELECT COUNT(*) FROM USUARIO WHERE USER = ? AND PASSWORD = ?";
+    private static final String SQL_GET_USER_ROLE = "SELECT NOMBRE_ROL FROM USUARIO WHERE USER = ?";
+
+    public UserDAO(IDatabaseConnection databaseConnection) {
+        super(databaseConnection);
     }
 
     @Override
@@ -25,22 +31,24 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
         try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT,
                 Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, user.getPassword());
-            statement.setString(2, user.getName());
-            statement.setString(3, user.getLastName());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getStatus());
-            statement.setString(6, user.getGender());
+            statement.setString(1, user.getUserName());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getName());
+            statement.setString(4, user.getLastName());
+            statement.setString(5, user.getEmail());
+            statement.setString(6, user.getRole());
+            statement.setString(7, user.getStatus());
+            statement.setString(8, user.getGender());
 
             if (statement.executeUpdate() > 0) {
-                try (java.sql.ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         generatedId = generatedKeys.getInt(1);
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new DAOException("Error al insertar el usuario en la transacción.", e);
+        } catch (SQLException exception) {
+            throw new DAOException("Error al insertar el usuario en la transacción.", exception);
         }
 
         return generatedId;
@@ -57,16 +65,95 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     public boolean updateUser(User user, Connection sharedConnection) throws DAOException {
         try {
             return updateTuple(sharedConnection, SQL_UPDATE, statement -> {
-                statement.setString(1, user.getPassword());
-                statement.setString(2, user.getName());
-                statement.setString(3, user.getLastName());
-                statement.setString(4, user.getEmail());
-                statement.setString(5, user.getStatus());
-                statement.setString(6, user.getGender());
-                statement.setInt(7, user.getId());
+                statement.setString(1, user.getUserName());
+                statement.setString(2, user.getPassword());
+                statement.setString(3, user.getName());
+                statement.setString(4, user.getLastName());
+                statement.setString(5, user.getEmail());
+                statement.setString(6, user.getRole());
+                statement.setString(7, user.getStatus());
+                statement.setString(8, user.getGender());
+                statement.setInt(9, user.getId());
             });
-        } catch (SQLException e) {
-            throw new DAOException("Error al actualizar el usuario en la transacción.", e);
+        } catch (SQLException exception) {
+            throw new DAOException("Error al actualizar el usuario en la transacción.", exception);
         }
+    }
+
+    @Override
+    public boolean verifyCredentials(String userName, String password) throws DAOException {
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS)) {
+            statement.setString(1, userName);
+            statement.setString(2, password);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException("Error al verificar las credenciales del usuario.", exception);
+        }
+        return false;
+    }
+
+    @Override
+    public String getUserRole(String userName) throws DAOException {
+        String retrievedRole = null;
+
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_GET_USER_ROLE)) {
+            statement.setString(1, userName);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    retrievedRole = resultSet.getString("NOMBRE_ROL");
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException("Error al recuperar el rol del usuario.", exception);
+        }
+
+        return retrievedRole;
+    }
+
+    @Override
+    public User getUserByUserName(String userName) throws DAOException {
+        User retrievedUser = null;
+
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_USERNAME)) {
+            statement.setString(1, userName);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    retrievedUser = new User();
+                    retrievedUser.setId(resultSet.getInt("ID_USUARIO"));
+                    retrievedUser.setUserName(resultSet.getString("USER"));
+                    retrievedUser.setPassword(resultSet.getString("PASSWORD"));
+                    retrievedUser.setName(resultSet.getString("NOMBRE"));
+                    retrievedUser.setLastName(resultSet.getString("APELLIDOS"));
+                    retrievedUser.setEmail(resultSet.getString("CORREO"));
+                    retrievedUser.setRole(resultSet.getString("NOMBRE_ROL"));
+                    retrievedUser.setStatus(resultSet.getString("ESTADO"));
+                    retrievedUser.setGender(resultSet.getString("GENERO"));
+
+                    if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    }
+                    if (resultSet.getTimestamp("FECHA_BAJA") != null) {
+                        retrievedUser.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
+                    }
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException("Error al recuperar el usuario por nombre de usuario.", exception);
+        }
+
+        return retrievedUser;
     }
 }

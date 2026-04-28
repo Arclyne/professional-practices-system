@@ -19,191 +19,195 @@ DROP TABLE IF EXISTS COORDINADOR;
 DROP TABLE IF EXISTS PROFESOR;
 DROP TABLE IF EXISTS PRACTICANTE;
 DROP TABLE IF EXISTS ACCESS_TOKEN;
+DROP TABLE IF EXISTS ROL;
 DROP TABLE IF EXISTS USUARIO;
 DROP TABLE IF EXISTS PERIODO_ESCOLAR;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
+CREATE TABLE ROL (
+    NOMBRE_ROL varchar(50) NOT NULL,
+    DESCRIPCION varchar(255) DEFAULT NULL,
+    PRIMARY KEY (NOMBRE_ROL)
+);
+
 CREATE TABLE USUARIO (
-                         ID_USUARIO int NOT NULL AUTO_INCREMENT,
-                         PASSWORD varchar(255) NOT NULL,
-                         NOMBRE varchar(100) NOT NULL,
-                         APELLIDOS varchar(100) NOT NULL,
-                         CORREO varchar(150) NOT NULL UNIQUE,
-                         ESTADO enum('Activo','No Activo') NOT NULL,
-                         GENERO varchar(20) DEFAULT NULL,
-                         FECHA_REGISTRO datetime DEFAULT CURRENT_TIMESTAMP,
-                         FECHA_BAJA datetime DEFAULT NULL,
-                         PRIMARY KEY (ID_USUARIO)
+    ID_USUARIO int NOT NULL AUTO_INCREMENT,
+    USER varchar(20) NOT NULL UNIQUE, 
+    PASSWORD varchar(255) NOT NULL,
+    NOMBRE varchar(100) NOT NULL,
+    APELLIDOS varchar(100) NOT NULL,
+    CORREO varchar(150) NOT NULL UNIQUE,
+    NOMBRE_ROL varchar(50) NOT NULL,
+    ESTADO enum('Activo','No Activo', 'Pendiente') NOT NULL,
+    GENERO varchar(20) DEFAULT NULL,
+    FECHA_REGISTRO datetime DEFAULT CURRENT_TIMESTAMP,
+    FECHA_BAJA datetime DEFAULT NULL,
+    PRIMARY KEY (ID_USUARIO),
+    CONSTRAINT fk_usuario_rol FOREIGN KEY (NOMBRE_ROL) REFERENCES ROL (NOMBRE_ROL) ON DELETE RESTRICT
 );
 
 CREATE TABLE PERIODO_ESCOLAR (
-                                 ID_PERIODO int NOT NULL AUTO_INCREMENT,
-                                 NOMBRE_PERIODO varchar(50) NOT NULL,
-                                 FECHA_INICIO date DEFAULT NULL,
-                                 FECHA_FIN date DEFAULT NULL,
-                                 ESTADO_PERIODO enum('activo', 'concluido', 'proximo') NOT NULL,
-                                 PRIMARY KEY (ID_PERIODO)
+    ID_PERIODO int NOT NULL AUTO_INCREMENT,
+    NOMBRE_PERIODO varchar(50) NOT NULL,
+    FECHA_INICIO date DEFAULT NULL,
+    FECHA_FIN date DEFAULT NULL,
+    ESTADO_PERIODO enum('activo', 'concluido', 'proximo') NOT NULL,
+    PRIMARY KEY (ID_PERIODO)
 );
 
 CREATE TABLE ACCESS_TOKEN (
-                              TOKEN_VALUE int NOT NULL,
-                              CREATION_TIME datetime DEFAULT CURRENT_TIMESTAMP,
-                              ID_USUARIO int NOT NULL,
-                              PRIMARY KEY (TOKEN_VALUE),
-                              CONSTRAINT access_token_ibfk_1 FOREIGN KEY (ID_USUARIO) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    TOKEN_VALUE int NOT NULL,
+    CREATION_TIME datetime DEFAULT CURRENT_TIMESTAMP,
+    ID_USUARIO int NOT NULL,
+    PRIMARY KEY (TOKEN_VALUE),
+    CONSTRAINT access_token_ibfk_1 FOREIGN KEY (ID_USUARIO) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
 CREATE TABLE ORGANIZACION_VINCULADA (
-                                        ID_ORGANIZACION int NOT NULL AUTO_INCREMENT,
-                                        NOMBRE_ORGANIZACION varchar(150) NOT NULL,
-                                        ESTADO varchar(50) DEFAULT NULL,
-                                        DIRECCION varchar(255) DEFAULT NULL,
-                                        CIUDAD varchar(100) DEFAULT NULL,
-                                        SECTOR varchar(100) DEFAULT NULL,
-                                        CORREO varchar(150) DEFAULT NULL,
-                                        TELEFONO varchar(20) DEFAULT NULL,
-                                        PRIMARY KEY (ID_ORGANIZACION),
-                                        UNIQUE KEY CORREO (CORREO)
+    ID_ORGANIZACION int NOT NULL AUTO_INCREMENT,
+    NOMBRE_ORGANIZACION varchar(150) NOT NULL,
+    ESTADO varchar(50) DEFAULT NULL,
+    DIRECCION varchar(255) DEFAULT NULL,
+    CIUDAD varchar(100) DEFAULT NULL,
+    SECTOR varchar(100) DEFAULT NULL,
+    CORREO varchar(150) DEFAULT NULL,
+    TELEFONO varchar(20) DEFAULT NULL,
+    PRIMARY KEY (ID_ORGANIZACION),
+    UNIQUE KEY CORREO (CORREO)
 );
 
 CREATE TABLE ACTIVIDAD (
-                           ID_ACTIVIDAD int NOT NULL AUTO_INCREMENT,
-                           NOMBRE varchar(150) NOT NULL,
-                           FECHA_INICIO date DEFAULT NULL,
-                           FECHA_END date DEFAULT NULL,
-                           DESCRIPCION text,
-                           ENCARGADO varchar(150) DEFAULT NULL,
-                           PRIMARY KEY (ID_ACTIVIDAD)
+    ID_ACTIVIDAD int NOT NULL AUTO_INCREMENT,
+    NOMBRE varchar(150) NOT NULL,
+    FECHA_INICIO date DEFAULT NULL,
+    FECHA_END date DEFAULT NULL,
+    DESCRIPCION text,
+    ENCARGADO varchar(150) DEFAULT NULL,
+    PRIMARY KEY (ID_ACTIVIDAD)
 );
 
 CREATE TABLE MENSAJE (
-                         INDEX_MENSAJE int NOT NULL AUTO_INCREMENT,
-                         FECHA_ENVIO datetime DEFAULT CURRENT_TIMESTAMP,
-                         PRIMARY KEY (INDEX_MENSAJE)
+    INDEX_MENSAJE int NOT NULL AUTO_INCREMENT,
+    FECHA_ENVIO datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (INDEX_MENSAJE)
 );
 
 CREATE TABLE ADMINISTRADOR (
-                               ID_ADMINISTRADOR int NOT NULL,
-                               PRIMARY KEY (ID_ADMINISTRADOR),
-                               CONSTRAINT administrador_ibfk_1 FOREIGN KEY (ID_ADMINISTRADOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    ID_ADMINISTRADOR int NOT NULL,
+    PRIMARY KEY (ID_ADMINISTRADOR),
+    CONSTRAINT administrador_ibfk_1 FOREIGN KEY (ID_ADMINISTRADOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
 CREATE TABLE COORDINADOR (
-                             ID_COORDINADOR int NOT NULL,
-                             NUMERO_PERSONAL varchar(20) NOT NULL UNIQUE,
-                             PRIMARY KEY (ID_COORDINADOR),
-                             CONSTRAINT coordinador_ibfk_1 FOREIGN KEY (ID_COORDINADOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    ID_COORDINADOR int NOT NULL,
+    PRIMARY KEY (ID_COORDINADOR),
+    CONSTRAINT coordinador_ibfk_1 FOREIGN KEY (ID_COORDINADOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
 CREATE TABLE PROFESOR (
-                          ID_PROFESOR int NOT NULL,
-                          NUMERO_PERSONAL varchar(20) NOT NULL UNIQUE,
-                          PRIMARY KEY (ID_PROFESOR),
-                          CONSTRAINT profesor_ibfk_1 FOREIGN KEY (ID_PROFESOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    ID_PROFESOR int NOT NULL,
+    PRIMARY KEY (ID_PROFESOR),
+    CONSTRAINT profesor_ibfk_1 FOREIGN KEY (ID_PROFESOR) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
 CREATE TABLE PRACTICANTE (
-                             ID_PRACTICANTE int NOT NULL,
-                             MATRICULA varchar(20) NOT NULL UNIQUE,
-                             LENGUA_INDIGENA varchar(100) DEFAULT NULL,
-                             CALIFICACION decimal(5,2) DEFAULT NULL,
-                             PRIMARY KEY (ID_PRACTICANTE),
-                             CONSTRAINT practicante_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    ID_PRACTICANTE int NOT NULL,
+    LENGUA_INDIGENA varchar(100) DEFAULT NULL,
+    CALIFICACION decimal(5,2) DEFAULT NULL,
+    PRIMARY KEY (ID_PRACTICANTE),
+    CONSTRAINT practicante_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
 CREATE TABLE PROYECTO (
-                          ID_PROYECTO int NOT NULL AUTO_INCREMENT,
-                          NOMBRE_PROYECTO varchar(200) NOT NULL,
-                          DESCRIPCION text,
-                          CUPO_PARTICIPANTES int NOT NULL,
-                          ENCARGADO varchar(150) DEFAULT NULL,
-                          ESTADO varchar(50) DEFAULT 'Activo',
-                          FECHA_INICIO date DEFAULT NULL,
-                          FECHA_END date DEFAULT NULL,
-                          ID_ORGANIZACION int NOT NULL,
-                          PRIMARY KEY (ID_PROYECTO),
-                          CONSTRAINT fk_proyecto_organizacion
-                              FOREIGN KEY (ID_ORGANIZACION)
-                                  REFERENCES ORGANIZACION_VINCULADA (ID_ORGANIZACION)
-                                  ON DELETE CASCADE
+    ID_PROYECTO int NOT NULL AUTO_INCREMENT,
+    NOMBRE_PROYECTO varchar(200) NOT NULL,
+    DESCRIPCION text,
+    CUPO_PARTICIPANTES int NOT NULL,
+    ENCARGADO varchar(150) DEFAULT NULL,
+    ESTADO varchar(50) DEFAULT 'Activo',
+    FECHA_INICIO date DEFAULT NULL,
+    FECHA_END date DEFAULT NULL,
+    ID_ORGANIZACION int NOT NULL,
+    PRIMARY KEY (ID_PROYECTO),
+    CONSTRAINT fk_proyecto_organizacion FOREIGN KEY (ID_ORGANIZACION) REFERENCES ORGANIZACION_VINCULADA (ID_ORGANIZACION) ON DELETE CASCADE
 );
 
 CREATE TABLE GRUPO_PRACTICAS (
-                                 INDEX_GRUPO int NOT NULL AUTO_INCREMENT,
-                                 SECCION varchar(50) NOT NULL,
-                                 ID_PERIODO int NOT NULL,
-                                 ID_PROFESOR int NOT NULL,
-                                 PRIMARY KEY (INDEX_GRUPO),
-                                 CONSTRAINT grupo_practicas_ibfk_1 FOREIGN KEY (ID_PROFESOR) REFERENCES PROFESOR (ID_PROFESOR) ON DELETE CASCADE,
-                                 CONSTRAINT grupo_practicas_ibfk_2 FOREIGN KEY (ID_PERIODO) REFERENCES PERIODO_ESCOLAR (ID_PERIODO) ON DELETE CASCADE
+    INDEX_GRUPO int NOT NULL AUTO_INCREMENT,
+    SECCION varchar(50) NOT NULL,
+    ID_PERIODO int NOT NULL,
+    ID_PROFESOR int NOT NULL,
+    PRIMARY KEY (INDEX_GRUPO),
+    CONSTRAINT grupo_practicas_ibfk_1 FOREIGN KEY (ID_PROFESOR) REFERENCES PROFESOR (ID_PROFESOR) ON DELETE CASCADE,
+    CONSTRAINT grupo_practicas_ibfk_2 FOREIGN KEY (ID_PERIODO) REFERENCES PERIODO_ESCOLAR (ID_PERIODO) ON DELETE CASCADE
 );
 
 CREATE TABLE ACEPTA (
-                        ID_COORDINADOR int NOT NULL,
-                        ID_PROYECTO int NOT NULL,
-                        PRIMARY KEY (ID_COORDINADOR,ID_PROYECTO),
-                        CONSTRAINT acepta_ibfk_1 FOREIGN KEY (ID_COORDINADOR) REFERENCES COORDINADOR (ID_COORDINADOR) ON DELETE CASCADE,
-                        CONSTRAINT acepta_ibfk_2 FOREIGN KEY (ID_PROYECTO) REFERENCES PROYECTO (ID_PROYECTO) ON DELETE CASCADE
+    ID_COORDINADOR int NOT NULL,
+    ID_PROYECTO int NOT NULL,
+    PRIMARY KEY (ID_COORDINADOR,ID_PROYECTO),
+    CONSTRAINT acepta_ibfk_1 FOREIGN KEY (ID_COORDINADOR) REFERENCES COORDINADOR (ID_COORDINADOR) ON DELETE CASCADE,
+    CONSTRAINT acepta_ibfk_2 FOREIGN KEY (ID_PROYECTO) REFERENCES PROYECTO (ID_PROYECTO) ON DELETE CASCADE
 );
 
 CREATE TABLE AUTO_EVALUACION (
-                                 ID_AUTO_EVAL int NOT NULL AUTO_INCREMENT,
-                                 PERIODO varchar(50) NOT NULL,
-                                 CALIFICACION decimal(5,2) NOT NULL,
-                                 DESCRIPCION text,
-                                 ID_PRACTICANTE int NOT NULL,
-                                 EVIDENCIA text,
-                                 PRIMARY KEY (ID_AUTO_EVAL),
-                                 CONSTRAINT auto_evaluacion_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE
+    ID_AUTO_EVAL int NOT NULL AUTO_INCREMENT,
+    PERIODO varchar(50) NOT NULL,
+    CALIFICACION decimal(5,2) NOT NULL,
+    DESCRIPCION text,
+    ID_PRACTICANTE int NOT NULL,
+    EVIDENCIA text,
+    PRIMARY KEY (ID_AUTO_EVAL),
+    CONSTRAINT auto_evaluacion_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE
 );
 
 CREATE TABLE BITACORA_REPORTE (
-                                  INDEX_REPORTE int NOT NULL AUTO_INCREMENT,
-                                  FECHA date NOT NULL,
-                                  ID_PRACTICANTE int NOT NULL,
-                                  PRIMARY KEY (INDEX_REPORTE),
-                                  CONSTRAINT bitacora_reporte_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE
+    INDEX_REPORTE int NOT NULL AUTO_INCREMENT,
+    FECHA date NOT NULL,
+    ID_PRACTICANTE int NOT NULL,
+    PRIMARY KEY (INDEX_REPORTE),
+    CONSTRAINT bitacora_reporte_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE
 );
 
 CREATE TABLE EVALUACION_ORGANIZACION (
-                                         ID_EVAL_EXTERNA int NOT NULL AUTO_INCREMENT,
-                                         PERIODO varchar(50) NOT NULL,
-                                         CALIFICACION decimal(5,2) NOT NULL,
-                                         DESCRIPCION text,
-                                         ID_PRACTICANTE int NOT NULL,
-                                         ID_ORGANIZACION int DEFAULT NULL,
-                                         PRIMARY KEY (ID_EVAL_EXTERNA),
-                                         CONSTRAINT evaluacion_ORGANIZACION_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE,
-                                         CONSTRAINT evaluacion_ORGANIZACION_ibfk_2 FOREIGN KEY (ID_ORGANIZACION) REFERENCES ORGANIZACION_VINCULADA (ID_ORGANIZACION) ON DELETE SET NULL
+    ID_EVAL_EXTERNA int NOT NULL AUTO_INCREMENT,
+    PERIODO varchar(50) NOT NULL,
+    CALIFICACION decimal(5,2) NOT NULL,
+    DESCRIPCION text,
+    ID_PRACTICANTE int NOT NULL,
+    ID_ORGANIZACION int DEFAULT NULL,
+    PRIMARY KEY (ID_EVAL_EXTERNA),
+    CONSTRAINT evaluacion_ORGANIZACION_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE,
+    CONSTRAINT evaluacion_ORGANIZACION_ibfk_2 FOREIGN KEY (ID_ORGANIZACION) REFERENCES ORGANIZACION_VINCULADA (ID_ORGANIZACION) ON DELETE SET NULL
 );
 
 CREATE TABLE EVALUACION_PROFESOR (
-                                     ID_EVAL_EXTERNA int NOT NULL AUTO_INCREMENT,
-                                     PERIODO varchar(50) NOT NULL,
-                                     CALIFICACION decimal(5,2) NOT NULL,
-                                     DESCRIPCION text,
-                                     ID_PRACTICANTE int NOT NULL,
-                                     ID_PROFESOR int DEFAULT NULL,
-                                     PRIMARY KEY (ID_EVAL_EXTERNA),
-                                     CONSTRAINT evaluacion_profesor_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE,
-                                     CONSTRAINT evaluacion_profesor_ibfk_2 FOREIGN KEY (ID_PROFESOR) REFERENCES PROFESOR (ID_PROFESOR) ON DELETE SET NULL
+    ID_EVAL_EXTERNA int NOT NULL AUTO_INCREMENT,
+    PERIODO varchar(50) NOT NULL,
+    CALIFICACION decimal(5,2) NOT NULL,
+    DESCRIPCION text,
+    ID_PRACTICANTE int NOT NULL,
+    ID_PROFESOR int DEFAULT NULL,
+    PRIMARY KEY (ID_EVAL_EXTERNA),
+    CONSTRAINT evaluacion_profesor_ibfk_1 FOREIGN KEY (ID_PRACTICANTE) REFERENCES PRACTICANTE (ID_PRACTICANTE) ON DELETE CASCADE,
+    CONSTRAINT evaluacion_profesor_ibfk_2 FOREIGN KEY (ID_PROFESOR) REFERENCES PROFESOR (ID_PROFESOR) ON DELETE SET NULL
 );
 
 CREATE TABLE FORMADO_POR (
-                             ID_PROYECTO int NOT NULL,
-                             ID_ACTIVIDAD int NOT NULL,
-                             PRIMARY KEY (ID_PROYECTO,ID_ACTIVIDAD),
-                             CONSTRAINT formado_por_ibfk_1 FOREIGN KEY (ID_PROYECTO) REFERENCES PROYECTO (ID_PROYECTO) ON DELETE CASCADE,
-                             CONSTRAINT formado_por_ibfk_2 FOREIGN KEY (ID_ACTIVIDAD) REFERENCES ACTIVIDAD (ID_ACTIVIDAD) ON DELETE CASCADE
+    ID_PROYECTO int NOT NULL,
+    ID_ACTIVIDAD int NOT NULL,
+    PRIMARY KEY (ID_PROYECTO,ID_ACTIVIDAD),
+    CONSTRAINT formado_por_ibfk_1 FOREIGN KEY (ID_PROYECTO) REFERENCES PROYECTO (ID_PROYECTO) ON DELETE CASCADE,
+    CONSTRAINT formado_por_ibfk_2 FOREIGN KEY (ID_ACTIVIDAD) REFERENCES ACTIVIDAD (ID_ACTIVIDAD) ON DELETE CASCADE
 );
 
 CREATE TABLE PARTICIPA (
-                           INDEX_MENSAJE int NOT NULL,
-                           ID_SENDER int NOT NULL,
-                           ID_RECEIVER int NOT NULL,
-                           PRIMARY KEY (INDEX_MENSAJE),
-                           CONSTRAINT participa_ibfk_1 FOREIGN KEY (INDEX_MENSAJE) REFERENCES MENSAJE (INDEX_MENSAJE) ON DELETE CASCADE,
-                           CONSTRAINT participa_ibfk_2 FOREIGN KEY (ID_SENDER) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE,
-                           CONSTRAINT participa_ibfk_3 FOREIGN KEY (ID_RECEIVER) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
+    INDEX_MENSAJE int NOT NULL,
+    ID_SENDER int NOT NULL,
+    ID_RECEIVER int NOT NULL,
+    PRIMARY KEY (INDEX_MENSAJE),
+    CONSTRAINT participa_ibfk_1 FOREIGN KEY (INDEX_MENSAJE) REFERENCES MENSAJE (INDEX_MENSAJE) ON DELETE CASCADE,
+    CONSTRAINT participa_ibfk_2 FOREIGN KEY (ID_SENDER) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE,
+    CONSTRAINT participa_ibfk_3 FOREIGN KEY (ID_RECEIVER) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );

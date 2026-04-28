@@ -17,12 +17,12 @@ INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, ID_USUARIO) VALUES (123456, 1);
 
 -- 5. Insertar Actividades
 INSERT INTO ACTIVIDAD (ID_ACTIVIDAD, NOMBRE, ENCARGADO) VALUES
-                                                            (1, 'toRecover', 'toRecover'),
-                                                            (2, 'Dummy 1', 'Dummy 1'),
-                                                            (3, 'Dummy 2', 'Dummy 2');
+(1, 'toRecover', 'toRecover'),
+(2, 'Dummy 1', 'Dummy 1'),
+(3, 'Dummy 2', 'Dummy 2');
 
 -- 6. Insertar Proyectos (Asegúrate de que las fechas coincidan con el formato DATE de H2)
 INSERT INTO PROYECTO (ID_PROYECTO, NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES
-                                                                                                                                                      (1, 'toRecover', 'Project for recovery test', 2, 'toRecover', 'Activo', '2026-01-01', '2026-06-01', 1),
-                                                                                                                                                      (2, 'Dummy 1', 'First dummy project', 3, 'Dummy 1', 'Activo', '2026-01-01', '2026-06-01', 1),
-                                                                                                                                                      (3, 'Dummy 2', 'Second dummy project', 1, 'Dummy 2', 'Activo', '2026-01-01', '2026-06-01', 1);
+(1, 'toRecover', 'Project for recovery test', 2, 'toRecover', 'Activo', '2026-01-01', '2026-06-01', 1),
+(2, 'Dummy 1', 'First dummy project', 3, 'Dummy 1', 'Activo', '2026-01-01', '2026-06-01', 1),
+(3, 'Dummy 2', 'Second dummy project', 1, 'Dummy 2', 'Activo', '2026-01-01', '2026-06-01', 1);
