@@ -5,20 +5,22 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
-import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.AuthAction;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import java.util.Map;
 
 public class StartSessionManager {
 
     private final IUserDAO userDAO;
-    private final User userInSession;
 
-    public StartSessionManager(IDatabaseConnection databaseConnection, User userInSession) {
+    public StartSessionManager(IDatabaseConnection databaseConnection) {
         this.userDAO = new UserDAO(databaseConnection);
-        this.userInSession = userInSession;
     }
 
     public void handleActionConnectButton(Map<String, String> credential, ActionEvent currentActionEvent)
@@ -27,40 +29,31 @@ public class StartSessionManager {
             if (userDAO.verifyCredentials(credential.get("User"), credential.get("Password"))) {
                 User retrievedUser = userDAO.getUserByUserName(credential.get("User"));
 
-                userInSession.setId(retrievedUser.getId());
-                userInSession.setUserName(retrievedUser.getUserName());
-                userInSession.setPassword(retrievedUser.getPassword());
-                userInSession.setName(retrievedUser.getName());
-                userInSession.setLastName(retrievedUser.getLastName());
-                userInSession.setEmail(retrievedUser.getEmail());
-                userInSession.setRole(retrievedUser.getRole());
-                userInSession.setStatus(retrievedUser.getStatus());
-                userInSession.setGender(retrievedUser.getGender());
-                userInSession.setRegistrationDate(retrievedUser.getRegistrationDate());
-                userInSession.setDischargeDate(retrievedUser.getDischargeDate());
+                Store store = Store.getInstance();
 
-                CommonControler.showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
+                store.dispatch(new AuthAction.LoginSuccess(retrievedUser));
 
-                switch (userInSession.getStatus()) {
-                    case "Pending": {
-
+                switch (retrievedUser.getStatus()) {
+                    case "Pendiente":
+                        store.dispatch(new NavigationAction.GoToSection(AppSection.PASSWORD_RESET));
                         break;
-                    }
-                    case "Activo": {
+
+                    case "Activo":
+                        store.dispatch(new NavigationAction.GoToSection(AppSection.TOKEN_VERIFICATION));
                         break;
-                    }
-                    case "Inactivo": {
-                        throw new ManagerException("Usuario Inactivo.Comuniquese con su Coordinador");
-                    }
+
+                    case "No Activo":
+                        throw new ManagerException("Usuario no activo. Comuníquese con su Coordinador.");
+
                     default:
-                        break;
+                        throw new ManagerException("Estado de usuario no reconocido en el sistema.");
                 }
-            } else {
-                throw new ManagerException("Usuario o Contraseña no valida");
-            }
-        } catch (
 
-        DAOException e) {
+            } else {
+                throw new ManagerException("Usuario o Contraseña no valida.");
+            }
+        } catch (DAOException e) {
+            e.printStackTrace();
             throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
         }
     }

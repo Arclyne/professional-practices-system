@@ -17,7 +17,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryApplicationStage) throws Exception {
         DatabasePropeties databaseProperties = new DatabasePropeties();
-        IDatabaseConnection databaseConnection = new DataconnectionConfig(databaseProperties, "local").databaseConnection();
+        IDatabaseConnection databaseConnection = new DataconnectionConfig(databaseProperties, "local")
+                .databaseConnection();
         DependencyInjector injector = new DependencyInjector(databaseConnection);
         FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("/mx/uv/fei/presentation/main.fxml"));
 
