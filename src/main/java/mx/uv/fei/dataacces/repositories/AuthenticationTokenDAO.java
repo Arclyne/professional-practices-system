@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import mx.uv.fei.domain.dto.AuthenticationToken;
@@ -13,9 +14,9 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
 public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationToken {
 
-    private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, ID_USUARIO) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, ID_USUARIO FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ?";
-    private static final String SQL_SELECT_CREATION_TIME = "SELECT CREATION_TIME FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ? AND ID_USUARIO = ?";
+    private static final String SQL_INSERT = "INSERT INTO ACCESS_TOKEN (TOKEN_VALUE, CREATION_TIME, NOMBRE_USUARIO) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, NOMBRE_USUARIO FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ?";
+    private static final String SQL_SELECT_CREATION_TIME = "SELECT CREATION_TIME FROM ACCESS_TOKEN WHERE TOKEN_VALUE = ? AND NOMBRE_USUARIO = ?";
 
     public AuthenticationTokenDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
@@ -28,8 +29,9 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setInt(1, tokenToInsert.getValueToken());
-            statement.setObject(2, tokenToInsert.getTimeCreation());
-            statement.setInt(3, tokenToInsert.getUserId());
+            // CORRECCIÓN: Convertir LocalDateTime a Timestamp de SQL
+            statement.setTimestamp(2, Timestamp.valueOf(tokenToInsert.getTimeCreation()));
+            statement.setString(3, tokenToInsert.getUserName());
 
             return statement.executeUpdate() > 0;
 
@@ -52,8 +54,14 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 if (resultSet.next()) {
                     tokenRecovered = new AuthenticationToken();
                     tokenRecovered.setValueToken(resultSet.getInt("TOKEN_VALUE"));
-                    tokenRecovered.setTimeCreation(resultSet.getObject("CREATION_TIME", LocalDateTime.class));
-                    tokenRecovered.setUserId(resultSet.getInt("ID_USUARIO"));
+
+                    // CORRECCIÓN: Leer como Timestamp y convertir a LocalDateTime
+                    Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
+                    if (ts != null) {
+                        tokenRecovered.setTimeCreation(ts.toLocalDateTime());
+                    }
+
+                    tokenRecovered.setUserName(resultSet.getString("NOMBRE_USUARIO"));
                 }
             }
         } catch (SQLException e) {
@@ -63,7 +71,7 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
     }
 
     @Override
-    public LocalDateTime getTokenCreationTime(int tokenValue, int userId) throws DAOException {
+    public LocalDateTime getTokenCreationTime(int tokenValue, String userName) throws DAOException {
         LocalDateTime creationTime = null;
 
         try (
@@ -71,11 +79,15 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECT_CREATION_TIME)) {
 
             statement.setInt(1, tokenValue);
-            statement.setInt(2, userId);
+            statement.setString(2, userName);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    creationTime = resultSet.getObject("CREATION_TIME", LocalDateTime.class);
+                    // CORRECCIÓN: Leer como Timestamp y convertir a LocalDateTime
+                    Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
+                    if (ts != null) {
+                        creationTime = ts.toLocalDateTime();
+                    }
                 }
             }
         } catch (SQLException e) {

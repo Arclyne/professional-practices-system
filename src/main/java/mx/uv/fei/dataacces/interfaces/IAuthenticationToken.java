@@ -10,5 +10,5 @@ public interface IAuthenticationToken {
 
     AuthenticationToken recoverToken(int tokenValue) throws DAOException;
 
-    LocalDateTime getTokenCreationTime(int tokenValue, int userId) throws DAOException;
+    LocalDateTime getTokenCreationTime(int tokenValue, String userName) throws DAOException;
 }
