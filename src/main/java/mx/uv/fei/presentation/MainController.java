@@ -49,8 +49,11 @@ public class MainController {
                 switch (targetSection) {
                     case SPLASH_SCREEN -> loadView("/mx/uv/fei/presentation/loading.fxml");
                     case ADMIN_REGISTRATION -> loadView("/mx/uv/fei/presentation/RegisterAdmin.fxml");
-                    case LOGIN -> loadView("/mx/uv/fei/presentation/login.fxml");
+                    case LOGIN -> loadView("/mx/uv/fei/presentation/StartSession.fxml");
                     case DASHBOARD -> loadView("/mx/uv/fei/presentation/dashboard.fxml");
+                    case PASSWORD_RESET -> loadView("/mx/uv/fei/presentation/PasswordReset.fxml");
+                    case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/TokenVerification.fxml");
+
                     default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
                 }
             }

@@ -11,14 +11,17 @@ public class AuthReducer {
             case AuthAction.AdminDetectionResult a -> new AuthState(
                     a.exists(),
                     false,
-                    currentState.currentUsername()
-            );
+                    currentState.currentUser());
 
             case AuthAction.AdminCreatedSuccessfully a -> new AuthState(
                     true,
                     false,
-                    currentState.currentUsername()
-            );
+                    currentState.currentUser());
+
+            case AuthAction.LoginSuccess a -> new AuthState(
+                    currentState.isAdminRegistered(),
+                    currentState.isCheckingStatus(),
+                    a.loggedInUser());
         };
     }
 }

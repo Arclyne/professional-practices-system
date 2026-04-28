@@ -77,6 +77,7 @@ public class RegisterAdminController implements Initializable {
         newAdmin.setUserName(fieldNoPersonal.getText());
         newAdmin.setPassword(fieldPassword.getText());
         newAdmin.setGender((String) comboBoxSexo.getValue());
+        newAdmin.setRole("Administrador");
 
         try {
             manager.registerInitialAdmin(newAdmin);
@@ -101,11 +102,17 @@ public class RegisterAdminController implements Initializable {
     }
 
     private void clearForm() {
-        if (fieldNombre != null) fieldNombre.setText("");
-        if (fieldApellido != null) fieldApellido.setText("");
-        if (fieldCorreo != null) fieldCorreo.setText("");
-        if (fieldNoPersonal != null) fieldNoPersonal.setText("");
-        if (fieldPassword != null) fieldPassword.setText("");
-        if (comboBoxSexo != null) comboBoxSexo.clearSelection();
+        if (fieldNombre != null)
+            fieldNombre.setText("");
+        if (fieldApellido != null)
+            fieldApellido.setText("");
+        if (fieldCorreo != null)
+            fieldCorreo.setText("");
+        if (fieldNoPersonal != null)
+            fieldNoPersonal.setText("");
+        if (fieldPassword != null)
+            fieldPassword.setText("");
+        if (comboBoxSexo != null)
+            comboBoxSexo.clearSelection();
     }
 }
