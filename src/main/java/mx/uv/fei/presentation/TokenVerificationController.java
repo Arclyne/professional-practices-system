@@ -28,7 +28,6 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private Button buttonSend;
 
-    // ¡Regla cumplida! Solo 1 parámetro en el constructor
     public TokenVerificationController(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
