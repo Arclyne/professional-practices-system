@@ -133,7 +133,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 if (resultSet.next()) {
                     retrievedUser = new User();
                     retrievedUser.setId(resultSet.getInt("ID_USUARIO"));
-                    retrievedUser.setUserName(resultSet.getString("USER"));
+                    retrievedUser.setUserName(resultSet.getString("NOMBRE_USUARIO"));
                     retrievedUser.setPassword(resultSet.getString("PASSWORD"));
                     retrievedUser.setName(resultSet.getString("NOMBRE"));
                     retrievedUser.setLastName(resultSet.getString("APELLIDOS"));
