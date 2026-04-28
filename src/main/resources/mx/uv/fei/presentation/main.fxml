@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
-
-</AnchorPane>
+<StackPane fx:id="contentArea"
+           prefHeight="768.0" prefWidth="1024.0"
+           xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="mx.uv.fei.presentation.MainController">
+</StackPane>
