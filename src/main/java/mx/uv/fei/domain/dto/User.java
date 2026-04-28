@@ -4,16 +4,20 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class User {
+
     private int id;
+    private String userName;
     private String password;
+    private String role;
+
     private String name;
     private String lastName;
+    private String email;
     private String status;
     private String gender;
-    private String email;
+
     private LocalDateTime registrationDate;
-    private LocalDateTime unsubscriptionDate;
-    private String role;
+    private LocalDateTime DischargeDate;
 
     public User() {
     }
@@ -26,12 +30,28 @@ public class User {
         this.id = id;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getName() {
@@ -50,6 +70,14 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -66,10 +94,6 @@ public class User {
         this.gender = gender;
     }
 
-    public void setEmail(String email) { this.email = email; }
-
-    public String getEmail() { return this.email; }
-
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
@@ -78,20 +102,12 @@ public class User {
         this.registrationDate = registrationDate;
     }
 
-    public LocalDateTime getUnsubscriptionDate() {
-        return unsubscriptionDate;
+    public LocalDateTime getDischargeDate() {
+        return DischargeDate;
     }
 
-    public void setDischargeDate(LocalDateTime unsubscriptionDate) {
-        this.unsubscriptionDate = unsubscriptionDate;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getRole() {
-        return role;
+    public void setDischargeDate(LocalDateTime DischargeDate) {
+        this.DischargeDate = DischargeDate;
     }
 
     @Override
@@ -99,14 +115,18 @@ public class User {
         if (this == object) {
             return true;
         }
-
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
 
         User that = (User) object;
 
-        return Objects.equals(this.name, that.name) &&
-                Objects.equals(this.lastName, that.lastName);
+        return Objects.equals(this.userName, that.userName) &&
+                Objects.equals(this.email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName, email);
     }
 }
