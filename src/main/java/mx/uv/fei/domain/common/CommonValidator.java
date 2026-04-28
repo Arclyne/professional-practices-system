@@ -1,10 +1,6 @@
 package mx.uv.fei.domain.common;
 
-import mx.uv.fei.domain.dto.Activity;
-import mx.uv.fei.domain.dto.Practitioner;
-import mx.uv.fei.domain.dto.Professor;
-import mx.uv.fei.domain.dto.Project;
-import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.dto.*;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.Date;
