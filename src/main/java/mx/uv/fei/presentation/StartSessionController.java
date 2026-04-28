@@ -5,11 +5,13 @@ import java.util.HashMap;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.manager.StartSessionManager;
 
@@ -40,8 +42,11 @@ public class StartSessionController {
         Map<String, String> credential = new HashMap<>();
         credential.put("User", userNameInput);
         credential.put("Password", userPasswordInput);
-
-        startSessionManager.handleActionConnectButton(credential, actionEvent);
+        try {
+            startSessionManager.handleActionConnectButton(credential, actionEvent);
+        } catch (ManagerException e) {
+            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+        }
 
         if (userNameInput.isEmpty() || userPasswordInput.isEmpty()) {
             CommonControler.showErrorAlert("Campos requeridos", "Por favor, ingrese su usuario y contraseña.");

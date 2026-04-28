@@ -24,7 +24,7 @@ public class SceneManager {
         this.applicationPrimaryStage = applicationPrimaryStage;
 
         DatabasePropeties databaseProperties = new DatabasePropeties();
-        this.databaseConnection = new DataconnectionConfig(databaseProperties, "SHH").databaseConnection();
+        this.databaseConnection = new DataconnectionConfig(databaseProperties, "local").databaseConnection();
         this.userInSession = new User();
         this.applicationPrimaryStage.setUserData(this);
     }
