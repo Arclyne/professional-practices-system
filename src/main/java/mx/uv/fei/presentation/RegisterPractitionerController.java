@@ -13,6 +13,9 @@ import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterPractitionerManager;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.common.CommonControler;
 
@@ -84,10 +87,7 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        System.out.println("--- Operación Cancelada ---");
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {
