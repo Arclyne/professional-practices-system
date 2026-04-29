@@ -13,15 +13,23 @@ import mx.uv.fei.domain.statemachine.state.RootState;
 
 public class DashboardController {
 
-    @FXML private Label labelUserName;
-    @FXML private Label labelUserRole;
-    @FXML private VBox containerAdminActions;
-    @FXML private StackPane dashboardContent;
+    @FXML
+    private Label labelUserName;
+    @FXML
+    private Label labelUserRole;
+    @FXML
+    private VBox containerAdminActions;
+    @FXML
+    private StackPane dashboardContent;
 
-    @FXML private Button btnRegistrarPracticante;
-    @FXML private Button btnRegistrarProfesor;
-    @FXML private Button btnRegistrarProyecto;
-    @FXML private Button btnRegistrarActividad;
+    @FXML
+    private Button btnRegistrarPracticante;
+    @FXML
+    private Button btnRegistrarProfesor;
+    @FXML
+    private Button btnRegistrarProyecto;
+    @FXML
+    private Button btnRegistrarActividad;
 
     @FXML
     public void initialize() {
@@ -60,7 +68,7 @@ public class DashboardController {
             btnRegistrarActividad.setVisible(true);
             btnRegistrarActividad.setManaged(true);
         } else if ("Coordinador".equalsIgnoreCase(role)) {
-            // ... resto de tu código
+
         } else if ("Coordinador".equalsIgnoreCase(role)) {
             btnRegistrarPracticante.setVisible(true);
             btnRegistrarPracticante.setManaged(true);

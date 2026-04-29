@@ -7,8 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 
 import mx.uv.fei.domain.manager.PasswordResetManager;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
