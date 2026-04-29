@@ -51,6 +51,16 @@ public class DashboardController {
         if ("Administrador".equalsIgnoreCase(role)) {
             containerAdminActions.setVisible(true);
             containerAdminActions.setManaged(true);
+            btnRegistrarPracticante.setVisible(true);
+            btnRegistrarPracticante.setManaged(true);
+            btnRegistrarProfesor.setVisible(true);
+            btnRegistrarProfesor.setManaged(true);
+            btnRegistrarProyecto.setVisible(true);
+            btnRegistrarProyecto.setManaged(true);
+            btnRegistrarActividad.setVisible(true);
+            btnRegistrarActividad.setManaged(true);
+        } else if ("Coordinador".equalsIgnoreCase(role)) {
+            // ... resto de tu código
         } else if ("Coordinador".equalsIgnoreCase(role)) {
             btnRegistrarPracticante.setVisible(true);
             btnRegistrarPracticante.setManaged(true);
@@ -62,6 +72,11 @@ public class DashboardController {
             btnRegistrarActividad.setVisible(true);
             btnRegistrarActividad.setManaged(true);
         }
+    }
+
+    @FXML
+    private void handleRegistrarPracticante() {
+        Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PRACTITIONER));
     }
 
     @FXML

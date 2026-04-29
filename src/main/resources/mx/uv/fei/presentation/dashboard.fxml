@@ -76,7 +76,7 @@
                 </Label>
 
                 <VBox alignment="CENTER" spacing="15.0" maxWidth="300.0">
-                    <Button fx:id="btnRegistrarPracticante" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    <Button fx:id="btnRegistrarPracticante" onAction="#handleRegistrarPracticante" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
                             style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;"
                             text="Registrar Practicante" prefHeight="45.0" />
 
