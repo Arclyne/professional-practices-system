@@ -1,6 +1,5 @@
 package mx.uv.fei.domain.manager;
 
-
 import java.util.UUID;
 
 import mx.uv.fei.domain.common.CommonValidator;
@@ -9,8 +8,6 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.PractitionerDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-
-
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class RegisterPractitionerManager {
@@ -24,8 +21,11 @@ public class RegisterPractitionerManager {
 
     public String registerNewPractitioner(Practitioner practitioner) throws ManagerException {
         String temporalPassword = "temp-" + UUID.randomUUID().toString().substring(0, 8);
+
         practitioner.setPassword(temporalPassword);
-        practitioner.setStatus("no activo");
+        practitioner.setUserName(practitioner.getEnrollment()); // La matrícula es el Nombre de Usuario
+        practitioner.setRole("Practicante");
+        practitioner.setStatus("Pendiente");
         practitioner.setGrade(0.0);
 
         CommonValidator.validatePractitioner(practitioner);
@@ -40,7 +40,8 @@ public class RegisterPractitionerManager {
             return temporalPassword;
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw new ManagerException(
+                    "Ocurrió un problema al guardar en la base de datos. Por favor, intente más tarde.", e);
         }
     }
 }

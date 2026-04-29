@@ -6,7 +6,6 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.AuthenticationTokenDAO;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.dto.AuthenticationToken;
-import mx.uv.fei.domain.dto.User;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -15,11 +14,9 @@ import java.time.temporal.ChronoUnit;
 public class TokenManager {
 
     private final IAuthenticationToken tokenDAO;
-    private final User userInSession;
 
-    public TokenManager(IDatabaseConnection databaseConnection, User userInSession) {
+    public TokenManager(IDatabaseConnection databaseConnection) {
         this.tokenDAO = new AuthenticationTokenDAO(databaseConnection);
-        this.userInSession = userInSession;
     }
 
     public void generateToken() throws ManagerException {
