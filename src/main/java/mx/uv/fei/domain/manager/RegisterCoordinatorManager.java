@@ -2,7 +2,6 @@ package mx.uv.fei.domain.manager;
 
 import java.util.UUID;
 
-import mx.uv.fei.domain.common.CommonValidator;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.CoordinatorDAO;
@@ -35,7 +34,8 @@ public class RegisterCoordinatorManager {
             return tempPassword;
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.",
+                    e);
         }
     }
 

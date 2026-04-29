@@ -5,6 +5,7 @@ import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.AuthenticationTokenDAO;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.dto.AuthenticationToken;
 
 import java.security.SecureRandom;
@@ -23,7 +24,7 @@ public class TokenManager {
         SecureRandom secureRandom = new SecureRandom();
         int newToken = 100000 + secureRandom.nextInt(900000);
         AuthenticationToken token = new AuthenticationToken();
-        token.setUserName("Test");
+        token.setUserName(Store.getInstance().getState().authState().currentUser().getUserName());
         token.setValueToken(newToken);
         token.setTimeCreation(LocalDateTime.now());
         try {
@@ -48,7 +49,8 @@ public class TokenManager {
         }
 
         try {
-            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken, "Test");
+            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken,
+                    Store.getInstance().getState().authState().currentUser().getUserName());
 
             if (tokenCreationTime == null) {
                 throw new ManagerException("El token ingresado es incorrecto.");
