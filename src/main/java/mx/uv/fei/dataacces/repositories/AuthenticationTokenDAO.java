@@ -29,7 +29,6 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setInt(1, tokenToInsert.getValueToken());
-            // CORRECCIÓN: Convertir LocalDateTime a Timestamp de SQL
             statement.setTimestamp(2, Timestamp.valueOf(tokenToInsert.getTimeCreation()));
             statement.setString(3, tokenToInsert.getUserName());
 
@@ -55,7 +54,6 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                     tokenRecovered = new AuthenticationToken();
                     tokenRecovered.setValueToken(resultSet.getInt("TOKEN_VALUE"));
 
-                    // CORRECCIÓN: Leer como Timestamp y convertir a LocalDateTime
                     Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
                     if (ts != null) {
                         tokenRecovered.setTimeCreation(ts.toLocalDateTime());
@@ -83,7 +81,7 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    // CORRECCIÓN: Leer como Timestamp y convertir a LocalDateTime
+
                     Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
                     if (ts != null) {
                         creationTime = ts.toLocalDateTime();

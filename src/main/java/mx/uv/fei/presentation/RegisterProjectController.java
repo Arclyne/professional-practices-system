@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
@@ -104,7 +103,6 @@ public class RegisterProjectController implements Initializable {
 
             if (isProjectSavedSuccessfully) {
                 CommonControler.showSuccessAlert("Registro Exitoso", "El proyecto ha sido guardado correctamente.");
-                SceneManager.closeCurrentWindow(actionEvent);
             }
 
         } catch (NumberFormatException capacityFormatMismatchException) {
@@ -118,8 +116,10 @@ public class RegisterProjectController implements Initializable {
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent actionEvent) {
-        SceneManager.closeCurrentWindow(actionEvent);
+    private void handleActionCancelButton(ActionEvent event) {
+        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
+        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
+        stage.close();
     }
 
 }

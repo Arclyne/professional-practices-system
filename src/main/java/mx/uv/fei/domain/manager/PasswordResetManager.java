@@ -9,7 +9,6 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
