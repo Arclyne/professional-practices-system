@@ -6,6 +6,10 @@ import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,6 +44,7 @@ public class PasswordResetManager {
             if (!isUpdated) {
                 throw new ManagerException("No se pudo actualizar la información en el sistema.");
             }
+            Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
         } catch (DAOException | SQLException exception) {
             throw new ManagerException("Ocurrió un error de conexión al intentar actualizar el perfil.", exception);
         }

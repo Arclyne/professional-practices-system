@@ -41,9 +41,9 @@
          <VBox.margin>
             <Insets top="15.0"/>
          </VBox.margin>
-         <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" onAction="#handleCancelButtonAction"
+         <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" onAction="#handleActionCancelButton"
                  styleClass="secondary-button" text="Cancelar" HBox.hgrow="ALWAYS"/>
-         <Button fx:id="registerButton" maxWidth="1.7976931348623157E308" onAction="#handleRegisterButtonAction"
+         <Button fx:id="registerButton" maxWidth="1.7976931348623157E308" onAction="#handleActionRegisterButton"
                  styleClass="primary-button" text="Registrar Practicante" HBox.hgrow="ALWAYS"/>
       </HBox>
    </VBox>

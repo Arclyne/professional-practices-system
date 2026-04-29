@@ -53,6 +53,7 @@ public class MainController {
                     case DASHBOARD -> loadView("/mx/uv/fei/presentation/dashboard.fxml");
                     case PASSWORD_RESET -> loadView("/mx/uv/fei/presentation/PasswordReset.fxml");
                     case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/TokenVerification.fxml");
+                    case REGISTER_PRACTITIONER -> loadView("/mx/uv/fei/presentation/registerPractitioner.fxml");
 
                     default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
                 }
@@ -75,6 +76,7 @@ public class MainController {
 
         } catch (Exception e) {
             System.err.println("¡ERROR FATAL AL CARGAR LA VISTA [" + fxmlPath + "]!");
+            e.printStackTrace();
             CommonControler.showAlert("Error de Interfaz",
                     "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
                     AlertType.ERROR);
