@@ -35,7 +35,7 @@ public class RegisterPractitionerController implements Initializable {
 
     private RegisterPractitionerManager manager;
 
-    public void setManager(RegisterPractitionerManager manager) {
+    public RegisterPractitionerController(RegisterPractitionerManager manager) {
         this.manager = manager;
     }
 
