@@ -14,9 +14,6 @@ import javafx.scene.control.TextField;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.StartSessionManager;
-import mx.uv.fei.domain.statemachine.Store;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 public class StartSessionController {
 

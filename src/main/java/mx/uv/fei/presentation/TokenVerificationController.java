@@ -6,7 +6,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.manager.TokenManager;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -63,7 +62,9 @@ public class TokenVerificationController implements Initializable {
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent actionEvent) {
-        SceneManager.closeCurrentWindow(actionEvent);
+    private void handleActionCancelButton(ActionEvent event) {
+        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
+        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
+        stage.close();
     }
 }
