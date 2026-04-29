@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
@@ -96,7 +95,6 @@ public class RegisterActivityController implements Initializable {
 
             if (isActivitySavedSuccessfully) {
                 CommonControler.showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
-                SceneManager.closeCurrentWindow(actionEvent);
             }
 
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
@@ -108,8 +106,10 @@ public class RegisterActivityController implements Initializable {
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent actionEvent) {
-        SceneManager.closeCurrentWindow(actionEvent);
+    private void handleActionCancelButton(ActionEvent event) {
+        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
+        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
+        stage.close();
     }
 
 }
