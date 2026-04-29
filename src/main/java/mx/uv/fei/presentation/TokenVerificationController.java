@@ -10,6 +10,9 @@ import mx.uv.fei.domain.manager.SceneManager;
 import mx.uv.fei.domain.manager.TokenManager;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,8 +45,7 @@ public class TokenVerificationController implements Initializable {
             tokenManager.verifyToken(textFieldToken.getText());
 
             CommonControler.showSuccessAlert("Éxito", "Autenticación completada correctamente.");
-            SceneManager.closeCurrentWindow(actionEvent);
-
+            Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
         } catch (ManagerException managerException) {
             CommonControler.showErrorAlert("Error de Autenticación", managerException.getMessage());
         }

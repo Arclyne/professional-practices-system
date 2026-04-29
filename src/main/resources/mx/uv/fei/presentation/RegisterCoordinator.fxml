@@ -9,25 +9,24 @@
 <?import mx.uv.fei.presentation.components.FormComboBox?>
 <?import mx.uv.fei.presentation.components.FormField?>
 
-<AnchorPane prefHeight="500.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="mx.uv.fei.presentation.RegisterProfessorController">
+<AnchorPane prefHeight="550.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.RegisterCoordinatorController">
     <VBox spacing="15.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0"
           AnchorPane.topAnchor="40.0">
-        <Label styleClass="form-title" text="Registro de Profesor"/>
+        <Label styleClass="form-title" text="Registro de Coordinador"/>
 
-        <Label text="Capture la información del docente para el sistema FEI" textFill="#6b7280">
+        <Label text="Capture la información del coordinador para el sistema FEI" textFill="#6b7280">
             <VBox.margin>
                 <Insets bottom="10.0"/>
             </VBox.margin>
         </Label>
 
-        <FormField fx:id="fieldNombre" labelText="Nombre del Profesor" promptText="Ingrese el nombre"/>
-
-        <FormField fx:id="fieldApellido" labelText="Apellidos del Profesor" promptText="Ingrese los apellidos"/>
-
+        <FormField fx:id="fieldNombre" labelText="Nombre del Coordinador" promptText="Ingrese el nombre"/>
+        <FormField fx:id="fieldApellido" labelText="Apellidos del Coordinador" promptText="Ingrese los apellidos"/>
         <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
+        <FormField fx:id="fieldNoPersonal" labelText="Número de Personal (Usuario)" promptText="Ingrese el número de personal"/>
 
-        <FormField fx:id="fieldNoPersonal" labelText="Número de Personal" promptText="Ingrese el número de personal"/>
+        <FormField fx:id="fieldPassword" labelText="Contraseña" promptText="Asigne una contraseña temporal"/>
 
         <FormComboBox fx:id="comboBoxSexo" labelText="Sexo / Género"/>
 
@@ -40,7 +39,7 @@
             <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" onAction="#handleActionCancelButton"
                     styleClass="secondary-button" text="Cancelar" HBox.hgrow="ALWAYS"/>
             <Button fx:id="registerButton" maxWidth="1.7976931348623157E308"
-                    onAction="#handleActionRegisterButton" styleClass="primary-button" text="Registrar Profesor"
+                    onAction="#handleActionRegisterButton" styleClass="primary-button" text="Registrar Coordinador"
                     HBox.hgrow="ALWAYS"/>
         </HBox>
     </VBox>
