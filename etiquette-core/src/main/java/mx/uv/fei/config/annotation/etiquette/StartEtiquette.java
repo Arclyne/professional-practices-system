@@ -1,5 +1,7 @@
 package mx.uv.fei.config.annotation.etiquette;
 
+import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface StartEtiquette {
-    String profile() default "local";
-
-    Class<?> factory() default void.class;
+    // Valor centinela para búsqueda por convención
+    Class<? extends IApplicationModule> factory() default IApplicationModule.class;
 }
