@@ -5,12 +5,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
 
+@Component
 public class DashboardController {
 
     @FXML
@@ -31,10 +34,18 @@ public class DashboardController {
     @FXML
     private Button btnRegistrarActividad;
 
+    private final Store store;
+
+    @Inject
+    public DashboardController(Store store) {
+        this.store = store;
+    }
+
     @FXML
     public void initialize() {
-        RootState currentState = Store.getInstance().getState();
-        User currentUser = currentState.authState().currentUser();
+        // Obtenemos el estado desde el store inyectado
+        RootState currentState = store.getState();
+        User currentUser = currentState.sessionState().currentUserInSession(); // Corregido para buscar en sessionState
 
         if (currentUser != null) {
             labelUserName.setText(currentUser.getName() + " " + currentUser.getLastName());
@@ -68,8 +79,6 @@ public class DashboardController {
             btnRegistrarActividad.setVisible(true);
             btnRegistrarActividad.setManaged(true);
         } else if ("Coordinador".equalsIgnoreCase(role)) {
-
-        } else if ("Coordinador".equalsIgnoreCase(role)) {
             btnRegistrarPracticante.setVisible(true);
             btnRegistrarPracticante.setManaged(true);
             btnRegistrarProfesor.setVisible(true);
@@ -84,11 +93,11 @@ public class DashboardController {
 
     @FXML
     private void handleRegistrarPracticante() {
-        Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PRACTITIONER));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PRACTITIONER));
     }
 
     @FXML
     private void handleLogout() {
-        Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
     }
 }

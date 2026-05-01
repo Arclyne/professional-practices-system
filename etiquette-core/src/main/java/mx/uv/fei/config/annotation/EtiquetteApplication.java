@@ -1,8 +1,8 @@
 package mx.uv.fei.config.annotation;
 
 import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
-import mx.uv.fei.config.annotation.core.ApplicationConfigurationFactory;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
+import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 
 public class EtiquetteApplication {
 
@@ -10,8 +10,10 @@ public class EtiquetteApplication {
         return new DependencyInjector(module);
     }
 
-    public static IApplicationModule bootstrap(String profile) {
-        // Llama a la factoría para obtener el módulo configurado
-        return ApplicationConfigurationFactory.create(profile);
+    public static String resolveProfile(Class<?> entryPointClass) {
+        if (entryPointClass.isAnnotationPresent(StartEtiquette.class)) {
+            return entryPointClass.getAnnotation(StartEtiquette.class).profile();
+        }
+        return "local";
     }
 }

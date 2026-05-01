@@ -8,7 +8,10 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 
 public interface IPracticeGroupDAO {
     int insertPracticeGroup(PracticeGroup group) throws DAOException;
+
     PracticeGroup recoverPracticeGroup(int groupIndex) throws DAOException;
+
     boolean updatePracticeGroup(PracticeGroup group, int groupIndex) throws DAOException;
+
     List<PracticeGroup> getAllPracticeGroups() throws DAOException;
 }

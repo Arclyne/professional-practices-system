@@ -2,22 +2,25 @@ package mx.uv.fei.domain.manager;
 
 import java.util.regex.Pattern;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.repositories.AdministratorDAO;
-import mx.uv.fei.dataacces.repositories.UserDAO;
+import mx.uv.fei.dataacces.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
-import mx.uv.fei.domain.statemachine.actions.AuthAction;
+import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 
+@Component
 public class RegisterAdminManager {
 
-    private final AdministratorDAO adminDAO;
+    private final IAdministratorDAO adminDAO;
+    private final Store store;
 
-    public RegisterAdminManager(IDatabaseConnection dbConnection) {
-        UserDAO userDAO = new UserDAO(dbConnection);
-        this.adminDAO = new AdministratorDAO(dbConnection, userDAO);
+    @Inject
+    public RegisterAdminManager(IAdministratorDAO adminDAO, Store store) {
+        this.adminDAO = adminDAO;
+        this.store = store;
     }
 
     public boolean checkSystemHasAdmin() throws ManagerException {
@@ -41,11 +44,12 @@ public class RegisterAdminManager {
             if (resultId <= 0) {
                 throw new ManagerException("No se pudo completar el registro del administrador en el sistema.");
             }
-
-            Store.getInstance().dispatch(new AuthAction.AdminCreatedSuccessfully());
+            store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", e);
+            throw new ManagerException(
+                    "Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.",
+                    e);
         }
     }
 

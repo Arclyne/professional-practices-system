@@ -9,6 +9,8 @@ import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
@@ -19,6 +21,7 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.common.CommonControler;
 
+@Component
 public class RegisterPractitionerController implements Initializable {
 
     @FXML
@@ -29,16 +32,18 @@ public class RegisterPractitionerController implements Initializable {
     private FormField fieldApellido;
     @FXML
     private FormField fieldCorreo;
-
     @FXML
     private FormComboBox comboBoxSexo;
     @FXML
     private FormField fieldLengua;
 
-    private RegisterPractitionerManager manager;
+    private final RegisterPractitionerManager manager;
+    private final Store store;
 
-    public RegisterPractitionerController(RegisterPractitionerManager manager) {
+    @Inject
+    public RegisterPractitionerController(RegisterPractitionerManager manager, Store store) {
         this.manager = manager;
+        this.store = store;
     }
 
     @Override
@@ -50,11 +55,6 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
-        if (manager == null) {
-            CommonControler.showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
-            return;
-        }
-
         if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
             CommonControler.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.",
                     AlertType.WARNING);
@@ -66,7 +66,7 @@ public class RegisterPractitionerController implements Initializable {
         newPractitioner.setName(fieldNombre.getText());
         newPractitioner.setLastName(fieldApellido.getText());
         newPractitioner.setEmail(fieldCorreo.getText());
-        newPractitioner.setGender(comboBoxSexo.getValue());
+        newPractitioner.setGender((String) comboBoxSexo.getValue());
 
         String lengua = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();
         newPractitioner.setIndigenousLanguage(lengua);
@@ -87,7 +87,7 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {

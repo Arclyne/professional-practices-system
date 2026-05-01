@@ -8,14 +8,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
-import mx.uv.fei.domain.common.CommonControler;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.RegisterProfessorManager;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+@Component
 public class RegisterProfessorController implements Initializable {
 
     @FXML
@@ -29,9 +32,10 @@ public class RegisterProfessorController implements Initializable {
     @FXML
     private FormComboBox comboBoxSexo;
 
-    private RegisterProfessorManager manager;
+    private final RegisterProfessorManager manager;
 
-    public void setManager(RegisterProfessorManager manager) {
+    @Inject
+    public RegisterProfessorController(RegisterProfessorManager manager) {
         this.manager = manager;
     }
 
@@ -44,11 +48,6 @@ public class RegisterProfessorController implements Initializable {
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
-        if (manager == null) {
-            CommonControler.showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
-            return;
-        }
-
         if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
             CommonControler.showAlert("Campos incompletos",
                     "Por favor, llene todos los campos obligatorios del docente.",
@@ -61,7 +60,7 @@ public class RegisterProfessorController implements Initializable {
         newProfessor.setLastName(fieldApellido.getText());
         newProfessor.setEmail(fieldCorreo.getText());
         newProfessor.setUserName(fieldNoPersonal.getText());
-        newProfessor.setGender(comboBoxSexo.getValue());
+        newProfessor.setGender((String) comboBoxSexo.getValue());
 
         try {
             String generatedPassword = manager.registerNewProfessor(newProfessor);

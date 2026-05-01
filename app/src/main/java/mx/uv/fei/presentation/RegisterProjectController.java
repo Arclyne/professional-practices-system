@@ -15,6 +15,8 @@ import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 
 import java.net.URL;
@@ -22,6 +24,7 @@ import java.sql.Date;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 
+@Component
 public class RegisterProjectController implements Initializable {
 
     private final ProjectManager projectManager;
@@ -57,6 +60,7 @@ public class RegisterProjectController implements Initializable {
     @FXML
     private Button buttonCancel;
 
+    @Inject
     public RegisterProjectController(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
@@ -80,7 +84,7 @@ public class RegisterProjectController implements Initializable {
 
             projectInformation.setProjectName(fieldProjectName.getText());
             projectInformation.setDescription(textAreaDescription.getText());
-            projectInformation.setManager(comboBoxManager.getValue());
+            projectInformation.setManager((String) comboBoxManager.getValue());
 
             int parsedProjectCapacity = Integer.parseInt(fieldCapacity.getText());
             projectInformation.setParticipantCapacity(parsedProjectCapacity);
@@ -121,5 +125,4 @@ public class RegisterProjectController implements Initializable {
         javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
         stage.close();
     }
-
 }

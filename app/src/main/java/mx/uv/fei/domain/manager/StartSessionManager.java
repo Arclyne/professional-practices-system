@@ -1,26 +1,29 @@
 package mx.uv.fei.domain.manager;
 
 import javafx.event.ActionEvent;
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
-import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
-
 import mx.uv.fei.domain.statemachine.Store;
-import mx.uv.fei.domain.statemachine.actions.AuthAction;
+import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import java.util.Map;
 
+@Component
 public class StartSessionManager {
 
     private final IUserDAO userDAO;
+    private final Store store;
 
-    public StartSessionManager(IDatabaseConnection databaseConnection) {
-        this.userDAO = new UserDAO(databaseConnection);
+    @Inject
+    public StartSessionManager(IUserDAO userDAO, Store store) {
+        this.userDAO = userDAO;
+        this.store = store;
     }
 
     public void handleActionConnectButton(Map<String, String> credential, ActionEvent currentActionEvent)
@@ -29,9 +32,7 @@ public class StartSessionManager {
             if (userDAO.verifyCredentials(credential.get("User"), credential.get("Password"))) {
                 User retrievedUser = userDAO.getUserByUserName(credential.get("User"));
 
-                Store store = Store.getInstance();
-
-                store.dispatch(new AuthAction.LoginSuccess(retrievedUser));
+                store.dispatch(new AuthenticatorAction.LoginSuccess(retrievedUser));
 
                 switch (retrievedUser.getStatus()) {
                     case "Pendiente":

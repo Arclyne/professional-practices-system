@@ -35,7 +35,8 @@ public class RegisterProfessorManager {
             return tempPassword;
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.",
+                    e);
         }
     }
 

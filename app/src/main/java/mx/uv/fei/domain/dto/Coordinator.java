@@ -1,9 +1,7 @@
 package mx.uv.fei.domain.dto;
 
-
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 public class Coordinator extends User {
     private LocalDateTime registrationDate;
@@ -29,13 +27,13 @@ public class Coordinator extends User {
         this.dischargeDate = dischargeDate;
     }
 
-     @Override
+    @Override
     public boolean equals(Object object) {
         if (this == object) {
             return true;
         }
-    
-        if (object == null || getClass() != object.getClass()){
+
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
 

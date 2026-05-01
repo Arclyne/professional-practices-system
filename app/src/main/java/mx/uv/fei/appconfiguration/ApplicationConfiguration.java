@@ -1,4 +1,4 @@
-package mx.uv.fei.config;
+package mx.uv.fei.appconfiguration;
 
 import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
 import mx.uv.fei.config.annotation.etiquette.Provide;

@@ -9,9 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import mx.uv.fei.TestDatabaseSetup;
-import mx.uv.fei.config.annotation.StartEtiquetteTest;
+
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
+import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
 @StartEtiquetteTest

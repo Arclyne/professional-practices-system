@@ -2,6 +2,7 @@ package mx.uv.fei.config.annotation.core;
 
 import mx.uv.fei.config.annotation.etiquette.Provide;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +29,17 @@ public class ProviderMethodRegistry {
         return providerMethods.containsKey(type);
     }
 
-    public Object provide(Class<?> type) throws Exception {
+    public Object provide(Class<?> type) {
         Method method = providerMethods.get(type);
-        return method.invoke(moduleInstance);
+
+        try {
+            return method.invoke(moduleInstance);
+        } catch (IllegalAccessException exception) {
+            throw new IllegalStateException(
+                    "No se tiene acceso al método proveedor de la dependencia: " + type.getName(), exception);
+        } catch (InvocationTargetException exception) {
+            throw new IllegalStateException("El método proveedor falló al crear la dependencia: " + type.getName(),
+                    exception.getCause());
+        }
     }
 }

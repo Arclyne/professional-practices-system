@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 
 import mx.uv.fei.domain.manager.PasswordManager;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -27,6 +28,7 @@ public class PasswordResetController implements Initializable {
     @FXML
     private Button buttonCancel;
 
+    @Inject
     public PasswordResetController(PasswordManager passwordResetMa) {
         this.passwordResetMa = passwordResetMa;
     }

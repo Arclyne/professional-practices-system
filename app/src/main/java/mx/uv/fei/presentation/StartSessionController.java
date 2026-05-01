@@ -10,27 +10,27 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.StartSessionManager;
 
+@Component
 public class StartSessionController {
 
-    private StartSessionManager startSessionManager;
+    private final StartSessionManager startSessionManager;
 
     @FXML
     private TextField textFieldUser;
-
     @FXML
     private PasswordField passwordFieldUser;
-
     @FXML
     private Button buttonClose;
-
     @FXML
     private Button buttonConnect;
 
+    @Inject
     public StartSessionController(StartSessionManager manager) {
         this.startSessionManager = manager;
     }

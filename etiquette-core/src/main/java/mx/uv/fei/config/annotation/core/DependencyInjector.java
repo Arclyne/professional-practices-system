@@ -7,6 +7,7 @@ import mx.uv.fei.config.annotation.etiquette.Profile;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,22 +24,14 @@ public class DependencyInjector {
     }
 
     public <T> T retrieveInstance(Class<T> type) {
-        try {
-            return type.cast(resolveRecursively(type, applicationModule.retrieveGlobalProfile()));
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
+        return type.cast(resolveRecursively(type, applicationModule.retrieveGlobalProfile()));
     }
 
     public void injectDependencies(Object targetInstance) {
-        try {
-            injectFields(targetInstance, targetInstance.getClass(), resolveProfile(targetInstance.getClass()));
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
+        injectFields(targetInstance, targetInstance.getClass(), resolveProfile(targetInstance.getClass()));
     }
 
-    private Object resolveRecursively(Class<?> type, String profile) throws Exception {
+    private Object resolveRecursively(Class<?> type, String profile) {
         if (singletonInstances.containsKey(type)) {
             return singletonInstances.get(type);
         }
@@ -50,26 +43,37 @@ public class DependencyInjector {
         }
 
         if (type.isInterface()) {
-            throw new RuntimeException(type.getName());
+            throw new IllegalArgumentException("No se puede instanciar directamente la interfaz: " + type.getName()
+                    + ". Asegúrate de proveer una implementación.");
         }
 
         profile = resolveProfile(type, profile);
-
         Constructor<?> constructor = selectConstructor(type);
         Object[] parameters = resolveParameters(constructor.getParameters(), profile);
 
-        Object instance = constructor.newInstance(parameters);
+        try {
+            Object instance = constructor.newInstance(parameters);
 
-        injectFields(instance, type, profile);
+            injectFields(instance, type, profile);
 
-        if (type.isAnnotationPresent(Component.class)) {
-            registerSingleton(type, instance);
+            if (type.isAnnotationPresent(Component.class)) {
+                registerSingleton(type, instance);
+            }
+
+            return instance;
+
+        } catch (InstantiationException exception) {
+            throw new IllegalStateException("No se puede instanciar la clase (podría ser abstracta): " + type.getName(),
+                    exception);
+        } catch (IllegalAccessException exception) {
+            throw new IllegalStateException("El constructor de la clase no es accesible: " + type.getName(), exception);
+        } catch (InvocationTargetException exception) {
+            throw new IllegalStateException("El constructor de la clase arrojó una excepción: " + type.getName(),
+                    exception.getCause());
         }
-
-        return instance;
     }
 
-    private Object[] resolveParameters(Parameter[] parameters, String profile) throws Exception {
+    private Object[] resolveParameters(Parameter[] parameters, String profile) {
         Object[] resolvedParameters = new Object[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -83,12 +87,18 @@ public class DependencyInjector {
         return resolvedParameters;
     }
 
-    private void injectFields(Object target, Class<?> type, String profile) throws Exception {
+    private void injectFields(Object target, Class<?> type, String profile) {
         for (Field field : type.getDeclaredFields()) {
             if (field.isAnnotationPresent(Inject.class)) {
                 field.setAccessible(true);
                 Object dependency = resolveRecursively(field.getType(), profile);
-                field.set(target, dependency);
+
+                try {
+                    field.set(target, dependency);
+                } catch (IllegalAccessException exception) {
+                    throw new IllegalStateException(
+                            "No se pudo inyectar la dependencia en el campo: " + field.getName(), exception);
+                }
             }
         }
     }
@@ -99,7 +109,13 @@ public class DependencyInjector {
                 return constructor;
             }
         }
-        return type.getConstructors()[0];
+
+        Constructor<?>[] constructors = type.getConstructors();
+        if (constructors.length == 0) {
+            throw new IllegalStateException(
+                    "No se encontró ningún constructor público para la clase: " + type.getName());
+        }
+        return constructors[0];
     }
 
     private void registerSingleton(Class<?> type, Object instance) {

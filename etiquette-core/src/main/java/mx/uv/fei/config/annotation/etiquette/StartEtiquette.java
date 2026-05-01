@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface StartEtiquette {
     String profile() default "local";
+
+    Class<?> factory() default void.class;
 }

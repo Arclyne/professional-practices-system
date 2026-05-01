@@ -6,6 +6,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.manager.TokenManager;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -16,9 +18,11 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Component
 public class TokenVerificationController implements Initializable {
 
     private final TokenManager tokenManager;
+    private final Store store;
 
     @FXML
     private TextField textFieldToken;
@@ -30,8 +34,10 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private Button buttonSend;
 
-    public TokenVerificationController(TokenManager tokenManager) {
+    @Inject
+    public TokenVerificationController(TokenManager tokenManager, Store store) {
         this.tokenManager = tokenManager;
+        this.store = store;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class TokenVerificationController implements Initializable {
             tokenManager.verifyToken(textFieldToken.getText());
 
             CommonControler.showSuccessAlert("Éxito", "Autenticación completada correctamente.");
-            Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
         } catch (ManagerException managerException) {
             CommonControler.showErrorAlert("Error de Autenticación", managerException.getMessage());
         }
