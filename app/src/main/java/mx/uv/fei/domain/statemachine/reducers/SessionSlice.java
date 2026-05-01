@@ -2,18 +2,20 @@ package mx.uv.fei.domain.statemachine.reducers;
 
 import mx.uv.fei.domain.statemachine.actions.Action;
 import mx.uv.fei.domain.statemachine.actions.SessionAction;
-import mx.uv.fei.domain.statemachine.state.SessionState;
+import mx.uv.fei.domain.statemachine.state.RootState;
 
-public class SessionSlice {
-    public SessionState reduce(SessionState currentSessionState, Action applicationAction) {
-        if (applicationAction instanceof SessionAction.LoginSuccess loginSuccessAction) {
-            return new SessionState(loginSuccessAction.loggedInUser());
+public class SessionSlice implements SliceReducer {
+
+    @Override
+    public RootState reduce(RootState currentState, Action action) {
+        if (!(action instanceof SessionAction sessionAction)) {
+            return currentState;
         }
 
-        if (applicationAction instanceof SessionAction.Logout) {
-            return new SessionState(null);
-        }
+        var nextSessionState = SessionReducer.reduce(
+                currentState.sessionState(),
+                sessionAction);
 
-        return currentSessionState;
+        return currentState.withSessionState(nextSessionState);
     }
 }

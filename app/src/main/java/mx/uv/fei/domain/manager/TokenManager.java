@@ -1,39 +1,51 @@
 package mx.uv.fei.domain.manager;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IAuthenticationToken;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.repositories.AuthenticationTokenDAO;
-import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.dto.AuthenticationToken;
+import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.statemachine.SessionFacade;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Component
 public class TokenManager {
 
     private final IAuthenticationToken tokenDAO;
+    private final SessionFacade session;
 
-    public TokenManager(IDatabaseConnection databaseConnection) {
-        this.tokenDAO = new AuthenticationTokenDAO(databaseConnection);
+    @Inject
+    public TokenManager(IAuthenticationToken tokenDAO, SessionFacade session) {
+        this.tokenDAO = tokenDAO;
+        this.session = session;
     }
 
     public void generateToken() throws ManagerException {
+        // Obtenemos el usuario activo mediante el Facade
+        User currentUser = session.getCurrentUser();
+
+        if (currentUser == null) {
+            throw new ManagerException("No hay una sesión activa para generar el token.");
+        }
+
         SecureRandom secureRandom = new SecureRandom();
         int newToken = 100000 + secureRandom.nextInt(900000);
+
         AuthenticationToken token = new AuthenticationToken();
-        token.setUserName(Store.getInstance().getState().authState().currentUser().getUserName());
+        token.setUserName(currentUser.getUserName());
         token.setValueToken(newToken);
         token.setTimeCreation(LocalDateTime.now());
+
         try {
             tokenDAO.insertToken(token);
-
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
         }
-
     }
 
     public void verifyToken(String tokenInput) throws ManagerException {
@@ -48,9 +60,13 @@ public class TokenManager {
             throw new ManagerException("El código debe contener únicamente números.");
         }
 
+        User currentUser = session.getCurrentUser();
+        if (currentUser == null) {
+            throw new ManagerException("No hay una sesión activa para verificar el token.");
+        }
+
         try {
-            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken,
-                    Store.getInstance().getState().authState().currentUser().getUserName());
+            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken, currentUser.getUserName());
 
             if (tokenCreationTime == null) {
                 throw new ManagerException("El token ingresado es incorrecto.");

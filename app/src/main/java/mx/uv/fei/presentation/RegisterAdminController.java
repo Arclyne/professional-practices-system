@@ -10,6 +10,8 @@ import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -21,6 +23,7 @@ import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+@Component
 public class RegisterAdminController implements Initializable {
 
     @FXML
@@ -36,14 +39,13 @@ public class RegisterAdminController implements Initializable {
     @FXML
     private FormComboBox comboBoxSexo;
 
-    private RegisterAdminManager manager;
+    private final RegisterAdminManager manager;
+    private final Store store;
 
-    public RegisterAdminController(RegisterAdminManager registerAdminManager) {
-        this.manager = registerAdminManager;
-    }
-
-    public void setManager(RegisterAdminManager manager) {
+    @Inject
+    public RegisterAdminController(RegisterAdminManager manager, Store store) {
         this.manager = manager;
+        this.store = store;
     }
 
     @Override
@@ -55,11 +57,6 @@ public class RegisterAdminController implements Initializable {
 
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
-        if (manager == null) {
-            CommonControler.showAlert("Error del Sistema", "Dependencia Manager no inyectada.", AlertType.ERROR);
-            return;
-        }
-
         if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
                 fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
                 fieldPassword.getText().isEmpty() || comboBoxSexo.getValue() == null) {
@@ -87,7 +84,7 @@ public class RegisterAdminController implements Initializable {
                     AlertType.INFORMATION);
 
             clearForm();
-            Store.getInstance().dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+            store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
 
         } catch (ManagerException e) {
             CommonControler.showAlert("Error en la Configuración", e.getMessage(), AlertType.ERROR);

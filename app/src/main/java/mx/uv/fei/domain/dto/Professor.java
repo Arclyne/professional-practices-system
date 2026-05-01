@@ -13,7 +13,7 @@ public class Professor extends User {
             return true;
         }
 
-        if (object == null || getClass() != object.getClass()){
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
 

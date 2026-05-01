@@ -15,6 +15,7 @@ import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 
 import java.net.URL;
@@ -55,6 +56,7 @@ public class RegisterActivityController implements Initializable {
     @FXML
     private Button buttonCancel;
 
+    @Inject
     public RegisterActivityController(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }

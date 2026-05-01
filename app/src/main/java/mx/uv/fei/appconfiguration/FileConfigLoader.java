@@ -1,4 +1,6 @@
-package mx.uv.fei.config;
+package mx.uv.fei.appconfiguration;
+
+import mx.uv.fei.config.annotation.etiquette.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,12 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@Component
 public class FileConfigLoader {
-    public static Properties loadProperties(String fileName) {
+
+    public Properties loadProperties(String fileName) {
         Properties properties = new Properties();
 
-        try (
-                InputStream input = FileConfigLoader.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream input = FileConfigLoader.class.getClassLoader().getResourceAsStream(fileName)) {
             if (input == null) {
                 throw new IllegalArgumentException("The configuration file was not found: " + fileName);
             }
@@ -25,16 +28,14 @@ public class FileConfigLoader {
     }
 
     public Map<String, String> loadUseConfig(String fileName, String useConfig) {
-
-        Properties Allproperties = loadProperties(fileName);
+        Properties allProperties = loadProperties(fileName);
         Map<String, String> useConfigMap = new HashMap<>();
         String prefix = useConfig + ".";
 
-        for (String key : Allproperties.stringPropertyNames()) {
-
+        for (String key : allProperties.stringPropertyNames()) {
             if (key.startsWith(prefix)) {
-                String propety = key.substring(prefix.length());
-                useConfigMap.put(propety, Allproperties.getProperty(key));
+                String propertyName = key.substring(prefix.length());
+                useConfigMap.put(propertyName, allProperties.getProperty(key));
             }
         }
 

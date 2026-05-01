@@ -20,14 +20,12 @@
 
     <dependencies>
 
-        <!-- Your DI core -->
         <dependency>
             <groupId>mx.uv.fei</groupId>
             <artifactId>etiquette-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Test support (ONLY for tests) -->
         <dependency>
             <groupId>mx.uv.fei</groupId>
             <artifactId>etiquette-test</artifactId>
@@ -35,7 +33,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -48,14 +45,12 @@
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- MySQL (production) -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.0.0</version>
         </dependency>
 
-        <!-- H2 (tests only) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -63,7 +58,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit (for your tests in app) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -76,7 +70,6 @@
     <build>
         <plugins>
 
-            <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -86,20 +79,18 @@
                 </configuration>
             </plugin>
 
-            <!-- Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.0</version>
             </plugin>
 
-            <!-- JavaFX -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.6</version>
                 <configuration>
-                    <mainClass>mx.uv.fei.App</mainClass>
+                    <mainClass>mx.uv.fei.app.App</mainClass>
                 </configuration>
             </plugin>
 

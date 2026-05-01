@@ -10,6 +10,7 @@ import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -19,15 +20,22 @@ import mx.uv.fei.presentation.components.FormField;
 
 public class RegisterCoordinatorController implements Initializable {
 
-    @FXML private FormField fieldNombre;
-    @FXML private FormField fieldApellido;
-    @FXML private FormField fieldCorreo;
-    @FXML private FormField fieldNoPersonal;
-    @FXML private FormField fieldPassword;
-    @FXML private FormComboBox comboBoxSexo;
+    @FXML
+    private FormField fieldNombre;
+    @FXML
+    private FormField fieldApellido;
+    @FXML
+    private FormField fieldCorreo;
+    @FXML
+    private FormField fieldNoPersonal;
+    @FXML
+    private FormField fieldPassword;
+    @FXML
+    private FormComboBox comboBoxSexo;
 
     private final RegisterCoordinatorManager manager;
 
+    @Inject
     public RegisterCoordinatorController(RegisterCoordinatorManager manager) {
         this.manager = manager;
     }
@@ -82,11 +90,17 @@ public class RegisterCoordinatorController implements Initializable {
     }
 
     private void clearForm() {
-        if (fieldNombre != null) fieldNombre.setText("");
-        if (fieldApellido != null) fieldApellido.setText("");
-        if (fieldCorreo != null) fieldCorreo.setText("");
-        if (fieldNoPersonal != null) fieldNoPersonal.setText("");
-        if (fieldPassword != null) fieldPassword.setText("");
-        if (comboBoxSexo != null) comboBoxSexo.clearSelection();
+        if (fieldNombre != null)
+            fieldNombre.setText("");
+        if (fieldApellido != null)
+            fieldApellido.setText("");
+        if (fieldCorreo != null)
+            fieldCorreo.setText("");
+        if (fieldNoPersonal != null)
+            fieldNoPersonal.setText("");
+        if (fieldPassword != null)
+            fieldPassword.setText("");
+        if (comboBoxSexo != null)
+            comboBoxSexo.clearSelection();
     }
 }

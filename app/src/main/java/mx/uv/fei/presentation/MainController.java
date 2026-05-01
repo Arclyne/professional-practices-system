@@ -8,13 +8,17 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.StackPane;
 import java.net.URL;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.manager.RegisterAdminManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
 
+@Component
 public class MainController {
 
     @FXML
@@ -22,30 +26,33 @@ public class MainController {
 
     private Runnable unsubscribe;
     private final DependencyInjector injector;
+    private final Store store;
+    private final RegisterAdminManager registerAdminManager;
 
     private AppSection activeSection = null;
 
-    public MainController(DependencyInjector injector) {
+    @Inject
+    public MainController(DependencyInjector injector, Store store, RegisterAdminManager registerAdminManager) {
         this.injector = injector;
+        this.store = store;
+        this.registerAdminManager = registerAdminManager;
     }
 
     @FXML
     public void initialize() {
-        this.unsubscribe = Store.getInstance().subscribe(this::handleStateChange);
-
+        this.unsubscribe = store.subscribe(this::handleStateChange);
         startAppFlow();
     }
 
     private void handleStateChange(RootState prevState, RootState newState) {
         AppSection targetSection = newState.navigationState().currentSection();
 
-        System.out.println(targetSection);
+        System.out.println("Navegando a: " + targetSection);
 
         Platform.runLater(() -> {
             if (this.activeSection != targetSection) {
                 this.activeSection = targetSection;
 
-                System.out.println(targetSection);
                 switch (targetSection) {
                     case SPLASH_SCREEN -> loadView("/mx/uv/fei/presentation/loading.fxml");
                     case ADMIN_REGISTRATION -> loadView("/mx/uv/fei/presentation/RegisterAdmin.fxml");
@@ -54,7 +61,6 @@ public class MainController {
                     case PASSWORD_RESET -> loadView("/mx/uv/fei/presentation/PasswordReset.fxml");
                     case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/TokenVerification.fxml");
                     case REGISTER_PRACTITIONER -> loadView("/mx/uv/fei/presentation/registerPractitioner.fxml");
-
                     default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
                 }
             }
@@ -69,7 +75,8 @@ public class MainController {
             }
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            loader.setControllerFactory(injector::getController);
+
+            loader.setControllerFactory(injector::retrieveInstance);
 
             Parent view = loader.load();
             contentArea.getChildren().setAll(view);
@@ -85,9 +92,8 @@ public class MainController {
 
     private void startAppFlow() {
         try {
-            boolean adminExists = injector.getRegisterAdminManager().checkSystemHasAdmin();
+            boolean adminExists = registerAdminManager.checkSystemHasAdmin();
 
-            Store store = Store.getInstance();
             if (!adminExists) {
                 store.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
             } else {

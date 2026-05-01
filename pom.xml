@@ -9,14 +9,18 @@
     <artifactId>professional-practices-system</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!-- IMPORTANT -->
     <packaging>pom</packaging>
 
-    <!-- MODULES MUST BE INSIDE project -->
     <modules>
         <module>etiquette-core</module>
         <module>etiquette-test</module>
         <module>app</module>
     </modules>
+
+<properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>

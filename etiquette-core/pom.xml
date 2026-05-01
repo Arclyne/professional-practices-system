@@ -13,10 +13,5 @@
 
     <artifactId>etiquette-core</artifactId>
 
-    <dependency>
-    <groupId>mx.uv.fei</groupId>
-    <artifactId>app</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
 
 </project>

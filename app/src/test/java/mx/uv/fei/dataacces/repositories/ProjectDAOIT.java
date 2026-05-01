@@ -2,6 +2,7 @@ package mx.uv.fei.dataacces.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,18 +12,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import mx.uv.fei.TestDatabaseSetup;
-import mx.uv.fei.config.DatabasePropeties;
-import mx.uv.fei.config.DataconnectionConfig;
+import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 
+@StartEtiquetteTest
+@Profile("test")
 public class ProjectDAOIT {
 
+    @Inject
     private IDatabaseConnection dbConnection;
-    private DatabasePropeties propeties;
 
+    @Inject
     private IProjectDAO projectDAOTest;
 
     private Project expectedProjectInserted;
@@ -32,11 +37,11 @@ public class ProjectDAOIT {
 
     @BeforeEach
     void setUp() throws SQLException {
-        propeties = new DatabasePropeties();
-        dbConnection = new DataconnectionConfig(propeties, "test").databaseConnection();
+        assertNotNull(dbConnection);
+        assertNotNull(projectDAOTest);
+
         TestDatabaseSetup.initialize(dbConnection);
 
-        projectDAOTest = new ProjectDAO(dbConnection);
         expectedProjectInserted = new Project();
         expectedProjectInserted.setProjectId(1);
         expectedProjectInserted.setProjectName("toRecover");
@@ -75,28 +80,22 @@ public class ProjectDAOIT {
 
         boolean resultTest = projectDAOTest.insertProject(testProject);
         assertTrue(resultTest);
-
     }
 
     @Test
     void testRecoverProjectSuccess() throws DAOException {
-
         Project resultTest = projectDAOTest.recoverProject("toRecover", "toRecover");
         assertEquals(expectedProjectInserted, resultTest);
-
     }
 
     @Test
     void testRecoverALLSuccess() throws DAOException {
-
         List<Project> resultTest = projectDAOTest.getAllProjects();
         assertEquals(expectedList, resultTest);
-
     }
 
     @Test
     void testUpdateTuplaSuccess() throws DAOException {
-
         Project toUpdateProject = projectDAOTest.recoverProject("toRecover", "toRecover");
 
         Project toUpdatedData = new Project();
@@ -114,6 +113,5 @@ public class ProjectDAOIT {
         Project resultTest = projectDAOTest.recoverProject("Updated Project Name", "Updated Manager");
 
         assertEquals(toUpdatedData, resultTest);
-
     }
 }
