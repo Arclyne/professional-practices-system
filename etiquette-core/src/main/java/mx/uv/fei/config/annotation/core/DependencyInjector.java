@@ -32,6 +32,14 @@ public class DependencyInjector {
     }
 
     private Object resolveRecursively(Class<?> type, String profile) {
+        if (type == IApplicationModule.class) {
+            return applicationModule;
+        }
+
+        if (type == DependencyInjector.class) {
+            return this;
+        }
+
         if (singletonInstances.containsKey(type)) {
             return singletonInstances.get(type);
         }
@@ -43,8 +51,7 @@ public class DependencyInjector {
         }
 
         if (type.isInterface()) {
-            throw new IllegalArgumentException("No se puede instanciar directamente la interfaz: " + type.getName()
-                    + ". Asegúrate de proveer una implementación.");
+            throw new IllegalArgumentException("No hay provider registrado para la interfaz: " + type.getName());
         }
 
         profile = resolveProfile(type, profile);
@@ -58,6 +65,7 @@ public class DependencyInjector {
 
             if (type.isAnnotationPresent(Component.class)) {
                 registerSingleton(type, instance);
+                providerRegistry.registerDynamicProviders(instance);
             }
 
             return instance;
@@ -119,10 +127,13 @@ public class DependencyInjector {
     }
 
     private void registerSingleton(Class<?> type, Object instance) {
-        singletonInstances.put(type, instance);
-
-        for (Class<?> implementedInterface : type.getInterfaces()) {
-            singletonInstances.put(implementedInterface, instance);
+        Class<?> current = type;
+        while (current != null && current != Object.class) {
+            singletonInstances.put(current, instance);
+            for (Class<?> iface : current.getInterfaces()) {
+                singletonInstances.put(iface, instance);
+            }
+            current = current.getSuperclass();
         }
     }
 

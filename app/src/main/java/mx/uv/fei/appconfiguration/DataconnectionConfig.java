@@ -10,24 +10,30 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
 @Component
 public class DataconnectionConfig {
-
-    private DatabaseProperties properties;
+    private final DatabaseProperties properties;
+    private final String activeProfile;
 
     @Inject
-    public DataconnectionConfig(DatabaseProperties properties) {
+    public DataconnectionConfig(DatabaseProperties properties, String profile) {
         this.properties = properties;
+        this.activeProfile = profile;
+        loadConfig();
     }
 
     @Provide
-    public IDatabaseConnection databaseConnection() {
-        return new DatabaseConnection(properties.getUrl(), properties.getUser(), properties.getPassword());
+    public IDatabaseConnection provideConnection() {
+        return new DatabaseConnection(
+                properties.getUrl(),
+                properties.getUser(),
+                properties.getPassword()
+        );
     }
 
-    public void loadConfig(String profile) {
-        FileConfigLoader configurator = new FileConfigLoader();
-        Map<String, String> propetiesLoad = configurator.loadUseConfig("database.properties", profile);
-        properties.setUrl(propetiesLoad.get("db.url"));
-        properties.setUser(propetiesLoad.get("db.user"));
-        properties.setPassword(propetiesLoad.get("db.password"));
+    private void loadConfig() {
+        FileConfigLoader loader = new FileConfigLoader();
+        var map = loader.loadUseConfig("database.properties", activeProfile);
+        properties.setUrl(map.get("db.url"));
+        properties.setUser(map.get("db.user"));
+        properties.setPassword(map.get("db.password"));
     }
 }

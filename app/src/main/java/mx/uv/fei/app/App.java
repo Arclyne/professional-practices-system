@@ -6,42 +6,38 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import mx.uv.fei.appconfiguration.ApplicationConfigurationFactory;
+import mx.uv.fei.appconfiguration.DatabaseProperties;
+import mx.uv.fei.appconfiguration.DataconnectionConfig;
 import mx.uv.fei.config.annotation.EtiquetteApplication;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
+import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
+import mx.uv.fei.dataacces.repositories.AdministratorDAO;
+import mx.uv.fei.dataacces.repositories.UserDAO;
+import mx.uv.fei.domain.statemachine.Store;
 
-@StartEtiquette(profile = "local")
+@StartEtiquette
+@Profile("local")
 public class App extends Application {
-
     private DependencyInjector dependencyInjector;
 
     @Override
     public void init() {
-
-        String profile = EtiquetteApplication.resolveProfile(this.getClass());
-
-        this.dependencyInjector = EtiquetteApplication.run(
-                this.getClass(),
-                ApplicationConfigurationFactory.create(profile));
+        this.dependencyInjector = EtiquetteApplication.run(this.getClass());
+        dependencyInjector.retrieveInstance(DatabaseProperties.class);
+        dependencyInjector.retrieveInstance(DataconnectionConfig.class);
+        dependencyInjector.retrieveInstance(UserDAO.class);
+        dependencyInjector.retrieveInstance(AdministratorDAO.class);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/mx/uv/fei/presentation/main.fxml"));
-
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mx/uv/fei/presentation/main.fxml"));
         loader.setControllerFactory(dependencyInjector::retrieveInstance);
 
         Parent root = loader.load();
-        Scene scene = new Scene(root, 1024, 768);
-
-        primaryStage.setScene(scene);
+        primaryStage.setScene(new Scene(root, 1024, 768));
         primaryStage.setTitle("Sistema de Gestión de Prácticas Profesionales - FEI");
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
