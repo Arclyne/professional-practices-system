@@ -4,11 +4,13 @@ import java.util.Map;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.config.annotation.etiquette.Keep;
 import mx.uv.fei.config.annotation.etiquette.Provide;
 import mx.uv.fei.dataacces.database.DatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
 @Component
+@Keep
 public class DataconnectionConfig {
     private final DatabaseProperties properties;
     private final String activeProfile;

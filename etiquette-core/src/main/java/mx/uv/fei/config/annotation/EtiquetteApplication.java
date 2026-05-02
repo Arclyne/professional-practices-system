@@ -27,7 +27,18 @@ public class EtiquetteApplication {
                 throw new IllegalStateException("Error al inicializar Etiquette: " + e.getMessage(), e);
             }
         }
-        return new DependencyInjector(module);
+
+        // Determinar el paquete base para el escáner
+        String basePackage = entryPointClass.getPackageName();
+
+        // Subimos un nivel en la jerarquía si el punto de entrada está en subpaquetes comunes
+        // para asegurar que escaneamos todo 'mx.uv.fei'
+        if (basePackage.endsWith(".app") || basePackage.endsWith(".test")) {
+            basePackage = basePackage.substring(0, basePackage.lastIndexOf("."));
+        }
+
+        // Le pasamos el paquete base al inyector para que inicie el escaneo
+        return new DependencyInjector(module, basePackage);
     }
 
     private static IApplicationModule instantiateModule(Class<?> clazz, String profile) throws Exception {
@@ -53,6 +64,6 @@ public class EtiquetteApplication {
         if (entryPointClass.isAnnotationPresent(Profile.class)) {
             return entryPointClass.getAnnotation(Profile.class).value();
         }
-        return "local";
+        return "local"; // fallback a "local"
     }
 }

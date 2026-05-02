@@ -1,8 +1,10 @@
 package mx.uv.fei.appconfiguration;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Keep;
 
 @Component
+@Keep
 public class DatabaseProperties {
 
     private String Url;
