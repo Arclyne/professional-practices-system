@@ -6,15 +6,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import mx.uv.fei.appconfiguration.DatabaseProperties;
-import mx.uv.fei.appconfiguration.DataconnectionConfig;
 import mx.uv.fei.config.annotation.EtiquetteApplication;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
-import mx.uv.fei.dataacces.repositories.AdministratorDAO;
-import mx.uv.fei.dataacces.repositories.UserDAO;
-import mx.uv.fei.domain.statemachine.Store;
+
 
 @StartEtiquette
 @Profile("local")
@@ -24,10 +20,6 @@ public class App extends Application {
     @Override
     public void init() {
         this.dependencyInjector = EtiquetteApplication.run(this.getClass());
-        dependencyInjector.retrieveInstance(DatabaseProperties.class);
-        dependencyInjector.retrieveInstance(DataconnectionConfig.class);
-        dependencyInjector.retrieveInstance(UserDAO.class);
-        dependencyInjector.retrieveInstance(AdministratorDAO.class);
     }
 
     @Override

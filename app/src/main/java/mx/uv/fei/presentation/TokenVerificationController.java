@@ -13,6 +13,7 @@ import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.actions.SessionAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import java.net.URL;
@@ -51,8 +52,15 @@ public class TokenVerificationController implements Initializable {
 
             CommonControler.showSuccessAlert("Éxito", "Autenticación completada correctamente.");
             store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+
         } catch (ManagerException managerException) {
-            CommonControler.showErrorAlert("Error de Autenticación", managerException.getMessage());
+            // Ahora mostrará los mensajes exactos ("El token expiró", "Formato incorrecto", etc.)
+            CommonControler.showErrorAlert("Validación fallida", managerException.getMessage());
+
+        } catch (Exception exception) {
+            // Respaldo de seguridad por si ocurre un NullPointerException o similar
+            CommonControler.showErrorAlert("Error Fatal", "Ocurrió un error inesperado al verificar el token.");
+            exception.printStackTrace();
         }
     }
 
@@ -62,15 +70,25 @@ public class TokenVerificationController implements Initializable {
             tokenManager.generateToken();
             CommonControler.showSuccessAlert("Enviado",
                     "Se ha generado un nuevo código (por ahora no se envía al correo).");
+
+        } catch (ManagerException managerException) {
+            // Aquí te avisará explícitamente si "No hay una sesión activa"
+            CommonControler.showErrorAlert("No se pudo generar", managerException.getMessage());
+
         } catch (Exception exception) {
-            CommonControler.showErrorAlert("Error", "No se pudo generar el token.");
+            CommonControler.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en el sistema.");
+            exception.printStackTrace();
         }
     }
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        // En lugar de matar la ventana a la fuerza, limpiamos la sesión a medias
+        // y le pedimos al Store que regrese a la pantalla de Login
+        store.dispatch(new SessionAction.Logout());
+
+        // Nota: Si SessionAction.Logout no redirige automáticamente en tu Reducer,
+        // puedes despachar la navegación manualmente después del logout:
+        // store.dispatch(new NavigationAction.GoToSection(AppSection.START_SESSION));
     }
 }

@@ -27,14 +27,13 @@ public class RegisterAdminManager {
         try {
             return this.adminDAO.checkIfAdminExists();
         } catch (DAOException e) {
-            e.printStackTrace();
+
             throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", e);
         }
     }
 
     public void registerInitialAdmin(Administrator administrator) throws ManagerException {
         administrator.setStatus("Activo");
-        administrator.setRole("Administrador");
 
         this.validateAdminBusinessRules(administrator);
 

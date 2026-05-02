@@ -2,6 +2,7 @@ package mx.uv.fei.domain.statemachine;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.config.annotation.etiquette.Keep;
 import mx.uv.fei.domain.statemachine.reducers.AuthenticatorSlice;
 import mx.uv.fei.domain.statemachine.reducers.NavigationSlice;
 import mx.uv.fei.domain.statemachine.reducers.SessionSlice;
@@ -14,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 @Component
+@Keep
 public class Store {
 
     private RootState applicationState;

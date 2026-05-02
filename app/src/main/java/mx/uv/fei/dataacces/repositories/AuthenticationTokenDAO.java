@@ -28,9 +28,8 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
 
     @Override
     public boolean insertToken(AuthenticationToken tokenToInsert) throws DAOException {
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setInt(1, tokenToInsert.getValueToken());
             statement.setTimestamp(2, Timestamp.valueOf(tokenToInsert.getTimeCreation()));
@@ -39,7 +38,9 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
             return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar insertar el token en la base de datos.", e);
+            String debugMsg = String.format("Fallo al insertar token [%d] para el usuario '%s'. SQLState: %s, ErrorCode: %d",
+                    tokenToInsert.getValueToken(), tokenToInsert.getUserName(), e.getSQLState(), e.getErrorCode());
+            throw new DAOException(debugMsg, e);
         }
     }
 
@@ -47,9 +48,8 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
     public AuthenticationToken recoverToken(int tokenValue) throws DAOException {
         AuthenticationToken tokenRecovered = null;
 
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
 
             statement.setInt(1, tokenValue);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -67,7 +67,9 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar recuperar el token de la base de datos.", e);
+            String debugMsg = String.format("Fallo al recuperar los datos del token [%d]. SQLState: %s, ErrorCode: %d",
+                    tokenValue, e.getSQLState(), e.getErrorCode());
+            throw new DAOException(debugMsg, e);
         }
         return tokenRecovered;
     }
@@ -76,16 +78,14 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
     public LocalDateTime getTokenCreationTime(int tokenValue, String userName) throws DAOException {
         LocalDateTime creationTime = null;
 
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_CREATION_TIME)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_CREATION_TIME)) {
 
             statement.setInt(1, tokenValue);
             statement.setString(2, userName);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-
                     Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
                     if (ts != null) {
                         creationTime = ts.toLocalDateTime();
@@ -93,7 +93,9 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar recuperar la fecha de creación del token.", e);
+            String debugMsg = String.format("Fallo al consultar tiempo de creación para el token [%d] del usuario '%s'. SQLState: %s, ErrorCode: %d",
+                    tokenValue, userName, e.getSQLState(), e.getErrorCode());
+            throw new DAOException(debugMsg, e);
         }
         return creationTime;
     }
