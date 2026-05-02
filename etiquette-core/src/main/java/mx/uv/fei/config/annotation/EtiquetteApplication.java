@@ -21,18 +21,13 @@ public class EtiquetteApplication {
                         ? getConventionClass(entryPointClass)
                         : start.factory();
 
-                // Instanciar pasando el perfil al constructor
                 module = instantiateModule(targetClass, profile);
             } catch (Exception e) {
                 throw new IllegalStateException("Error al inicializar Etiquette: " + e.getMessage(), e);
             }
         }
 
-        // Determinar el paquete base para el escáner
         String basePackage = entryPointClass.getPackageName();
-
-        // Subimos un nivel en la jerarquía si el punto de entrada está en subpaquetes comunes
-        // para asegurar que escaneamos todo 'mx.uv.fei'
         if (basePackage.endsWith(".app") || basePackage.endsWith(".test")) {
             basePackage = basePackage.substring(0, basePackage.lastIndexOf("."));
         }
