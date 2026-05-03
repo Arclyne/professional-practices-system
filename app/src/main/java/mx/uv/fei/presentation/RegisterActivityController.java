@@ -11,6 +11,9 @@ import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
@@ -26,6 +29,10 @@ import java.util.ResourceBundle;
 public class RegisterActivityController implements Initializable {
 
     private final ProjectManager projectManager;
+    private final Store store;
+
+    public Button saveButton;
+    public Button cancelButton;
 
     @FXML
     private FormField fieldActivityName;
@@ -57,12 +64,15 @@ public class RegisterActivityController implements Initializable {
     private Button buttonCancel;
 
     @Inject
-    public RegisterActivityController(ProjectManager projectManager) {
+    public RegisterActivityController(ProjectManager projectManager, Store store) {
+
         this.projectManager = projectManager;
+        this.store = store;
     }
 
     @Override
     public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
+
         ObservableList<String> organizationOptions = FXCollections.observableArrayList(
                 "Organización A", "Organización B", "Organización C");
         comboBoxOrganization.setItems(organizationOptions);
@@ -74,6 +84,7 @@ public class RegisterActivityController implements Initializable {
 
     @FXML
     private void handleActionSaveButton(ActionEvent actionEvent) {
+
         try {
             Activity activityInformation = new Activity();
 
@@ -109,9 +120,7 @@ public class RegisterActivityController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
 }

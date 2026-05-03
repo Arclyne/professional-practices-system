@@ -17,9 +17,9 @@ public class ProjectManager {
     private final IActivityDAO activityDataAccessObject;
     private final IProjectDAO projectDataAccessObject;
 
-    public ProjectManager(IDatabaseConnection DatabaseConnection) {
-        this.activityDataAccessObject = new ActivityDAO(DatabaseConnection);
-        this.projectDataAccessObject = new ProjectDAO(DatabaseConnection);
+    public ProjectManager(IDatabaseConnection databaseConnection) {
+        this.activityDataAccessObject = new ActivityDAO(databaseConnection);
+        this.projectDataAccessObject = new ProjectDAO(databaseConnection);
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {

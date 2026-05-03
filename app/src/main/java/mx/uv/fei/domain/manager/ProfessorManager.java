@@ -10,12 +10,12 @@ import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-public class RegisterProfessorManager {
-    private UserDAO userDAO;
-    private ProfessorDAO professorDAO;
+public class ProfessorManager {
 
-    public RegisterProfessorManager(IDatabaseConnection dbConnection) {
-        this.userDAO = new UserDAO(dbConnection);
+    private final ProfessorDAO professorDAO;
+
+    public ProfessorManager(IDatabaseConnection dbConnection) {
+        UserDAO userDAO = new UserDAO(dbConnection);
         this.professorDAO = new ProfessorDAO(dbConnection, userDAO);
     }
 
