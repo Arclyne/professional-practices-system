@@ -36,7 +36,7 @@ public class StartSessionController {
     }
 
     @FXML
-    private void handleActionConnectButton(ActionEvent actionEvent) {
+    private void handleActionConnectButton() {
         String userNameInput = textFieldUser.getText().trim();
         String userPasswordInput = passwordFieldUser.getText().trim();
 
@@ -50,7 +50,7 @@ public class StartSessionController {
         credential.put("Password", userPasswordInput);
 
         try {
-            startSessionManager.handleActionConnectButton(credential, actionEvent);
+            startSessionManager.handleActionConnectButton(credential);
         } catch (ManagerException e) {
             CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }

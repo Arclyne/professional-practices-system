@@ -14,7 +14,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
-import mx.uv.fei.domain.manager.RegisterPractitionerManager;
+import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -37,11 +37,11 @@ public class RegisterPractitionerController implements Initializable {
     @FXML
     private FormField fieldLengua;
 
-    private final RegisterPractitionerManager manager;
+    private final PractitionerManager manager;
     private final Store store;
 
     @Inject
-    public RegisterPractitionerController(RegisterPractitionerManager manager, Store store) {
+    public RegisterPractitionerController(PractitionerManager manager, Store store) {
         this.manager = manager;
         this.store = store;
     }

@@ -10,11 +10,11 @@ import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-public class RegisterPractitionerManager {
+public class PractitionerManager {
 
     private PractitionerDAO practitionerDAO;
 
-    public RegisterPractitionerManager(IDatabaseConnection dbConnection) {
+    public PractitionerManager(IDatabaseConnection dbConnection) {
         UserDAO userDAO = new UserDAO(dbConnection);
         practitionerDAO = new PractitionerDAO(dbConnection, userDAO);
     }
