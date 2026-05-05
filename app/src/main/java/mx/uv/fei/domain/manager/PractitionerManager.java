@@ -2,7 +2,7 @@ package mx.uv.fei.domain.manager;
 
 import java.util.UUID;
 
-import mx.uv.fei.domain.common.CommonValidator;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.PractitionerDAO;
@@ -23,12 +23,12 @@ public class PractitionerManager {
         String temporalPassword = "temp-" + UUID.randomUUID().toString().substring(0, 8);
 
         practitioner.setPassword(temporalPassword);
-        practitioner.setUserName(practitioner.getEnrollment()); // La matrícula es el Nombre de Usuario
-        practitioner.setRole("Practicante");
+        practitioner.setUserName(practitioner.getEnrollment());
+        practitioner.setRole("Practitioner");
         practitioner.setStatus("Pendiente");
         practitioner.setGrade(0.0);
 
-        CommonValidator.validatePractitioner(practitioner);
+        Validator.validatePractitioner(practitioner);
 
         try {
             int resultId = this.practitionerDAO.insertPractitioner(practitioner);

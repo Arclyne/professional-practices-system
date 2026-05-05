@@ -3,7 +3,7 @@ package mx.uv.fei.domain.common;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-public class CommonControler {
+public class Controller {
 
     public static void showSuccessAlert(String alertTitle, String alertMessage) {
         Alert userAlert = new Alert(Alert.AlertType.INFORMATION);

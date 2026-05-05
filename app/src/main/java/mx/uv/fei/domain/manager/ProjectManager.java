@@ -9,7 +9,7 @@ import mx.uv.fei.dataacces.repositories.ActivityDAO;
 import mx.uv.fei.dataacces.repositories.ProjectDAO;
 
 import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.domain.common.CommonValidator;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class ProjectManager {
@@ -23,7 +23,7 @@ public class ProjectManager {
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
-        CommonValidator.validateActivityData(activityToRegister);
+        Validator.validateActivityData(activityToRegister);
 
         try {
             boolean isRegistered = activityDataAccessObject.insertActivity(activityToRegister);
@@ -39,7 +39,7 @@ public class ProjectManager {
     }
 
     public boolean registerNewProject(Project projectToRegister) throws ManagerException {
-        CommonValidator.validateProjectData(projectToRegister);
+        Validator.validateProjectData(projectToRegister);
 
         try {
             boolean isRegistered = projectDataAccessObject.insertProject(projectToRegister);

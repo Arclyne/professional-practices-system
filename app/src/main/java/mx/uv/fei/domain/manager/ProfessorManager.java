@@ -2,7 +2,7 @@ package mx.uv.fei.domain.manager;
 
 import java.util.UUID;
 
-import mx.uv.fei.domain.common.CommonValidator;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.ProfessorDAO;
@@ -22,8 +22,9 @@ public class ProfessorManager {
     public String registerNewProfessor(Professor professor) throws ManagerException {
         String tempPassword = this.generatePassword();
         professor.setPassword(tempPassword);
-        professor.setStatus("no activo");
-        CommonValidator.validateProfessorData(professor);
+        professor.setRole("Professor");
+        professor.setStatus("Pendiente");
+        Validator.validateProfessorData(professor);
 
         try {
             int resultId = this.professorDAO.insertProfessor(professor);

@@ -24,7 +24,7 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
    <children>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Usuario/Correo:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
       <TextField fx:id="textFieldUser" GridPane.columnIndex="1" GridPane.rowIndex="0" />
       
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="1" />

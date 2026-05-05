@@ -4,8 +4,19 @@ import mx.uv.fei.domain.dto.*;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
-public class CommonValidator {
+public class Validator {
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
+
+    public static boolean isValidEmail(String email) {
+        return email != null && EMAIL_PATTERN.matcher(email).matches();
+    }
+
+    public static boolean isValidEnrollment(String enrollment) {
+        return enrollment != null && ENROLLMENT_PATTERN.matcher(enrollment).matches();
+    }
 
     public static void validateActivityData(Activity activityToValidate) throws ManagerException {
         validateString(activityToValidate.getName(), "El nombre de la actividad es obligatorio.");
@@ -21,19 +32,38 @@ public class CommonValidator {
 
     public static void validateProfessorData(Professor professorToValidate) throws ManagerException {
         validateUser(professorToValidate, "profesor");
-        validateString(professorToValidate.getUserName(), "El No. personal es obligatorio");
+        validateString(professorToValidate.getUserName(), "El No. personal es obligatorio.");
+    }
+
+    public static void validateCoordinatorData(Coordinator coordinatorToValidate) throws ManagerException {
+        validateUser(coordinatorToValidate, "coordinador");
+        validateString(coordinatorToValidate.getUserName(), "El No. personal es obligatorio.");
     }
 
     public static void validatePractitioner(Practitioner practitionerToValidate) throws ManagerException {
         validateUser(practitionerToValidate, "practicante");
-        validateString(practitionerToValidate.getEnrollment(), "La matricula del practicante es obligatoria");
+        validateString(practitionerToValidate.getEnrollment(), "La matrícula del practicante es obligatoria.");
+
+        // Uso del método corregido
+        if (!isValidEnrollment(practitionerToValidate.getEnrollment())) {
+            throw new ManagerException("El formato de la matrícula proporcionada no es válido.");
+        }
+    }
+
+    public static void validateAdministratorData(Administrator administratorToValidate) throws ManagerException {
+        validateUser(administratorToValidate, "administrador");
+        validateString(administratorToValidate.getUserName(), "El No. personal es obligatorio.");
     }
 
     private static void validateUser(User userToValidate, String rol) throws ManagerException {
         validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
         validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
         validateString(userToValidate.getGender(), "El género del " + rol + " es obligatorio.");
-        validateString(userToValidate.getEmail(), "El Correo del " + rol + "es obligatorio");
+        validateString(userToValidate.getEmail(), "El correo del " + rol + " es obligatorio.");
+
+        if (!isValidEmail(userToValidate.getEmail())) {
+            throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
+        }
     }
 
     private static void validateString(String value, String errorMessage) throws ManagerException {
