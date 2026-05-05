@@ -2,6 +2,10 @@ package mx.uv.fei.domain.manager;
 
 import java.util.UUID;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
+import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.CoordinatorDAO;
@@ -9,21 +13,19 @@ import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+@Component
 public class CoordinatorManager {
 
-    private UserDAO userDAO;
-    private CoordinatorDAO coordinatorDAO;
+    private final ICoordinatorDAO coordinatorDAO;
 
-    public CoordinatorManager(IDatabaseConnection dbConnection) {
-        this.userDAO = new UserDAO(dbConnection);
-        this.coordinatorDAO = new CoordinatorDAO(dbConnection, userDAO);
+    @Inject
+    public CoordinatorManager(ICoordinatorDAO coordinatorDAO) {
+        this.coordinatorDAO = coordinatorDAO;
     }
 
     public void registerNewCoordinator(Coordinator coordinator) throws ManagerException {
         String tempPassword = this.generatePassword();
         coordinator.setPassword(tempPassword);
-        coordinator.setStatus("no activo");
-
         try {
             int resultId = this.coordinatorDAO.insertCoordinator(coordinator);
 

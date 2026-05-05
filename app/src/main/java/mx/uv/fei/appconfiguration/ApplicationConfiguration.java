@@ -1,8 +1,10 @@
 package mx.uv.fei.appconfiguration;
 
 import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
+import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 
+@Component
 public class ApplicationConfiguration implements IApplicationModule {
     private final String profile;
 

@@ -4,179 +4,149 @@ import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Keep;
-import mx.uv.fei.config.annotation.etiquette.Profile;
+import mx.uv.fei.config.annotation.provider.ProviderMethodRegistry;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DependencyInjector {
 
-    private final Map<Class<?>, Object> singletonInstances = new ConcurrentHashMap<>();
-    // Catálogo de clases descubiertas por el escáner (Interfaz -> Implementación)
-    private final Map<Class<?>, Class<?>> componentCatalog = new ConcurrentHashMap<>();
-    private final ProviderMethodRegistry providerRegistry;
-    private final IApplicationModule applicationModule;
+    private final Map<Class<?>, Object> singletonInstancesMap = new ConcurrentHashMap<>();
+    private final ProviderMethodRegistry systemProviderRegistry;
+    private final IApplicationModule currentApplicationModule;
+    private final ComponentScanner systemComponentScanner;
 
-    public DependencyInjector(IApplicationModule applicationModule, String basePackage) {
-        this.applicationModule = applicationModule;
-        this.providerRegistry = new ProviderMethodRegistry(applicationModule);
-
-        scanPackages(basePackage);
+    public DependencyInjector(IApplicationModule applicationModule, String basePackageToScan) {
+        this.currentApplicationModule = applicationModule;
+        this.systemProviderRegistry = new ProviderMethodRegistry(applicationModule);
+        this.systemComponentScanner = new ComponentScanner(basePackageToScan);
 
         initializeKeepComponents();
     }
 
-    private void scanPackages(String basePackage) {
-        try {
-            List<Class<?>> classes = PackageScanner.findClasses(basePackage);
-            for (Class<?> clazz : classes) {
-                if (clazz.isAnnotationPresent(Component.class)) {
-
-                    componentCatalog.put(clazz, clazz);
-                    for (Class<?> iface : clazz.getInterfaces()) {
-                        componentCatalog.put(iface, clazz);
-                    }
-                }
-            }
-        } catch (ClassNotFoundException | IOException e) {
-            System.err.println("Advertencia: Error escaneando paquetes en " + basePackage + " -> " + e.getMessage());
-        }
-    }
-
     private void initializeKeepComponents() {
-        for (Class<?> clazz : componentCatalog.values()) {
-            if (clazz.isAnnotationPresent(Keep.class) && !singletonInstances.containsKey(clazz)) {
-                retrieveInstance(clazz);
+        for (Class<?> currentComponentClass : systemComponentScanner.getCatalogValues()) {
+            if (currentComponentClass.isAnnotationPresent(Keep.class) && !singletonInstancesMap.containsKey(currentComponentClass)) {
+                retrieveInstance(currentComponentClass);
             }
         }
     }
 
-    public <T> T retrieveInstance(Class<T> type) {
-        String profile = (applicationModule != null) ? applicationModule.retrieveGlobalProfile() : "local";
-        return type.cast(resolveRecursively(type, profile));
+    public <TargetType> TargetType retrieveInstance(Class<TargetType> targetType) {
+        String activeExecutionProfile = getGlobalProfile();
+        return targetType.cast(resolveRecursively(targetType, activeExecutionProfile));
     }
 
     public void injectDependencies(Object targetInstance) {
-        injectFields(targetInstance, targetInstance.getClass(), resolveProfile(targetInstance.getClass()));
+        String activeExecutionProfile = ReflectionHelper.resolveProfile(targetInstance.getClass(), getGlobalProfile());
+        injectFields(targetInstance, targetInstance.getClass(), activeExecutionProfile);
     }
 
-    private Object resolveRecursively(Class<?> type, String profile) {
-        if (type == IApplicationModule.class) {
-            return applicationModule;
+    private Object resolveRecursively(Class<?> targetType, String activeExecutionProfile) {
+        Object resolvedDependencyInstance;
+
+        if (targetType == IApplicationModule.class) {
+            resolvedDependencyInstance = currentApplicationModule;
+        } else if (targetType == DependencyInjector.class) {
+            resolvedDependencyInstance = this;
+        } else if (singletonInstancesMap.containsKey(targetType)) {
+            resolvedDependencyInstance = singletonInstancesMap.get(targetType);
+        } else if (systemProviderRegistry.contains(targetType)) {
+            resolvedDependencyInstance = systemProviderRegistry.provide(targetType);
+            singletonInstancesMap.put(targetType, resolvedDependencyInstance);
+        } else {
+            Class<?> implementationClass = systemComponentScanner.getImplementation(targetType);
+            if (implementationClass != null) {
+                targetType = implementationClass;
+            } else if (targetType.isInterface()) {
+                throw new IllegalArgumentException("No se encontro un proveedor ni un componente registrado en el catalogo para satisfacer la interfaz solicitada: " + targetType.getName());
+            }
+
+            activeExecutionProfile = ReflectionHelper.resolveProfile(targetType, activeExecutionProfile);
+            Constructor<?> selectedConstructor = ReflectionHelper.selectConstructor(targetType);
+            Object[] resolvedConstructorParametersArray = resolveParameters(selectedConstructor.getParameters(), activeExecutionProfile);
+
+            resolvedDependencyInstance = instantiateAndRegister(targetType, selectedConstructor, resolvedConstructorParametersArray, activeExecutionProfile);
         }
 
-        if (type == DependencyInjector.class) {
-            return this;
-        }
+        return resolvedDependencyInstance;
+    }
 
-        if (singletonInstances.containsKey(type)) {
-            return singletonInstances.get(type);
-        }
-
-        if (providerRegistry.contains(type)) {
-            Object instance = providerRegistry.provide(type);
-            singletonInstances.put(type, instance);
-            return instance;
-        }
-
-        Class<?> implementationClass = componentCatalog.get(type);
-        if (implementationClass != null) {
-            type = implementationClass;
-        } else if (type.isInterface()) {
-            throw new IllegalArgumentException("No hay provider ni componente registrado en el catálogo para la interfaz: " + type.getName());
-        }
-
-        profile = resolveProfile(type, profile);
-        Constructor<?> constructor = selectConstructor(type);
-        Object[] parameters = resolveParameters(constructor.getParameters(), profile);
+    private Object instantiateAndRegister(Class<?> targetType, Constructor<?> targetConstructor, Object[] constructorParameters, String activeExecutionProfile) {
+        Object newInstantiatedObject;
 
         try {
-            Object instance = constructor.newInstance(parameters);
+            newInstantiatedObject = targetConstructor.newInstance(constructorParameters);
 
-            injectFields(instance, type, profile);
+            injectFields(newInstantiatedObject, targetType, activeExecutionProfile);
 
-            if (type.isAnnotationPresent(Component.class)) {
-                registerSingleton(type, instance);
-                providerRegistry.registerDynamicProviders(instance);
+            if (targetType.isAnnotationPresent(Component.class)) {
+                registerSingleton(targetType, newInstantiatedObject);
+                systemProviderRegistry.registerDynamicProviders(newInstantiatedObject);
             }
 
-            return instance;
-
-        } catch (InstantiationException exception) {
-            throw new IllegalStateException("No se puede instanciar la clase (podría ser abstracta): " + type.getName(), exception);
-        } catch (IllegalAccessException exception) {
-            throw new IllegalStateException("El constructor de la clase no es accesible: " + type.getName(), exception);
-        } catch (InvocationTargetException exception) {
-            throw new IllegalStateException("El constructor de la clase arrojó una excepción: " + type.getName(), exception.getCause());
+        } catch (InstantiationException instantiationException) {
+            throw new IllegalStateException("No fue posible instanciar la clase solicitada, asegurese de que no sea una clase abstracta: " + targetType.getName(), instantiationException);
+        } catch (IllegalAccessException illegalAccessException) {
+            throw new IllegalStateException("El constructor de la clase solicitada no es accesible publicamente: " + targetType.getName(), illegalAccessException);
+        } catch (InvocationTargetException invocationTargetException) {
+            throw new IllegalStateException("El constructor de la clase solicitada arrojo una excepcion interna durante su ejecucion: " + targetType.getName(), invocationTargetException.getCause());
         }
+
+        return newInstantiatedObject;
     }
 
-    private Object[] resolveParameters(Parameter[] parameters, String profile) {
-        Object[] resolvedParameters = new Object[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i].getType() == String.class) {
-                resolvedParameters[i] = profile;
+    private Object[] resolveParameters(Parameter[] constructorParametersArray, String activeExecutionProfile) {
+        Object[] resolvedParametersArray = new Object[constructorParametersArray.length];
+
+        for (int parameterIndex = 0; parameterIndex < constructorParametersArray.length; parameterIndex++) {
+            if (constructorParametersArray[parameterIndex].getType() == String.class) {
+                resolvedParametersArray[parameterIndex] = activeExecutionProfile;
             } else {
-                resolvedParameters[i] = resolveRecursively(parameters[i].getType(), profile);
+                resolvedParametersArray[parameterIndex] = resolveRecursively(constructorParametersArray[parameterIndex].getType(), activeExecutionProfile);
             }
         }
-        return resolvedParameters;
+
+        return resolvedParametersArray;
     }
 
-    private void injectFields(Object target, Class<?> type, String profile) {
-        for (Field field : type.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Inject.class)) {
-                field.setAccessible(true);
-                Object dependency = resolveRecursively(field.getType(), profile);
+    private void injectFields(Object targetInstance, Class<?> targetType, String activeExecutionProfile) {
+        for (Field currentClassField : targetType.getDeclaredFields()) {
+            if (currentClassField.isAnnotationPresent(Inject.class)) {
+                currentClassField.setAccessible(true);
+                Object resolvedFieldDependency = resolveRecursively(currentClassField.getType(), activeExecutionProfile);
                 try {
-                    field.set(target, dependency);
-                } catch (IllegalAccessException exception) {
-                    throw new IllegalStateException("No se pudo inyectar la dependencia en el campo: " + field.getName(), exception);
+                    currentClassField.set(targetInstance, resolvedFieldDependency);
+                } catch (IllegalAccessException illegalAccessException) {
+                    throw new IllegalStateException("Ocurrio un error al intentar inyectar la dependencia requerida en el campo: " + currentClassField.getName(), illegalAccessException);
                 }
             }
         }
     }
 
-    private Constructor<?> selectConstructor(Class<?> type) {
-        for (Constructor<?> constructor : type.getConstructors()) {
-            if (constructor.isAnnotationPresent(Inject.class)) {
-                return constructor;
+    private void registerSingleton(Class<?> targetType, Object singletonInstanceToRegister) {
+        Class<?> currentClassInHierarchy = targetType;
+
+        while (currentClassInHierarchy != null && currentClassInHierarchy != Object.class) {
+            singletonInstancesMap.put(currentClassInHierarchy, singletonInstanceToRegister);
+            for (Class<?> implementedInterface : currentClassInHierarchy.getInterfaces()) {
+                singletonInstancesMap.put(implementedInterface, singletonInstanceToRegister);
             }
-        }
-
-        Constructor<?>[] constructors = type.getConstructors();
-        if (constructors.length == 0) {
-            throw new IllegalStateException("No se encontró ningún constructor público para la clase: " + type.getName());
-        }
-        return constructors[0];
-    }
-
-    private void registerSingleton(Class<?> type, Object instance) {
-        Class<?> current = type;
-        while (current != null && current != Object.class) {
-            singletonInstances.put(current, instance);
-            for (Class<?> iface : current.getInterfaces()) {
-                singletonInstances.put(iface, instance);
-            }
-            current = current.getSuperclass();
+            currentClassInHierarchy = currentClassInHierarchy.getSuperclass();
         }
     }
 
-    private String resolveProfile(Class<?> type) {
-        String globalProfile = (applicationModule != null) ? applicationModule.retrieveGlobalProfile() : "local";
-        return resolveProfile(type, globalProfile);
-    }
+    private String getGlobalProfile() {
+        String globalExecutionProfile = "local";
 
-    private String resolveProfile(Class<?> type, String fallback) {
-        if (type.isAnnotationPresent(Profile.class)) {
-            return type.getAnnotation(Profile.class).value();
+        if (currentApplicationModule != null) {
+            globalExecutionProfile = currentApplicationModule.retrieveGlobalProfile();
         }
-        return fallback;
+
+        return globalExecutionProfile;
     }
 }
