@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-public class CommonParse {
+public class Parse {
 
     public static Date parseDate(String dayString, String monthString, String yearString)
             throws IllegalArgumentException, DateTimeParseException {

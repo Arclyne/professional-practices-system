@@ -16,10 +16,10 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
-import mx.uv.fei.domain.common.CommonParse;
+import mx.uv.fei.domain.common.Parse;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 
 import java.net.URL;
 import java.sql.Date;
@@ -86,36 +86,42 @@ public class RegisterActivityController implements Initializable {
     private void handleActionSaveButton(ActionEvent actionEvent) {
 
         try {
-            Activity activityInformation = new Activity();
-
-            activityInformation.setName(fieldActivityName.getText());
-            activityInformation.setDescription(textAreaDescription.getText());
-            activityInformation.setManager(comboBoxManager.getValue());
-
-            Date activityStartDate = CommonParse.parseDate(
-                    textFieldStartDay.getText(),
-                    textFieldStartMonth.getText(),
-                    textFieldStartYear.getText());
-            Date activityEndDate = CommonParse.parseDate(
-                    textFieldDeadlineDay.getText(),
-                    textFieldDeadlineMonth.getText(),
-                    textFieldDeadlineYear.getText());
-
-            activityInformation.setStartDate(activityStartDate);
-            activityInformation.setEndDate(activityEndDate);
+            Activity activityInformation = createActivity();
 
             boolean isActivitySavedSuccessfully = projectManager.registerNewActivity(activityInformation);
 
             if (isActivitySavedSuccessfully) {
-                CommonControler.showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
+                Controller.showInfoAlert("Registro Exitoso", "La actividad se ha guardado correctamente.");
             }
 
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
-            CommonControler.showErrorAlert("Error de fecha",
+            Controller.showErrorAlert("Error de fecha",
                     "Por favor, introduzca fechas válidas en formato numérico (DD/MM/AAAA).");
         } catch (ManagerException managerException) {
-            CommonControler.showErrorAlert("Fallo en el registro", managerException.getMessage());
+            Controller.showErrorAlert("Fallo en el registro", managerException.getMessage());
         }
+    }
+
+    private Activity createActivity() {
+        Activity activityInformation = new Activity();
+
+        activityInformation.setName(fieldActivityName.getText());
+        activityInformation.setDescription(textAreaDescription.getText());
+        activityInformation.setManager(comboBoxManager.getValue());
+
+        Date activityStartDate = Parse.parseDate(
+                textFieldStartDay.getText(),
+                textFieldStartMonth.getText(),
+                textFieldStartYear.getText());
+        Date activityEndDate = Parse.parseDate(
+                textFieldDeadlineDay.getText(),
+                textFieldDeadlineMonth.getText(),
+                textFieldDeadlineYear.getText());
+
+        activityInformation.setStartDate(activityStartDate);
+        activityInformation.setEndDate(activityEndDate);
+
+        return activityInformation;
     }
 
     @FXML

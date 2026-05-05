@@ -66,19 +66,11 @@ public class DashboardController {
         buttonRegisterActivity.setVisible(false);
         buttonRegisterActivity.setManaged(false);
 
-        if ("Administrador".equalsIgnoreCase(role)) {
+        if ("Administrator".equalsIgnoreCase(role)) {
             buttonRegisterCoordinator.setVisible(true);
             buttonRegisterCoordinator.setManaged(true);
-            buttonRegisterPractitioner.setVisible(true);
-            buttonRegisterPractitioner.setManaged(true);
-            buttonRegisterProfessor.setVisible(true);
-            buttonRegisterProfessor.setManaged(true);
-            buttonRegisterProject.setVisible(true);
-            buttonRegisterProject.setManaged(true);
-            buttonRegisterActivity.setVisible(true);
-            buttonRegisterActivity.setManaged(true);
 
-        } else if ("Coordinador".equalsIgnoreCase(role)) {
+        } else if ("Coordinator".equalsIgnoreCase(role)) {
             buttonRegisterPractitioner.setVisible(true);
             buttonRegisterPractitioner.setManaged(true);
             buttonRegisterProfessor.setVisible(true);
@@ -86,7 +78,7 @@ public class DashboardController {
             buttonRegisterProject.setVisible(true);
             buttonRegisterProject.setManaged(true);
 
-        } else if ("Profesor".equalsIgnoreCase(role)) {
+        } else if ("Professor".equalsIgnoreCase(role)) {
             buttonRegisterActivity.setVisible(true);
             buttonRegisterActivity.setManaged(true);
         }

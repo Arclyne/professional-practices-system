@@ -25,9 +25,6 @@
         <FormField fx:id="fieldApellido" labelText="Apellidos del Coordinador" promptText="Ingrese los apellidos"/>
         <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
         <FormField fx:id="fieldNoPersonal" labelText="Número de Personal (Usuario)" promptText="Ingrese el número de personal"/>
-
-        <FormField fx:id="fieldPassword" labelText="Contraseña" promptText="Asigne una contraseña temporal"/>
-
         <FormComboBox fx:id="comboBoxSexo" labelText="Sexo / Género"/>
 
         <VBox VBox.vgrow="ALWAYS"/>

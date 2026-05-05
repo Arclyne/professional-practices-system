@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
@@ -57,29 +57,12 @@ public class RegisterAdminController implements Initializable {
 
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
-                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
-                fieldPassword.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-
-            CommonControler.showAlert("Campos incompletos",
-                    "Por favor, llene todos los campos obligatorios para configurar el sistema.",
-                    AlertType.WARNING);
-            return;
-        }
-
-        Administrator newAdmin = new Administrator();
-        newAdmin.setName(fieldNombre.getText());
-        newAdmin.setLastName(fieldApellido.getText());
-        newAdmin.setEmail(fieldCorreo.getText());
-        newAdmin.setUserName(fieldNoPersonal.getText());
-        newAdmin.setPassword(fieldPassword.getText());
-        newAdmin.setGender((String) comboBoxSexo.getValue());
-        newAdmin.setRole("Administrador");
+        Administrator newAdmin = createAdministrator();
 
         try {
             manager.registerInitialAdmin(newAdmin);
 
-            CommonControler.showAlert("Configuración Exitosa",
+            Controller.showAlert("Configuración Exitosa",
                     "El administrador principal ha sido registrado. El sistema está listo para usarse.",
                     AlertType.INFORMATION);
 
@@ -87,8 +70,20 @@ public class RegisterAdminController implements Initializable {
             store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
 
         } catch (ManagerException e) {
-            CommonControler.showAlert("Error en la Configuración", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error en la Configuración", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private Administrator createAdministrator() {
+        Administrator newAdmin = new Administrator();
+        newAdmin.setName(fieldNombre.getText());
+        newAdmin.setLastName(fieldApellido.getText());
+        newAdmin.setEmail(fieldCorreo.getText());
+        newAdmin.setUserName(fieldNoPersonal.getText());
+        newAdmin.setPassword(fieldPassword.getText());
+        newAdmin.setGender((String) comboBoxSexo.getValue());
+
+        return newAdmin;
     }
 
     @FXML
