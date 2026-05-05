@@ -19,7 +19,7 @@ import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 
 @Component
 public class RegisterPractitionerController implements Initializable {
@@ -55,18 +55,7 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-            CommonControler.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.",
-                    AlertType.WARNING);
-            return;
-        }
-
-        Practitioner newPractitioner = new Practitioner();
-        newPractitioner.setEnrollment(fieldMatricula.getText());
-        newPractitioner.setName(fieldNombre.getText());
-        newPractitioner.setLastName(fieldApellido.getText());
-        newPractitioner.setEmail(fieldCorreo.getText());
-        newPractitioner.setGender((String) comboBoxSexo.getValue());
+        Practitioner newPractitioner = createPractitioner();
 
         String lengua = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();
         newPractitioner.setIndigenousLanguage(lengua);
@@ -74,16 +63,28 @@ public class RegisterPractitionerController implements Initializable {
         try {
             String generatedPassword = manager.registerNewPractitioner(newPractitioner);
 
-            CommonControler.showAlert("Registro Exitoso",
+            Controller.showAlert("Registro Exitoso",
                     "El practicante fue registrado correctamente.\nContraseña temporal generada: " + generatedPassword,
                     AlertType.INFORMATION);
 
             clearForm();
 
         } catch (ManagerException e) {
-            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
+
+    private Practitioner createPractitioner() {
+        Practitioner newPractitioner = new Practitioner();
+        newPractitioner.setEnrollment(fieldMatricula.getText());
+        newPractitioner.setName(fieldNombre.getText());
+        newPractitioner.setLastName(fieldApellido.getText());
+        newPractitioner.setEmail(fieldCorreo.getText());
+        newPractitioner.setGender((String) comboBoxSexo.getValue());
+
+        return newPractitioner;
+    }
+
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {

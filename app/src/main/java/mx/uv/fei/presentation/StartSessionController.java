@@ -12,7 +12,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.StartSessionManager;
 
@@ -37,22 +37,22 @@ public class StartSessionController {
 
     @FXML
     private void handleActionConnectButton() {
-        String userNameInput = textFieldUser.getText().trim();
+        String identifierInput = textFieldUser.getText().trim();
         String userPasswordInput = passwordFieldUser.getText().trim();
 
-        if (userNameInput.isEmpty() || userPasswordInput.isEmpty()) {
-            CommonControler.showErrorAlert("Campos requeridos", "Por favor, ingrese su usuario y contraseña.");
+        if (identifierInput.isEmpty() || userPasswordInput.isEmpty()) {
+            Controller.showErrorAlert("Campos requeridos", "Por favor, ingrese su correo o matrícula y su contraseña.");
             return;
         }
 
         Map<String, String> credential = new HashMap<>();
-        credential.put("User", userNameInput);
+        credential.put("Identifier", identifierInput);
         credential.put("Password", userPasswordInput);
 
         try {
             startSessionManager.handleActionConnectButton(credential);
         } catch (ManagerException e) {
-            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error al Iniciar Sesión", e.getMessage(), AlertType.ERROR);
         }
     }
 

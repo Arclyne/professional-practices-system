@@ -16,11 +16,11 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
-import mx.uv.fei.domain.common.CommonParse;
+import mx.uv.fei.domain.common.Parse;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 
 import java.net.URL;
 import java.sql.Date;
@@ -96,11 +96,11 @@ public class RegisterProjectController implements Initializable {
             int parsedProjectCapacity = Integer.parseInt(fieldCapacity.getText());
             projectInformation.setParticipantCapacity(parsedProjectCapacity);
 
-            Date projectStartDate = CommonParse.parseDate(
+            Date projectStartDate = Parse.parseDate(
                     textFieldStartDay.getText(),
                     textFieldStartMonth.getText(),
                     textFieldStartYear.getText());
-            Date projectEndDate = CommonParse.parseDate(
+            Date projectEndDate = Parse.parseDate(
                     textFieldDeadlineDay.getText(),
                     textFieldDeadlineMonth.getText(),
                     textFieldDeadlineYear.getText());
@@ -113,16 +113,16 @@ public class RegisterProjectController implements Initializable {
             boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
 
             if (isProjectSavedSuccessfully) {
-                CommonControler.showSuccessAlert("Registro Exitoso", "El proyecto ha sido guardado correctamente.");
+                Controller.showSuccessAlert("Registro Exitoso", "El proyecto ha sido guardado correctamente.");
             }
 
         } catch (NumberFormatException capacityFormatMismatchException) {
-            CommonControler.showErrorAlert("Error de formato",
+            Controller.showErrorAlert("Error de formato",
                     "El cupo de participantes debe ser un número entero válido.");
         } catch (IllegalArgumentException | DateTimeParseException dateValidationException) {
-            CommonControler.showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas (DD/MM/AAAA).");
+            Controller.showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas (DD/MM/AAAA).");
         } catch (ManagerException managerException) {
-            CommonControler.showErrorAlert("Error al guardar", managerException.getMessage());
+            Controller.showErrorAlert("Error al guardar", managerException.getMessage());
         }
     }
 

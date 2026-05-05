@@ -8,7 +8,7 @@ import javafx.scene.control.PasswordField;
 
 import mx.uv.fei.domain.manager.PasswordManager;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.net.URL;
@@ -44,11 +44,11 @@ public class PasswordResetController implements Initializable {
                     passwordFieldNew.getText(),
                     passwordFieldConfirm.getText());
 
-            CommonControler.showSuccessAlert("Activación Exitosa",
+            Controller.showSuccessAlert("Activación Exitosa",
                     "Su contraseña ha sido guardada y su cuenta ahora está Activa.");
 
         } catch (ManagerException managerException) {
-            CommonControler.showErrorAlert("Error de Validación", managerException.getMessage());
+            Controller.showErrorAlert("Error de Validación", managerException.getMessage());
         }
     }
 
