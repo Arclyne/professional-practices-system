@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -54,13 +54,23 @@ public class RegisterProfessorController implements Initializable {
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-            CommonControler.showAlert("Campos incompletos",
-                    "Por favor, llene todos los campos obligatorios del docente.",
-                    AlertType.WARNING);
-            return;
-        }
+        Professor newProfessor = createProfessor();
 
+        try {
+            String generatedPassword = manager.registerNewProfessor(newProfessor);
+
+            Controller.showAlert("Registro de Profesor Exitoso",
+                    "El docente fue registrado correctamente en la facultad.\nContraseña temporal generada: "
+                            + generatedPassword,
+                    AlertType.INFORMATION);
+
+            clearForm();
+        } catch (ManagerException e) {
+            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private Professor createProfessor() {
         Professor newProfessor = new Professor();
         newProfessor.setName(fieldNombre.getText());
         newProfessor.setLastName(fieldApellido.getText());
@@ -68,18 +78,7 @@ public class RegisterProfessorController implements Initializable {
         newProfessor.setUserName(fieldNoPersonal.getText());
         newProfessor.setGender((String) comboBoxSexo.getValue());
 
-        try {
-            String generatedPassword = manager.registerNewProfessor(newProfessor);
-
-            CommonControler.showAlert("Registro de Profesor Exitoso",
-                    "El docente fue registrado correctamente en la facultad.\nContraseña temporal generada: "
-                            + generatedPassword,
-                    AlertType.INFORMATION);
-
-            clearForm();
-        } catch (ManagerException e) {
-            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
-        }
+        return newProfessor;
     }
 
     @FXML

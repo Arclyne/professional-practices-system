@@ -1,5 +1,6 @@
 package mx.uv.fei.presentation;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,10 +9,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.StackPane;
 import java.net.URL;
 
+import javafx.util.Duration;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.manager.AdminManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -88,29 +90,36 @@ public class MainController {
         } catch (Exception e) {
             System.err.println("¡ERROR FATAL AL CARGAR LA VISTA [" + fxmlPath + "]!");
             e.printStackTrace();
-            CommonControler.showAlert("Error de Interfaz",
+            Controller.showAlert("Error de Interfaz",
                     "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
                     AlertType.ERROR);
         }
     }
 
     private void startAppFlow() {
-        try {
-            boolean adminExists = registerAdminManager.checkSystemHasAdmin();
 
-            sleep(2000);
+        store.dispatch(new NavigationAction.GoToSection(AppSection.SPLASH_SCREEN));
 
-            if (!adminExists) {
-                store.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
-            } else {
-                store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+
+        pause.setOnFinished(event -> {
+            try {
+                boolean adminExists = registerAdminManager.checkSystemHasAdmin();
+
+                if (!adminExists) {
+                    store.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
+                } else {
+                    store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+                }
+
+            } catch (Exception e) {
+                Controller.showAlert("Error de Arranque",
+                        "El sistema falló al iniciar: " + e.getMessage(),
+                        AlertType.ERROR);
             }
+        });
 
-        } catch (Exception e) {
-            CommonControler.showAlert("Error de Arranque",
-                    "El sistema falló al iniciar: " + e.getMessage(),
-                    AlertType.ERROR);
-        }
+        pause.play();
     }
 
     public void dispose() {

@@ -19,9 +19,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     private static final String SQL_INSERT = "INSERT INTO USUARIO (NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'No Activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
     private static final String SQL_UPDATE = "UPDATE USUARIO SET NOMBRE_USUARIO = ?, PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, NOMBRE_ROL = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
-    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE NOMBRE_USUARIO = ?";
 
-    private static final String SQL_VERIFY_CREDENTIALS = "SELECT COUNT(*) FROM USUARIO WHERE NOMBRE_USUARIO = ? AND PASSWORD = ?";
+    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE NOMBRE_USUARIO = ?";
+    private static final String SQL_SELECT_BY_EMAIL = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE CORREO = ?";
+
+    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM USUARIO WHERE NOMBRE_USUARIO = ? AND PASSWORD = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM USUARIO WHERE CORREO = ? AND PASSWORD = ?";
+
     private static final String SQL_GET_USER_ROLE = "SELECT NOMBRE_ROL FROM USUARIO WHERE NOMBRE_USUARIO = ?";
 
     @Inject
@@ -85,10 +89,10 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     }
 
     @Override
-    public boolean verifyCredentials(String userName, String password) throws DAOException {
+    public boolean verifyCredentialsByUserName(String userName, String password) throws DAOException {
         try (
                 Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS)) {
+                PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_USERNAME)) {
             statement.setString(1, userName);
             statement.setString(2, password);
 
@@ -98,7 +102,26 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 }
             }
         } catch (SQLException exception) {
-            throw new DAOException("Error al verificar las credenciales del usuario.", exception);
+            throw new DAOException("Error al verificar las credenciales del usuario por nombre de usuario.", exception);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean verifyCredentialsByEmail(String email, String password) throws DAOException {
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_EMAIL)) {
+            statement.setString(1, email);
+            statement.setString(2, password);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException("Error al verificar las credenciales del usuario por correo electrónico.", exception);
         }
         return false;
     }
@@ -126,12 +149,21 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
     @Override
     public User getUserByUserName(String userName) throws DAOException {
+        return extractUserFromQuery(SQL_SELECT_BY_USERNAME, userName);
+    }
+
+    @Override
+    public User getUserByEmail(String email) throws DAOException {
+        return extractUserFromQuery(SQL_SELECT_BY_EMAIL, email);
+    }
+
+    private User extractUserFromQuery(String query, String parameter) throws DAOException {
         User retrievedUser = null;
 
         try (
                 Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_USERNAME)) {
-            statement.setString(1, userName);
+                PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, parameter);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -155,7 +187,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 }
             }
         } catch (SQLException exception) {
-            throw new DAOException("Error al recuperar el usuario por nombre de usuario.", exception);
+            throw new DAOException("Error al recuperar los datos del usuario de la base de datos.", exception);
         }
 
         return retrievedUser;
