@@ -1,6 +1,9 @@
 -- 0. Insertar el ROL necesario para el usuario
-INSERT INTO ROL (NOMBRE_ROL, DESCRIPCION)
-VALUES ('Practicante', 'Rol para estudiantes de la FEI');
+INSERT INTO ROL (NOMBRE_ROL, DESCRIPCION) VALUES
+ ('Administrador', 'Administrador global del sistema'),
+('Coordinador', 'Coordinador de practicas profesionales'),
+('Profesor', 'Profesor a cargo de un grupo escolar'),
+('Practicante', 'Estudiante de practicas profesionales');
 
 -- 1. Insertar en USUARIO
 INSERT INTO USUARIO (ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO)
