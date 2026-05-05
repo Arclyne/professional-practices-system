@@ -15,7 +15,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.RegisterAdminManager;
+import mx.uv.fei.domain.manager.AdminManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
@@ -39,11 +39,11 @@ public class RegisterAdminController implements Initializable {
     @FXML
     private FormComboBox comboBoxSexo;
 
-    private final RegisterAdminManager manager;
+    private final AdminManager manager;
     private final Store store;
 
     @Inject
-    public RegisterAdminController(RegisterAdminManager manager, Store store) {
+    public RegisterAdminController(AdminManager manager, Store store) {
         this.manager = manager;
         this.store = store;
     }

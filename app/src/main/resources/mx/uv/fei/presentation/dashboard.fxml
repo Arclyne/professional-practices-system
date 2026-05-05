@@ -1,96 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: white;"
+            prefHeight="600.0" prefWidth="900.0" styleClass="root" stylesheets="@../styles.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="mx.uv.fei.presentation.DashboardController">
 
     <left>
-        <VBox prefWidth="250.0" spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 1 0 0;">
+        <VBox prefWidth="260.0" spacing="10.0" style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
             <padding>
-                <Insets bottom="20.0" left="15.0" right="15.0" top="20.0"/>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
             </padding>
-            <Label text="SGP - FEI" textFill="#212529">
-                <font>
-                    <Font name="System Bold" size="24.0"/>
-                </font>
+
+            <Label styleClass="form-title" text="SGP - FEI">
                 <VBox.margin>
-                    <Insets bottom="20.0"/>
+                    <Insets bottom="10.0"/>
                 </VBox.margin>
             </Label>
 
-            <VBox spacing="5.0">
-                <Label fx:id="labelUserName" text="Cargando..." textFill="#212529">
+            <VBox spacing="2.0">
+                <Label fx:id="labelUserName" text="Cargando..." styleClass="field-label" />
+                <Label fx:id="labelUserRole" text="Rol: ..." textFill="#6b7280">
                     <font>
-                        <Font name="System Bold" size="14.0"/>
+                        <Font size="12.0" />
                     </font>
                 </Label>
-                <Label fx:id="labelUserRole" text="Rol: ..." textFill="#6c757d"/>
                 <VBox.margin>
-                    <Insets bottom="30.0"/>
+                    <Insets bottom="20.0"/>
                 </VBox.margin>
             </VBox>
 
             <Separator opacity="0.5"/>
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand;" text="Inicio" />
+            <Label text="Menú Principal" textFill="#9CA3AF">
+                <font>
+                    <Font name="System Bold" size="11.0" />
+                </font>
+                <VBox.margin>
+                    <Insets top="10.0" bottom="5.0"/>
+                </VBox.margin>
+            </Label>
 
-            <VBox fx:id="containerAdminActions" spacing="10.0">
-                <Label text="Administración" textFill="#495057">
-                    <VBox.margin>
-                        <Insets top="10.0" />
-                    </VBox.margin>
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                </Label>
-                <Button fx:id="btnRegistrarCoordinador" maxWidth="1.7976931348623157E308"
-                        mnemonicParsing="false" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand;"
-                        text="Registrar Coordinador"/>
-            </VBox>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="secondary-button" text="Inicio" />
 
             <Region VBox.vgrow="ALWAYS"/>
 
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#handleLogout" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-cursor: hand;"
+                    onAction="#handleLogout" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-border-color: #FCA5A5; -fx-border-radius: 8px; -fx-cursor: hand;"
                     text="Cerrar Sesión" />
         </VBox>
     </left>
 
     <center>
-        <StackPane fx:id="dashboardContent" style="-fx-background-color: white;">
-            <VBox alignment="CENTER" spacing="20.0">
-                <Label text="Bienvenido al Sistema de Gestión de Prácticas Profesionales" textFill="#212529">
-                    <font>
-                        <Font size="20.0"/>
-                    </font>
+        <StackPane fx:id="dashboardContent" style="-fx-background-color: #FFFFFF;">
+            <VBox alignment="CENTER" spacing="15.0">
+                <Label styleClass="form-title" text="Bienvenido al Sistema de Gestión" />
+                <Label text="Seleccione una acción para comenzar." textFill="#6b7280">
                     <VBox.margin>
-                        <Insets bottom="30.0" />
+                        <Insets bottom="20.0" />
                     </VBox.margin>
                 </Label>
 
                 <VBox alignment="CENTER" spacing="15.0" maxWidth="300.0">
-                    <Button fx:id="btnRegistrarPracticante" onAction="#handleRegistrarPracticante" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                            style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;"
-                            text="Registrar Practicante" prefHeight="45.0" />
+                    <Button fx:id="buttonRegisterCoordinator" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Coordinador"/>
 
-                    <Button fx:id="btnRegistrarProfesor" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                            style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;"
-                            text="Registrar Profesor" prefHeight="45.0" />
+                    <Button fx:id="buttonRegisterPractitioner" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Practicante" />
 
-                    <Button fx:id="btnRegistrarProyecto" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                            style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;"
-                            text="Registrar Proyecto" prefHeight="45.0" />
+                    <Button fx:id="buttonRegisterProfessor" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Profesor" />
 
-                    <Button fx:id="btnRegistrarActividad" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                            style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;"
-                            text="Registrar Actividad" prefHeight="45.0" />
+                    <Button fx:id="buttonRegisterProject" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Proyecto" />
+
+                    <Button fx:id="buttonRegisterActivity" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Actividad" />
                 </VBox>
             </VBox>
         </StackPane>

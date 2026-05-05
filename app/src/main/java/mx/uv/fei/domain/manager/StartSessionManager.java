@@ -1,6 +1,5 @@
 package mx.uv.fei.domain.manager;
 
-import javafx.event.ActionEvent;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
@@ -26,7 +25,7 @@ public class StartSessionManager {
         this.store = store;
     }
 
-    public void handleActionConnectButton(Map<String, String> credential, ActionEvent currentActionEvent)
+    public void handleActionConnectButton(Map<String, String> credential)
             throws ManagerException {
         try {
             if (userDAO.verifyCredentials(credential.get("User"), credential.get("Password"))) {

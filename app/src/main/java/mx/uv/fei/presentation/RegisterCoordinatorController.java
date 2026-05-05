@@ -14,7 +14,10 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.RegisterCoordinatorManager;
+import mx.uv.fei.domain.manager.CoordinatorManager;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
@@ -33,11 +36,14 @@ public class RegisterCoordinatorController implements Initializable {
     @FXML
     private FormComboBox comboBoxSexo;
 
-    private final RegisterCoordinatorManager manager;
+    private final CoordinatorManager manager;
+    private final Store store;
 
     @Inject
-    public RegisterCoordinatorController(RegisterCoordinatorManager manager) {
+    public RegisterCoordinatorController(CoordinatorManager manager, Store store) {
+
         this.manager = manager;
+        this.store = store;
     }
 
     @Override
@@ -86,7 +92,7 @@ public class RegisterCoordinatorController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        clearForm();
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {

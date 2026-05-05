@@ -12,13 +12,13 @@ import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 
 @Component
-public class RegisterAdminManager {
+public class AdminManager {
 
     private final IAdministratorDAO adminDAO;
     private final Store store;
 
     @Inject
-    public RegisterAdminManager(IAdministratorDAO adminDAO, Store store) {
+    public AdminManager(IAdministratorDAO adminDAO, Store store) {
         this.adminDAO = adminDAO;
         this.store = store;
     }
