@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.CommonControler;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
@@ -55,43 +55,32 @@ public class RegisterCoordinatorController implements Initializable {
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
-                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
-                fieldPassword.getText().isEmpty() || comboBoxSexo.getValue() == null) {
-
-            CommonControler.showAlert("Campos incompletos",
-                    "Por favor, llene todos los campos obligatorios.",
-                    AlertType.WARNING);
-            return;
-        }
-
-        Coordinator newCoordinator = getNewCoordinator();
+        Coordinator newCoordinator = createCoordinator();
 
         try {
             manager.registerNewCoordinator(newCoordinator);
 
-            CommonControler.showAlert("Registro Exitoso",
+            Controller.showAlert("Registro Exitoso",
                     "El coordinador ha sido registrado correctamente en el sistema.",
                     AlertType.INFORMATION);
 
             clearForm();
 
         } catch (ManagerException e) {
-            CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
 
-    private Coordinator getNewCoordinator() {
+    private Coordinator createCoordinator() {
         Coordinator newCoordinator = new Coordinator();
         newCoordinator.setName(fieldNombre.getText().trim());
         newCoordinator.setLastName(fieldApellido.getText().trim());
         newCoordinator.setEmail(fieldCorreo.getText().trim());
         newCoordinator.setUserName(fieldNoPersonal.getText().trim());
-        newCoordinator.setPassword(fieldPassword.getText().trim());
         newCoordinator.setGender((String) comboBoxSexo.getValue());
-
         newCoordinator.setRole("Coordinator");
         newCoordinator.setStatus("Pendiente");
+
         return newCoordinator;
     }
 

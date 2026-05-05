@@ -89,7 +89,6 @@ public class MainController {
 
         } catch (Exception e) {
             System.err.println("¡ERROR FATAL AL CARGAR LA VISTA [" + fxmlPath + "]!");
-            e.printStackTrace();
             Controller.showAlert("Error de Interfaz",
                     "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
                     AlertType.ERROR);
