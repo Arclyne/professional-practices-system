@@ -65,16 +65,7 @@ public class RegisterCoordinatorController implements Initializable {
             return;
         }
 
-        Coordinator newCoordinator = new Coordinator();
-        newCoordinator.setName(fieldNombre.getText().trim());
-        newCoordinator.setLastName(fieldApellido.getText().trim());
-        newCoordinator.setEmail(fieldCorreo.getText().trim());
-        newCoordinator.setUserName(fieldNoPersonal.getText().trim());
-        newCoordinator.setPassword(fieldPassword.getText().trim());
-        newCoordinator.setGender((String) comboBoxSexo.getValue());
-
-        newCoordinator.setRole("Coordinador");
-        newCoordinator.setStatus("activo");
+        Coordinator newCoordinator = getNewCoordinator();
 
         try {
             manager.registerNewCoordinator(newCoordinator);
@@ -88,6 +79,20 @@ public class RegisterCoordinatorController implements Initializable {
         } catch (ManagerException e) {
             CommonControler.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private Coordinator getNewCoordinator() {
+        Coordinator newCoordinator = new Coordinator();
+        newCoordinator.setName(fieldNombre.getText().trim());
+        newCoordinator.setLastName(fieldApellido.getText().trim());
+        newCoordinator.setEmail(fieldCorreo.getText().trim());
+        newCoordinator.setUserName(fieldNoPersonal.getText().trim());
+        newCoordinator.setPassword(fieldPassword.getText().trim());
+        newCoordinator.setGender((String) comboBoxSexo.getValue());
+
+        newCoordinator.setRole("Coordinator");
+        newCoordinator.setStatus("Pendiente");
+        return newCoordinator;
     }
 
     @FXML
