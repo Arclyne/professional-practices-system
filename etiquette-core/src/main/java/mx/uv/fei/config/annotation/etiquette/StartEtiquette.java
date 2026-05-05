@@ -12,6 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface StartEtiquette {
-    // Valor centinela para búsqueda por convención
     Class<? extends IApplicationModule> factory() default IApplicationModule.class;
 }
