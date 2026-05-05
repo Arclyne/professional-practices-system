@@ -11,6 +11,9 @@ import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.domain.common.CommonParse;
@@ -28,6 +31,9 @@ import java.util.ResourceBundle;
 public class RegisterProjectController implements Initializable {
 
     private final ProjectManager projectManager;
+    private final Store store;
+    public Button saveButton;
+    public Button cancelButton;
 
     @FXML
     private FormField fieldProjectName;
@@ -61,8 +67,9 @@ public class RegisterProjectController implements Initializable {
     private Button buttonCancel;
 
     @Inject
-    public RegisterProjectController(ProjectManager projectManager) {
+    public RegisterProjectController(ProjectManager projectManager, Store store) {
         this.projectManager = projectManager;
+        this.store = store;
     }
 
     @Override
@@ -121,8 +128,6 @@ public class RegisterProjectController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

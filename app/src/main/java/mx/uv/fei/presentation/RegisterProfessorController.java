@@ -13,13 +13,19 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.CommonControler;
 import mx.uv.fei.domain.dto.Professor;
+import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
-import mx.uv.fei.domain.manager.RegisterProfessorManager;
+import mx.uv.fei.domain.manager.ProfessorManager;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
 public class RegisterProfessorController implements Initializable {
+
+    private final ProfessorManager manager;
+    private final Store store;
 
     @FXML
     private FormField fieldNombre;
@@ -32,11 +38,11 @@ public class RegisterProfessorController implements Initializable {
     @FXML
     private FormComboBox comboBoxSexo;
 
-    private final RegisterProfessorManager manager;
-
     @Inject
-    public RegisterProfessorController(RegisterProfessorManager manager) {
+    public RegisterProfessorController(ProfessorManager manager, Store store) {
+
         this.manager = manager;
+        this.store = store;
     }
 
     @Override
@@ -78,9 +84,7 @@ public class RegisterProfessorController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
-        javafx.stage.Stage stage = (javafx.stage.Stage) source.getScene().getWindow();
-        stage.close();
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {
