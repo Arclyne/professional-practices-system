@@ -11,16 +11,17 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.interfaces.IProjectManagerDAO;
+import mx.uv.fei.dataacces.interfaces.IManagerDAO;
 import mx.uv.fei.domain.dto.Manager;
 
 @Component
-public class ProjectManagerDAO extends BaseDAO implements IProjectManagerDAO {
+public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
     private static final String SQL_SELECT_BY_ORG = "SELECT ID_ENCARGADO, NOMBRE_ENCARGADO, TELEFONO, CORREO FROM ENCARGADO_PROYECTO WHERE ID_ORGANIZACION = ?";
+    private static final String SQL_INSERT_MANAGER = "INSERT INTO ENCARGADO_PROYECTO (NOMBRE_ENCARGADO, TELEFONO, CORREO, ID_ORGANIZACION) VALUES (?, ?, ?, ?)";
 
     @Inject
-    public ProjectManagerDAO(IDatabaseConnection databaseConnection) {
+    public ManagerDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
@@ -51,5 +52,22 @@ public class ProjectManagerDAO extends BaseDAO implements IProjectManagerDAO {
         }
 
         return managersList;
+    }
+
+    @Override
+    public boolean insertManager(Manager manager) throws DAOException {
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_INSERT_MANAGER)
+        ) {
+            statement.setString(1, manager.getName());
+            statement.setString(2, manager.getPhone());
+            statement.setString(3, manager.getEmail());
+            statement.setInt(4, manager.getOrganizationId());
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DAOException("Error al intentar registrar el encargado en la base de datos.", e);
+        }
     }
 }

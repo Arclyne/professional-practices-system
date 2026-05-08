@@ -87,6 +87,11 @@
                             mnemonicParsing="false" onAction="#handleNavigateToRegisterProjectAction" styleClass="secondary-button" text="Registrar Proyecto"
                             visible="false" managed="false"/>
 
+                    <!-- NUEVO BOTÓN AÑADIDO AQUÍ -->
+                    <Button fx:id="navigateToRegisterManagerButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterManagerAction" styleClass="secondary-button" text="Registrar Encargado"
+                            visible="false" managed="false"/>
+
                     <Button fx:id="navigateToRegisterActivityButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToRegisterActivityAction" styleClass="secondary-button" text="Registrar Actividad"
                             visible="false" managed="false"/>

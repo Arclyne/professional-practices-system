@@ -56,6 +56,18 @@ public class Validator {
         validateString(administratorToValidate.getUserName(), "El No. personal es obligatorio.");
     }
 
+    public static void validateManagerData(Manager managerToValidate) throws ManagerException {
+        validateString(managerToValidate.getName(), "El nombre del encargado es obligatorio.");
+        validateString(managerToValidate.getPhone(), "El teléfono del encargado es obligatorio.");
+        validateString(managerToValidate.getEmail(), "El correo del encargado es obligatorio.");
+
+        if (!isValidEmail(managerToValidate.getEmail())) {
+            throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
+        }
+
+        validateId(managerToValidate.getOrganizationId(), "Debe seleccionar la organización a la que pertenece.");
+    }
+
     private static void validateUser(User userToValidate, String rol) throws ManagerException {
         validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
         validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
