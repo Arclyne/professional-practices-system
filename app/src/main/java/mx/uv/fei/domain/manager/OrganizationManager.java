@@ -3,8 +3,9 @@ package mx.uv.fei.domain.manager;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataacces.interfaces.IManagerDAO; // <-- Interfaz corregida
 import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
-import mx.uv.fei.dataacces.interfaces.IProjectManagerDAO;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -15,12 +16,12 @@ import java.util.List;
 public class OrganizationManager {
 
     private final IOrganizationDAO organizationDAO;
-    private final IProjectManagerDAO projectManagerDAO;
+    private final IManagerDAO managerDAO; // <-- DAO corregido
 
     @Inject
-    public OrganizationManager(IOrganizationDAO organizationDAO, IProjectManagerDAO projectManagerDAO) {
+    public OrganizationManager(IOrganizationDAO organizationDAO, IManagerDAO managerDAO) {
         this.organizationDAO = organizationDAO;
-        this.projectManagerDAO = projectManagerDAO;
+        this.managerDAO = managerDAO;
     }
 
     public List<Organization> getAllOrganizations() throws ManagerException {
@@ -33,9 +34,25 @@ public class OrganizationManager {
 
     public List<Manager> getManagersByOrganization(int organizationId) throws ManagerException {
         try {
-            return projectManagerDAO.getManagersByOrganization(organizationId);
+            return managerDAO.getManagersByOrganization(organizationId);
         } catch (DAOException e) {
             throw new ManagerException("No se pudieron cargar los encargados de esta organización.", e);
+        }
+    }
+
+    public boolean registerManager(Manager managerToRegister) throws ManagerException {
+        Validator.validateManagerData(managerToRegister);
+
+        try {
+            boolean isRegistered = managerDAO.insertManager(managerToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException("No se pudo completar el registro del encargado en el sistema.");
+            }
+            return true;
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
 }
