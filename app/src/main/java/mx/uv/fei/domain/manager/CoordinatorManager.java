@@ -5,38 +5,43 @@ import java.util.UUID;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataacces.repositories.CoordinatorDAO;
+import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
 public class CoordinatorManager {
 
-    private final ICoordinatorDAO coordinatorDAO;
+    private final ICoordinatorDAO coordinatorDataAccessObject;
 
     @Inject
-    public CoordinatorManager(ICoordinatorDAO coordinatorDAO) {
-        this.coordinatorDAO = coordinatorDAO;
+    public CoordinatorManager(ICoordinatorDAO coordinatorDataAccessObject) {
+        this.coordinatorDataAccessObject = coordinatorDataAccessObject;
     }
 
-    public void registerNewCoordinator(Coordinator coordinator) throws ManagerException {
-        String tempPassword = this.generatePassword();
-        coordinator.setPassword(tempPassword);
-        Validator.validateCoordinatorData(coordinator);
-        try {
-            int resultId = this.coordinatorDAO.insertCoordinator(coordinator);
+    public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
+        String temporaryGeneratedPassword = this.generateTemporaryPassword();
+        coordinatorInformation.setPassword(temporaryGeneratedPassword);
 
-            if (resultId <= 0) {
+        try {
+            int insertedCoordinatorId = this.coordinatorDataAccessObject.insertCoordinator(coordinatorInformation);
+
+            if (insertedCoordinatorId <= 0) {
                 throw new ManagerException("No se pudo completar el registro del coordinador en el sistema.");
             }
 
-        } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            return temporaryGeneratedPassword;
+
+        } catch (DAOException dataAccessObjectException) {
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", dataAccessObjectException);
         }
     }
 
-    private String generatePassword() {
+    private String generateTemporaryPassword() {
         return "temp-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }
