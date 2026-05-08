@@ -84,6 +84,8 @@ public class MainController {
                     case REGISTER_ACTIVITY -> loadView("/mx/uv/fei/presentation/activityForms.fxml");
                     case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
                     case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
+                    // --- NUEVA SECCIÓN ---
+                    case REGISTER_MANAGER -> loadView("/mx/uv/fei/presentation/registerManager.fxml");
                     default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
                 }
             }
