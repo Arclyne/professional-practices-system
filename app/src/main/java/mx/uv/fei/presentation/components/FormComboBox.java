@@ -1,5 +1,6 @@
 package mx.uv.fei.presentation.components;
 
+import javafx.beans.property.ObjectProperty; // Importación necesaria
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,5 +48,17 @@ public class FormComboBox extends VBox {
         if (comboBox != null) {
             comboBox.getSelectionModel().clearSelection();
         }
+    }
+
+    public ObjectProperty<String> valueProperty() {
+        return comboBox.valueProperty();
+    }
+
+    public ObservableList<String> getItems() {
+        return comboBox.getItems();
+    }
+
+    public void setPromptText(String promptText) {
+        comboBox.setPromptText(promptText);
     }
 }

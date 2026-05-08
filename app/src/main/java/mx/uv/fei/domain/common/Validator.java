@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Validator {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs|s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
 
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
@@ -26,7 +26,9 @@ public class Validator {
 
     public static void validateProjectData(Project projectToValidate) throws ManagerException {
         validateString(projectToValidate.getProjectName(), "El nombre del proyecto es obligatorio.");
-        validateString(projectToValidate.getManager(), "El encargado del proyecto es obligatorio.");
+        validateId(projectToValidate.getCompanyId(), "Debe seleccionar una organización vinculada.");
+        validateId(projectToValidate.getManagerId(), "Debe seleccionar un encargado para el proyecto.");
+
         validateDateRange(projectToValidate.getStartDate(), projectToValidate.getEndDate());
     }
 
@@ -44,7 +46,6 @@ public class Validator {
         validateUser(practitionerToValidate, "practicante");
         validateString(practitionerToValidate.getEnrollment(), "La matrícula del practicante es obligatoria.");
 
-        // Uso del método corregido
         if (!isValidEnrollment(practitionerToValidate.getEnrollment())) {
             throw new ManagerException("El formato de la matrícula proporcionada no es válido.");
         }
@@ -63,6 +64,12 @@ public class Validator {
 
         if (!isValidEmail(userToValidate.getEmail())) {
             throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
+        }
+    }
+
+    private static void validateId(int id, String errorMessage) throws ManagerException {
+        if (id <= 0) {
+            throw new ManagerException(errorMessage);
         }
     }
 
