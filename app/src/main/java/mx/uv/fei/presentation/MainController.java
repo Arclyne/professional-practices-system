@@ -84,9 +84,13 @@ public class MainController {
                     case REGISTER_ACTIVITY -> loadView("/mx/uv/fei/presentation/activityForms.fxml");
                     case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
                     case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
-                    // --- NUEVA SECCIÓN ---
+                    case PRIORITIZE_PROJECTS -> loadView("/mx/uv/fei/presentation/prioritizeProjects.fxml");
+                    case VIEW_PRACTITIONER_PRIORITIES -> loadView("/mx/uv/fei/presentation/viewPractitionerPriorities.fxml");
+                    case COORDINATOR_PRACTITIONER_MENU -> loadView("/mx/uv/fei/presentation/coordinatorPractitionerMenu.fxml");
+                    case PENDING_PRACTITIONER_SELECTION -> loadView("/mx/uv/fei/presentation/pendingPractitionerSelection.fxml");
                     case REGISTER_MANAGER -> loadView("/mx/uv/fei/presentation/registerManager.fxml");
-                    default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
+                    case ASSIGN_PROJECT -> loadView("/mx/uv/fei/presentation/assignProject.fxml");
+                    default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }
             }
         });
