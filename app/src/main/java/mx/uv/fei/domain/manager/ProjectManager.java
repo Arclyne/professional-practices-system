@@ -1,25 +1,25 @@
 package mx.uv.fei.domain.manager;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.dataacces.interfaces.IActivityDAO;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IProjectDAO;
-import mx.uv.fei.dataacces.repositories.ActivityDAO;
-import mx.uv.fei.dataacces.repositories.ProjectDAO;
-
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+@Component
 public class ProjectManager {
 
     private final IActivityDAO activityDataAccessObject;
     private final IProjectDAO projectDataAccessObject;
 
-    public ProjectManager(IDatabaseConnection databaseConnection) {
-        this.activityDataAccessObject = new ActivityDAO(databaseConnection);
-        this.projectDataAccessObject = new ProjectDAO(databaseConnection);
+    @Inject
+    public ProjectManager(IActivityDAO activityDataAccessObject, IProjectDAO projectDataAccessObject) {
+        this.activityDataAccessObject = activityDataAccessObject;
+        this.projectDataAccessObject = projectDataAccessObject;
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
