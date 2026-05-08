@@ -32,75 +32,83 @@ public class RegisterCoordinatorController implements Initializable {
     @FXML
     private FormField fieldNoPersonal;
     @FXML
-    private FormField fieldPassword;
-    @FXML
     private FormComboBox comboBoxSexo;
 
-    private final CoordinatorManager manager;
-    private final Store store;
+    private final CoordinatorManager coordinatorManager;
+    private final Store applicationNavigationStore;
 
     @Inject
-    public RegisterCoordinatorController(CoordinatorManager manager, Store store) {
-
-        this.manager = manager;
-        this.store = store;
+    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, Store applicationNavigationStore) {
+        this.coordinatorManager = coordinatorManager;
+        this.applicationNavigationStore = applicationNavigationStore;
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
+    public void initialize(URL locationUrl, ResourceBundle resourceBundle) {
+        ObservableList<String> genderOptionsObservableList = FXCollections.observableArrayList(
                 "Masculino", "Femenino", "Otro");
-        comboBoxSexo.setItems(opcionesSexo);
+        comboBoxSexo.setItems(genderOptionsObservableList);
     }
 
     @FXML
-    private void handleActionRegisterButton(ActionEvent event) {
-        Coordinator newCoordinator = createCoordinator();
+    private void handleActionRegisterButton(ActionEvent userActionEvent) {
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
+                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
+                comboBoxSexo.getValue() == null) {
 
-        try {
-            manager.registerNewCoordinator(newCoordinator);
+            Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
 
-            Controller.showAlert("Registro Exitoso",
-                    "El coordinador ha sido registrado correctamente en el sistema.",
-                    AlertType.INFORMATION);
+        } else {
+            Coordinator newCoordinatorInformation = getNewCoordinator();
 
-            clearForm();
+            try {
+                String assignedTemporaryPassword = coordinatorManager.registerNewCoordinator(newCoordinatorInformation);
 
-        } catch (ManagerException e) {
-            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+                Controller.showAlert("Registro Exitoso",
+                        "El coordinador ha sido registrado correctamente en el sistema.\nContraseña temporal generada: " + assignedTemporaryPassword,
+                        AlertType.INFORMATION);
+
+                clearForm();
+
+            } catch (ManagerException registrationManagerException) {
+                Controller.showAlert("Error en el Registro", registrationManagerException.getMessage(), AlertType.ERROR);
+            }
         }
     }
 
-    private Coordinator createCoordinator() {
-        Coordinator newCoordinator = new Coordinator();
-        newCoordinator.setName(fieldNombre.getText().trim());
-        newCoordinator.setLastName(fieldApellido.getText().trim());
-        newCoordinator.setEmail(fieldCorreo.getText().trim());
-        newCoordinator.setUserName(fieldNoPersonal.getText().trim());
-        newCoordinator.setGender((String) comboBoxSexo.getValue());
-        newCoordinator.setRole("Coordinator");
-        newCoordinator.setStatus("Pendiente");
+    private Coordinator getNewCoordinator() {
+        Coordinator mappedCoordinator = new Coordinator();
+        mappedCoordinator.setName(fieldNombre.getText().trim());
+        mappedCoordinator.setLastName(fieldApellido.getText().trim());
+        mappedCoordinator.setEmail(fieldCorreo.getText().trim());
+        mappedCoordinator.setUserName(fieldNoPersonal.getText().trim());
+        mappedCoordinator.setGender((String) comboBoxSexo.getValue());
+        mappedCoordinator.setRole("Coordinator");
+        mappedCoordinator.setStatus("Pendiente");
 
-        return newCoordinator;
+        return mappedCoordinator;
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent event) {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+    private void handleActionCancelButton(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {
-        if (fieldNombre != null)
+        if (fieldNombre != null) {
             fieldNombre.setText("");
-        if (fieldApellido != null)
+        }
+        if (fieldApellido != null) {
             fieldApellido.setText("");
-        if (fieldCorreo != null)
+        }
+        if (fieldCorreo != null) {
             fieldCorreo.setText("");
-        if (fieldNoPersonal != null)
+        }
+        if (fieldNoPersonal != null) {
             fieldNoPersonal.setText("");
-        if (fieldPassword != null)
-            fieldPassword.setText("");
-        if (comboBoxSexo != null)
+        }
+        if (comboBoxSexo != null) {
             comboBoxSexo.clearSelection();
+        }
     }
 }
