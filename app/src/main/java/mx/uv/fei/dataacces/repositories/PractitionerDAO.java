@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
@@ -164,4 +165,31 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
         return isUpdated;
     }
+
+    @Override
+    public List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException {
+        List<Practitioner> pendingPractitionersList = new ArrayList<>();
+        String queryToExecute = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO AS MATRICULA, U.NOMBRE, U.APELLIDOS, U.CORREO FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO WHERE P.ID_PRACTICANTE IN (SELECT ID_PRACTICANTE FROM POSTULACION_PROYECTO) AND P.ID_PRACTICANTE NOT IN (SELECT ID_PRACTICANTE FROM POSTULACION_PROYECTO WHERE ESTADO_POSTULACION = 'Asignado')";
+
+        try (Connection currentDatabaseConnection = databaseConnection.getConnection();
+             PreparedStatement selectStatement = currentDatabaseConnection.prepareStatement(queryToExecute);
+             ResultSet executionResultSet = selectStatement.executeQuery()) {
+
+            while (executionResultSet.next()) {
+                Practitioner currentPractitioner = new Practitioner();
+                currentPractitioner.setId(executionResultSet.getInt("ID_USUARIO"));
+                currentPractitioner.setEnrollment(executionResultSet.getString("MATRICULA"));
+                currentPractitioner.setName(executionResultSet.getString("NOMBRE"));
+                currentPractitioner.setLastName(executionResultSet.getString("APELLIDOS"));
+                currentPractitioner.setEmail(executionResultSet.getString("CORREO"));
+
+                pendingPractitionersList.add(currentPractitioner);
+            }
+        } catch (SQLException executionException) {
+            throw new DAOException("Ocurrio un error al consultar los practicantes pendientes de asignacion.", executionException);
+        }
+
+        return pendingPractitionersList;
+    }
+
 }

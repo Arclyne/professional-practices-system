@@ -2,9 +2,8 @@ package mx.uv.fei.domain.statemachine.state;
 
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-public record NavigationState(
-        AppSection currentSection) {
+public record NavigationState(AppSection currentSection, String targetEntityId) {
     public static NavigationState initialState() {
-        return new NavigationState(AppSection.SPLASH_SCREEN);
+        return new NavigationState(AppSection.SPLASH_SCREEN, null);
     }
 }
