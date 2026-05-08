@@ -16,7 +16,7 @@ import java.util.List;
 public class OrganizationManager {
 
     private final IOrganizationDAO organizationDAO;
-    private final IManagerDAO managerDAO; // <-- DAO corregido
+    private final IManagerDAO managerDAO;
 
     @Inject
     public OrganizationManager(IOrganizationDAO organizationDAO, IManagerDAO managerDAO) {
