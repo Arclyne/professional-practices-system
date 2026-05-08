@@ -20,111 +20,110 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
 
-import static java.lang.Thread.sleep;
-
 @Component
 public class MainController {
 
     @FXML
     private StackPane contentArea;
 
-    private Runnable unsubscribe;
-    private final DependencyInjector injector;
-    private final Store store;
-    private final AdminManager registerAdminManager;
+    private Runnable stateChangeSubscription;
+    private final DependencyInjector dependencyInjector;
+    private final Store applicationNavigationStore;
+    private final AdminManager administratorManager;
 
-    private AppSection activeSection = null;
+    private AppSection activeApplicationSection = null;
 
     @Inject
-    public MainController(DependencyInjector injector, Store store, AdminManager registerAdminManager) {
-        this.injector = injector;
-        this.store = store;
-        this.registerAdminManager = registerAdminManager;
+    public MainController(DependencyInjector dependencyInjector, Store applicationNavigationStore, AdminManager administratorManager) {
+        this.dependencyInjector = dependencyInjector;
+        this.applicationNavigationStore = applicationNavigationStore;
+        this.administratorManager = administratorManager;
     }
 
     @FXML
     public void initialize() {
-        this.unsubscribe = store.subscribe(this::handleStateChange);
-        startAppFlow();
+        this.stateChangeSubscription = applicationNavigationStore.subscribe(this::handleApplicationStateChange);
+        startApplicationFlow();
     }
 
-    private void handleStateChange(RootState prevState, RootState newState) {
-        AppSection targetSection = newState.navigationState().currentSection();
+    private void handleApplicationStateChange(RootState previousState, RootState newState) {
+        AppSection targetApplicationSection = newState.navigationState().currentSection();
 
         Platform.runLater(() -> {
-            if (this.activeSection != targetSection) {
-                this.activeSection = targetSection;
+            if (this.activeApplicationSection != targetApplicationSection) {
+                this.activeApplicationSection = targetApplicationSection;
 
-                switch (targetSection) {
-                    case SPLASH_SCREEN -> loadView("/mx/uv/fei/presentation/loading.fxml");
-                    case ADMIN_REGISTRATION -> loadView("/mx/uv/fei/presentation/registerAdmin.fxml");
-                    case LOGIN -> loadView("/mx/uv/fei/presentation/startSession.fxml");
-                    case DASHBOARD -> loadView("/mx/uv/fei/presentation/dashboard.fxml");
-                    case PASSWORD_RESET -> loadView("/mx/uv/fei/presentation/passwordReset.fxml");
-                    case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/tokenVerification.fxml");
-                    case REGISTER_PRACTITIONER -> loadView("/mx/uv/fei/presentation/registerPractitioner.fxml");
-                    case REGISTER_PROFESSOR -> loadView("/mx/uv/fei/presentation/registerProfessor.fxml");
-                    case REGISTER_ACTIVITY -> loadView("/mx/uv/fei/presentation/activityForms.fxml");
-                    case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
-                    case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
-                    default -> System.err.println(">>> ALERTA: No hay un case para " + targetSection);
+                switch (targetApplicationSection) {
+                    case SPLASH_SCREEN -> loadInterfaceView("/mx/uv/fei/presentation/loading.fxml");
+                    case ADMIN_REGISTRATION -> loadInterfaceView("/mx/uv/fei/presentation/registerAdmin.fxml");
+                    case LOGIN -> loadInterfaceView("/mx/uv/fei/presentation/startSession.fxml");
+                    case DASHBOARD -> loadInterfaceView("/mx/uv/fei/presentation/dashboard.fxml");
+                    case PASSWORD_RESET -> loadInterfaceView("/mx/uv/fei/presentation/passwordReset.fxml");
+                    case TOKEN_VERIFICATION -> loadInterfaceView("/mx/uv/fei/presentation/tokenVerification.fxml");
+                    case REGISTER_PRACTITIONER -> loadInterfaceView("/mx/uv/fei/presentation/registerPractitioner.fxml");
+                    case REGISTER_PROFESSOR -> loadInterfaceView("/mx/uv/fei/presentation/registerProfessor.fxml");
+                    case REGISTER_ACTIVITY -> loadInterfaceView("/mx/uv/fei/presentation/activityForms.fxml");
+                    case REGISTER_PROJECT -> loadInterfaceView("/mx/uv/fei/presentation/projectForm.fxml");
+                    case REGISTER_COORDINATOR -> loadInterfaceView("/mx/uv/fei/presentation/registerCoordinator.fxml");
+                    case PRIORITIZE_PROJECTS -> loadInterfaceView("/mx/uv/fei/presentation/prioritizeProjects.fxml");
+                    case VIEW_PRACTITIONER_PRIORITIES -> loadInterfaceView("/mx/uv/fei/presentation/viewPractitionerPriorities.fxml");
+                    case COORDINATOR_PRACTITIONER_MENU -> loadInterfaceView("/mx/uv/fei/presentation/coordinatorPractitionerMenu.fxml");
+                    case PENDING_PRACTITIONER_SELECTION -> loadInterfaceView("/mx/uv/fei/presentation/pendingPractitionerSelection.fxml");
+                    case ASSIGN_PROJECT -> loadInterfaceView("/mx/uv/fei/presentation/assignProject.fxml");
+                    default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }
             }
         });
     }
 
-    private void loadView(String fxmlPath) {
+    private void loadInterfaceView(String fxmlFilePath) {
         try {
-            URL fxmlUrl = getClass().getResource(fxmlPath);
-            if (fxmlUrl == null) {
-                throw new RuntimeException("Ruta FXML no encontrada: " + fxmlPath);
+            URL fxmlFileUrl = getClass().getResource(fxmlFilePath);
+
+            if (fxmlFileUrl == null) {
+                throw new RuntimeException("Ruta FXML no encontrada en el sistema: " + fxmlFilePath);
             }
 
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            FXMLLoader viewLoader = new FXMLLoader(fxmlFileUrl);
+            viewLoader.setControllerFactory(dependencyInjector::retrieveInstance);
+            Parent loadedView = viewLoader.load();
+            contentArea.getChildren().setAll(loadedView);
 
-            loader.setControllerFactory(injector::retrieveInstance);
-
-            Parent view = loader.load();
-            contentArea.getChildren().setAll(view);
-
-        } catch (Exception e) {
-            System.err.println("¡ERROR FATAL AL CARGAR LA VISTA [" + fxmlPath + "]!");
-            e.printStackTrace();
+        } catch (Exception loadingException) {
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
+                    "No fue posible cargar la pantalla solicitada. Por favor, intente de nuevo o contacte al soporte técnico.",
                     AlertType.ERROR);
         }
     }
 
-    private void startAppFlow() {
+    private void startApplicationFlow() {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.SPLASH_SCREEN));
 
-        store.dispatch(new NavigationAction.GoToSection(AppSection.SPLASH_SCREEN));
+        PauseTransition initializationPause = new PauseTransition(Duration.seconds(2));
 
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
-
-        pause.setOnFinished(event -> {
+        initializationPause.setOnFinished(userActionEvent -> {
             try {
-                boolean adminExists = registerAdminManager.checkSystemHasAdmin();
+                boolean systemHasAdministrator = administratorManager.checkSystemHasAdmin();
 
-                if (!adminExists) {
-                    store.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
+                if (!systemHasAdministrator) {
+                    applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
                 } else {
-                    store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+                    applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
                 }
 
-            } catch (Exception e) {
+            } catch (Exception initializationException) {
                 Controller.showAlert("Error de Arranque",
-                        "El sistema falló al iniciar: " + e.getMessage(),
+                        "El sistema falló al iniciar sus componentes. Verifique su conexión a la base de datos.",
                         AlertType.ERROR);
             }
         });
 
-        pause.play();
+        initializationPause.play();
     }
 
     public void dispose() {
-        if (unsubscribe != null) {
-            unsubscribe.run();
+        if (stateChangeSubscription != null) {
+            stateChangeSubscription.run();
         }
     }
 }
