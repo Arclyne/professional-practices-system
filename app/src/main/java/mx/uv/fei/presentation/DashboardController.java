@@ -35,6 +35,9 @@ public class DashboardController {
     private Button navigateToRegisterProfessorButton;
     @FXML
     private Button navigateToRegisterProjectButton;
+
+    @FXML
+    private Button navigateToRegisterManagerButton;
     @FXML
     private Button navigateToRegisterActivityButton;
     @FXML
@@ -85,6 +88,9 @@ public class DashboardController {
             navigateToRegisterProfessorButton.setManaged(true);
             navigateToRegisterProjectButton.setVisible(true);
             navigateToRegisterProjectButton.setManaged(true);
+
+            navigateToRegisterManagerButton.setVisible(true);
+            navigateToRegisterManagerButton.setManaged(true);
         } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
             navigateToRegisterActivityButton.setVisible(true);
             navigateToRegisterActivityButton.setManaged(true);
@@ -110,6 +116,11 @@ public class DashboardController {
         if (navigateToRegisterProjectButton != null) {
             navigateToRegisterProjectButton.setVisible(false);
             navigateToRegisterProjectButton.setManaged(false);
+        }
+
+        if (navigateToRegisterManagerButton != null) {
+            navigateToRegisterManagerButton.setVisible(false);
+            navigateToRegisterManagerButton.setManaged(false);
         }
         if (navigateToRegisterActivityButton != null) {
             navigateToRegisterActivityButton.setVisible(false);
@@ -143,6 +154,11 @@ public class DashboardController {
     @FXML
     private void handleNavigateToRegisterProjectAction(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+    }
+
+    @FXML
+    private void handleNavigateToRegisterManagerAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_MANAGER));
     }
 
     @FXML
