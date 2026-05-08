@@ -21,10 +21,11 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTONE = "SELECT ID_PROYECTO, NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION FROM PROYECTO WHERE NOMBRE_PROYECTO = ? AND ENCARGADO = ?";
+    // Actualizamos ENCARGADO a ID_ENCARGADO en las sentencias SQL
+    private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTONE = "SELECT ID_PROYECTO, NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION FROM PROYECTO WHERE NOMBRE_PROYECTO = ? AND ID_ENCARGADO = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM PROYECTO";
-    private static final String SQL_UPDATE = "UPDATE PROYECTO SET NOMBRE_PROYECTO = ?, DESCRIPCION = ?, CUPO_PARTICIPANTES = ?, ENCARGADO = ?, ESTADO = ?, FECHA_INICIO = ?, FECHA_END = ?, ID_ORGANIZACION = ? WHERE ID_PROYECTO= ?";
+    private static final String SQL_UPDATE = "UPDATE PROYECTO SET NOMBRE_PROYECTO = ?, DESCRIPCION = ?, CUPO_PARTICIPANTES = ?, ID_ENCARGADO = ?, ESTADO = ?, FECHA_INICIO = ?, FECHA_END = ?, ID_ORGANIZACION = ? WHERE ID_PROYECTO = ?";
 
     public boolean insertProject(Project project) throws DAOException {
         try (
@@ -33,7 +34,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
             statement.setInt(3, project.getParticipantCapacity());
-            statement.setString(4, project.getManager());
+
+            // Cambiado a setInt para la llave foránea
+            statement.setInt(4, project.getManagerId());
+
             statement.setString(5, project.getStatus());
             statement.setDate(6, project.getStartDate());
             statement.setDate(7, project.getEndDate());
@@ -46,14 +50,14 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     }
 
     @Override
-    public Project recoverProject(String projectName, String manager) throws DAOException {
+    public Project recoverProject(String projectName, int managerId) throws DAOException { // Cambiado parámetro a int managerId
         Project projectToSearch = new Project();
 
         try (
                 Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECTONE)) {
             statement.setString(1, projectName);
-            statement.setString(2, manager);
+            statement.setInt(2, managerId); // Cambiado a setInt
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -61,7 +65,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                     projectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
                     projectToSearch.setDescription(resultSet.getString("DESCRIPCION"));
                     projectToSearch.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-                    projectToSearch.setManager(resultSet.getString("ENCARGADO"));
+
+                    // Recuperamos como int
+                    projectToSearch.setManagerId(resultSet.getInt("ID_ENCARGADO"));
+
                     projectToSearch.setStatus(resultSet.getString("ESTADO"));
                     projectToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
                     projectToSearch.setEndDate(resultSet.getDate("FECHA_END"));
@@ -69,7 +76,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
+            throw new DAOException("Error al intentar recuperar el proyecto en la base de datos.", e);
         }
         return projectToSearch;
     }
@@ -82,7 +89,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             projectRecovered.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
             projectRecovered.setDescription(resultSet.getString("DESCRIPCION"));
             projectRecovered.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-            projectRecovered.setManager(resultSet.getString("ENCARGADO"));
+
+            // Recuperamos como int
+            projectRecovered.setManagerId(resultSet.getInt("ID_ENCARGADO"));
+
             projectRecovered.setStatus(resultSet.getString("ESTADO"));
             projectRecovered.setStartDate(resultSet.getDate("FECHA_INICIO"));
             projectRecovered.setEndDate(resultSet.getDate("FECHA_END"));
@@ -98,7 +108,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setString(1, projectToUpdate.getProjectName());
             statement.setString(2, projectToUpdate.getDescription());
             statement.setInt(3, projectToUpdate.getParticipantCapacity());
-            statement.setString(4, projectToUpdate.getManager());
+
+            // Cambiado a setInt
+            statement.setInt(4, projectToUpdate.getManagerId());
+
             statement.setString(5, projectToUpdate.getStatus());
             statement.setDate(6, projectToUpdate.getStartDate());
             statement.setDate(7, projectToUpdate.getEndDate());

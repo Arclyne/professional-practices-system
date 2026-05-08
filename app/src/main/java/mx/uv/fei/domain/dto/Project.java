@@ -8,7 +8,9 @@ public class Project {
     private String projectName;
     private String description;
     private int participantCapacity;
-    private String manager;
+
+    private int managerId;
+
     private String status;
     private Date startDate;
     private Date endDate;
@@ -46,12 +48,12 @@ public class Project {
         this.participantCapacity = participantCapacity;
     }
 
-    public String getManager() {
-        return manager;
+    public int getManagerId() {
+        return managerId;
     }
 
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setManagerId(int managerId) {
+        this.managerId = managerId;
     }
 
     public String getStatus() {
@@ -95,13 +97,13 @@ public class Project {
             return false;
 
         Project that = (Project) object;
-        return Objects.equals(projectName, that.getProjectName()) &&
-                Objects.equals(manager, that.getManager()) &&
-                Objects.equals(companyId, that.getCompanyId());
+        return managerId == that.managerId &&
+                companyId == that.companyId &&
+                Objects.equals(projectName, that.projectName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectName, manager, companyId);
+        return Objects.hash(projectName, managerId, companyId);
     }
 }

@@ -29,7 +29,7 @@ public class MainApplication extends Application {
 
         try {
             Parent rootWindowNode = graphicalUserInterfaceLoader.load();
-            Scene mainApplicationScene = new Scene(rootWindowNode, 1024, 768);
+            Scene mainApplicationScene = new Scene(rootWindowNode, 450, 600);
 
             primaryApplicationStage.setScene(mainApplicationScene);
             primaryApplicationStage.setTitle("Sistema de Gestion de Practicas Profesionales - FEI");
