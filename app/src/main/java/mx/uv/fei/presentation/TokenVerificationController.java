@@ -56,9 +56,8 @@ public class TokenVerificationController implements Initializable {
         } catch (ManagerException managerException) {
             Controller.showErrorAlert("Validación fallida", managerException.getMessage());
 
-        } catch (Exception exception) {
-            Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado al verificar el token.");
-            exception.printStackTrace();
+        } catch (RuntimeException runtimeException) {
+            Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en tiempo de ejecución al verificar el token.");
         }
     }
 
@@ -72,9 +71,8 @@ public class TokenVerificationController implements Initializable {
         } catch (ManagerException managerException) {
             Controller.showErrorAlert("No se pudo generar", managerException.getMessage());
 
-        } catch (Exception exception) {
-            Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en el sistema.");
-            exception.printStackTrace();
+        } catch (RuntimeException runtimeException) {
+            Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en tiempo de ejecución en el sistema.");
         }
     }
 

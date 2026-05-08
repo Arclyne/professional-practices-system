@@ -21,7 +21,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         super(databaseConnection);
     }
 
-    // Actualizamos ENCARGADO a ID_ENCARGADO en las sentencias SQL
     private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_SELECTONE = "SELECT ID_PROYECTO, NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION FROM PROYECTO WHERE NOMBRE_PROYECTO = ? AND ID_ENCARGADO = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM PROYECTO";
@@ -34,8 +33,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
             statement.setInt(3, project.getParticipantCapacity());
-
-            // Cambiado a setInt para la llave foránea
             statement.setInt(4, project.getManagerId());
 
             statement.setString(5, project.getStatus());
@@ -65,8 +62,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                     projectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
                     projectToSearch.setDescription(resultSet.getString("DESCRIPCION"));
                     projectToSearch.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-
-                    // Recuperamos como int
                     projectToSearch.setManagerId(resultSet.getInt("ID_ENCARGADO"));
 
                     projectToSearch.setStatus(resultSet.getString("ESTADO"));
@@ -89,8 +84,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             projectRecovered.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
             projectRecovered.setDescription(resultSet.getString("DESCRIPCION"));
             projectRecovered.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-
-            // Recuperamos como int
             projectRecovered.setManagerId(resultSet.getInt("ID_ENCARGADO"));
 
             projectRecovered.setStatus(resultSet.getString("ESTADO"));
@@ -108,8 +101,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setString(1, projectToUpdate.getProjectName());
             statement.setString(2, projectToUpdate.getDescription());
             statement.setInt(3, projectToUpdate.getParticipantCapacity());
-
-            // Cambiado a setInt
             statement.setInt(4, projectToUpdate.getManagerId());
 
             statement.setString(5, projectToUpdate.getStatus());
