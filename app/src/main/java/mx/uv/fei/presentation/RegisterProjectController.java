@@ -40,7 +40,6 @@ public class RegisterProjectController implements Initializable {
     private final OrganizationManager organizationManager;
     private final Store store;
 
-    // Diccionarios para guardar Nombre -> ID real de la BD
     private final Map<String, Integer> organizationMap = new HashMap<>();
     private final Map<String, Integer> managerMap = new HashMap<>();
 
@@ -69,19 +68,16 @@ public class RegisterProjectController implements Initializable {
 
     @Override
     public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
-        // 1. Deshabilitamos el ComboBox de encargados al abrir la pantalla
-        comboBoxManager.setDisable(true);
 
-        // 2. Cargamos las organizaciones
+        comboBoxManager.setDisable(true);
         loadOrganizations();
 
-        // 3. Listener: Escucha cuando el usuario selecciona una organización
         comboBoxOrganization.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && !newValue.toString().trim().isEmpty()) {
                 int orgId = organizationMap.get((String) newValue);
                 loadManagersByOrganization(orgId);
             } else {
-                // Si deseleccionan, volvemos a bloquear y limpiar
+
                 comboBoxManager.setDisable(true);
                 comboBoxManager.getItems().clear();
             }
@@ -111,7 +107,6 @@ public class RegisterProjectController implements Initializable {
             List<Manager> managers = organizationManager.getManagersByOrganization(organizationId);
             ObservableList<String> managerNames = FXCollections.observableArrayList();
 
-            // Limpiamos el mapa anterior para evitar datos fantasma
             managerMap.clear();
 
             for (Manager mgr : managers) {
@@ -121,7 +116,6 @@ public class RegisterProjectController implements Initializable {
 
             comboBoxManager.setItems(managerNames);
 
-            // 4. Habilitamos el ComboBox solo si encontramos encargados
             if (!managerNames.isEmpty()) {
                 comboBoxManager.setDisable(false);
             } else {
