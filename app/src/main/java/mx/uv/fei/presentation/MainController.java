@@ -88,6 +88,7 @@ public class MainController {
                     case VIEW_PRACTITIONER_PRIORITIES -> loadView("/mx/uv/fei/presentation/viewPractitionerPriorities.fxml");
                     case COORDINATOR_PRACTITIONER_MENU -> loadView("/mx/uv/fei/presentation/coordinatorPractitionerMenu.fxml");
                     case PENDING_PRACTITIONER_SELECTION -> loadView("/mx/uv/fei/presentation/pendingPractitionerSelection.fxml");
+                    case REGISTER_MANAGER -> loadView("/mx/uv/fei/presentation/registerManager.fxml");
                     case ASSIGN_PROJECT -> loadView("/mx/uv/fei/presentation/assignProject.fxml");
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }

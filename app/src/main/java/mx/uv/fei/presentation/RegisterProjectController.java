@@ -153,7 +153,6 @@ public class RegisterProjectController implements Initializable {
             projectInformation.setEndDate(projectEndDate);
             projectInformation.setStatus("Activo");
 
-            // Validar combos y recuperar IDs
             String selectedOrg = (String) comboBoxOrganization.getValue();
             String selectedMgr = (String) comboBoxManager.getValue();
 
