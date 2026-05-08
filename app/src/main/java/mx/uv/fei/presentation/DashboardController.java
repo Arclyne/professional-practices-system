@@ -1,12 +1,17 @@
 package mx.uv.fei.presentation;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.DashboardManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -15,77 +20,150 @@ import mx.uv.fei.domain.statemachine.state.RootState;
 @Component
 public class DashboardController {
 
-    @FXML private Label labelUserName;
-    @FXML private Label labelUserRole;
-    @FXML private StackPane dashboardContent;
+    @FXML
+    private Label systemUserNameLabel;
+    @FXML
+    private Label systemUserRoleLabel;
+    @FXML
+    private StackPane dashboardMainContentArea;
 
-    @FXML private Button buttonRegisterCoordinator;
-    @FXML private Button buttonRegisterPractitioner;
-    @FXML private Button buttonRegisterProfessor;
-    @FXML private Button buttonRegisterProject;
-    @FXML private Button buttonRegisterActivity;
+    @FXML
+    private Button navigateToRegisterCoordinatorButton;
+    @FXML
+    private Button navigateToPractitionerManagementMenuButton;
+    @FXML
+    private Button navigateToRegisterProfessorButton;
+    @FXML
+    private Button navigateToRegisterProjectButton;
+    @FXML
+    private Button navigateToRegisterActivityButton;
+    @FXML
+    private Button navigateToPractitionerProjectsButton;
+    @FXML
+    private Button systemLogoutButton;
 
-    private final Store store;
+    private final Store applicationNavigationStore;
+    private final DashboardManager applicationDashboardManager;
 
     @Inject
-    public DashboardController(Store store) {
-        this.store = store;
+    public DashboardController(Store applicationNavigationStore, DashboardManager applicationDashboardManager) {
+        this.applicationNavigationStore = applicationNavigationStore;
+        this.applicationDashboardManager = applicationDashboardManager;
     }
 
     @FXML
     public void initialize() {
-        RootState currentState = store.getState();
-        User currentUser = currentState.sessionState().currentUserInSession();
+        try {
+            RootState currentSystemState = applicationNavigationStore.getState();
 
-        if (currentUser != null) {
-            labelUserName.setText(currentUser.getName() + " " + currentUser.getLastName());
-            labelUserRole.setText("Rol: " + currentUser.getRole());
-            configurePermissions(currentUser.getRole());
+            if (currentSystemState != null && currentSystemState.sessionState() != null) {
+                User currentAuthenticatedUser = currentSystemState.sessionState().currentUserInSession();
+
+                if (currentAuthenticatedUser != null) {
+                    systemUserNameLabel.setText(currentAuthenticatedUser.getName() + " " + currentAuthenticatedUser.getLastName());
+                    systemUserRoleLabel.setText("Rol: " + currentAuthenticatedUser.getRole());
+                    adjustUserInterfacePermissionsByRole(currentAuthenticatedUser.getRole());
+                } else {
+                    Controller.showAlert("Sesión inválida", "No se detectó un usuario activo en el sistema. Por favor, inicie sesión nuevamente.", AlertType.WARNING);
+                }
+            }
+        } catch (Exception initializationException) {
+            Controller.showAlert("Error del Sistema", "No se pudo inicializar el panel de control.", AlertType.ERROR);
         }
-
-        buttonRegisterPractitioner.setOnAction(e -> navigateTo(AppSection.REGISTER_PRACTITIONER));
-        buttonRegisterProfessor.setOnAction(e -> navigateTo(AppSection.REGISTER_PROFESSOR));
-        buttonRegisterProject.setOnAction(e -> navigateTo(AppSection.REGISTER_PROJECT));
-        buttonRegisterActivity.setOnAction(e -> navigateTo(AppSection.REGISTER_ACTIVITY));
-        buttonRegisterCoordinator.setOnAction(e -> navigateTo(AppSection.REGISTER_COORDINATOR));
     }
 
-    private void navigateTo(AppSection section) {
-        store.dispatch(new NavigationAction.GoToSection(section));
+    private void adjustUserInterfacePermissionsByRole(String authenticatedUserRole) {
+        hideAllNavigationButtonsByDefault();
+
+        if (applicationDashboardManager.isAdministratorMenuAvailable(authenticatedUserRole)) {
+            navigateToRegisterCoordinatorButton.setVisible(true);
+            navigateToRegisterCoordinatorButton.setManaged(true);
+        } else if (applicationDashboardManager.isCoordinatorMenuAvailable(authenticatedUserRole)) {
+            navigateToPractitionerManagementMenuButton.setVisible(true);
+            navigateToPractitionerManagementMenuButton.setManaged(true);
+            navigateToRegisterProfessorButton.setVisible(true);
+            navigateToRegisterProfessorButton.setManaged(true);
+            navigateToRegisterProjectButton.setVisible(true);
+            navigateToRegisterProjectButton.setManaged(true);
+        } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
+            navigateToRegisterActivityButton.setVisible(true);
+            navigateToRegisterActivityButton.setManaged(true);
+        } else if (applicationDashboardManager.isPractitionerMenuAvailable(authenticatedUserRole)) {
+            navigateToPractitionerProjectsButton.setVisible(true);
+            navigateToPractitionerProjectsButton.setManaged(true);
+        }
     }
 
-    private void configurePermissions(String role) {
-        buttonRegisterCoordinator.setVisible(false);
-        buttonRegisterCoordinator.setManaged(false);
-        buttonRegisterPractitioner.setVisible(false);
-        buttonRegisterPractitioner.setManaged(false);
-        buttonRegisterProfessor.setVisible(false);
-        buttonRegisterProfessor.setManaged(false);
-        buttonRegisterProject.setVisible(false);
-        buttonRegisterProject.setManaged(false);
-        buttonRegisterActivity.setVisible(false);
-        buttonRegisterActivity.setManaged(false);
-
-        if ("Administrator".equalsIgnoreCase(role)) {
-            buttonRegisterCoordinator.setVisible(true);
-            buttonRegisterCoordinator.setManaged(true);
-
-        } else if ("Coordinator".equalsIgnoreCase(role)) {
-            buttonRegisterPractitioner.setVisible(true);
-            buttonRegisterPractitioner.setManaged(true);
-            buttonRegisterProfessor.setVisible(true);
-            buttonRegisterProfessor.setManaged(true);
-            buttonRegisterProject.setVisible(true);
-            buttonRegisterProject.setManaged(true);
-
-        } else if ("Professor".equalsIgnoreCase(role)) {
-            buttonRegisterActivity.setVisible(true);
-            buttonRegisterActivity.setManaged(true);
+    private void hideAllNavigationButtonsByDefault() {
+        if (navigateToRegisterCoordinatorButton != null) {
+            navigateToRegisterCoordinatorButton.setVisible(false);
+            navigateToRegisterCoordinatorButton.setManaged(false);
+        }
+        if (navigateToPractitionerManagementMenuButton != null) {
+            navigateToPractitionerManagementMenuButton.setVisible(false);
+            navigateToPractitionerManagementMenuButton.setManaged(false);
+        }
+        if (navigateToRegisterProfessorButton != null) {
+            navigateToRegisterProfessorButton.setVisible(false);
+            navigateToRegisterProfessorButton.setManaged(false);
+        }
+        if (navigateToRegisterProjectButton != null) {
+            navigateToRegisterProjectButton.setVisible(false);
+            navigateToRegisterProjectButton.setManaged(false);
+        }
+        if (navigateToRegisterActivityButton != null) {
+            navigateToRegisterActivityButton.setVisible(false);
+            navigateToRegisterActivityButton.setManaged(false);
+        }
+        if (navigateToPractitionerProjectsButton != null) {
+            navigateToPractitionerProjectsButton.setVisible(false);
+            navigateToPractitionerProjectsButton.setManaged(false);
         }
     }
 
     @FXML
-    private void handleLogout() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
+    private void handleNavigateToRegisterCoordinatorAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_COORDINATOR));
+    }
+
+    @FXML
+    private void handleNavigateToPractitionerManagementAction(ActionEvent userActionEvent) {
+        try {
+            applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+        } catch (Exception dispatchException) {
+            Controller.showAlert("Error de Navegación", "No fue posible abrir el menú de gestión de practicantes.", AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleNavigateToRegisterProfessorAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
+    }
+
+    @FXML
+    private void handleNavigateToRegisterProjectAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+    }
+
+    @FXML
+    private void handleNavigateToRegisterActivityAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_ACTIVITY));
+    }
+
+    @FXML
+    private void handleNavigateToPractitionerProjectsAction(ActionEvent userActionEvent) {
+        User currentAuthenticatedPractitioner = applicationNavigationStore.getState().sessionState().currentUserInSession();
+
+        try {
+            AppSection resolvedTargetNavigationSection = applicationDashboardManager.resolvePractitionerProjectsNavigation(currentAuthenticatedPractitioner.getId());
+            applicationNavigationStore.dispatch(new NavigationAction.GoToSection(resolvedTargetNavigationSection));
+        } catch (ManagerException verificationException) {
+            Controller.showAlert("Acceso denegado", verificationException.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleSystemLogoutAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
     }
 }

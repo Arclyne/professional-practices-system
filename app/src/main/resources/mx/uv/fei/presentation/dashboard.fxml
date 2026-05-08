@@ -28,8 +28,8 @@
             </Label>
 
             <VBox spacing="2.0">
-                <Label fx:id="labelUserName" text="Cargando..." styleClass="field-label" />
-                <Label fx:id="labelUserRole" text="Rol: ..." textFill="#6b7280">
+                <Label fx:id="systemUserNameLabel" text="Cargando..." styleClass="field-label" />
+                <Label fx:id="systemUserRoleLabel" text="Rol: ..." textFill="#6b7280">
                     <font>
                         <Font size="12.0" />
                     </font>
@@ -54,14 +54,14 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#handleLogout" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-border-color: #FCA5A5; -fx-border-radius: 8px; -fx-cursor: hand;"
+            <Button fx:id="systemLogoutButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#handleSystemLogoutAction" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-border-color: #FCA5A5; -fx-border-radius: 8px; -fx-cursor: hand;"
                     text="Cerrar Sesión" />
         </VBox>
     </left>
 
     <center>
-        <StackPane fx:id="dashboardContent" style="-fx-background-color: #FFFFFF;">
+        <StackPane fx:id="dashboardMainContentArea" style="-fx-background-color: #FFFFFF;">
             <VBox alignment="CENTER" spacing="15.0">
                 <Label styleClass="form-title" text="Bienvenido al Sistema de Gestión" />
                 <Label text="Seleccione una acción para comenzar." textFill="#6b7280">
@@ -71,20 +71,29 @@
                 </Label>
 
                 <VBox alignment="CENTER" spacing="15.0" maxWidth="300.0">
-                    <Button fx:id="buttonRegisterCoordinator" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Coordinador"/>
+                    <Button fx:id="navigateToRegisterCoordinatorButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterCoordinatorAction" styleClass="secondary-button" text="Registrar Coordinador"
+                            visible="false" managed="false"/>
 
-                    <Button fx:id="buttonRegisterPractitioner" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Practicante" />
+                    <Button fx:id="navigateToPractitionerManagementMenuButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToPractitionerManagementAction" styleClass="secondary-button" text="Gestión de Practicantes"
+                            visible="false" managed="false"/>
 
-                    <Button fx:id="buttonRegisterProfessor" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Profesor" />
+                    <Button fx:id="navigateToRegisterProfessorButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProfessorAction" styleClass="secondary-button" text="Registrar Profesor"
+                            visible="false" managed="false"/>
 
-                    <Button fx:id="buttonRegisterProject" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Proyecto" />
+                    <Button fx:id="navigateToRegisterProjectButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProjectAction" styleClass="secondary-button" text="Registrar Proyecto"
+                            visible="false" managed="false"/>
 
-                    <Button fx:id="buttonRegisterActivity" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" styleClass="secondary-button" text="Registrar Actividad" />
+                    <Button fx:id="navigateToRegisterActivityButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterActivityAction" styleClass="secondary-button" text="Registrar Actividad"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToPractitionerProjectsButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToPractitionerProjectsAction" styleClass="secondary-button" text="Mis Proyectos"
+                            visible="false" managed="false"/>
                 </VBox>
             </VBox>
         </StackPane>

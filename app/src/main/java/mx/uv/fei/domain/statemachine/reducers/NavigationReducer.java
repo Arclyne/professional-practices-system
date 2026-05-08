@@ -7,14 +7,17 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction.ViewEntityDetails;
 
 public class NavigationReducer {
 
-    public static NavigationState reduce(NavigationState currentState, NavigationAction action) {
-        return switch (action) {
-            case GoToSection a -> new NavigationState(
-                    a.section()
+    public static NavigationState reduce(NavigationState currentNavigationState, NavigationAction dispatchedAction) {
+
+        return switch (dispatchedAction) {
+            case GoToSection goToSectionAction -> new NavigationState(
+                    goToSectionAction.section(),
+                    null
             );
 
-            case ViewEntityDetails a -> new NavigationState(
-                    a.section()
+            case ViewEntityDetails viewEntityDetailsAction -> new NavigationState(
+                    viewEntityDetailsAction.section(),
+                    viewEntityDetailsAction.entityId()
             );
         };
     }
