@@ -19,8 +19,10 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     private final UserDAO userDAO;
 
     private static final String SQL_INSERT = "INSERT INTO COORDINADOR (ID_COORDINADOR) VALUES (?)";
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE C.ID_COORDINADOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO";
+
+    // CORRECCIÓN: Se cambió C.FECHA_REGISTRO por U.FECHA_REGISTRO y se agregaron NOMBRE_USUARIO y CORREO
+    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.CORREO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE C.ID_COORDINADOR = ?";
+    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.CORREO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO";
 
     @Inject
     public CoordinatorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -53,13 +55,13 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
             } catch (SQLException e) {
                 connection.rollback();
-                throw new DAOException("SQL Error while inserting coordinator. Changes were rolled back.", e);
+                throw new DAOException("SQL Error al intentar insertar el coordinador. Cambios revertidos.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Critical database connection error.", e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
         return resultId;
@@ -78,6 +80,11 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     coordinatorToSearch.setId(resultSet.getInt("ID_USUARIO"));
+
+                    // CORRECCIÓN: Recuperar datos faltantes
+                    coordinatorToSearch.setUserName(resultSet.getString("NOMBRE_USUARIO"));
+                    coordinatorToSearch.setEmail(resultSet.getString("CORREO"));
+
                     coordinatorToSearch.setPassword(resultSet.getString("PASSWORD"));
                     coordinatorToSearch.setName(resultSet.getString("NOMBRE"));
                     coordinatorToSearch.setLastName(resultSet.getString("APELLIDOS"));
@@ -103,6 +110,11 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
             Coordinator coordinatorRecovered = new Coordinator();
 
             coordinatorRecovered.setId(resultSet.getInt("ID_USUARIO"));
+
+            // CORRECCIÓN: Recuperar datos faltantes
+            coordinatorRecovered.setUserName(resultSet.getString("NOMBRE_USUARIO"));
+            coordinatorRecovered.setEmail(resultSet.getString("CORREO"));
+
             coordinatorRecovered.setPassword(resultSet.getString("PASSWORD"));
             coordinatorRecovered.setName(resultSet.getString("NOMBRE"));
             coordinatorRecovered.setLastName(resultSet.getString("APELLIDOS"));
@@ -137,13 +149,13 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
             } catch (SQLException e) {
                 connection.rollback();
-                throw new DAOException("SQL Error while updating coordinator. Changes were rolled back.", e);
+                throw new DAOException("SQL Error al intentar actualizar el coordinador. Cambios revertidos.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Critical database connection error.", e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
         return isUpdated;

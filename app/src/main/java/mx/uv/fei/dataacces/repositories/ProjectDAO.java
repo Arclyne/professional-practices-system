@@ -26,6 +26,14 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     private static final String SQL_SELECTALL = "SELECT * FROM PROYECTO";
     private static final String SQL_UPDATE = "UPDATE PROYECTO SET NOMBRE_PROYECTO = ?, DESCRIPCION = ?, CUPO_PARTICIPANTES = ?, ID_ENCARGADO = ?, ESTADO = ?, FECHA_INICIO = ?, FECHA_END = ?, ID_ORGANIZACION = ? WHERE ID_PROYECTO = ?";
 
+
+    private static final String SQL_SELECT_AVAILABLE_WITH_CAPACITY =
+            "SELECT p.* FROM PROYECTO p " +
+                    "LEFT JOIN POSTULACION_PROYECTO pp ON p.ID_PROYECTO = pp.ID_PROYECTO AND pp.ESTADO_POSTULACION = 'Asignado' " +
+                    "WHERE p.ESTADO = 'Activo' " +
+                    "GROUP BY p.ID_PROYECTO " +
+                    "HAVING COUNT(pp.ID_PRACTICANTE) < p.CUPO_PARTICIPANTES";
+
     public boolean insertProject(Project project) throws DAOException {
         try (
                 Connection connection = databaseConnection.getConnection();
@@ -108,6 +116,25 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setDate(7, projectToUpdate.getEndDate());
             statement.setInt(8, projectToUpdate.getCompanyId());
             statement.setInt(9, ID);
+        });
+    }
+
+    @Override
+    public List<Project> getAvailableProjectsWithCapacity() throws DAOException {
+        return recoverALL(SQL_SELECT_AVAILABLE_WITH_CAPACITY, resultSet -> {
+            Project projectRecovered = new Project();
+
+            projectRecovered.setProjectId(resultSet.getInt("ID_PROYECTO"));
+            projectRecovered.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
+            projectRecovered.setDescription(resultSet.getString("DESCRIPCION"));
+            projectRecovered.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
+            projectRecovered.setManagerId(resultSet.getInt("ID_ENCARGADO"));
+            projectRecovered.setStatus(resultSet.getString("ESTADO"));
+            projectRecovered.setStartDate(resultSet.getDate("FECHA_INICIO"));
+            projectRecovered.setEndDate(resultSet.getDate("FECHA_END"));
+            projectRecovered.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
+
+            return projectRecovered;
         });
     }
 }
