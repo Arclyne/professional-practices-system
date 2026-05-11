@@ -79,6 +79,8 @@ public class PrioritizeProjectsController {
 
     private void loadSystemAvailableProjects() {
         try {
+            availableProjectsObservableList.clear();
+            prioritizedProjectsObservableList.clear();
             List<Project> retrievedAvailableProjectsList = projectPrioritizationManager.retrieveAllAvailableProjects();
             availableProjectsObservableList.addAll(retrievedAvailableProjectsList);
         } catch (ManagerException managerRetrievalException) {
