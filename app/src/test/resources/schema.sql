@@ -1,6 +1,5 @@
 SET REFERENTIAL_INTEGRITY FALSE;
-
-DROP PROCEDURE IF EXISTS AssignProjectAndRejectOthers;
+DROP ALIAS IF EXISTS AssignProjectAndRejectOthers;
 DROP TABLE IF EXISTS POSTULACION_PROYECTO;
 DROP TABLE IF EXISTS PARTICIPA;
 DROP TABLE IF EXISTS FORMADO_POR;
@@ -22,7 +21,6 @@ DROP TABLE IF EXISTS PERIODO_ESCOLAR;
 DROP TABLE IF EXISTS ACCESS_TOKEN;
 DROP TABLE IF EXISTS USUARIO;
 DROP TABLE IF EXISTS ROL;
-
 SET REFERENTIAL_INTEGRITY TRUE;
 
 CREATE TABLE ROL (
@@ -224,22 +222,21 @@ CREATE TABLE PARTICIPA (
                            CONSTRAINT participa_ibfk_3 FOREIGN KEY (ID_RECEIVER) REFERENCES USUARIO (ID_USUARIO) ON DELETE CASCADE
 );
 
-DELIMITER //
-CREATE PROCEDURE AssignProjectAndRejectOthers(
-    IN targetPractitionerIdentifier INT,
-    IN targetProjectIdentifier INT
-)
-BEGIN
-START TRANSACTION;
-
-UPDATE POSTULACION_PROYECTO
-SET ESTADO_POSTULACION = 'Asignado'
-WHERE ID_PRACTICANTE = targetPractitionerIdentifier AND ID_PROYECTO = targetProjectIdentifier;
-
-UPDATE POSTULACION_PROYECTO
-SET ESTADO_POSTULACION = 'Rechazado'
-WHERE ID_PRACTICANTE = targetPractitionerIdentifier AND ID_PROYECTO != targetProjectIdentifier;
-
-COMMIT;
-END //
-DELIMITER ;
+CREATE ALIAS AssignProjectAndRejectOthers AS $$
+void assignProject(Connection conn, int targetPractitionerIdentifier, int targetProjectIdentifier) throws SQLException {
+conn.setAutoCommit(false);
+try (PreparedStatement ps1 = conn.prepareStatement("UPDATE POSTULACION_PROYECTO SET ESTADO_POSTULACION = 'Asignado' WHERE ID_PRACTICANTE = ? AND ID_PROYECTO = ?");
+PreparedStatement ps2 = conn.prepareStatement("UPDATE POSTULACION_PROYECTO SET ESTADO_POSTULACION = 'Rechazado' WHERE ID_PRACTICANTE = ? AND ID_PROYECTO != ?")) {
+ps1.setInt(1, targetPractitionerIdentifier);
+ps1.setInt(2, targetProjectIdentifier);
+ps1.executeUpdate();
+ps2.setInt(1, targetPractitionerIdentifier);
+ps2.setInt(2, targetProjectIdentifier);
+ps2.executeUpdate();
+conn.commit();
+} catch (SQLException e) {
+conn.rollback();
+throw e;
+}
+}
+$$;
