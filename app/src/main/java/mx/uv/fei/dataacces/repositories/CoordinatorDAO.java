@@ -19,10 +19,9 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     private final UserDAO userDAO;
 
     private static final String SQL_INSERT = "INSERT INTO COORDINADOR (ID_COORDINADOR) VALUES (?)";
-
-    // CORRECCIÓN: Se cambió C.FECHA_REGISTRO por U.FECHA_REGISTRO y se agregaron NOMBRE_USUARIO y CORREO
     private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.CORREO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE C.ID_COORDINADOR = ?";
     private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.CORREO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO";
+    private static final String SQL_SELECT_CURRENT = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.CORREO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE U.ESTADO IN ('Activo', 'Pendiente')";
 
     @Inject
     public CoordinatorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -53,15 +52,15 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                     connection.rollback();
                 }
 
-            } catch (SQLException e) {
+            } catch (SQLException exception) {
                 connection.rollback();
-                throw new DAOException("SQL Error al intentar insertar el coordinador. Cambios revertidos.", e);
+                throw new DAOException("SQL Error al intentar insertar el coordinador. Cambios revertidos.", exception);
             } finally {
                 connection.setAutoCommit(true);
             }
 
-        } catch (SQLException e) {
-            throw new DAOException("Error crítico de conexión a la base de datos.", e);
+        } catch (SQLException exception) {
+            throw new DAOException("Error crítico de conexión a la base de datos.", exception);
         }
 
         return resultId;
@@ -80,28 +79,61 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     coordinatorToSearch.setId(resultSet.getInt("ID_USUARIO"));
-
-                    // CORRECCIÓN: Recuperar datos faltantes
                     coordinatorToSearch.setUserName(resultSet.getString("NOMBRE_USUARIO"));
                     coordinatorToSearch.setEmail(resultSet.getString("CORREO"));
-
                     coordinatorToSearch.setPassword(resultSet.getString("PASSWORD"));
                     coordinatorToSearch.setName(resultSet.getString("NOMBRE"));
                     coordinatorToSearch.setLastName(resultSet.getString("APELLIDOS"));
                     coordinatorToSearch.setStatus(resultSet.getString("ESTADO"));
                     coordinatorToSearch.setGender(resultSet.getString("GENERO"));
 
-                    coordinatorToSearch.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                        coordinatorToSearch.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    }
 
                     if (resultSet.getTimestamp("FECHA_BAJA") != null) {
                         coordinatorToSearch.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new DAOException("Error al intentar recuperar el coordinador de la base de datos.", e);
+        } catch (SQLException exception) {
+            throw new DAOException("Error al intentar recuperar el coordinador de la base de datos.", exception);
         }
         return coordinatorToSearch;
+    }
+
+    @Override
+    public Coordinator getCurrentCoordinator() throws DAOException {
+        Coordinator currentCoordinator = null;
+
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_CURRENT);
+                ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                currentCoordinator = new Coordinator();
+                currentCoordinator.setId(resultSet.getInt("ID_USUARIO"));
+                currentCoordinator.setUserName(resultSet.getString("NOMBRE_USUARIO"));
+                currentCoordinator.setEmail(resultSet.getString("CORREO"));
+                currentCoordinator.setPassword(resultSet.getString("PASSWORD"));
+                currentCoordinator.setName(resultSet.getString("NOMBRE"));
+                currentCoordinator.setLastName(resultSet.getString("APELLIDOS"));
+                currentCoordinator.setStatus(resultSet.getString("ESTADO"));
+                currentCoordinator.setGender(resultSet.getString("GENERO"));
+
+                if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                    currentCoordinator.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                }
+
+                if (resultSet.getTimestamp("FECHA_BAJA") != null) {
+                    currentCoordinator.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException("Error al consultar el coordinador actual en la base de datos.", exception);
+        }
+        return currentCoordinator;
     }
 
     @Override
@@ -110,18 +142,18 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
             Coordinator coordinatorRecovered = new Coordinator();
 
             coordinatorRecovered.setId(resultSet.getInt("ID_USUARIO"));
-
-            // CORRECCIÓN: Recuperar datos faltantes
             coordinatorRecovered.setUserName(resultSet.getString("NOMBRE_USUARIO"));
             coordinatorRecovered.setEmail(resultSet.getString("CORREO"));
-
             coordinatorRecovered.setPassword(resultSet.getString("PASSWORD"));
             coordinatorRecovered.setName(resultSet.getString("NOMBRE"));
             coordinatorRecovered.setLastName(resultSet.getString("APELLIDOS"));
             coordinatorRecovered.setStatus(resultSet.getString("ESTADO"));
             coordinatorRecovered.setGender(resultSet.getString("GENERO"));
 
-            coordinatorRecovered.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+            if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
+                coordinatorRecovered.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+            }
+
             if (resultSet.getTimestamp("FECHA_BAJA") != null) {
                 coordinatorRecovered.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
             }
@@ -147,15 +179,15 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                     connection.rollback();
                 }
 
-            } catch (SQLException e) {
+            } catch (SQLException exception) {
                 connection.rollback();
-                throw new DAOException("SQL Error al intentar actualizar el coordinador. Cambios revertidos.", e);
+                throw new DAOException("SQL Error al intentar actualizar el coordinador. Cambios revertidos.", exception);
             } finally {
                 connection.setAutoCommit(true);
             }
 
-        } catch (SQLException e) {
-            throw new DAOException("Error crítico de conexión a la base de datos.", e);
+        } catch (SQLException exception) {
+            throw new DAOException("Error crítico de conexión a la base de datos.", exception);
         }
 
         return isUpdated;

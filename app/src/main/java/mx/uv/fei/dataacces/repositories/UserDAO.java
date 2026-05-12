@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -191,5 +192,39 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         }
 
         return retrievedUser;
+    }
+
+    @Override
+    public boolean deactivateMultipleUsers(List<Integer> userIdentifiersList) throws DAOException {
+        boolean allUpdatesSuccessful = true;
+        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
+            activeDatabaseConnection.setAutoCommit(false);
+            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE)) {
+                for (Integer currentIdentifier : userIdentifiersList) {
+                    updateStatement.setInt(1, currentIdentifier);
+                    updateStatement.addBatch();
+                }
+                int[] executionResults = updateStatement.executeBatch();
+                for (int result : executionResults) {
+                    if (result <= 0) {
+                        allUpdatesSuccessful = false;
+                        break;
+                    }
+                }
+                if (allUpdatesSuccessful) {
+                    activeDatabaseConnection.commit();
+                } else {
+                    activeDatabaseConnection.rollback();
+                }
+            } catch (SQLException executionException) {
+                activeDatabaseConnection.rollback();
+                throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", executionException);
+            } finally {
+                activeDatabaseConnection.setAutoCommit(true);
+            }
+        } catch (SQLException connectionException) {
+            throw new DAOException("Error de conexión al procesar inactivación masiva.", connectionException);
+        }
+        return allUpdatesSuccessful;
     }
 }

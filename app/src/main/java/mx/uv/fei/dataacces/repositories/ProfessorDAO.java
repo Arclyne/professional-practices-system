@@ -20,8 +20,8 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private static final String SQL_INSERT = "INSERT INTO PROFESOR (ID_PROFESOR) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.USER, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO WHERE P.ID_PROFESOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.USER, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO";
+    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO WHERE P.ID_PROFESOR = ?";
+    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM PROFESOR P INNER JOIN USUARIO U ON P.ID_PROFESOR = U.ID_USUARIO";
 
     @Inject
     public ProfessorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -109,7 +109,7 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private void mapProfessor(Professor professor, ResultSet resultSet) throws SQLException {
         professor.setId(resultSet.getInt("ID_USUARIO"));
-        professor.setUserName(resultSet.getString("USER")); // El antiguo staffNumber ahora es userName
+        professor.setUserName(resultSet.getString("NOMBRE_USUARIO"));
         professor.setPassword(resultSet.getString("PASSWORD"));
         professor.setName(resultSet.getString("NOMBRE"));
         professor.setLastName(resultSet.getString("APELLIDOS"));

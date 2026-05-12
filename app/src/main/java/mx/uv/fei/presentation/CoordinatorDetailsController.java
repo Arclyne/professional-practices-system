@@ -13,9 +13,9 @@ import javafx.scene.layout.VBox;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
-import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.AdminManager;
+import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -29,14 +29,14 @@ public class CoordinatorDetailsController {
     @FXML private Label statusLabel;
     @FXML private Button inactivateButton;
 
-    private final AdminManager adminManager;
+    private final CoordinatorManager coordinatorManager;
     private final Store applicationNavigationStore;
 
     private int currentCoordinatorId;
 
     @Inject
-    public CoordinatorDetailsController(AdminManager adminManager, Store applicationNavigationStore) {
-        this.adminManager = adminManager;
+    public CoordinatorDetailsController(CoordinatorManager coordinatorManager, Store applicationNavigationStore) {
+        this.coordinatorManager = coordinatorManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }
 
@@ -47,7 +47,7 @@ public class CoordinatorDetailsController {
 
     private void loadCurrentCoordinatorData() {
         try {
-            User currentCoordinator = adminManager.getActiveCoordinator();
+            Coordinator currentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
 
             if (currentCoordinator != null) {
                 this.currentCoordinatorId = currentCoordinator.getId();
@@ -61,10 +61,10 @@ public class CoordinatorDetailsController {
                     inactivateButton.setText("Coordinador Inactivo");
                 }
             } else {
-                Controller.showAlert("Sin resultados", "No hay un coordinador activo en el sistema actualmente.", AlertType.INFORMATION);
+                Controller.showAlert("Sin resultados", "No hay un coordinador activo o pendiente en el sistema actualmente.", AlertType.INFORMATION);
                 inactivateButton.setDisable(true);
             }
-        } catch (ManagerException e) {
+        } catch (ManagerException retrievalException) {
             Controller.showAlert("Error de conexión", "No se pudieron recuperar los datos del coordinador.", AlertType.ERROR);
         }
     }
@@ -100,13 +100,13 @@ public class CoordinatorDetailsController {
 
     private void executeInactivation() {
         try {
-            adminManager.changeUserStatus(currentCoordinatorId, "No Activo");
+            coordinatorManager.inactivateCoordinator(currentCoordinatorId);
 
             Controller.showAlert("Éxito", "El coordinador ha sido inactivado correctamente.", AlertType.INFORMATION);
             loadCurrentCoordinatorData();
 
-        } catch (ManagerException e) {
-            Controller.showAlert("Error en el proceso", e.getMessage(), AlertType.ERROR);
+        } catch (ManagerException inactivationException) {
+            Controller.showAlert("Error en el proceso", inactivationException.getMessage(), AlertType.ERROR);
         }
     }
 

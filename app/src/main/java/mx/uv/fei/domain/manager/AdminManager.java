@@ -4,35 +4,29 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IAdministratorDAO;
-import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Administrator;
-import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
-
-import java.util.List;
 
 @Component
 public class AdminManager {
 
     private final IAdministratorDAO adminDAO;
-    private final ICoordinatorDAO coordinatorDAO;
     private final Store store;
 
     @Inject
-    public AdminManager(IAdministratorDAO adminDAO, ICoordinatorDAO coordinatorDAO, Store store) {
+    public AdminManager(IAdministratorDAO adminDAO, Store store) {
         this.adminDAO = adminDAO;
-        this.coordinatorDAO = coordinatorDAO;
         this.store = store;
     }
 
     public boolean checkSystemHasAdmin() throws ManagerException {
         try {
             return this.adminDAO.checkIfAdminExists();
-        } catch (DAOException e) {
-            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", e);
+        } catch (DAOException exception) {
+            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", exception);
         }
     }
 
@@ -50,44 +44,8 @@ public class AdminManager {
             }
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
 
-        } catch (DAOException e) {
-            throw new ManagerException(
-                    "Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.",
-                    e);
-        }
-    }
-
-    public Coordinator getActiveCoordinator() throws ManagerException {
-        try {
-            List<Coordinator> allCoordinators = coordinatorDAO.getAllCoordinators();
-            for (Coordinator coordinator : allCoordinators) {
-                if ("Activo".equalsIgnoreCase(coordinator.getStatus())) {
-                    return coordinator;
-                }
-            }
-            return null;
-
-        } catch (DAOException e) {
-            throw new ManagerException("No se pudo recuperar la información del coordinador actual.", e);
-        }
-    }
-
-    public void changeUserStatus(int coordinatorId, String newStatus) throws ManagerException {
-        try {
-            Coordinator coordinatorToUpdate = coordinatorDAO.recoverCoordinator(coordinatorId);
-
-            if (coordinatorToUpdate == null || coordinatorToUpdate.getId() == 0) {
-                throw new ManagerException("El coordinador especificado no existe en la base de datos.");
-            }
-            coordinatorToUpdate.setStatus(newStatus);
-            boolean isUpdated = coordinatorDAO.updateCoordinator(coordinatorToUpdate, coordinatorId);
-
-            if (!isUpdated) {
-                throw new ManagerException("No fue posible actualizar el estado del coordinador. Intente nuevamente.");
-            }
-
-        } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un error en el servidor al intentar cambiar el estado.", e);
+        } catch (DAOException exception) {
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", exception);
         }
     }
 }
