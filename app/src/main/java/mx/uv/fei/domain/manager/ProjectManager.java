@@ -9,6 +9,7 @@ import mx.uv.fei.dataacces.interfaces.IProjectDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import java.util.List;
 
 @Component
 public class ProjectManager {
@@ -53,4 +54,24 @@ public class ProjectManager {
             throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
         }
     }
+
+    public void inactivateMultipleProjects(List<Integer> projectIdentifiersList) throws ManagerException {
+        try {
+            boolean isProcessSuccessful = projectDataAccessObject.deactivateMultipleProjects(projectIdentifiersList);
+            if (!isProcessSuccessful) {
+                throw new ManagerException("No se pudieron inactivar los proyectos seleccionados.");
+            }
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error de base de datos al inactivar proyectos.", dataAccessException);
+        }
+    }
+
+    public List<Project> getAllProjects() throws ManagerException {
+        try {
+            return projectDataAccessObject.getAllProjects();
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error al obtener la lista de proyectos.", dataAccessException);
+        }
+    }
+
 }
