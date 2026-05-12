@@ -73,7 +73,7 @@ public class PendingPractitionerSelectionController {
 
         if (selectedPractitionerToReview != null) {
             String targetPractitionerIdentifier = String.valueOf(selectedPractitionerToReview.getId());
-            applicationNavigationStore.dispatch(new NavigationAction.ViewEntityDetails(AppSection.ASSIGN_PROJECT, targetPractitionerIdentifier));
+            applicationNavigationStore.dispatch(new NavigationAction.ViewEntityDetails( AppSection.ASSIGN_PROJECT, targetPractitionerIdentifier));
         } else {
             Controller.showAlert("Seleccion requerida", "Seleccione un practicante de la lista para revisar sus postulaciones.", AlertType.WARNING);
         }

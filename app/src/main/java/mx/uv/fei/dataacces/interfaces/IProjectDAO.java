@@ -15,4 +15,6 @@ public interface IProjectDAO {
     boolean updateProject(Project projectToUpdate, int ID) throws DAOException;
 
     List<Project> getAvailableProjectsWithCapacity() throws DAOException;
+
+    boolean deactivateMultipleProjects(List<Integer> projectIdentifiersList) throws DAOException;
 }

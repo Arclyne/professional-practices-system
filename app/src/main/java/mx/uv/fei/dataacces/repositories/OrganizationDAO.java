@@ -21,6 +21,8 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     private static final String SQL_SELECTALL = "SELECT * FROM ORGANIZACION_VINCULADA";
     private static final String SQL_UPDATE = "UPDATE ORGANIZACION_VINCULADA SET NOMBRE_ORGANIZACION = ?, ESTADO = ?, DIRECCION = ?, CIUDAD = ?, SECTOR = ?, CORREO = ?, TELEFONO = ? WHERE ID_ORGANIZACION = ?";
 
+    private static final String SQL_DEACTIVATE_ORGANIZATION = "UPDATE ORGANIZACION_VINCULADA SET ESTADO = 'No Activo' WHERE ID_ORGANIZACION = ?";
+
     @Inject
     public OrganizationDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
@@ -105,5 +107,28 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             statement.setString(7, upDateOrganization.getCellphone());
             statement.setInt(8, ID);
         });
+    }
+    @Override
+    public boolean deactivateMultipleOrganizations(List<Integer> organizationIdentifiersList) throws DAOException {
+        boolean allUpdatesSuccessful = true;
+        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
+            activeDatabaseConnection.setAutoCommit(false);
+            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE_ORGANIZATION)) {
+                for (Integer currentIdentifier : organizationIdentifiersList) {
+                    updateStatement.setInt(1, currentIdentifier);
+                    updateStatement.addBatch();
+                }
+                updateStatement.executeBatch();
+                activeDatabaseConnection.commit();
+            } catch (SQLException executionException) {
+                activeDatabaseConnection.rollback();
+                throw new DAOException("Error al ejecutar la inactivación masiva de organizaciones.", executionException);
+            } finally {
+                activeDatabaseConnection.setAutoCommit(true);
+            }
+        } catch (SQLException connectionException) {
+            throw new DAOException("Error de conexión al procesar inactivación de organizaciones.", connectionException);
+        }
+        return allUpdatesSuccessful;
     }
 }

@@ -26,6 +26,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     private static final String SQL_SELECTALL = "SELECT * FROM PROYECTO";
     private static final String SQL_UPDATE = "UPDATE PROYECTO SET NOMBRE_PROYECTO = ?, DESCRIPCION = ?, CUPO_PARTICIPANTES = ?, ID_ENCARGADO = ?, ESTADO = ?, FECHA_INICIO = ?, FECHA_END = ?, ID_ORGANIZACION = ? WHERE ID_PROYECTO = ?";
 
+    private static final String SQL_DEACTIVATE_PROJECT = "UPDATE PROYECTO SET ESTADO = 'No Activo' WHERE ID_PROYECTO = ?";
 
     private static final String SQL_SELECT_AVAILABLE_WITH_CAPACITY =
             "SELECT p.* FROM PROYECTO p " +
@@ -136,5 +137,29 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
             return projectRecovered;
         });
+    }
+
+    @Override
+    public boolean deactivateMultipleProjects(List<Integer> projectIdentifiersList) throws DAOException {
+        boolean allUpdatesSuccessful = true;
+        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
+            activeDatabaseConnection.setAutoCommit(false);
+            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE_PROJECT)) {
+                for (Integer currentIdentifier : projectIdentifiersList) {
+                    updateStatement.setInt(1, currentIdentifier);
+                    updateStatement.addBatch();
+                }
+                updateStatement.executeBatch();
+                activeDatabaseConnection.commit();
+            } catch (SQLException executionException) {
+                activeDatabaseConnection.rollback();
+                throw new DAOException("Error al ejecutar la inactivación masiva de proyectos.", executionException);
+            } finally {
+                activeDatabaseConnection.setAutoCommit(true);
+            }
+        } catch (SQLException connectionException) {
+            throw new DAOException("Error de conexión al procesar inactivación de proyectos.", connectionException);
+        }
+        return allUpdatesSuccessful;
     }
 }
