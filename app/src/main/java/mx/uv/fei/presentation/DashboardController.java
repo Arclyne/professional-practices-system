@@ -181,7 +181,7 @@ public class DashboardController {
 
     @FXML
     private void handleNavigateToRegisterProjectAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROJECT_MANAGEMENT_MENU));
     }
 
     @FXML
