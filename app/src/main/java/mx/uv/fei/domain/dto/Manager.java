@@ -7,16 +7,18 @@ public class Manager {
     private String phone;
     private String email;
     private int organizationId;
+    private String status;
 
     public Manager() {
     }
 
-    public Manager(int id, String name, String phone, String email, int organizationId) {
+    public Manager(int id, String name, String phone, String email, int organizationId, String status) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.organizationId = organizationId;
+        this.status = status;
     }
 
     public int getId() {
@@ -57,5 +59,13 @@ public class Manager {
 
     public void setOrganizationId(int organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
