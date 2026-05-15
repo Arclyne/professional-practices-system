@@ -17,8 +17,12 @@ import mx.uv.fei.domain.dto.Manager;
 @Component
 public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
-    private static final String SQL_SELECT_BY_ORG = "SELECT ID_ENCARGADO, NOMBRE_ENCARGADO, TELEFONO, CORREO FROM ENCARGADO_PROYECTO WHERE ID_ORGANIZACION = ?";
-    private static final String SQL_INSERT_MANAGER = "INSERT INTO ENCARGADO_PROYECTO (NOMBRE_ENCARGADO, TELEFONO, CORREO, ID_ORGANIZACION) VALUES (?, ?, ?, ?)";
+    private static final String SQL_SELECT_BY_ORG = "SELECT ID_ENCARGADO, NOMBRE_ENCARGADO, TELEFONO, CORREO, ESTADO FROM ENCARGADO_PROYECTO WHERE ID_ORGANIZACION = ?";
+
+
+    private static final String SQL_INSERT_MANAGER = "INSERT INTO ENCARGADO_PROYECTO (NOMBRE_ENCARGADO, TELEFONO, CORREO, ID_ORGANIZACION, ESTADO) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_ALL_MANAGERS = "SELECT ID_ENCARGADO, NOMBRE_ENCARGADO, TELEFONO, CORREO, ID_ORGANIZACION, ESTADO FROM ENCARGADO_PROYECTO";
+    private static final String SQL_DEACTIVATE_MANAGER = "UPDATE ENCARGADO_PROYECTO SET ESTADO = 'No Activo' WHERE ID_ENCARGADO = ?";
 
     @Inject
     public ManagerDAO(IDatabaseConnection databaseConnection) {
@@ -43,6 +47,7 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
                     manager.setPhone(resultSet.getString("TELEFONO"));
                     manager.setEmail(resultSet.getString("CORREO"));
                     manager.setOrganizationId(organizationId);
+                    manager.setStatus(resultSet.getString("ESTADO")); // Mapeo de estado
 
                     managersList.add(manager);
                 }
@@ -64,10 +69,75 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             statement.setString(2, manager.getPhone());
             statement.setString(3, manager.getEmail());
             statement.setInt(4, manager.getOrganizationId());
+            statement.setString(5, manager.getStatus());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DAOException("Error al intentar registrar el encargado en la base de datos.", e);
         }
+    }
+
+    @Override
+    public List<Manager> getAllManagers() throws DAOException {
+        List<Manager> managersList = new ArrayList<>();
+
+        try (
+                Connection connection = databaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ALL_MANAGERS);
+                ResultSet resultSet = statement.executeQuery()
+        ) {
+            while (resultSet.next()) {
+                Manager manager = new Manager();
+                manager.setId(resultSet.getInt("ID_ENCARGADO"));
+                manager.setName(resultSet.getString("NOMBRE_ENCARGADO"));
+                manager.setPhone(resultSet.getString("TELEFONO"));
+                manager.setEmail(resultSet.getString("CORREO"));
+                manager.setOrganizationId(resultSet.getInt("ID_ORGANIZACION"));
+                manager.setStatus(resultSet.getString("ESTADO")); // Mapeo de estado
+
+                managersList.add(manager);
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al consultar todos los encargados en la base de datos.", e);
+        }
+
+        return managersList;
+    }
+
+    @Override
+    public boolean deactivateMultipleManagers(List<Integer> managerIdentifiersList) throws DAOException {
+        boolean allUpdatesSuccessful = true;
+        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
+            activeDatabaseConnection.setAutoCommit(false);
+            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE_MANAGER)) {
+
+                for (Integer currentIdentifier : managerIdentifiersList) {
+                    updateStatement.setInt(1, currentIdentifier);
+                    updateStatement.addBatch();
+                }
+
+                int[] executionResults = updateStatement.executeBatch();
+                for (int result : executionResults) {
+                    if (result <= 0) {
+                        allUpdatesSuccessful = false;
+                        break;
+                    }
+                }
+
+                if (allUpdatesSuccessful) {
+                    activeDatabaseConnection.commit();
+                } else {
+                    activeDatabaseConnection.rollback();
+                }
+            } catch (SQLException executionException) {
+                activeDatabaseConnection.rollback();
+                throw new DAOException("Error al ejecutar la inactivación masiva de encargados.", executionException);
+            } finally {
+                activeDatabaseConnection.setAutoCommit(true);
+            }
+        } catch (SQLException connectionException) {
+            throw new DAOException("Error de conexión al procesar inactivación de encargados.", connectionException);
+        }
+        return allUpdatesSuccessful;
     }
 }

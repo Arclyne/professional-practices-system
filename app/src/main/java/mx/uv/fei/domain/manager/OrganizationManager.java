@@ -55,4 +55,23 @@ public class OrganizationManager {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
+
+    public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {
+        try {
+            boolean isProcessSuccessful = managerDAO.deactivateMultipleManagers(managerIdentifiersList);
+            if (!isProcessSuccessful) {
+                throw new ManagerException("No se pudieron inactivar los encargados seleccionados.");
+            }
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error de base de datos al inactivar encargados.", dataAccessException);
+        }
+    }
+
+    public List<Manager> getAllManagers() throws ManagerException {
+        try {
+            return managerDAO.getAllManagers();
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error al obtener la lista de encargados.", dataAccessException);
+        }
+    }
 }
