@@ -40,6 +40,8 @@ public class DashboardController {
     @FXML
     private Button navigateToRegisterManagerButton;
     @FXML
+    private Button navigateToRegisterOrganizationButton;
+    @FXML
     private Button navigateToRegisterActivityButton;
     @FXML
     private Button navigateToPractitionerProjectsButton;
@@ -105,6 +107,8 @@ public class DashboardController {
             navigateToRegisterProjectButton.setManaged(true);
             navigateToRegisterManagerButton.setVisible(true);
             navigateToRegisterManagerButton.setManaged(true);
+            navigateToRegisterOrganizationButton.setVisible(true);
+            navigateToRegisterOrganizationButton.setManaged(true);
 
         } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
             navigateToRegisterActivityButton.setVisible(true);
@@ -136,6 +140,10 @@ public class DashboardController {
         if (navigateToRegisterManagerButton != null) {
             navigateToRegisterManagerButton.setVisible(false);
             navigateToRegisterManagerButton.setManaged(false);
+        }
+        if (navigateToRegisterOrganizationButton != null) {
+            navigateToRegisterOrganizationButton.setVisible(false);
+            navigateToRegisterOrganizationButton.setManaged(false);
         }
         if (navigateToRegisterActivityButton != null) {
             navigateToRegisterActivityButton.setVisible(false);
@@ -176,7 +184,6 @@ public class DashboardController {
     @FXML
     private void handleNavigateToRegisterProfessorAction(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_MANAGEMENT_MENU));
-
     }
 
     @FXML
@@ -187,6 +194,12 @@ public class DashboardController {
     @FXML
     private void handleNavigateToRegisterManagerAction(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.MANAGER_MANAGEMENT_MENU));
+    }
+
+
+    @FXML
+    private void handleNavigateToRegisterOrganizationAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
     }
 
     @FXML

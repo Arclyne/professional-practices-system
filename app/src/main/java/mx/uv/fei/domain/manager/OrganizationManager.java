@@ -24,6 +24,21 @@ public class OrganizationManager {
         this.managerDAO = managerDAO;
     }
 
+    public boolean registerOrganization(Organization organizationToRegister) throws ManagerException {
+
+        try {
+            boolean isRegistered = organizationDAO.insertOrganization(organizationToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException("No se pudo completar el registro de la organización en el sistema.");
+            }
+            return true;
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
+    }
+
     public List<Organization> getAllOrganizations() throws ManagerException {
         try {
             return organizationDAO.getAllOrganization();
@@ -56,22 +71,17 @@ public class OrganizationManager {
         }
     }
 
-    public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {
+    public void inactivateMultipleOrganizations(List<Integer> organizationIdentifiersList) throws ManagerException {
         try {
-            boolean isProcessSuccessful = managerDAO.deactivateMultipleManagers(managerIdentifiersList);
+            boolean isProcessSuccessful = organizationDAO.deactivateMultipleOrganizations(organizationIdentifiersList);
             if (!isProcessSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los encargados seleccionados.");
+                throw new ManagerException("No se pudieron inactivar las organizaciones seleccionadas.");
             }
         } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar encargados.", dataAccessException);
+            throw new ManagerException("Error de base de datos al inactivar organizaciones.", dataAccessException);
         }
     }
 
-    public List<Manager> getAllManagers() throws ManagerException {
-        try {
-            return managerDAO.getAllManagers();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de encargados.", dataAccessException);
-        }
-    }
+
+
 }

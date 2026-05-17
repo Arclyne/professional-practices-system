@@ -34,7 +34,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
                 PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
             statement.setString(1, organization.getNameOrganization());
-            statement.setString(2, organization.getRegion());
+            statement.setString(2, organization.getState());
             statement.setString(3, organization.getAdress());
             statement.setString(4, organization.getCity());
             statement.setString(5, organization.getBusiness());
@@ -64,7 +64,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
                     organizationToSearch = new Organization();
                     organizationToSearch.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
                     organizationToSearch.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
-                    organizationToSearch.setRegion(resultSet.getString("ESTADO"));
+                    organizationToSearch.setState(resultSet.getString("ESTADO"));
                     organizationToSearch.setAdress(resultSet.getString("DIRECCION"));
                     organizationToSearch.setCity(resultSet.getString("CIUDAD"));
                     organizationToSearch.setBusiness(resultSet.getString("SECTOR"));
@@ -84,7 +84,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             Organization organizationRecover = new Organization();
             organizationRecover.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
             organizationRecover.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
-            organizationRecover.setRegion(resultSet.getString("ESTADO"));
+            organizationRecover.setState(resultSet.getString("ESTADO"));
             organizationRecover.setAdress(resultSet.getString("DIRECCION"));
             organizationRecover.setCity(resultSet.getString("CIUDAD"));
             organizationRecover.setBusiness(resultSet.getString("SECTOR"));
@@ -99,7 +99,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     public boolean updateOrganization(Organization upDateOrganization, int ID) throws DAOException {
         return updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, upDateOrganization.getNameOrganization());
-            statement.setString(2, upDateOrganization.getRegion());
+            statement.setString(2, upDateOrganization.getState());
             statement.setString(3, upDateOrganization.getAdress());
             statement.setString(4, upDateOrganization.getCity());
             statement.setString(5, upDateOrganization.getBusiness());

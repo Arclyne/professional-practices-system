@@ -80,16 +80,19 @@
                             visible="false" managed="false"/>
 
                     <Button fx:id="navigateToRegisterProfessorButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProfessorAction" styleClass="secondary-button" text="Registrar Profesor"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProfessorAction" styleClass="secondary-button" text="Gestión de Profesores"
                             visible="false" managed="false"/>
 
                     <Button fx:id="navigateToRegisterProjectButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProjectAction" styleClass="secondary-button" text="Registrar Proyecto"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterProjectAction" styleClass="secondary-button" text="Gestión de Proyectos"
                             visible="false" managed="false"/>
 
-                    <!-- NUEVO BOTÓN AÑADIDO AQUÍ -->
                     <Button fx:id="navigateToRegisterManagerButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToRegisterManagerAction" styleClass="secondary-button" text="Registrar Encargado"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterManagerAction" styleClass="secondary-button" text="Gestión de Encargados"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToRegisterOrganizationButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterOrganizationAction" styleClass="secondary-button" text="Gestión de Organizaciones"
                             visible="false" managed="false"/>
 
                     <Button fx:id="navigateToRegisterActivityButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
