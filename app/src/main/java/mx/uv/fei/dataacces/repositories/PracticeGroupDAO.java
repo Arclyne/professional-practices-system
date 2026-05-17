@@ -17,10 +17,10 @@ import mx.uv.fei.domain.dto.PracticeGroup;
 @Component
 public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO GRUPO_PRACTICAS (SECCION, ID_PROFESOR, ID_PERIODO) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT_ONE = "SELECT INDEX_GRUPO, SECCION, ID_PROFESOR, ID_PERIODO FROM GRUPO_PRACTICAS WHERE INDEX_GRUPO = ?";
-    private static final String SQL_SELECT_ALL = "SELECT INDEX_GRUPO, SECCION, ID_PROFESOR, ID_PERIODO FROM GRUPO_PRACTICAS";
-    private static final String SQL_UPDATE = "UPDATE GRUPO_PRACTICAS SET SECCION = ?, ID_PROFESOR = ?, ID_PERIODO = ? WHERE INDEX_GRUPO = ?";
+    private static final String SQL_INSERT = "INSERT INTO practice_group (section, professor_id, period_id) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT group_id, section, professor_id, period_id FROM practice_group WHERE group_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT group_id, section, professor_id, period_id FROM practice_group";
+    private static final String SQL_UPDATE = "UPDATE practice_group SET section = ?, professor_id = ?, period_id = ? WHERE group_id = ?";
 
     @Inject
     public PracticeGroupDAO(IDatabaseConnection databaseConnection) {
@@ -67,10 +67,10 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    groupToSearch.setGroupIndex(resultSet.getInt("INDEX_GRUPO"));
-                    groupToSearch.setSection(resultSet.getString("SECCION"));
-                    groupToSearch.setProfessorId(resultSet.getInt("ID_PROFESOR"));
-                    groupToSearch.setPeriodId(resultSet.getInt("ID_PERIODO"));
+                    groupToSearch.setGroupIndex(resultSet.getInt("group_id"));
+                    groupToSearch.setSection(resultSet.getString("section"));
+                    groupToSearch.setProfessorId(resultSet.getInt("professor_id"));
+                    groupToSearch.setPeriodId(resultSet.getInt("period_id"));
                 }
             }
         } catch (SQLException e) {
@@ -84,10 +84,10 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             PracticeGroup groupRecovered = new PracticeGroup();
 
-            groupRecovered.setGroupIndex(resultSet.getInt("INDEX_GRUPO"));
-            groupRecovered.setSection(resultSet.getString("SECCION"));
-            groupRecovered.setProfessorId(resultSet.getInt("ID_PROFESOR"));
-            groupRecovered.setPeriodId(resultSet.getInt("ID_PERIODO"));
+            groupRecovered.setGroupIndex(resultSet.getInt("group_id"));
+            groupRecovered.setSection(resultSet.getString("section"));
+            groupRecovered.setProfessorId(resultSet.getInt("professor_id"));
+            groupRecovered.setPeriodId(resultSet.getInt("period_id"));
 
             return groupRecovered;
         });

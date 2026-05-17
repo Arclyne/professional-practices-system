@@ -4,19 +4,23 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
-import mx.uv.fei.domain.Enum.LoginMethod;
+import mx.uv.fei.domain.enums.LoginMethod;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @Component
 public class StartSessionManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(StartSessionManager.class);
 
     private final IUserDAO userDAO;
     private final Store store;
@@ -44,7 +48,8 @@ public class StartSessionManager {
             routeUserByStatus(retrievedUser);
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            logger.error("Error de conexión al iniciar sesión", e);
+            throw new ManagerException("Ocurrió un problem de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 
@@ -89,13 +94,13 @@ public class StartSessionManager {
 
     private void routeUserByStatus(User user) throws ManagerException {
         switch (user.getStatus()) {
-            case "Pendiente":
+            case PENDING:
                 store.dispatch(new NavigationAction.GoToSection(AppSection.PASSWORD_RESET));
                 break;
-            case "Activo":
+            case ACTIVE:
                 store.dispatch(new NavigationAction.GoToSection(AppSection.TOKEN_VERIFICATION));
                 break;
-            case "No Activo":
+            case INACTIVE:
                 throw new ManagerException("Usuario inactivo. Comuníquese con su Coordinador.");
             default:
                 throw new ManagerException("Estado de usuario no reconocido en el sistema.");
