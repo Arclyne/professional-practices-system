@@ -13,6 +13,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Professor;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -40,20 +42,30 @@ public class RegisterProfessorController implements Initializable {
 
     @Inject
     public RegisterProfessorController(ProfessorManager manager, Store store) {
-
         this.manager = manager;
         this.store = store;
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
-                "Masculino", "Femenino", "Otro");
+                Gender.MALE.getDisplayValue(),
+                Gender.FEMALE.getDisplayValue(),
+                Gender.OTHER.getDisplayValue()
+        );
         comboBoxSexo.setItems(opcionesSexo);
     }
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
+                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
+                comboBoxSexo.getValue() == null) {
+
+            Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            return;
+        }
+
         Professor newProfessor = createProfessor();
 
         try {
@@ -72,11 +84,16 @@ public class RegisterProfessorController implements Initializable {
 
     private Professor createProfessor() {
         Professor newProfessor = new Professor();
-        newProfessor.setName(fieldNombre.getText());
-        newProfessor.setLastName(fieldApellido.getText());
-        newProfessor.setEmail(fieldCorreo.getText());
-        newProfessor.setUserName(fieldNoPersonal.getText());
-        newProfessor.setGender((String) comboBoxSexo.getValue());
+        newProfessor.setName(fieldNombre.getText().trim());
+        newProfessor.setLastName(fieldApellido.getText().trim());
+        newProfessor.setEmail(fieldCorreo.getText().trim());
+        newProfessor.setUserName(fieldNoPersonal.getText().trim());
+
+        String selectedSex = (String) comboBoxSexo.getValue();
+        newProfessor.setGender(Gender.fromDisplayValue(selectedSex));
+
+        newProfessor.setRole("Professor");
+        newProfessor.setStatus(UserStatus.PENDING);
 
         return newProfessor;
     }

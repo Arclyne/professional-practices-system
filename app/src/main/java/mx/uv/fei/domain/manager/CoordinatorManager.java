@@ -6,16 +6,21 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.CoordinatorDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class CoordinatorManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(CoordinatorManager.class);
     private final ICoordinatorDAO coordinatorDataAccessObject;
 
     @Inject
@@ -26,6 +31,9 @@ public class CoordinatorManager {
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
         String temporaryGeneratedPassword = this.generateTemporaryPassword();
         coordinatorInformation.setPassword(temporaryGeneratedPassword);
+        coordinatorInformation.setStatus(UserStatus.PENDING);
+
+        Validator.validateCoordinatorData(coordinatorInformation);
 
         try {
             int insertedCoordinatorId = this.coordinatorDataAccessObject.insertCoordinator(coordinatorInformation);
@@ -36,8 +44,9 @@ public class CoordinatorManager {
 
             return temporaryGeneratedPassword;
 
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", dataAccessObjectException);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 

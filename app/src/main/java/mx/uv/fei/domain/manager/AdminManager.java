@@ -6,6 +6,7 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Administrator;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
@@ -32,7 +33,7 @@ public class AdminManager {
     }
 
     public void registerInitialAdmin(Administrator administrator) throws ManagerException {
-        administrator.setStatus("Activo");
+        administrator.setStatus(UserStatus.ACTIVE);
         administrator.setRole("Administrator");
 
         Validator.validateAdministratorData(administrator);

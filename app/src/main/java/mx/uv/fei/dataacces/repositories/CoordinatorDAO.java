@@ -12,15 +12,19 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 
 @Component
 public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
     private final UserDAO userDAO;
+    private static final String SQL_INSERT = "INSERT INTO coordinator (coordinator_id) VALUES (?)";
 
-    private static final String SQL_INSERT = "INSERT INTO COORDINADOR (ID_COORDINADOR) VALUES (?)";
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO WHERE C.ID_COORDINADOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.ESTADO, U.GENERO, C.FECHA_REGISTRO, C.FECHA_BAJA FROM COORDINADOR C INNER JOIN USUARIO U ON C.ID_COORDINADOR = U.ID_USUARIO";
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE c.coordinator_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id";
 
     @Inject
     public CoordinatorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -77,18 +81,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    coordinatorToSearch.setId(resultSet.getInt("ID_USUARIO"));
-                    coordinatorToSearch.setPassword(resultSet.getString("PASSWORD"));
-                    coordinatorToSearch.setName(resultSet.getString("NOMBRE"));
-                    coordinatorToSearch.setLastName(resultSet.getString("APELLIDOS"));
-                    coordinatorToSearch.setStatus(resultSet.getString("ESTADO"));
-                    coordinatorToSearch.setGender(resultSet.getString("GENERO"));
-
-                    coordinatorToSearch.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
-
-                    if (resultSet.getTimestamp("FECHA_BAJA") != null) {
-                        coordinatorToSearch.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
-                    }
+                    mapCoordinator(coordinatorToSearch, resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -101,19 +94,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     public List<Coordinator> getAllCoordinators() throws DAOException {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             Coordinator coordinatorRecovered = new Coordinator();
-
-            coordinatorRecovered.setId(resultSet.getInt("ID_USUARIO"));
-            coordinatorRecovered.setPassword(resultSet.getString("PASSWORD"));
-            coordinatorRecovered.setName(resultSet.getString("NOMBRE"));
-            coordinatorRecovered.setLastName(resultSet.getString("APELLIDOS"));
-            coordinatorRecovered.setStatus(resultSet.getString("ESTADO"));
-            coordinatorRecovered.setGender(resultSet.getString("GENERO"));
-
-            coordinatorRecovered.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
-            if (resultSet.getTimestamp("FECHA_BAJA") != null) {
-                coordinatorRecovered.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
-            }
-
+            mapCoordinator(coordinatorRecovered, resultSet);
             return coordinatorRecovered;
         });
     }
@@ -147,5 +128,29 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         }
 
         return isUpdated;
+    }
+
+    private void mapCoordinator(Coordinator coordinator, ResultSet resultSet) throws SQLException {
+        coordinator.setId(resultSet.getInt("user_id"));
+        coordinator.setUserName(resultSet.getString("username"));
+        coordinator.setPassword(resultSet.getString("password"));
+        coordinator.setName(resultSet.getString("name"));
+        coordinator.setLastName(resultSet.getString("last_name"));
+        coordinator.setEmail(resultSet.getString("email"));
+        coordinator.setRole(resultSet.getString("role_name"));
+
+        String statusValue = resultSet.getString("status");
+        coordinator.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
+
+        String genderValue = resultSet.getString("gender");
+        coordinator.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
+
+        if (resultSet.getTimestamp("registration_date") != null) {
+            coordinator.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
+        }
+
+        if (resultSet.getTimestamp("discharge_date") != null) {
+            coordinator.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
+        }
     }
 }

@@ -12,16 +12,26 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.dto.Administrator;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 
 @Component
 public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO ADMINISTRADOR (ID_ADMINISTRADOR) VALUES (?)";
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.USER, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM ADMINISTRADOR A INNER JOIN USUARIO U ON A.ID_ADMINISTRADOR = U.ID_USUARIO WHERE A.ID_ADMINISTRADOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.USER, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.NOMBRE_ROL, U.ESTADO, U.GENERO, U.FECHA_REGISTRO, U.FECHA_BAJA FROM ADMINISTRADOR A INNER JOIN USUARIO U ON A.ID_ADMINISTRADOR = U.ID_USUARIO";
-    private static final String SQL_CHECK_EXISTS = "SELECT COUNT(*) FROM ADMINISTRADOR";
+    private static final String SQL_INSERT = "INSERT INTO administrator (administrator_id) VALUES (?)";
+
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM administrator a " +
+            "INNER JOIN user u ON a.administrator_id = u.user_id " +
+            "WHERE a.administrator_id = ?";
+
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM administrator a " +
+            "INNER JOIN user u ON a.administrator_id = u.user_id";
+
+    private static final String SQL_CHECK_EXISTS = "SELECT COUNT(*) FROM administrator";
 
     @Inject
     public AdministratorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -31,8 +41,8 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
     public boolean checkIfAdminExists() throws DAOException {
         try (Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_CHECK_EXISTS);
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(SQL_CHECK_EXISTS);
+             ResultSet resultSet = statement.executeQuery()) {
 
             if (resultSet.next()) {
                 return resultSet.getInt(1) > 0;
@@ -123,22 +133,26 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     }
 
     private void mapAdministrator(Administrator admin, ResultSet resultSet) throws SQLException {
-        admin.setId(resultSet.getInt("ID_USUARIO"));
-        admin.setUserName(resultSet.getString("USER"));
-        admin.setPassword(resultSet.getString("PASSWORD"));
-        admin.setName(resultSet.getString("NOMBRE"));
-        admin.setLastName(resultSet.getString("APELLIDOS"));
-        admin.setEmail(resultSet.getString("CORREO"));
-        admin.setRole(resultSet.getString("NOMBRE_ROL"));
-        admin.setStatus(resultSet.getString("ESTADO"));
-        admin.setGender(resultSet.getString("GENERO"));
+        admin.setId(resultSet.getInt("user_id"));
+        admin.setUserName(resultSet.getString("username"));
+        admin.setPassword(resultSet.getString("password"));
+        admin.setName(resultSet.getString("name"));
+        admin.setLastName(resultSet.getString("last_name"));
+        admin.setEmail(resultSet.getString("email"));
+        admin.setRole(resultSet.getString("role_name"));
 
-        if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
-            admin.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+        String statusValue = resultSet.getString("status");
+        admin.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
+
+        String genderValue = resultSet.getString("gender");
+        admin.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
+
+        if (resultSet.getTimestamp("registration_date") != null) {
+            admin.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
         }
 
-        if (resultSet.getTimestamp("FECHA_BAJA") != null) {
-            admin.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
+        if (resultSet.getTimestamp("discharge_date") != null) {
+            admin.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }
     }
 }
