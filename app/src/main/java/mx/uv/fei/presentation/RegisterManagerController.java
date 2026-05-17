@@ -58,7 +58,7 @@ public class RegisterManagerController implements Initializable {
             ObservableList<String> organizationOptions = FXCollections.observableArrayList();
 
             for (Organization org : organizations) {
-                if ("Activo".equalsIgnoreCase(org.getRegion())) {
+                if ("Activo".equalsIgnoreCase(org.getState())) {
                     organizationOptions.add(org.getNameOrganization());
                     organizationMap.put(org.getNameOrganization(), org.getIdOrganization());
                 }

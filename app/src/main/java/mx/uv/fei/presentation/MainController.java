@@ -94,6 +94,8 @@ public class MainController {
                     case ASSIGN_PROJECT -> loadView("/mx/uv/fei/presentation/assignProject.fxml");
                     case PROJECT_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageProjects.fxml");
                     case MANAGER_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageManagers.fxml");
+                    case ORGANIZATION_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageOrganizations.fxml");
+                    case REGISTER_ORGANIZATION -> loadView("/mx/uv/fei/presentation/registerOrganization.fxml");
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }
             }
