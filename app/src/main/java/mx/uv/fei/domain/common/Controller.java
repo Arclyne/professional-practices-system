@@ -1,5 +1,6 @@
 package mx.uv.fei.domain.common;
 
+import javafx.application.Platform; // <-- NUEVO: Importación necesaria para manejar los hilos
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -10,7 +11,8 @@ public class Controller {
         userAlert.setTitle(alertTitle);
         userAlert.setHeaderText(null);
         userAlert.setContentText(alertMessage);
-        userAlert.showAndWait();
+
+        Platform.runLater(() -> userAlert.showAndWait());
     }
 
     public static void showInfoAlert(String alertTitle, String alertMessage) {
@@ -18,7 +20,8 @@ public class Controller {
         userAlert.setTitle(alertTitle);
         userAlert.setHeaderText(null);
         userAlert.setContentText(alertMessage);
-        userAlert.showAndWait();
+
+        Platform.runLater(() -> userAlert.showAndWait());
     }
 
     public static void showErrorAlert(String alertTitle, String alertMessage) {
@@ -26,7 +29,8 @@ public class Controller {
         userAlert.setTitle(alertTitle);
         userAlert.setHeaderText(null);
         userAlert.setContentText(alertMessage);
-        userAlert.showAndWait();
+
+        Platform.runLater(() -> userAlert.showAndWait());
     }
 
     public static void showAlert(String title, String message, AlertType type) {
@@ -34,7 +38,7 @@ public class Controller {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.showAndWait();
-    }
 
+        Platform.runLater(() -> alert.showAndWait());
+    }
 }
