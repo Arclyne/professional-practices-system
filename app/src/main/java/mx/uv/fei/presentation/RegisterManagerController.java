@@ -77,6 +77,8 @@ public class RegisterManagerController implements Initializable {
             managerToRegister.setName(fieldName.getText());
             managerToRegister.setPhone(fieldPhone.getText());
             managerToRegister.setEmail(fieldEmail.getText());
+            managerToRegister.setStatus("Activo");
+
 
             String selectedOrg = comboBoxOrganization.getValue();
 
