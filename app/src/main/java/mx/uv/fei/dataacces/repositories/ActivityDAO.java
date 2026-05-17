@@ -21,10 +21,10 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO ACTIVIDAD (NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVIDAD, NOMBRE, FECHA_INICIO, FECHA_END, DESCRIPCION, ENCARGADO FROM ACTIVIDAD WHERE NOMBRE = ? AND ENCARGADO = ?";
-    private static final String SQL_SELECTALL = "SELECT * FROM ACTIVIDAD";
-    private static final String SQL_UPDATE = "UPDATE ACTIVIDAD SET NOMBRE = ? , FECHA_INICIO = ?, FECHA_END = ?, DESCRIPCION = ?, ENCARGADO = ? WHERE ID_ACTIVIDAD =?";
+    private static final String SQL_INSERT = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTTOSEARCH = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
+    private static final String SQL_SELECTALL = "SELECT * FROM activity";
+    private static final String SQL_UPDATE = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
@@ -40,7 +40,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar insertar el usuario en la base de datos.", e);
+            throw new DAOException("Error al intentar insertar la actividad en la base de datos.", e);
         }
     }
 
@@ -61,18 +61,19 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar insertar la organización en la base de datos.", e);
+            // Corregido mensaje de excepción (decía organización)
+            throw new DAOException("Error al intentar recuperar la actividad de la base de datos.", e);
         }
         return activityToSearch;
     }
 
     private void mapActivity(Activity activityToSearch, ResultSet resultSet) throws SQLException {
-        activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVIDAD"));
-        activityToSearch.setName(resultSet.getString("NOMBRE"));
-        activityToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
-        activityToSearch.setEndDate(resultSet.getDate("FECHA_END"));
-        activityToSearch.setDescription(resultSet.getString("DESCRIPCION"));
-        activityToSearch.setManager(resultSet.getString("ENCARGADO"));
+        activityToSearch.setActivityId(resultSet.getInt("activity_id"));
+        activityToSearch.setName(resultSet.getString("name"));
+        activityToSearch.setStartDate(resultSet.getDate("start_date"));
+        activityToSearch.setEndDate(resultSet.getDate("end_date"));
+        activityToSearch.setDescription(resultSet.getString("description"));
+        activityToSearch.setManager(resultSet.getString("manager"));
     }
 
     @Override

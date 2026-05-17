@@ -8,11 +8,13 @@ import javafx.stage.Stage;
 
 import mx.uv.fei.config.annotation.core.EtiquetteApplication;
 import mx.uv.fei.config.annotation.core.DependencyInjector;
+import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 
 import java.io.IOException;
 
 @StartEtiquette
+@Profile("net")
 public class MainApplication extends Application {
 
     private DependencyInjector systemDependencyInjector;

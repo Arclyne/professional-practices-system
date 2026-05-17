@@ -19,10 +19,10 @@ import java.util.List;
 @Component
 public class PostulationDAO extends BaseDAO implements IPostulationDAO {
 
-    private static final String SQL_CHECK_EXISTING_POSTULATIONS = "SELECT COUNT(*) FROM POSTULACION_PROYECTO WHERE ID_PRACTICANTE = ?";
-    private static final String SQL_INSERT_POSTULATION = "INSERT INTO POSTULACION_PROYECTO (ID_PRACTICANTE, ID_PROYECTO, NIVEL_PRIORIDAD, ESTADO_POSTULACION) VALUES (?, ?, ?, 'Pendiente')";
-    private static final String SQL_SELECT_POSTULATIONS = "SELECT P.ID_PRACTICANTE, P.ID_PROYECTO, PR.NOMBRE_PROYECTO, P.NIVEL_PRIORIDAD, P.ESTADO_POSTULACION FROM POSTULACION_PROYECTO P INNER JOIN PROYECTO PR ON P.ID_PROYECTO = PR.ID_PROYECTO WHERE P.ID_PRACTICANTE = ? AND (P.ESTADO_POSTULACION = 'Asignado' OR PR.CUPO_PARTICIPANTES > (SELECT COUNT(*) FROM POSTULACION_PROYECTO WHERE ID_PROYECTO = PR.ID_PROYECTO AND ESTADO_POSTULACION = 'Asignado')) ORDER BY P.NIVEL_PRIORIDAD ASC";
-    private static final String SQL_CALL_ASSIGNMENT_PROCEDURE = "{CALL AssignProjectAndRejectOthers(?, ?)}";
+    private static final String SQL_CHECK_EXISTING_POSTULATIONS = "SELECT COUNT(*) FROM project_postulation WHERE practitioner_id = ?";
+    private static final String SQL_INSERT_POSTULATION = "INSERT INTO project_postulation (practitioner_id, project_id, priority_level, postulation_status) VALUES (?, ?, ?, 'Pending')";
+    private static final String SQL_SELECT_POSTULATIONS = "SELECT p.practitioner_id, p.project_id, pr.project_name, p.priority_level, p.postulation_status FROM project_postulation p INNER JOIN project pr ON p.project_id = pr.project_id WHERE p.practitioner_id = ? AND (p.postulation_status = 'Assigned' OR pr.participant_capacity > (SELECT COUNT(*) FROM project_postulation WHERE project_id = pr.project_id AND postulation_status = 'Assigned')) ORDER BY p.priority_level ASC";
+    private static final String SQL_CALL_ASSIGNMENT_PROCEDURE = "{CALL assign_project_and_reject_others(?, ?)}";
 
     @Inject
     public PostulationDAO(IDatabaseConnection databaseConnection) {
@@ -95,11 +95,11 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
             try (ResultSet executionResultSet = selectStatement.executeQuery()) {
                 while (executionResultSet.next()) {
                     ProjectPostulation currentPostulation = new ProjectPostulation();
-                    currentPostulation.setPractitionerIdentifier(executionResultSet.getInt("ID_PRACTICANTE"));
-                    currentPostulation.setProjectIdentifier(executionResultSet.getInt("ID_PROYECTO"));
-                    currentPostulation.setProjectName(executionResultSet.getString("NOMBRE_PROYECTO"));
-                    currentPostulation.setPriorityLevel(executionResultSet.getInt("NIVEL_PRIORIDAD"));
-                    currentPostulation.setPostulationStatus(executionResultSet.getString("ESTADO_POSTULACION"));
+                    currentPostulation.setPractitionerIdentifier(executionResultSet.getInt("practitioner_id"));
+                    currentPostulation.setProjectIdentifier(executionResultSet.getInt("project_id"));
+                    currentPostulation.setProjectName(executionResultSet.getString("project_name"));
+                    currentPostulation.setPriorityLevel(executionResultSet.getInt("priority_level"));
+                    currentPostulation.setPostulationStatus(executionResultSet.getString("postulation_status"));
 
                     retrievedPostulationsList.add(currentPostulation);
                 }

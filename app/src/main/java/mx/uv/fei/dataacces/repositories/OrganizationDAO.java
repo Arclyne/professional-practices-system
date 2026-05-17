@@ -16,10 +16,10 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 @Component
 public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO ORGANIZACION_VINCULADA (NOMBRE_ORGANIZACION, ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT = "SELECT ID_ORGANIZACION, NOMBRE_ORGANIZACION ,ESTADO, DIRECCION, CIUDAD, SECTOR, CORREO, TELEFONO FROM ORGANIZACION_VINCULADA WHERE NOMBRE_ORGANIZACION = ?";
-    private static final String SQL_SELECTALL = "SELECT * FROM ORGANIZACION_VINCULADA";
-    private static final String SQL_UPDATE = "UPDATE ORGANIZACION_VINCULADA SET NOMBRE_ORGANIZACION = ?, ESTADO = ?, DIRECCION = ?, CIUDAD = ?, SECTOR = ?, CORREO = ?, TELEFONO = ? WHERE ID_ORGANIZACION = ?";
+    private static final String SQL_INSERT = "INSERT INTO linked_organization (organization_name, status, address, city, sector, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT = "SELECT organization_id, organization_name, status, address, city, sector, email, phone FROM linked_organization WHERE organization_name = ?";
+    private static final String SQL_SELECTALL = "SELECT * FROM linked_organization";
+    private static final String SQL_UPDATE = "UPDATE linked_organization SET organization_name = ?, status = ?, address = ?, city = ?, sector = ?, email = ?, phone = ? WHERE organization_id = ?";
 
     private static final String SQL_DEACTIVATE_ORGANIZATION = "UPDATE ORGANIZACION_VINCULADA SET ESTADO = 'No Activo' WHERE ID_ORGANIZACION = ?";
 
@@ -62,14 +62,14 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
                 if (resultSet.next()) {
 
                     organizationToSearch = new Organization();
-                    organizationToSearch.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
-                    organizationToSearch.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
-                    organizationToSearch.setState(resultSet.getString("ESTADO"));
-                    organizationToSearch.setAdress(resultSet.getString("DIRECCION"));
-                    organizationToSearch.setCity(resultSet.getString("CIUDAD"));
-                    organizationToSearch.setBusiness(resultSet.getString("SECTOR"));
-                    organizationToSearch.setMail(resultSet.getString("CORREO"));
-                    organizationToSearch.setCellphone(resultSet.getString("TELEFONO"));
+                    organizationToSearch.setIdOrganization(resultSet.getInt("organization_id"));
+                    organizationToSearch.setNameOrganization(resultSet.getString("organization_name"));
+                    organizationToSearch.setState(resultSet.getString("status"));
+                    organizationToSearch.setAdress(resultSet.getString("address"));
+                    organizationToSearch.setCity(resultSet.getString("city"));
+                    organizationToSearch.setBusiness(resultSet.getString("sector"));
+                    organizationToSearch.setMail(resultSet.getString("email"));
+                    organizationToSearch.setCellphone(resultSet.getString("phone"));
                 }
             }
         } catch (SQLException e) {
@@ -82,14 +82,14 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     public List<Organization> getAllOrganization() throws DAOException {
         return recoverALL(SQL_SELECTALL, resultSet -> {
             Organization organizationRecover = new Organization();
-            organizationRecover.setIdOrganization(resultSet.getInt("ID_ORGANIZACION"));
-            organizationRecover.setNameOrganization(resultSet.getString("NOMBRE_ORGANIZACION"));
-            organizationRecover.setState(resultSet.getString("ESTADO"));
-            organizationRecover.setAdress(resultSet.getString("DIRECCION"));
-            organizationRecover.setCity(resultSet.getString("CIUDAD"));
-            organizationRecover.setBusiness(resultSet.getString("SECTOR"));
-            organizationRecover.setMail(resultSet.getString("CORREO"));
-            organizationRecover.setCellphone(resultSet.getString("TELEFONO"));
+            organizationRecover.setIdOrganization(resultSet.getInt("organization_id"));
+            organizationRecover.setNameOrganization(resultSet.getString("organization_name"));
+            organizationRecover.setState(resultSet.getString("status"));
+            organizationRecover.setAdress(resultSet.getString("address"));
+            organizationRecover.setCity(resultSet.getString("city"));
+            organizationRecover.setBusiness(resultSet.getString("sector"));
+            organizationRecover.setMail(resultSet.getString("email"));
+            organizationRecover.setCellphone(resultSet.getString("phone"));
 
             return organizationRecover;
         });

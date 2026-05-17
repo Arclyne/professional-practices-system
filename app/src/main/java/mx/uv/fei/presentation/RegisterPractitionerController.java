@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.presentation.components.FormField;
@@ -49,16 +51,30 @@ public class RegisterPractitionerController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
+        ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
+                Gender.MALE.getDisplayValue(),
+                Gender.FEMALE.getDisplayValue(),
+                Gender.OTHER.getDisplayValue()
+        );
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList("Masculino", "Femenino", "Otro");
         comboBoxSexo.setItems(opcionesSexo);
     }
 
     @FXML
     private void handleActionRegisterButton(ActionEvent event) {
+        if (fieldMatricula.getText().isEmpty() || fieldNombre.getText().isEmpty() ||
+                fieldApellido.getText().isEmpty() || fieldCorreo.getText().isEmpty() ||
+                comboBoxSexo.getValue() == null) {
+
+            Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            return;
+        }
+
         Practitioner newPractitioner = createPractitioner();
-        String indigenousLanguage = fieldLengua.getText().isEmpty() ? "Ninguna" : fieldLengua.getText();
-        newPractitioner.setIndigenousLanguage(indigenousLanguage);
+
+        String lengua = fieldLengua.getText().trim().isEmpty() ? "Ninguna" : fieldLengua.getText().trim();
+        newPractitioner.setIndigenousLanguage(lengua);
 
         try {
             if (registerButton != null) registerButton.setDisable(true);
@@ -99,11 +115,17 @@ public class RegisterPractitionerController implements Initializable {
 
     private Practitioner createPractitioner() {
         Practitioner newPractitioner = new Practitioner();
-        newPractitioner.setEnrollment(fieldMatricula.getText());
-        newPractitioner.setName(fieldNombre.getText());
-        newPractitioner.setLastName(fieldApellido.getText());
-        newPractitioner.setEmail(fieldCorreo.getText());
-        newPractitioner.setGender((String) comboBoxSexo.getValue());
+        newPractitioner.setEnrollment(fieldMatricula.getText().trim());
+        newPractitioner.setName(fieldNombre.getText().trim());
+        newPractitioner.setLastName(fieldApellido.getText().trim());
+        newPractitioner.setEmail(fieldCorreo.getText().trim());
+
+        String selectedSex = (String) comboBoxSexo.getValue();
+        newPractitioner.setGender(Gender.fromDisplayValue(selectedSex));
+
+        newPractitioner.setRole("Practitioner");
+        newPractitioner.setStatus(UserStatus.PENDING);
+
         return newPractitioner;
     }
 
@@ -113,10 +135,17 @@ public class RegisterPractitionerController implements Initializable {
     }
 
     private void clearForm() {
-        if (fieldMatricula != null) fieldMatricula.setText("");
-        if (fieldNombre != null) fieldNombre.setText("");
-        if (fieldApellido != null) fieldApellido.setText("");
-        if (fieldCorreo != null) fieldCorreo.setText("");
-        if (fieldLengua != null) fieldLengua.setText("");
+        if (fieldMatricula != null)
+            fieldMatricula.setText("");
+        if (fieldNombre != null)
+            fieldNombre.setText("");
+        if (fieldApellido != null)
+            fieldApellido.setText("");
+        if (fieldCorreo != null)
+            fieldCorreo.setText("");
+        if (fieldLengua != null)
+            fieldLengua.setText("");
+        if (comboBoxSexo != null)
+            comboBoxSexo.clearSelection();
     }
 }

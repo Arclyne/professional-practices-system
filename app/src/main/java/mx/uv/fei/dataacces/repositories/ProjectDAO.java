@@ -21,10 +21,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO PROYECTO (NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTONE = "SELECT ID_PROYECTO, NOMBRE_PROYECTO, DESCRIPCION, CUPO_PARTICIPANTES, ID_ENCARGADO, ESTADO, FECHA_INICIO, FECHA_END, ID_ORGANIZACION FROM PROYECTO WHERE NOMBRE_PROYECTO = ? AND ID_ENCARGADO = ?";
-    private static final String SQL_SELECTALL = "SELECT * FROM PROYECTO";
-    private static final String SQL_UPDATE = "UPDATE PROYECTO SET NOMBRE_PROYECTO = ?, DESCRIPCION = ?, CUPO_PARTICIPANTES = ?, ID_ENCARGADO = ?, ESTADO = ?, FECHA_INICIO = ?, FECHA_END = ?, ID_ORGANIZACION = ? WHERE ID_PROYECTO = ?";
+    private static final String SQL_INSERT = "INSERT INTO project (project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTONE = "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project WHERE project_name = ? AND manager_id = ?";
+    private static final String SQL_SELECTALL = "SELECT * FROM project";
+    private static final String SQL_UPDATE = "UPDATE project SET project_name = ?, description = ?, participant_capacity = ?, manager_id = ?, status = ?, start_date = ?, end_date = ?, organization_id = ? WHERE project_id = ?";
 
     private static final String SQL_DEACTIVATE_PROJECT = "UPDATE PROYECTO SET ESTADO = 'No Activo' WHERE ID_PROYECTO = ?";
 
@@ -56,27 +56,27 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     }
 
     @Override
-    public Project recoverProject(String projectName, int managerId) throws DAOException { // Cambiado parámetro a int managerId
+    public Project recoverProject(String projectName, int managerId) throws DAOException {
         Project projectToSearch = new Project();
 
         try (
                 Connection connection = databaseConnection.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_SELECTONE)) {
             statement.setString(1, projectName);
-            statement.setInt(2, managerId); // Cambiado a setInt
+            statement.setInt(2, managerId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    projectToSearch.setProjectId(resultSet.getInt("ID_PROYECTO"));
-                    projectToSearch.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
-                    projectToSearch.setDescription(resultSet.getString("DESCRIPCION"));
-                    projectToSearch.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-                    projectToSearch.setManagerId(resultSet.getInt("ID_ENCARGADO"));
+                    projectToSearch.setProjectId(resultSet.getInt("project_id"));
+                    projectToSearch.setProjectName(resultSet.getString("project_name"));
+                    projectToSearch.setDescription(resultSet.getString("description"));
+                    projectToSearch.setParticipantCapacity(resultSet.getInt("participant_capacity"));
+                    projectToSearch.setManagerId(resultSet.getInt("manager_id"));
 
-                    projectToSearch.setStatus(resultSet.getString("ESTADO"));
-                    projectToSearch.setStartDate(resultSet.getDate("FECHA_INICIO"));
-                    projectToSearch.setEndDate(resultSet.getDate("FECHA_END"));
-                    projectToSearch.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
+                    projectToSearch.setStatus(resultSet.getString("status"));
+                    projectToSearch.setStartDate(resultSet.getDate("start_date"));
+                    projectToSearch.setEndDate(resultSet.getDate("end_date"));
+                    projectToSearch.setCompanyId(resultSet.getInt("organization_id"));
                 }
             }
         } catch (SQLException e) {
@@ -89,16 +89,16 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     public List<Project> getAllProjects() throws DAOException {
         return recoverALL(SQL_SELECTALL, resultSet -> {
             Project projectRecovered = new Project();
-            projectRecovered.setProjectId(resultSet.getInt("ID_PROYECTO"));
-            projectRecovered.setProjectName(resultSet.getString("NOMBRE_PROYECTO"));
-            projectRecovered.setDescription(resultSet.getString("DESCRIPCION"));
-            projectRecovered.setParticipantCapacity(resultSet.getInt("CUPO_PARTICIPANTES"));
-            projectRecovered.setManagerId(resultSet.getInt("ID_ENCARGADO"));
+            projectRecovered.setProjectId(resultSet.getInt("project_id"));
+            projectRecovered.setProjectName(resultSet.getString("project_name"));
+            projectRecovered.setDescription(resultSet.getString("description"));
+            projectRecovered.setParticipantCapacity(resultSet.getInt("participant_capacity"));
+            projectRecovered.setManagerId(resultSet.getInt("manager_id"));
 
-            projectRecovered.setStatus(resultSet.getString("ESTADO"));
-            projectRecovered.setStartDate(resultSet.getDate("FECHA_INICIO"));
-            projectRecovered.setEndDate(resultSet.getDate("FECHA_END"));
-            projectRecovered.setCompanyId(resultSet.getInt("ID_ORGANIZACION"));
+            projectRecovered.setStatus(resultSet.getString("status"));
+            projectRecovered.setStartDate(resultSet.getDate("start_date"));
+            projectRecovered.setEndDate(resultSet.getDate("end_date"));
+            projectRecovered.setCompanyId(resultSet.getInt("organization_id"));
 
             return projectRecovered;
         });

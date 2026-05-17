@@ -13,21 +13,23 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 
 @Component
 public class UserDAO extends BaseDAO implements IUserDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO USUARIO (NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_DEACTIVATE = "UPDATE USUARIO SET ESTADO = 'No Activo', FECHA_BAJA = NOW() WHERE ID_USUARIO = ?";
-    private static final String SQL_UPDATE = "UPDATE USUARIO SET NOMBRE_USUARIO = ?, PASSWORD = ?, NOMBRE = ?, APELLIDOS = ?, CORREO = ?, NOMBRE_ROL = ?, ESTADO = ?, GENERO = ? WHERE ID_USUARIO = ?";
+    private static final String SQL_INSERT = "INSERT INTO user (username, password, name, last_name, email, role_name, status, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_DEACTIVATE = "UPDATE user SET status = 'Inactive', discharge_date = NOW() WHERE user_id = ?";
+    private static final String SQL_UPDATE = "UPDATE user SET username = ?, password = ?, name = ?, last_name = ?, email = ?, role_name = ?, status = ?, gender = ? WHERE user_id = ?";
 
-    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE NOMBRE_USUARIO = ?";
-    private static final String SQL_SELECT_BY_EMAIL = "SELECT ID_USUARIO, NOMBRE_USUARIO, PASSWORD, NOMBRE, APELLIDOS, CORREO, NOMBRE_ROL, ESTADO, GENERO, FECHA_REGISTRO, FECHA_BAJA FROM USUARIO WHERE CORREO = ?";
+    private static final String SQL_SELECT_BY_USERNAME = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
+    private static final String SQL_SELECT_BY_EMAIL = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE email = ?";
 
-    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM USUARIO WHERE NOMBRE_USUARIO = ? AND PASSWORD = ?";
-    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM USUARIO WHERE CORREO = ? AND PASSWORD = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM user WHERE email = ? AND password = ?";
 
-    private static final String SQL_GET_USER_ROLE = "SELECT NOMBRE_ROL FROM USUARIO WHERE NOMBRE_USUARIO = ?";
+    private static final String SQL_GET_USER_ROLE = "SELECT role_name FROM user WHERE username = ?";
 
     @Inject
     public UserDAO(IDatabaseConnection databaseConnection) {
@@ -46,8 +48,9 @@ public class UserDAO extends BaseDAO implements IUserDAO {
             statement.setString(4, user.getLastName());
             statement.setString(5, user.getEmail());
             statement.setString(6, user.getRole());
-            statement.setString(7, user.getStatus());
-            statement.setString(8, user.getGender());
+            statement.setString(7, user.getStatus() != null ? user.getStatus().getDatabaseValue() : null);
+
+            statement.setString(8, user.getGender() != null ? user.getGender().getDatabaseValue() : null);
 
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -80,8 +83,9 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 statement.setString(4, user.getLastName());
                 statement.setString(5, user.getEmail());
                 statement.setString(6, user.getRole());
-                statement.setString(7, user.getStatus());
-                statement.setString(8, user.getGender());
+                statement.setString(7, user.getStatus() != null ? user.getStatus().getDatabaseValue() : null);
+
+                statement.setString(8, user.getGender() != null ? user.getGender().getDatabaseValue() : null);
                 statement.setInt(9, user.getId());
             });
         } catch (SQLException exception) {
@@ -138,7 +142,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    retrievedRole = resultSet.getString("NOMBRE_ROL");
+                    retrievedRole = resultSet.getString("role_name");
                 }
             }
         } catch (SQLException exception) {
@@ -169,21 +173,25 @@ public class UserDAO extends BaseDAO implements IUserDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     retrievedUser = new User();
-                    retrievedUser.setId(resultSet.getInt("ID_USUARIO"));
-                    retrievedUser.setUserName(resultSet.getString("NOMBRE_USUARIO"));
-                    retrievedUser.setPassword(resultSet.getString("PASSWORD"));
-                    retrievedUser.setName(resultSet.getString("NOMBRE"));
-                    retrievedUser.setLastName(resultSet.getString("APELLIDOS"));
-                    retrievedUser.setEmail(resultSet.getString("CORREO"));
-                    retrievedUser.setRole(resultSet.getString("NOMBRE_ROL"));
-                    retrievedUser.setStatus(resultSet.getString("ESTADO"));
-                    retrievedUser.setGender(resultSet.getString("GENERO"));
+                    retrievedUser.setId(resultSet.getInt("user_id"));
+                    retrievedUser.setUserName(resultSet.getString("username"));
+                    retrievedUser.setPassword(resultSet.getString("password"));
+                    retrievedUser.setName(resultSet.getString("name"));
+                    retrievedUser.setLastName(resultSet.getString("last_name"));
+                    retrievedUser.setEmail(resultSet.getString("email"));
+                    retrievedUser.setRole(resultSet.getString("role_name"));
 
-                    if (resultSet.getTimestamp("FECHA_REGISTRO") != null) {
-                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("FECHA_REGISTRO").toLocalDateTime());
+                    String statusValue = resultSet.getString("status");
+                    retrievedUser.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
+
+                    String genderValue = resultSet.getString("gender");
+                    retrievedUser.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
+
+                    if (resultSet.getTimestamp("registration_date") != null) {
+                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
                     }
-                    if (resultSet.getTimestamp("FECHA_BAJA") != null) {
-                        retrievedUser.setDischargeDate(resultSet.getTimestamp("FECHA_BAJA").toLocalDateTime());
+                    if (resultSet.getTimestamp("discharge_date") != null) {
+                        retrievedUser.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
                     }
                 }
             }

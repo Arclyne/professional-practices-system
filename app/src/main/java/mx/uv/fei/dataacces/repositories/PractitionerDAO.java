@@ -13,17 +13,18 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IPractitionerDAO;
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 
 @Component
 public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO PRACTICANTE (ID_PRACTICANTE, LENGUA_INDIGENA, CALIFICACION) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT_ONE = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO AS MATRICULA, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO WHERE P.ID_PRACTICANTE = ?";
-    private static final String SQL_SELECT_ALL = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO AS MATRICULA, U.PASSWORD, U.NOMBRE, U.APELLIDOS, U.CORREO, U.ESTADO, U.GENERO, P.LENGUA_INDIGENA, P.CALIFICACION FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO";
-
-    private static final String SQL_UPDATE_PRACTITIONER = "UPDATE PRACTICANTE SET LENGUA_INDIGENA = ?, CALIFICACION = ? WHERE ID_PRACTICANTE = ?";
+    private static final String SQL_INSERT = "INSERT INTO practitioner (practitioner_id, indigenous_language, grade) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, u.email, u.status, u.gender, p.indigenous_language, p.grade FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id WHERE p.practitioner_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, u.email, u.status, u.gender, p.indigenous_language, p.grade FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id";
+    private static final String SQL_UPDATE_PRACTITIONER = "UPDATE practitioner SET indigenous_language = ?, grade = ? WHERE practitioner_id = ?";
 
     @Inject
     public PractitionerDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -82,16 +83,20 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    practitionerToSearch.setId(resultSet.getInt("ID_USUARIO"));
-                    practitionerToSearch.setPassword(resultSet.getString("PASSWORD"));
-                    practitionerToSearch.setName(resultSet.getString("NOMBRE"));
-                    practitionerToSearch.setLastName(resultSet.getString("APELLIDOS"));
-                    practitionerToSearch.setEmail(resultSet.getString("CORREO"));
-                    practitionerToSearch.setStatus(resultSet.getString("ESTADO"));
-                    practitionerToSearch.setGender(resultSet.getString("GENERO"));
-                    practitionerToSearch.setEnrollment(resultSet.getString("MATRICULA"));
-                    practitionerToSearch.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
-                    practitionerToSearch.setGrade(resultSet.getDouble("CALIFICACION"));
+                    practitionerToSearch.setId(resultSet.getInt("user_id"));
+                    practitionerToSearch.setPassword(resultSet.getString("password"));
+                    practitionerToSearch.setName(resultSet.getString("name"));
+                    practitionerToSearch.setLastName(resultSet.getString("last_name"));
+                    practitionerToSearch.setEmail(resultSet.getString("email"));
+                    practitionerToSearch.setStatus(UserStatus.fromString(resultSet.getString("status")));
+
+                    // CORREGIDO: Conversión del String de la base de datos al Enum Gender
+                    String genderValue = resultSet.getString("gender");
+                    practitionerToSearch.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
+
+                    practitionerToSearch.setEnrollment(resultSet.getString("matricula"));
+                    practitionerToSearch.setIndigenousLanguage(resultSet.getString("indigenous_language"));
+                    practitionerToSearch.setGrade(resultSet.getDouble("grade"));
                 }
             }
         } catch (SQLException e) {
@@ -105,17 +110,19 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             Practitioner practitionerRecovered = new Practitioner();
 
-            practitionerRecovered.setId(resultSet.getInt("ID_USUARIO"));
-            practitionerRecovered.setPassword(resultSet.getString("PASSWORD"));
-            practitionerRecovered.setName(resultSet.getString("NOMBRE"));
-            practitionerRecovered.setLastName(resultSet.getString("APELLIDOS"));
-            practitionerRecovered.setEmail(resultSet.getString("CORREO"));
-            practitionerRecovered.setStatus(resultSet.getString("ESTADO"));
-            practitionerRecovered.setGender(resultSet.getString("GENERO"));
+            practitionerRecovered.setId(resultSet.getInt("user_id"));
+            practitionerRecovered.setPassword(resultSet.getString("password"));
+            practitionerRecovered.setName(resultSet.getString("name"));
+            practitionerRecovered.setLastName(resultSet.getString("last_name"));
+            practitionerRecovered.setEmail(resultSet.getString("email"));
+            practitionerRecovered.setStatus(UserStatus.fromString(resultSet.getString("status")));
 
-            practitionerRecovered.setEnrollment(resultSet.getString("MATRICULA"));
-            practitionerRecovered.setIndigenousLanguage(resultSet.getString("LENGUA_INDIGENA"));
-            practitionerRecovered.setGrade(resultSet.getDouble("CALIFICACION"));
+            String genderValue = resultSet.getString("gender");
+            practitionerRecovered.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
+
+            practitionerRecovered.setEnrollment(resultSet.getString("matricula"));
+            practitionerRecovered.setIndigenousLanguage(resultSet.getString("indigenous_language"));
+            practitionerRecovered.setGrade(resultSet.getDouble("grade"));
 
             return practitionerRecovered;
         });
@@ -169,7 +176,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     @Override
     public List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException {
         List<Practitioner> pendingPractitionersList = new ArrayList<>();
-        String queryToExecute = "SELECT U.ID_USUARIO, U.NOMBRE_USUARIO AS MATRICULA, U.NOMBRE, U.APELLIDOS, U.CORREO FROM PRACTICANTE P INNER JOIN USUARIO U ON P.ID_PRACTICANTE = U.ID_USUARIO WHERE P.ID_PRACTICANTE IN (SELECT ID_PRACTICANTE FROM POSTULACION_PROYECTO) AND P.ID_PRACTICANTE NOT IN (SELECT ID_PRACTICANTE FROM POSTULACION_PROYECTO WHERE ESTADO_POSTULACION = 'Asignado')";
+        String queryToExecute = "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                "FROM practitioner p " +
+                "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                "WHERE p.practitioner_id IN (SELECT practitioner_id FROM project_postulation) " +
+                "AND p.practitioner_id NOT IN (SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
 
         try (Connection currentDatabaseConnection = databaseConnection.getConnection();
              PreparedStatement selectStatement = currentDatabaseConnection.prepareStatement(queryToExecute);
@@ -177,11 +188,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
             while (executionResultSet.next()) {
                 Practitioner currentPractitioner = new Practitioner();
-                currentPractitioner.setId(executionResultSet.getInt("ID_USUARIO"));
-                currentPractitioner.setEnrollment(executionResultSet.getString("MATRICULA"));
-                currentPractitioner.setName(executionResultSet.getString("NOMBRE"));
-                currentPractitioner.setLastName(executionResultSet.getString("APELLIDOS"));
-                currentPractitioner.setEmail(executionResultSet.getString("CORREO"));
+                currentPractitioner.setId(executionResultSet.getInt("user_id"));
+                currentPractitioner.setEnrollment(executionResultSet.getString("matricula"));
+                currentPractitioner.setName(executionResultSet.getString("name"));
+                currentPractitioner.setLastName(executionResultSet.getString("last_name"));
+                currentPractitioner.setEmail(executionResultSet.getString("email"));
 
                 pendingPractitionersList.add(currentPractitioner);
             }
@@ -191,5 +202,4 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
         return pendingPractitionersList;
     }
-
 }
