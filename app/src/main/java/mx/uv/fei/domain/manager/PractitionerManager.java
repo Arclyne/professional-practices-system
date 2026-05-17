@@ -8,6 +8,7 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.PractitionerDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class PractitionerManager {
@@ -25,7 +26,7 @@ public class PractitionerManager {
         practitioner.setPassword(temporalPassword);
         practitioner.setUserName(practitioner.getEnrollment());
         practitioner.setRole("Practitioner");
-        practitioner.setStatus("Pendiente");
+        practitioner.setStatus(UserStatus.PENDING);
         practitioner.setGrade(0.0);
 
         Validator.validatePractitioner(practitioner);

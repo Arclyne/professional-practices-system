@@ -1,5 +1,8 @@
 package mx.uv.fei.domain.dto;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -13,8 +16,8 @@ public class User {
     private String name;
     private String lastName;
     private String email;
-    private String status;
-    private String gender;
+    private UserStatus status;
+    private Gender gender;
 
     private LocalDateTime registrationDate;
     private LocalDateTime DischargeDate;
@@ -78,19 +81,19 @@ public class User {
         this.email = email;
     }
 
-    public String getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

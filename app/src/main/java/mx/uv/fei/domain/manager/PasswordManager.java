@@ -6,6 +6,7 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.SessionFacade; // <-- Tu nuevo Facade
 import mx.uv.fei.domain.statemachine.Store;
@@ -40,7 +41,7 @@ public class PasswordManager {
             throw new ManagerException("Error: No se encontró una sesión activa para actualizar.");
         }
 
-        userInSession.setStatus("Activo");
+        userInSession.setStatus(UserStatus.ACTIVE);
         userInSession.setPassword(newPassword);
 
         try (Connection sharedConnection = databaseConnection.getConnection()) {

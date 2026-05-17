@@ -13,6 +13,8 @@ import java.util.ResourceBundle;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.statemachine.Store;
@@ -44,9 +46,12 @@ public class RegisterCoordinatorController implements Initializable {
     }
 
     @Override
-    public void initialize(URL locationUrl, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         ObservableList<String> genderOptionsObservableList = FXCollections.observableArrayList(
-                "Masculino", "Femenino", "Otro");
+                Gender.MALE.getDisplayValue(),
+                Gender.FEMALE.getDisplayValue(),
+                Gender.OTHER.getDisplayValue()
+        );
         comboBoxSexo.setItems(genderOptionsObservableList);
     }
 
@@ -82,9 +87,13 @@ public class RegisterCoordinatorController implements Initializable {
         mappedCoordinator.setLastName(fieldApellido.getText().trim());
         mappedCoordinator.setEmail(fieldCorreo.getText().trim());
         mappedCoordinator.setUserName(fieldNoPersonal.getText().trim());
-        mappedCoordinator.setGender((String) comboBoxSexo.getValue());
+
+        String selectedSex = (String) comboBoxSexo.getValue();
+        mappedCoordinator.setGender(Gender.fromDisplayValue(selectedSex));
+
         mappedCoordinator.setRole("Coordinator");
-        mappedCoordinator.setStatus("Pendiente");
+
+        mappedCoordinator.setStatus(UserStatus.PENDING);
 
         return mappedCoordinator;
     }
