@@ -8,12 +8,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.cell.CheckBoxListCell;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.repositories.OrganizationDAO;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -28,21 +29,32 @@ public class ManagerManagementController {
 
     @FXML private ListView<String> managersListView;
 
-    private final OrganizationDAO managerManager;
+    private final ManagerManager managerManager;
     private final Store applicationNavigationStore;
 
     private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
     private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
 
     @Inject
-    public ManagerManagementController(OrganizationDAO managerManager, Store applicationNavigationStore) {
+    public ManagerManagementController(ManagerManager managerManager, Store applicationNavigationStore) {
         this.managerManager = managerManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }
 
     @FXML
     public void initialize() {
-        Controller.setupCheckBoxListViewUX(managersListView, itemSelectionStateMap);
+        managersListView.setCellFactory(CheckBoxListCell.forListView(itemString -> itemSelectionStateMap.get(itemString)));
+
+        managersListView.setOnMouseClicked(event -> {
+            String selectedItem = managersListView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                BooleanProperty checkboxState = itemSelectionStateMap.get(selectedItem);
+                if (checkboxState != null) {
+                    checkboxState.set(!checkboxState.get());
+                    managersListView.getSelectionModel().clearSelection();
+                }
+            }
+        });
         loadActiveManagers();
     }
 
@@ -54,9 +66,7 @@ public class ManagerManagementController {
         try {
             List<Manager> registeredManagersList = managerManager.getAllManagers();
             for (Manager currentManager : registeredManagersList) {
-
                 if (currentManager.getStatus() != null && !"No Activo".equalsIgnoreCase(currentManager.getStatus())) {
-
                     String formattedDisplayString = currentManager.getName() + " (" + currentManager.getEmail() + ") - " + currentManager.getStatus();
                     itemToIdentifierMap.put(formattedDisplayString, currentManager.getId());
                     itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
