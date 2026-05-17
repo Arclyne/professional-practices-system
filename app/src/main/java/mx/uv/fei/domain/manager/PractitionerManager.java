@@ -13,6 +13,7 @@ import mx.uv.fei.domain.common.IFileBackup;
 import mx.uv.fei.domain.common.IPractitionerParser;
 import mx.uv.fei.dataacces.interfaces.IPractitionerDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
@@ -35,7 +36,7 @@ public class PractitionerManager {
         practitioner.setPassword(temporalPassword);
         practitioner.setUserName(practitioner.getEnrollment());
         practitioner.setRole("Practitioner");
-        practitioner.setStatus("Pendiente");
+        practitioner.setStatus(UserStatus.PENDING);
         practitioner.setGrade(0.0);
 
         Validator.validatePractitioner(practitioner);

@@ -17,10 +17,10 @@ import mx.uv.fei.dataacces.interfaces.ISchoolPeriodDAO;
 @Component
 public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO PERIODO_ESCOLAR (NOMBRE_PERIODO, FECHA_INICIO, FECHA_FIN, ESTADO_PERIODO) VALUES (?, ?, ?, ?)";
-    private static final String SQL_SELECT_ONE = "SELECT ID_PERIODO, NOMBRE_PERIODO, FECHA_INICIO, FECHA_FIN, ESTADO_PERIODO FROM PERIODO_ESCOLAR WHERE ID_PERIODO = ?";
-    private static final String SQL_SELECT_ALL = "SELECT ID_PERIODO, NOMBRE_PERIODO, FECHA_INICIO, FECHA_FIN, ESTADO_PERIODO FROM PERIODO_ESCOLAR";
-    private static final String SQL_UPDATE = "UPDATE PERIODO_ESCOLAR SET NOMBRE_PERIODO = ?, FECHA_INICIO = ?, FECHA_FIN = ?, ESTADO_PERIODO = ? WHERE ID_PERIODO = ?";
+    private static final String SQL_INSERT = "INSERT INTO school_period (period_name, start_date, end_date, period_status) VALUES (?, ?, ?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period WHERE period_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period";
+    private static final String SQL_UPDATE = "UPDATE school_period SET period_name = ?, start_date = ?, end_date = ?, period_status = ? WHERE period_id = ?";
 
     @Inject
     public SchoolPeriodDAO(IDatabaseConnection databaseConnection) {
@@ -67,17 +67,17 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    periodToSearch.setPeriodId(resultSet.getInt("ID_PERIODO"));
-                    periodToSearch.setPeriodName(resultSet.getString("NOMBRE_PERIODO"));
+                    periodToSearch.setPeriodId(resultSet.getInt("period_id"));
+                    periodToSearch.setPeriodName(resultSet.getString("period_name"));
 
-                    if (resultSet.getDate("FECHA_INICIO") != null) {
-                        periodToSearch.setStartDate(resultSet.getDate("FECHA_INICIO").toLocalDate());
+                    if (resultSet.getDate("start_date") != null) {
+                        periodToSearch.setStartDate(resultSet.getDate("start_date").toLocalDate());
                     }
-                    if (resultSet.getDate("FECHA_FIN") != null) {
-                        periodToSearch.setEndDate(resultSet.getDate("FECHA_FIN").toLocalDate());
+                    if (resultSet.getDate("end_date") != null) {
+                        periodToSearch.setEndDate(resultSet.getDate("end_date").toLocalDate());
                     }
 
-                    periodToSearch.setStatus(resultSet.getString("ESTADO_PERIODO"));
+                    periodToSearch.setStatus(resultSet.getString("period_status"));
                 }
             }
         } catch (SQLException e) {
@@ -92,17 +92,17 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             SchoolPeriod periodRecovered = new SchoolPeriod();
 
-            periodRecovered.setPeriodId(resultSet.getInt("ID_PERIODO"));
-            periodRecovered.setPeriodName(resultSet.getString("NOMBRE_PERIODO"));
+            periodRecovered.setPeriodId(resultSet.getInt("period_id"));
+            periodRecovered.setPeriodName(resultSet.getString("period_name"));
 
-            if (resultSet.getDate("FECHA_INICIO") != null) {
-                periodRecovered.setStartDate(resultSet.getDate("FECHA_INICIO").toLocalDate());
+            if (resultSet.getDate("start_date") != null) {
+                periodRecovered.setStartDate(resultSet.getDate("start_date").toLocalDate());
             }
-            if (resultSet.getDate("FECHA_FIN") != null) {
-                periodRecovered.setEndDate(resultSet.getDate("FECHA_FIN").toLocalDate());
+            if (resultSet.getDate("end_date") != null) {
+                periodRecovered.setEndDate(resultSet.getDate("end_date").toLocalDate());
             }
 
-            periodRecovered.setStatus(resultSet.getString("ESTADO_PERIODO"));
+            periodRecovered.setStatus(resultSet.getString("period_status"));
 
             return periodRecovered;
         });

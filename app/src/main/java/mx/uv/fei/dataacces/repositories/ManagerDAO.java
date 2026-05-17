@@ -17,6 +17,8 @@ import mx.uv.fei.domain.dto.Manager;
 @Component
 public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
+    private static final String SQL_SELECT_BY_ORG = "SELECT manager_id, manager_name, phone, email FROM project_manager WHERE organization_id = ?";
+    private static final String SQL_INSERT_MANAGER = "INSERT INTO project_manager (manager_name, phone, email, organization_id) VALUES (?, ?, ?, ?)";
     private static final String SQL_SELECT_BY_ORG = "SELECT ID_ENCARGADO, NOMBRE_ENCARGADO, TELEFONO, CORREO, ESTADO FROM ENCARGADO_PROYECTO WHERE ID_ORGANIZACION = ?";
 
 
@@ -42,12 +44,12 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Manager manager = new Manager();
-                    manager.setId(resultSet.getInt("ID_ENCARGADO"));
-                    manager.setName(resultSet.getString("NOMBRE_ENCARGADO"));
-                    manager.setPhone(resultSet.getString("TELEFONO"));
-                    manager.setEmail(resultSet.getString("CORREO"));
+                    manager.setId(resultSet.getInt("manager_id"));
+                    manager.setName(resultSet.getString("manager_name"));
+                    manager.setPhone(resultSet.getString("phone"));
+                    manager.setEmail(resultSet.getString("email"));
                     manager.setOrganizationId(organizationId);
-                    manager.setStatus(resultSet.getString("ESTADO")); // Mapeo de estado
+                    manager.setStatus(resultSet.getString("STATU"));
 
                     managersList.add(manager);
                 }

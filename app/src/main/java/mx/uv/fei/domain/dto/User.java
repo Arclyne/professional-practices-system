@@ -1,5 +1,8 @@
 package mx.uv.fei.domain.dto;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -13,8 +16,8 @@ public class User {
     private String name;
     private String lastName;
     private String email;
-    private String status;
-    private String gender;
+    private UserStatus status;
+    private Gender gender;
 
     private LocalDateTime registrationDate;
     private LocalDateTime dischargeDate;
@@ -22,50 +25,107 @@ public class User {
     public User() {
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getUserName() {
+        return userName;
+    }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getRole() {
+        return role;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public String getName() {
+        return name;
+    }
 
-    public LocalDateTime getRegistrationDate() { return registrationDate; }
-    public void setRegistrationDate(LocalDateTime registrationDate) { this.registrationDate = registrationDate; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public LocalDateTime getDischargeDate() { return dischargeDate; }
-    public void setDischargeDate(LocalDateTime dischargeDate) { this.dischargeDate = dischargeDate; }
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDateTime getDischargeDate() {
+        return DischargeDate;
+    }
+
+    public void setDischargeDate(LocalDateTime DischargeDate) {
+        this.DischargeDate = DischargeDate;
+    }
 
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
 
-        User user = (User) object;
-        return id == user.id;
+        User that = (User) object;
+
+        return Objects.equals(this.userName, that.userName) &&
+                Objects.equals(this.email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(userName, email);
     }
 }

@@ -23,13 +23,13 @@ abstract class BaseDAO {
         this.databaseConnection = databaseConnection;
     }
 
-    protected <T> List<T> recoverALL(String stament, ISelectedList<T> rowMapper, Object... parameterObjects)
+    protected <T> List<T> recoverALL(String sqlStatement, ISelectedList<T> rowMapper, Object... parameterObjects)
             throws DAOException {
         List<T> results = new ArrayList<T>();
 
         try (
                 Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(stament)) {
+                PreparedStatement statement = connection.prepareStatement(sqlStatement)) {
             int index = 1;
             for (Object parameters : parameterObjects) {
                 statement.setObject(index++, parameters);

@@ -4,28 +4,38 @@ import java.util.UUID;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.ICoordinatorDAO;
 import mx.uv.fei.dataacces.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataacces.repositories.CoordinatorDAO;
+import mx.uv.fei.dataacces.repositories.UserDAO;
+import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class CoordinatorManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(CoordinatorManager.class);
     private final ICoordinatorDAO coordinatorDataAccessObject;
-    private final IUserDAO userDataAccessObject;
+    private final IUserDAO userDAO;
 
     @Inject
     public CoordinatorManager(ICoordinatorDAO coordinatorDataAccessObject, IUserDAO userDataAccessObject) {
         this.coordinatorDataAccessObject = coordinatorDataAccessObject;
-        this.userDataAccessObject = userDataAccessObject;
+        this.userDAO = userDataAccessObject;
     }
 
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
         String temporaryGeneratedPassword = this.generateTemporaryPassword();
         coordinatorInformation.setPassword(temporaryGeneratedPassword);
-        coordinatorInformation.setStatus("Pendiente");
+        coordinatorInformation.setStatus(UserStatus.PENDING);
+
+        Validator.validateCoordinatorData(coordinatorInformation);
 
         try {
             int insertedCoordinatorId = this.coordinatorDataAccessObject.insertCoordinator(coordinatorInformation);
@@ -43,7 +53,7 @@ public class CoordinatorManager {
 
     public void inactivateCoordinator(int coordinatorIdentifier) throws ManagerException {
         try {
-            boolean isCoordinatorDeactivated = userDataAccessObject.deactivateUser(coordinatorIdentifier);
+            boolean isCoordinatorDeactivated = userDAO.deactivateUser(coordinatorIdentifier);
 
             if (!isCoordinatorDeactivated) {
                 throw new ManagerException("No se pudo inactivar. Verifique que el coordinador exista en el sistema.");

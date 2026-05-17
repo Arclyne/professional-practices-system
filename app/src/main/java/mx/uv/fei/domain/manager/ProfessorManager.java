@@ -11,11 +11,15 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.repositories.ProfessorDAO;
 import mx.uv.fei.dataacces.repositories.UserDAO;
 import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class ProfessorManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProfessorManager.class);
     private final ProfessorDAO professorDAO;
     private final UserDAO userDAO;
 
@@ -29,7 +33,7 @@ public class ProfessorManager {
         String tempPassword = this.generatePassword();
         professor.setPassword(tempPassword);
         professor.setRole("Professor");
-        professor.setStatus("Pendiente");
+        professor.setStatus(UserStatus.PENDING);
         Validator.validateProfessorData(professor);
 
         try {
@@ -42,8 +46,8 @@ public class ProfessorManager {
             return tempPassword;
 
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.",
-                    e);
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 

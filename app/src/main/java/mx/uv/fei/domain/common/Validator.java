@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.common;
 
 import mx.uv.fei.domain.dto.*;
+import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.Date;
@@ -88,7 +89,11 @@ public class Validator {
     private static void validateUser(User userToValidate, String rol) throws ManagerException {
         validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
         validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
-        validateString(userToValidate.getGender(), "El género del " + rol + " es obligatorio.");
+
+        if (userToValidate.getGender() == null) {
+            throw new ManagerException("El género del " + rol + " es obligatorio.");
+        }
+
         validateString(userToValidate.getEmail(), "El correo del " + rol + " es obligatorio.");
 
         if (!isValidEmail(userToValidate.getEmail())) {

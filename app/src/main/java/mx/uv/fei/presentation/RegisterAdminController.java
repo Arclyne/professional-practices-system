@@ -14,6 +14,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Administrator;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
 import mx.uv.fei.presentation.components.FormComboBox;
@@ -49,14 +51,25 @@ public class RegisterAdminController implements Initializable {
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         ObservableList<String> opcionesSexo = FXCollections.observableArrayList(
-                "Masculino", "Femenino", "Otro");
+                Gender.MALE.getDisplayValue(),
+                Gender.FEMALE.getDisplayValue(),
+                Gender.OTHER.getDisplayValue()
+        );
         comboBoxSexo.setItems(opcionesSexo);
     }
 
     @FXML
     private void handleRegisterButtonAction(ActionEvent event) {
+        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
+                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
+                fieldPassword.getText().isEmpty() || comboBoxSexo.getValue() == null) {
+
+            Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            return;
+        }
+
         Administrator newAdmin = createAdministrator();
 
         try {
@@ -76,12 +89,18 @@ public class RegisterAdminController implements Initializable {
 
     private Administrator createAdministrator() {
         Administrator newAdmin = new Administrator();
-        newAdmin.setName(fieldNombre.getText());
-        newAdmin.setLastName(fieldApellido.getText());
-        newAdmin.setEmail(fieldCorreo.getText());
-        newAdmin.setUserName(fieldNoPersonal.getText());
+        newAdmin.setName(fieldNombre.getText().trim());
+        newAdmin.setLastName(fieldApellido.getText().trim());
+        newAdmin.setEmail(fieldCorreo.getText().trim());
+        newAdmin.setUserName(fieldNoPersonal.getText().trim());
         newAdmin.setPassword(fieldPassword.getText());
-        newAdmin.setGender((String) comboBoxSexo.getValue());
+
+        String selectedSex = (String) comboBoxSexo.getValue();
+        newAdmin.setGender(Gender.fromDisplayValue(selectedSex));
+
+        newAdmin.setRole("Administrator");
+
+        newAdmin.setStatus(UserStatus.ACTIVE);
 
         return newAdmin;
     }
