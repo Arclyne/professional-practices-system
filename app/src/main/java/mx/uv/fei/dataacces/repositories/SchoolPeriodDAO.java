@@ -17,10 +17,10 @@ import mx.uv.fei.dataacces.interfaces.ISchoolPeriodDAO;
 @Component
 public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO school_period (PERIOD_NAME, START_DATE, END_DATE, PERIOD_STATUS) VALUES (?, ?, ?, ?)";
-    private static final String SQL_SELECT_ONE = "SELECT ID_PERIOD, PERIOD_NAME, START_DATE, END_DATE, PERIOD_STATUS FROM school_period WHERE ID_PERIOD = ?";
-    private static final String SQL_SELECT_ALL = "SELECT ID_PERIOD, PERIOD_NAME, START_DATE, END_DATE, PERIOD_STATUS FROM school_period";
-    private static final String SQL_UPDATE = "UPDATE school_period SET PERIOD_NAME = ?, START_DATE = ?, END_DATE = ?, PERIOD_STATUS = ? WHERE ID_PERIOD = ?";
+    private static final String SQL_INSERT = "INSERT INTO school_period (period_name, start_date, end_date, period_status) VALUES (?, ?, ?, ?)";
+    private static final String SQL_SELECT_ONE = "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period WHERE period_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period";
+    private static final String SQL_UPDATE = "UPDATE school_period SET period_name = ?, start_date = ?, end_date = ?, period_status = ? WHERE period_id = ?";
 
     @Inject
     public SchoolPeriodDAO(IDatabaseConnection databaseConnection) {
@@ -33,8 +33,8 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, period.getPeriodName());
-            statement.setDate(2, java.sql.Date.valueOf(period.getStartDate()));
-            statement.setDate(3, java.sql.Date.valueOf(period.getEndDate()));
+            statement.setDate(2, period.getStartDate() != null ? java.sql.Date.valueOf(period.getStartDate()) : null);
+            statement.setDate(3, period.getEndDate() != null ? java.sql.Date.valueOf(period.getEndDate()) : null);
             statement.setString(4, period.getStatus());
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -57,15 +57,15 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
             statement.setInt(1, periodId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    periodToSearch.setPeriodId(resultSet.getInt("ID_PERIOD"));
-                    periodToSearch.setPeriodName(resultSet.getString("PERIOD_NAME"));
-                    if (resultSet.getDate("START_DATE") != null) {
-                        periodToSearch.setStartDate(resultSet.getDate("START_DATE").toLocalDate());
+                    periodToSearch.setPeriodId(resultSet.getInt("period_id"));
+                    periodToSearch.setPeriodName(resultSet.getString("period_name"));
+                    if (resultSet.getDate("start_date") != null) {
+                        periodToSearch.setStartDate(resultSet.getDate("start_date").toLocalDate());
                     }
-                    if (resultSet.getDate("END_DATE") != null) {
-                        periodToSearch.setEndDate(resultSet.getDate("END_DATE").toLocalDate());
+                    if (resultSet.getDate("end_date") != null) {
+                        periodToSearch.setEndDate(resultSet.getDate("end_date").toLocalDate());
                     }
-                    periodToSearch.setStatus(resultSet.getString("PERIOD_STATUS"));
+                    periodToSearch.setStatus(resultSet.getString("period_status"));
                 }
             }
         } catch (SQLException e) {
@@ -78,15 +78,15 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
     public List<SchoolPeriod> getAllSchoolPeriods() throws DAOException {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             SchoolPeriod periodRecovered = new SchoolPeriod();
-            periodRecovered.setPeriodId(resultSet.getInt("ID_PERIOD"));
-            periodRecovered.setPeriodName(resultSet.getString("PERIOD_NAME"));
-            if (resultSet.getDate("START_DATE") != null) {
-                periodRecovered.setStartDate(resultSet.getDate("START_DATE").toLocalDate());
+            periodRecovered.setPeriodId(resultSet.getInt("period_id"));
+            periodRecovered.setPeriodName(resultSet.getString("period_name"));
+            if (resultSet.getDate("start_date") != null) {
+                periodRecovered.setStartDate(resultSet.getDate("start_date").toLocalDate());
             }
-            if (resultSet.getDate("END_DATE") != null) {
-                periodRecovered.setEndDate(resultSet.getDate("END_DATE").toLocalDate());
+            if (resultSet.getDate("end_date") != null) {
+                periodRecovered.setEndDate(resultSet.getDate("end_date").toLocalDate());
             }
-            periodRecovered.setStatus(resultSet.getString("PERIOD_STATUS"));
+            periodRecovered.setStatus(resultSet.getString("period_status"));
             return periodRecovered;
         });
     }
@@ -95,8 +95,8 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
     public boolean updateSchoolPeriod(SchoolPeriod period, int id) throws DAOException {
         return updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, period.getPeriodName());
-            statement.setDate(2, java.sql.Date.valueOf(period.getStartDate()));
-            statement.setDate(3, java.sql.Date.valueOf(period.getEndDate()));
+            statement.setDate(2, period.getStartDate() != null ? java.sql.Date.valueOf(period.getStartDate()) : null);
+            statement.setDate(3, period.getEndDate() != null ? java.sql.Date.valueOf(period.getEndDate()) : null);
             statement.setString(4, period.getStatus());
             statement.setInt(5, id);
         });

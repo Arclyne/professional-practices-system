@@ -19,16 +19,16 @@ import mx.uv.fei.domain.enums.UserStatus;
 public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
     private final UserDAO userDAO;
-    private static final String SQL_INSERT = "INSERT INTO coordinator (ID_COORDINADOR) VALUES (?)";
+    private static final String SQL_INSERT = "INSERT INTO coordinator (coordinator_id) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
-            "FROM coordinator c INNER JOIN user u ON c.ID_COORDINADOR = u.ID_USER WHERE c.ID_COORDINADOR = ?";
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE c.coordinator_id = ?";
 
-    private static final String SQL_SELECT_ALL = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
-            "FROM coordinator c INNER JOIN user u ON c.ID_COORDINADOR = u.ID_USER";
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id";
 
-    private static final String SQL_SELECT_CURRENT_ACTIVE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
-            "FROM coordinator c INNER JOIN user u ON c.ID_COORDINADOR = u.ID_USER WHERE u.STATUS = 'Active' LIMIT 1";
+    private static final String SQL_SELECT_CURRENT_ACTIVE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE u.status = 'Active' LIMIT 1";
 
     @Inject
     public CoordinatorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -134,25 +134,25 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     }
 
     private void mapCoordinator(Coordinator coordinator, ResultSet resultSet) throws SQLException {
-        coordinator.setId(resultSet.getInt("ID_USER"));
-        coordinator.setUserName(resultSet.getString("USERNAME"));
-        coordinator.setPassword(resultSet.getString("PASSWORD"));
-        coordinator.setName(resultSet.getString("FIRST_NAME"));
-        coordinator.setLastName(resultSet.getString("LAST_NAME"));
-        coordinator.setEmail(resultSet.getString("EMAIL"));
-        coordinator.setRole(resultSet.getString("ROLE_NAME"));
+        coordinator.setId(resultSet.getInt("user_id"));
+        coordinator.setUserName(resultSet.getString("username"));
+        coordinator.setPassword(resultSet.getString("password"));
+        coordinator.setName(resultSet.getString("name"));
+        coordinator.setLastName(resultSet.getString("last_name"));
+        coordinator.setEmail(resultSet.getString("email"));
+        coordinator.setRole(resultSet.getString("role_name"));
 
-        String statusValue = resultSet.getString("STATUS");
+        String statusValue = resultSet.getString("status");
         coordinator.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-        String genderValue = resultSet.getString("GENDER");
+        String genderValue = resultSet.getString("gender");
         coordinator.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-        if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
-            coordinator.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("registration_date") != null) {
+            coordinator.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
         }
-        if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
-            coordinator.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("discharge_date") != null) {
+            coordinator.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }
     }
 }
