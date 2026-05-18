@@ -20,16 +20,16 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO administrator (administrator_id) VALUES (?)";
+    private static final String SQL_INSERT = "INSERT INTO administrator (ID_ADMINISTRATOR) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+    private static final String SQL_SELECT_ONE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
             "FROM administrator a " +
-            "INNER JOIN user u ON a.administrator_id = u.user_id " +
-            "WHERE a.administrator_id = ?";
+            "INNER JOIN user u ON a.ID_ADMINISTRATOR = u.ID_USER " +
+            "WHERE a.ID_ADMINISTRATOR = ?";
 
-    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+    private static final String SQL_SELECT_ALL = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
             "FROM administrator a " +
-            "INNER JOIN user u ON a.administrator_id = u.user_id";
+            "INNER JOIN user u ON a.ID_ADMINISTRATOR = u.ID_USER";
 
     private static final String SQL_CHECK_EXISTS = "SELECT COUNT(*) FROM administrator";
 
@@ -43,7 +43,6 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHECK_EXISTS);
              ResultSet resultSet = statement.executeQuery()) {
-
             if (resultSet.next()) {
                 return resultSet.getInt(1) > 0;
             }
@@ -56,51 +55,39 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     @Override
     public int insertAdministrator(Administrator administrator) throws DAOException {
         int resultId = -1;
-
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
-
             try {
                 int generatedUserId = userDAO.insertUser(administrator, connection);
-
                 if (generatedUserId > 0) {
                     try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
                         statement.setInt(1, generatedUserId);
-
                         if (statement.executeUpdate() > 0) {
                             resultId = generatedUserId;
                         }
                     }
-
                     connection.commit();
                 } else {
                     connection.rollback();
                 }
-
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("SQL Error al insertar el administrador. Se ha hecho un rollback.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
-
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
-
         return resultId;
     }
 
     @Override
     public Administrator recoverAdministrator(int administratorId) throws DAOException {
         Administrator adminToSearch = new Administrator();
-
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
-
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
             statement.setInt(1, administratorId);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     mapAdministrator(adminToSearch, resultSet);
@@ -124,7 +111,6 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     @Override
     public boolean updateAdministrator(Administrator adminToUpdate, int id) throws DAOException {
         adminToUpdate.setId(id);
-
         try (Connection connection = databaseConnection.getConnection()) {
             return userDAO.updateUser(adminToUpdate, connection);
         } catch (SQLException e) {
@@ -133,26 +119,25 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     }
 
     private void mapAdministrator(Administrator admin, ResultSet resultSet) throws SQLException {
-        admin.setId(resultSet.getInt("user_id"));
-        admin.setUserName(resultSet.getString("username"));
-        admin.setPassword(resultSet.getString("password"));
-        admin.setName(resultSet.getString("name"));
-        admin.setLastName(resultSet.getString("last_name"));
-        admin.setEmail(resultSet.getString("email"));
-        admin.setRole(resultSet.getString("role_name"));
+        admin.setId(resultSet.getInt("ID_USER"));
+        admin.setUserName(resultSet.getString("USERNAME"));
+        admin.setPassword(resultSet.getString("PASSWORD"));
+        admin.setName(resultSet.getString("FIRST_NAME"));
+        admin.setLastName(resultSet.getString("LAST_NAME"));
+        admin.setEmail(resultSet.getString("EMAIL"));
+        admin.setRole(resultSet.getString("ROLE_NAME"));
 
-        String statusValue = resultSet.getString("status");
+        String statusValue = resultSet.getString("STATUS");
         admin.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-        String genderValue = resultSet.getString("gender");
+        String genderValue = resultSet.getString("GENDER");
         admin.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-        if (resultSet.getTimestamp("registration_date") != null) {
-            admin.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
+        if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
+            admin.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
         }
-
-        if (resultSet.getTimestamp("discharge_date") != null) {
-            admin.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
+        if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
+            admin.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
         }
     }
 }

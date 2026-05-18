@@ -47,21 +47,21 @@ public class OrganizationDAOIT {
         expectedOrganizationInserted.setIdOrganization(1);
         expectedOrganizationInserted.setNameOrganization("toRecover");
         expectedOrganizationInserted.setMail("torecover@uv.mx");
-        expectedOrganizationInserted.setRegion("Veracruz");
+        expectedOrganizationInserted.setState("Veracruz");
         expectedOrganizationInserted.setBusiness("Technology");
 
         organizationToCompare01 = new Organization();
         organizationToCompare01.setIdOrganization(2);
         organizationToCompare01.setNameOrganization("Dummy 1");
         organizationToCompare01.setMail("dummy1@uv.mx");
-        organizationToCompare01.setRegion("Veracruz");
+        organizationToCompare01.setState("Veracruz");
         organizationToCompare01.setBusiness("Technology");
 
         organizationToCompare02 = new Organization();
         organizationToCompare02.setIdOrganization(3);
         organizationToCompare02.setNameOrganization("Dummy 2");
         organizationToCompare02.setMail("dummy2@uv.mx");
-        organizationToCompare02.setRegion("Veracruz");
+        organizationToCompare02.setState("Veracruz");
         organizationToCompare02.setBusiness("Technology");
 
         expectedList = new ArrayList<>();
@@ -74,7 +74,7 @@ public class OrganizationDAOIT {
     void testInsertOrganizationSuccess() throws DAOException {
         Organization testOrganization = new Organization();
         testOrganization.setNameOrganization("Python Software"); // Corregido typo
-        testOrganization.setRegion("Veracruz");
+        testOrganization.setState("Veracruz");
         testOrganization.setAdress("Av. Xalapa");
         testOrganization.setCity("Xalapa");
         testOrganization.setBusiness("Derecho");
@@ -108,7 +108,7 @@ public class OrganizationDAOIT {
 
         Organization toUpdatedData = new Organization();
         toUpdatedData.setNameOrganization("UV Soft Updated");
-        toUpdatedData.setRegion("Veracruz");
+        toUpdatedData.setState("Veracruz");
         toUpdatedData.setAdress("Nueva Direccion");
         toUpdatedData.setCity("Xalapa");
         toUpdatedData.setBusiness("Technology");

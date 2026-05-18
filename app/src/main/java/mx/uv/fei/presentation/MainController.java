@@ -84,12 +84,18 @@ public class MainController {
                     case REGISTER_ACTIVITY -> loadView("/mx/uv/fei/presentation/activityForms.fxml");
                     case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
                     case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
+                    case COORDINATOR_DETAILS -> loadView("/mx/uv/fei/presentation/coordinatorDetails.fxml");
                     case PRIORITIZE_PROJECTS -> loadView("/mx/uv/fei/presentation/prioritizeProjects.fxml");
                     case VIEW_PRACTITIONER_PRIORITIES -> loadView("/mx/uv/fei/presentation/viewPractitionerPriorities.fxml");
                     case COORDINATOR_PRACTITIONER_MENU -> loadView("/mx/uv/fei/presentation/coordinatorPractitionerMenu.fxml");
                     case PENDING_PRACTITIONER_SELECTION -> loadView("/mx/uv/fei/presentation/pendingPractitionerSelection.fxml");
                     case REGISTER_MANAGER -> loadView("/mx/uv/fei/presentation/registerManager.fxml");
+                    case PROFESSOR_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/managerProfessor.fxml");
                     case ASSIGN_PROJECT -> loadView("/mx/uv/fei/presentation/assignProject.fxml");
+                    case PROJECT_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageProjects.fxml");
+                    case MANAGER_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageManagers.fxml");
+                    case ORGANIZATION_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageOrganizations.fxml");
+                    case REGISTER_ORGANIZATION -> loadView("/mx/uv/fei/presentation/registerOrganization.fxml");
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }
             }
@@ -116,9 +122,9 @@ public class MainController {
 
             contentArea.getChildren().setAll(view);
 
-        } catch (Exception e) {
+        } catch (Exception interfaceLoadException) {
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
+                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + interfaceLoadException.getMessage(),
                     AlertType.ERROR);
         }
     }
@@ -129,7 +135,7 @@ public class MainController {
 
         PauseTransition pause = new PauseTransition(Duration.seconds(2));
 
-        pause.setOnFinished(event -> {
+        pause.setOnFinished(pauseTransitionEvent -> {
             try {
                 boolean adminExists = administratorManager.checkSystemHasAdmin();
 
@@ -139,9 +145,9 @@ public class MainController {
                     store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
                 }
 
-            } catch (ManagerException e) {
+            } catch (ManagerException startupException) {
                 Controller.showAlert("Error de Arranque",
-                        "El sistema falló al iniciar: " + e.getMessage(),
+                        "El sistema falló al iniciar: " + startupException.getMessage(),
                         AlertType.ERROR);
             }
         });

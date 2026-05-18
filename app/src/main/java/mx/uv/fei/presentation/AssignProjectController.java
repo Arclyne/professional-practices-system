@@ -49,6 +49,7 @@ public class AssignProjectController {
     @FXML
     public void initialize() {
         try {
+            postulationsObservableList.clear();
             RootState currentSystemState = applicationNavigationStore.getState();
             String retrievedEntityIdentifier = currentSystemState.navigationState().targetEntityId();
 

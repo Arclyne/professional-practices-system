@@ -12,6 +12,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.OrganizationManager;
 import mx.uv.fei.domain.statemachine.Store;
@@ -58,7 +59,7 @@ public class RegisterManagerController implements Initializable {
             ObservableList<String> organizationOptions = FXCollections.observableArrayList();
 
             for (Organization org : organizations) {
-                if ("Activo".equalsIgnoreCase(org.getRegion())) {
+                if ("Activo".equalsIgnoreCase(org.getState())) {
                     organizationOptions.add(org.getNameOrganization());
                     organizationMap.put(org.getNameOrganization(), org.getIdOrganization());
                 }
@@ -77,6 +78,8 @@ public class RegisterManagerController implements Initializable {
             managerToRegister.setName(fieldName.getText());
             managerToRegister.setPhone(fieldPhone.getText());
             managerToRegister.setEmail(fieldEmail.getText());
+            managerToRegister.setStatus(UserStatus.ACTIVE);
+
 
             String selectedOrg = comboBoxOrganization.getValue();
 
