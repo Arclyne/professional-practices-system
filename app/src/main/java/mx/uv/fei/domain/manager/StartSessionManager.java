@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 public class StartSessionManager {
 
     private static final Logger logger = LoggerFactory.getLogger(StartSessionManager.class);
-
     private final IUserDAO userDAO;
     private final AppStore store;
 

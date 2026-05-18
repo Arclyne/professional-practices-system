@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
 
 public class PasswordResetController implements Initializable {
 
-    private final PasswordManager passwordResetMa;
+    private final PasswordManager passwordManager;
 
     @FXML
     private PasswordField passwordFieldNew;
@@ -30,7 +30,7 @@ public class PasswordResetController implements Initializable {
 
     @Inject
     public PasswordResetController(PasswordManager passwordResetMa) {
-        this.passwordResetMa = passwordResetMa;
+        this.passwordManager = passwordResetMa;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class PasswordResetController implements Initializable {
     @FXML
     private void handleActionSaveButton(ActionEvent actionEvent) {
         try {
-            passwordResetMa.updatePasswordAndActivate(
+            passwordManager.updatePasswordAndActivate(
                     passwordFieldNew.getText(),
                     passwordFieldConfirm.getText());
 

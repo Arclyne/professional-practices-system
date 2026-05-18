@@ -1,7 +1,6 @@
 package mx.uv.fei.domain.common;
 
 import mx.uv.fei.domain.dto.*;
-import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.Date;
@@ -11,6 +10,8 @@ public class Validator {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs|s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern PERSONAL_NUMBER_PATTERN = Pattern.compile("^\\d+$");
+    private static final Pattern HAS_UPPERCASE = Pattern.compile("[A-Z]");
+    private static final Pattern HAS_NUMBER = Pattern.compile("[0-9]");
 
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
@@ -89,6 +90,7 @@ public class Validator {
     private static void validateUser(User userToValidate, String rol) throws ManagerException {
         validateString(userToValidate.getName(), "El nombre del " + rol + " es obligatorio.");
         validateString(userToValidate.getLastName(), "Los apellidos del " + rol + " son obligatorios.");
+        validatePassword(userToValidate.getPassword());
 
         if (userToValidate.getGender() == null) {
             throw new ManagerException("El género del " + rol + " es obligatorio.");
@@ -104,6 +106,21 @@ public class Validator {
     private static void validateId(int id, String errorMessage) throws ManagerException {
         if (id <= 0) {
             throw new ManagerException(errorMessage);
+        }
+    }
+
+    public static void validatePassword(String password) throws ManagerException {
+        if (password == null || password.isBlank()) {
+            throw new ManagerException("La contraseña es obligatoria y no puede estar vacía.");
+        }
+        if (password.length() < 8) {
+            throw new ManagerException("La contraseña debe tener una longitud mínima de 8 caracteres.");
+        }
+        if (!HAS_UPPERCASE.matcher(password).find()) {
+            throw new ManagerException("La contraseña debe contener al menos una letra mayúscula.");
+        }
+        if (!HAS_NUMBER.matcher(password).find()) {
+            throw new ManagerException("La contraseña debe contener al menos un número.");
         }
     }
 
