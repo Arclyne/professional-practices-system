@@ -38,7 +38,7 @@ public class TokenManager {
         AuthenticationToken token = new AuthenticationToken();
         token.setUserName(currentUser.getUserName());
         token.setValueToken(newToken);
-        token.setTimeCreation(LocalDateTime.now());
+        token.setTimeCreation(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         try {
             tokenDAO.insertToken(token);

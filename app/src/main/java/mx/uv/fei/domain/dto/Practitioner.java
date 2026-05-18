@@ -6,10 +6,11 @@ public class Practitioner extends User {
 
     private String indigenousLanguage;
     private double grade;
-    private String getEnrollment;
+    private String enrollment;
 
     public Practitioner() {
         super();
+        this.setRole("Practitioner");
     }
 
     public String getIndigenousLanguage() {
@@ -28,29 +29,26 @@ public class Practitioner extends User {
         this.grade = grade;
     }
 
-    public void setEnrollment(String getEnrollment) {
-        this.getEnrollment = getEnrollment;
+    public void setEnrollment(String enrollment) {
+        this.enrollment = enrollment;
     }
 
     public String getEnrollment() {
-        return this.getEnrollment;
+        return this.enrollment;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
 
         Practitioner that = (Practitioner) object;
+        return Objects.equals(this.enrollment, that.enrollment);
+    }
 
-        return Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getLastName(), that.getLastName()) &&
-                Objects.equals(this.indigenousLanguage, that.indigenousLanguage) &&
-                Double.compare(this.grade, that.grade) == 0;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), enrollment);
     }
 }

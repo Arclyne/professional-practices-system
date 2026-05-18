@@ -20,10 +20,10 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO professor (professor_id) VALUES (?)";
+    private static final String SQL_INSERT = "INSERT INTO professor (ID_PROFESSOR) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date FROM professor p INNER JOIN user u ON p.professor_id = u.user_id WHERE p.professor_id = ?";
-    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date FROM professor p INNER JOIN user u ON p.professor_id = u.user_id";
+    private static final String SQL_SELECT_ONE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE FROM professor p INNER JOIN user u ON p.ID_PROFESSOR = u.ID_USER WHERE p.ID_PROFESSOR = ?";
+    private static final String SQL_SELECT_ALL = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE FROM professor p INNER JOIN user u ON p.ID_PROFESSOR = u.ID_USER";
 
     @Inject
     public ProfessorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -34,17 +34,13 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     @Override
     public int insertProfessor(Professor professor) throws DAOException {
         int resultId = -1;
-
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
-
             try {
                 int generatedUserId = userDAO.insertUser(professor, connection);
-
                 if (generatedUserId > 0) {
                     try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
                         statement.setInt(1, generatedUserId);
-
                         if (statement.executeUpdate() > 0) {
                             resultId = generatedUserId;
                         }
@@ -53,31 +49,24 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
                 } else {
                     connection.rollback();
                 }
-
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("SQL Error while inserting professor. Changes were rolled back.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
-
         } catch (SQLException e) {
             throw new DAOException("Critical database connection error.", e);
         }
-
         return resultId;
     }
 
     @Override
     public Professor recoverProfessor(int professorId) throws DAOException {
         Professor professorToSearch = new Professor();
-
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
-
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
             statement.setInt(1, professorId);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     mapProfessor(professorToSearch, resultSet);
@@ -101,7 +90,6 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     @Override
     public boolean updateProfessor(Professor professorToUpdate, int id) throws DAOException {
         professorToUpdate.setId(id);
-
         try (Connection connection = databaseConnection.getConnection()) {
             return userDAO.updateUser(professorToUpdate, connection);
         } catch (SQLException e) {
@@ -110,25 +98,25 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     }
 
     private void mapProfessor(Professor professor, ResultSet resultSet) throws SQLException {
-        professor.setId(resultSet.getInt("user_id"));
-        professor.setUserName(resultSet.getString("username"));
-        professor.setPassword(resultSet.getString("password"));
-        professor.setName(resultSet.getString("name"));
-        professor.setLastName(resultSet.getString("last_name"));
-        professor.setEmail(resultSet.getString("email"));
-        professor.setRole(resultSet.getString("role_name"));
+        professor.setId(resultSet.getInt("ID_USER"));
+        professor.setUserName(resultSet.getString("USERNAME"));
+        professor.setPassword(resultSet.getString("PASSWORD"));
+        professor.setName(resultSet.getString("FIRST_NAME"));
+        professor.setLastName(resultSet.getString("LAST_NAME"));
+        professor.setEmail(resultSet.getString("EMAIL"));
+        professor.setRole(resultSet.getString("ROLE_NAME"));
 
-        String statusValue = resultSet.getString("status");
+        String statusValue = resultSet.getString("STATUS");
         professor.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-        String genderValue = resultSet.getString("gender");
+        String genderValue = resultSet.getString("GENDER");
         professor.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-        if (resultSet.getTimestamp("registration_date") != null) {
-            professor.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
+        if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
+            professor.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
         }
-        if (resultSet.getTimestamp("discharge_date") != null) {
-            professor.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
+        if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
+            professor.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
         }
     }
 }

@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.dto;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class AuthenticationToken {
@@ -9,7 +10,7 @@ public class AuthenticationToken {
     private String userName;
 
     public AuthenticationToken() {
-        this.timeCreation = LocalDateTime.now();
+        this.timeCreation = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public int getValueToken() {
@@ -25,7 +26,7 @@ public class AuthenticationToken {
     }
 
     public void setTimeCreation(LocalDateTime time) {
-        this.timeCreation = time;
+        this.timeCreation = time != null ? time.truncatedTo(ChronoUnit.SECONDS) : null;
     }
 
     public String getUserName() {
@@ -38,14 +39,9 @@ public class AuthenticationToken {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object)
-            return true;
-
-        if (object == null || getClass() != object.getClass())
-            return false;
-
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
         AuthenticationToken that = (AuthenticationToken) object;
-
         return valueToken == that.getValueToken() &&
                 Objects.equals(userName, that.getUserName());
     }
