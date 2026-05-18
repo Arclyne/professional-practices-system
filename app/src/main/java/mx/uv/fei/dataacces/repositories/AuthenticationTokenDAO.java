@@ -17,9 +17,9 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 @Component
 public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationToken {
 
-    private static final String SQL_INSERT = "INSERT INTO access_token (token_value, creation_time, username) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT = "SELECT token_value, creation_time, username FROM access_token WHERE token_value = ?";
-    private static final String SQL_SELECT_CREATION_TIME = "SELECT creation_time FROM access_token WHERE token_value = ? AND username = ?";
+    private static final String SQL_INSERT = "INSERT INTO access_token (TOKEN_VALUE, CREATION_TIME, USERNAME) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT = "SELECT TOKEN_VALUE, CREATION_TIME, USERNAME FROM access_token WHERE TOKEN_VALUE = ?";
+    private static final String SQL_SELECT_CREATION_TIME = "SELECT CREATION_TIME FROM access_token WHERE TOKEN_VALUE = ? AND USERNAME = ?";
 
     @Inject
     public AuthenticationTokenDAO(IDatabaseConnection databaseConnection) {
@@ -56,14 +56,14 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
 
                 if (resultSet.next()) {
                     tokenRecovered = new AuthenticationToken();
-                    tokenRecovered.setValueToken(resultSet.getInt("token_value"));
+                    tokenRecovered.setValueToken(resultSet.getInt("TOKEN_VALUE"));
 
-                    Timestamp ts = resultSet.getTimestamp("creation_time");
+                    Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
                     if (ts != null) {
                         tokenRecovered.setTimeCreation(ts.toLocalDateTime());
                     }
 
-                    tokenRecovered.setUserName(resultSet.getString("username"));
+                    tokenRecovered.setUserName(resultSet.getString("USERNAME"));
                 }
             }
         } catch (SQLException e) {
@@ -86,7 +86,7 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    Timestamp ts = resultSet.getTimestamp("creation_time");
+                    Timestamp ts = resultSet.getTimestamp("CREATION_TIME");
                     if (ts != null) {
                         creationTime = ts.toLocalDateTime();
                     }

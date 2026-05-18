@@ -6,6 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.stage.FileChooser;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -14,6 +17,8 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
+import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.PractitionerManager;
@@ -26,26 +31,23 @@ import mx.uv.fei.domain.common.Controller;
 @Component
 public class RegisterPractitionerController implements Initializable {
 
-    @FXML
-    private FormField fieldMatricula;
-    @FXML
-    private FormField fieldNombre;
-    @FXML
-    private FormField fieldApellido;
-    @FXML
-    private FormField fieldCorreo;
-    @FXML
-    private FormComboBox comboBoxSexo;
-    @FXML
-    private FormField fieldLengua;
+    @FXML private FormField fieldMatricula;
+    @FXML private FormField fieldNombre;
+    @FXML private FormField fieldApellido;
+    @FXML private FormField fieldCorreo;
+    @FXML private FormComboBox comboBoxSexo;
+    @FXML private FormField fieldLengua;
+    @FXML private Button cancelButton;
+    @FXML private Button registerButton;
+    @FXML private Button uploadCsvButton;
 
-    private final PractitionerManager manager;
-    private final Store store;
+    private final PractitionerManager practitionerManager;
+    private final Store applicationNavigationStore;
 
     @Inject
-    public RegisterPractitionerController(PractitionerManager manager, Store store) {
-        this.manager = manager;
-        this.store = store;
+    public RegisterPractitionerController(PractitionerManager practitionerManager, Store applicationNavigationStore) {
+        this.practitionerManager = practitionerManager;
+        this.applicationNavigationStore = applicationNavigationStore;
     }
 
     @Override
@@ -74,16 +76,39 @@ public class RegisterPractitionerController implements Initializable {
         newPractitioner.setIndigenousLanguage(lengua);
 
         try {
-            String generatedPassword = manager.registerNewPractitioner(newPractitioner);
+            if (registerButton != null) registerButton.setDisable(true);
 
-            Controller.showAlert("Registro Exitoso",
-                    "El practicante fue registrado correctamente.\nContraseña temporal generada: " + generatedPassword,
-                    AlertType.INFORMATION);
-
+            String generatedPassword = practitionerManager.registerNewPractitioner(newPractitioner);
+            Controller.showAlert("Registro Exitoso", "Practicante registrado.\nContraseña: " + generatedPassword, AlertType.INFORMATION);
             clearForm();
+        } catch (ManagerException exception) {
+            Controller.showAlert("Error en el Registro", exception.getMessage(), AlertType.ERROR);
+        } finally {
+            if (registerButton != null) registerButton.setDisable(false);
+        }
+    }
 
-        } catch (ManagerException e) {
-            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
+    @FXML
+    private void handleActionUploadCSV(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+
+        File selectedFile = fileChooser.showOpenDialog(fieldMatricula.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                User currentUser = applicationNavigationStore.getState().sessionState().currentUserInSession();
+                String coordinatorName = currentUser.getName() + "_" + currentUser.getLastName();
+
+                BatchRegistrationSummary summary = practitionerManager.registerPractitionerBatch(selectedFile, coordinatorName);
+                String resultMessage = "Exitosos: " + summary.getSuccessfulRegistrations() + "\nFallidos: " + summary.getFailedRegistrations();
+
+                Controller.showAlert("Resumen", resultMessage, AlertType.INFORMATION);
+                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+
+            } catch (ManagerException exception) {
+                Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
+            }
         }
     }
 
@@ -96,8 +121,8 @@ public class RegisterPractitionerController implements Initializable {
 
         String selectedSex = (String) comboBoxSexo.getValue();
         newPractitioner.setGender(Gender.fromDisplayValue(selectedSex));
-
         newPractitioner.setRole("Practitioner");
+
         newPractitioner.setStatus(UserStatus.PENDING);
 
         return newPractitioner;
@@ -105,7 +130,7 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
     private void clearForm() {

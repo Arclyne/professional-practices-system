@@ -9,8 +9,10 @@ import javafx.scene.layout.StackPane;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.manager.DashboardManager;
 import mx.uv.fei.domain.statemachine.Store;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -35,9 +37,10 @@ public class DashboardController {
     private Button navigateToRegisterProfessorButton;
     @FXML
     private Button navigateToRegisterProjectButton;
-
     @FXML
     private Button navigateToRegisterManagerButton;
+    @FXML
+    private Button navigateToRegisterOrganizationButton;
     @FXML
     private Button navigateToRegisterActivityButton;
     @FXML
@@ -47,11 +50,13 @@ public class DashboardController {
 
     private final Store applicationNavigationStore;
     private final DashboardManager applicationDashboardManager;
+    private final CoordinatorManager coordinatorManager;
 
     @Inject
-    public DashboardController(Store applicationNavigationStore, DashboardManager applicationDashboardManager) {
+    public DashboardController(Store applicationNavigationStore, DashboardManager applicationDashboardManager, CoordinatorManager coordinatorManager) {
         this.applicationNavigationStore = applicationNavigationStore;
         this.applicationDashboardManager = applicationDashboardManager;
+        this.coordinatorManager = coordinatorManager;
     }
 
     @FXML
@@ -81,6 +86,18 @@ public class DashboardController {
         if (applicationDashboardManager.isAdministratorMenuAvailable(authenticatedUserRole)) {
             navigateToRegisterCoordinatorButton.setVisible(true);
             navigateToRegisterCoordinatorButton.setManaged(true);
+
+            try {
+                Coordinator validCurrentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
+                if (validCurrentCoordinator != null) {
+                    navigateToRegisterCoordinatorButton.setText("Gestionar Coordinador");
+                } else {
+                    navigateToRegisterCoordinatorButton.setText("Registrar Coordinador");
+                }
+            } catch (ManagerException databaseQueryException) {
+                navigateToRegisterCoordinatorButton.setText("Gestionar Coordinador");
+            }
+
         } else if (applicationDashboardManager.isCoordinatorMenuAvailable(authenticatedUserRole)) {
             navigateToPractitionerManagementMenuButton.setVisible(true);
             navigateToPractitionerManagementMenuButton.setManaged(true);
@@ -88,12 +105,15 @@ public class DashboardController {
             navigateToRegisterProfessorButton.setManaged(true);
             navigateToRegisterProjectButton.setVisible(true);
             navigateToRegisterProjectButton.setManaged(true);
-
             navigateToRegisterManagerButton.setVisible(true);
             navigateToRegisterManagerButton.setManaged(true);
+            navigateToRegisterOrganizationButton.setVisible(true);
+            navigateToRegisterOrganizationButton.setManaged(true);
+
         } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
             navigateToRegisterActivityButton.setVisible(true);
             navigateToRegisterActivityButton.setManaged(true);
+
         } else if (applicationDashboardManager.isPractitionerMenuAvailable(authenticatedUserRole)) {
             navigateToPractitionerProjectsButton.setVisible(true);
             navigateToPractitionerProjectsButton.setManaged(true);
@@ -117,10 +137,13 @@ public class DashboardController {
             navigateToRegisterProjectButton.setVisible(false);
             navigateToRegisterProjectButton.setManaged(false);
         }
-
         if (navigateToRegisterManagerButton != null) {
             navigateToRegisterManagerButton.setVisible(false);
             navigateToRegisterManagerButton.setManaged(false);
+        }
+        if (navigateToRegisterOrganizationButton != null) {
+            navigateToRegisterOrganizationButton.setVisible(false);
+            navigateToRegisterOrganizationButton.setManaged(false);
         }
         if (navigateToRegisterActivityButton != null) {
             navigateToRegisterActivityButton.setVisible(false);
@@ -134,7 +157,19 @@ public class DashboardController {
 
     @FXML
     private void handleNavigateToRegisterCoordinatorAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_COORDINATOR));
+        try {
+            Coordinator validCurrentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
+
+            if (validCurrentCoordinator != null) {
+                String targetCoordinatorIdentifier = String.valueOf(validCurrentCoordinator.getId());
+                applicationNavigationStore.dispatch(new NavigationAction.ViewEntityDetails(AppSection.COORDINATOR_DETAILS, targetCoordinatorIdentifier));
+            } else {
+                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_COORDINATOR));
+            }
+
+        } catch (ManagerException managerRetrievalException) {
+            Controller.showAlert("Error de Servidor", managerRetrievalException.getMessage(), AlertType.ERROR);
+        }
     }
 
     @FXML
@@ -148,17 +183,23 @@ public class DashboardController {
 
     @FXML
     private void handleNavigateToRegisterProfessorAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_MANAGEMENT_MENU));
     }
 
     @FXML
     private void handleNavigateToRegisterProjectAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROJECT_MANAGEMENT_MENU));
     }
 
     @FXML
     private void handleNavigateToRegisterManagerAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_MANAGER));
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.MANAGER_MANAGEMENT_MENU));
+    }
+
+
+    @FXML
+    private void handleNavigateToRegisterOrganizationAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
     }
 
     @FXML

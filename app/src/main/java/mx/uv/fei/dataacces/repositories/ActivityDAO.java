@@ -21,17 +21,15 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTTOSEARCH = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
+    private static final String SQL_INSERT = "INSERT INTO activity (NAME, START_DATE, END_DATE, DESCRIPTION, MANAGER) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVITY, NAME, START_DATE, END_DATE, DESCRIPTION, MANAGER FROM activity WHERE NAME = ? AND MANAGER = ?";
     private static final String SQL_SELECTALL = "SELECT * FROM activity";
-    private static final String SQL_UPDATE = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
+    private static final String SQL_UPDATE = "UPDATE activity SET NAME = ?, START_DATE = ?, END_DATE = ?, DESCRIPTION = ?, MANAGER = ? WHERE ID_ACTIVITY = ?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
-
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
             statement.setString(1, activity.getName());
             statement.setDate(2, activity.getStartDate());
             statement.setDate(3, activity.getEndDate());
@@ -46,51 +44,44 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public Activity recoverActivity(String activityName, String manager) throws DAOException {
-
         Activity activityToSearch = new Activity();
-        try (
-                Connection connection = databaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH);) {
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH)) {
             statement.setString(1, activityName);
             statement.setString(2, manager);
 
-            try (
-                    ResultSet resultSet = statement.executeQuery()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     mapActivity(activityToSearch, resultSet);
                 }
             }
         } catch (SQLException e) {
-            // Corregido mensaje de excepción (decía organización)
             throw new DAOException("Error al intentar recuperar la actividad de la base de datos.", e);
         }
         return activityToSearch;
     }
 
     private void mapActivity(Activity activityToSearch, ResultSet resultSet) throws SQLException {
-        activityToSearch.setActivityId(resultSet.getInt("activity_id"));
-        activityToSearch.setName(resultSet.getString("name"));
-        activityToSearch.setStartDate(resultSet.getDate("start_date"));
-        activityToSearch.setEndDate(resultSet.getDate("end_date"));
-        activityToSearch.setDescription(resultSet.getString("description"));
-        activityToSearch.setManager(resultSet.getString("manager"));
+        activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVITY"));
+        activityToSearch.setName(resultSet.getString("NAME"));
+        activityToSearch.setStartDate(resultSet.getDate("START_DATE"));
+        activityToSearch.setEndDate(resultSet.getDate("END_DATE"));
+        activityToSearch.setDescription(resultSet.getString("DESCRIPTION"));
+        activityToSearch.setManager(resultSet.getString("MANAGER"));
     }
 
     @Override
     public List<Activity> getAllActivity() throws DAOException {
-
         return recoverALL(SQL_SELECTALL,
                 resultSet -> {
                     Activity activityRecovered = new Activity();
                     mapActivity(activityRecovered, resultSet);
-
                     return activityRecovered;
                 });
     }
 
     @Override
     public boolean updateActivity(Activity activity, int ID) throws DAOException {
-
         return updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, activity.getName());
             statement.setObject(2, activity.getStartDate());

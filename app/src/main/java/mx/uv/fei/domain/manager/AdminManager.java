@@ -26,9 +26,8 @@ public class AdminManager {
     public boolean checkSystemHasAdmin() throws ManagerException {
         try {
             return this.adminDAO.checkIfAdminExists();
-        } catch (DAOException e) {
-
-            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", e);
+        } catch (DAOException exception) {
+            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", exception);
         }
     }
 
@@ -46,10 +45,8 @@ public class AdminManager {
             }
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
 
-        } catch (DAOException e) {
-            throw new ManagerException(
-                    "Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.",
-                    e);
+        } catch (DAOException exception) {
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", exception);
         }
     }
 }

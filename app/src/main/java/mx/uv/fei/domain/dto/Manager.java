@@ -1,5 +1,7 @@
 package mx.uv.fei.domain.dto;
 
+import mx.uv.fei.domain.enums.UserStatus;
+
 public class Manager {
 
     private int id;
@@ -7,16 +9,18 @@ public class Manager {
     private String phone;
     private String email;
     private int organizationId;
+    private UserStatus status;
 
     public Manager() {
     }
 
-    public Manager(int id, String name, String phone, String email, int organizationId) {
+    public Manager(int id, String name, String phone, String email, int organizationId, UserStatus status) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.organizationId = organizationId;
+        this.status = status;
     }
 
     public int getId() {
@@ -58,4 +62,7 @@ public class Manager {
     public void setOrganizationId(int organizationId) {
         this.organizationId = organizationId;
     }
+
+    public UserStatus getStatus() { return status; }
+    public void setStatus(UserStatus status) { this.status = status; }
 }
