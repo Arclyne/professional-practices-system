@@ -10,16 +10,32 @@ public class Practitioner extends User {
 
     public Practitioner() {
         super();
+        this.setRole("Practitioner");
     }
 
-    public String getIndigenousLanguage() { return indigenousLanguage; }
-    public void setIndigenousLanguage(String indigenousLanguage) { this.indigenousLanguage = indigenousLanguage; }
+    public String getIndigenousLanguage() {
+        return indigenousLanguage;
+    }
 
-    public double getGrade() { return grade; }
-    public void setGrade(double grade) { this.grade = grade; }
+    public void setIndigenousLanguage(String indigenousLanguage) {
+        this.indigenousLanguage = indigenousLanguage;
+    }
 
-    public void setEnrollment(String enrollment) { this.enrollment = enrollment; }
-    public String getEnrollment() { return this.enrollment; }
+    public double getGrade() {
+        return grade;
+    }
+
+    public void setGrade(double grade) {
+        this.grade = grade;
+    }
+
+    public void setEnrollment(String enrollment) {
+        this.enrollment = enrollment;
+    }
+
+    public String getEnrollment() {
+        return this.enrollment;
+    }
 
     @Override
     public boolean equals(Object object) {

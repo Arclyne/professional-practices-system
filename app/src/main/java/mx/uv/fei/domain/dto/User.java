@@ -106,11 +106,11 @@ public class User {
     }
 
     public LocalDateTime getDischargeDate() {
-        return DischargeDate;
+        return dischargeDate;
     }
 
-    public void setDischargeDate(LocalDateTime DischargeDate) {
-        this.DischargeDate = DischargeDate;
+    public void setDischargeDate(LocalDateTime dischargeDate) {
+        this.dischargeDate = dischargeDate;
     }
 
     @Override

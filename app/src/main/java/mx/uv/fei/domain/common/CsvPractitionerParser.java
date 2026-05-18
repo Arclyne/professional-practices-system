@@ -8,6 +8,7 @@ import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
@@ -48,7 +49,13 @@ public class CsvPractitionerParser implements IPractitionerParser {
         practitioner.setName(rawData[1].replace("\"", "").trim());
         practitioner.setLastName(rawData[2].replace("\"", "").trim());
         practitioner.setEmail(rawData[3].replace("\"", "").trim());
-        practitioner.setGender(rawData[4].replace("\"", "").trim());
+
+        String parsedGender = rawData[4].replace("\"", "").trim();
+        try {
+            practitioner.setGender(Gender.fromDisplayValue(parsedGender));
+        } catch (IllegalArgumentException e) {
+            practitioner.setGender(Gender.OTHER);
+        }
 
         String indigenousLanguage = (rawData.length > 5 && !rawData[5].trim().isEmpty())
                 ? rawData[5].replace("\"", "").trim()

@@ -13,6 +13,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Manager;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.statemachine.Store;
@@ -66,7 +67,7 @@ public class ManagerManagementController {
         try {
             List<Manager> registeredManagersList = managerManager.getAllManagers();
             for (Manager currentManager : registeredManagersList) {
-                if (currentManager.getStatus() != null && !"No Activo".equalsIgnoreCase(currentManager.getStatus())) {
+                if (currentManager.getStatus() != null && currentManager.getStatus() != UserStatus.INACTIVE) {
                     String formattedDisplayString = currentManager.getName() + " (" + currentManager.getEmail() + ") - " + currentManager.getStatus();
                     itemToIdentifierMap.put(formattedDisplayString, currentManager.getId());
                     itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));

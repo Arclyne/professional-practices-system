@@ -66,7 +66,7 @@ public class ProjectManagementController {
         try {
             List<Project> registeredProjectsList = projectManager.getAllProjects();
             for (Project currentProject : registeredProjectsList) {
-                if (currentProject.getStatus() != null && !"No Activo".equalsIgnoreCase(currentProject.getStatus())) {
+                if (currentProject.getStatus() != null && !"Inactive".equalsIgnoreCase(currentProject.getStatus())) {
 
                     String formattedDisplayString = currentProject.getProjectName() + " (Cupo: " + currentProject.getParticipantCapacity() + ") - " + currentProject.getStatus();
                     itemToIdentifierMap.put(formattedDisplayString, currentProject.getProjectId());

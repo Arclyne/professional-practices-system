@@ -14,6 +14,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.statemachine.Store;
@@ -54,9 +55,11 @@ public class CoordinatorDetailsController {
                 nameLabel.setText(currentCoordinator.getName() + " " + currentCoordinator.getLastName());
                 emailLabel.setText(currentCoordinator.getEmail());
                 usernameLabel.setText(currentCoordinator.getUserName());
-                statusLabel.setText(currentCoordinator.getStatus());
 
-                if ("No Activo".equalsIgnoreCase(currentCoordinator.getStatus())) {
+                statusLabel.setText(currentCoordinator.getStatus().getDatabaseValue());
+
+
+                if (currentCoordinator.getStatus() == UserStatus.INACTIVE) {
                     inactivateButton.setDisable(true);
                     inactivateButton.setText("Coordinador Inactivo");
                 }
@@ -101,10 +104,8 @@ public class CoordinatorDetailsController {
     private void executeInactivation() {
         try {
             coordinatorManager.inactivateCoordinator(currentCoordinatorId);
-
             Controller.showAlert("Éxito", "El coordinador ha sido inactivado correctamente.", AlertType.INFORMATION);
             loadCurrentCoordinatorData();
-
         } catch (ManagerException inactivationException) {
             Controller.showAlert("Error en el proceso", inactivationException.getMessage(), AlertType.ERROR);
         }

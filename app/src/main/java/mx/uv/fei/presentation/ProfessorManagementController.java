@@ -13,6 +13,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Professor;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProfessorManager;
 import mx.uv.fei.domain.statemachine.Store;
@@ -55,10 +56,8 @@ public class ProfessorManagementController {
         try {
             List<Professor> registeredProfessorsList = professorManager.getAllProfessors();
             for (Professor currentProfessor : registeredProfessorsList) {
-
-                if (currentProfessor.getStatus() != null && !"No Activo".equalsIgnoreCase(currentProfessor.getStatus())) {
-
-                    String formattedDisplayString = currentProfessor.getName() + " " + currentProfessor.getLastName() + " (" + currentProfessor.getUserName() + ") - " + currentProfessor.getStatus();
+                if (currentProfessor.getStatus() != null && currentProfessor.getStatus() != UserStatus.INACTIVE) {
+                    String formattedDisplayString = currentProfessor.getName() + " " + currentProfessor.getLastName() + " (" + currentProfessor.getUserName() + ") - " + currentProfessor.getStatus().getDatabaseValue();
                     itemToIdentifierMap.put(formattedDisplayString, currentProfessor.getId());
                     itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
                     displayItemsList.add(formattedDisplayString);

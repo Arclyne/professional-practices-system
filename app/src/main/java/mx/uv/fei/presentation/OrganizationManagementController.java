@@ -68,7 +68,7 @@ public class OrganizationManagementController {
             List<Organization> registeredOrganizationsList = organizationManager.getAllOrganizations();
             for (Organization currentOrganization : registeredOrganizationsList) {
 
-                if (currentOrganization.getState() != null && !"No Activo".equalsIgnoreCase(currentOrganization.getState())) {
+                if (currentOrganization.getState() != null && !"Inactive".equalsIgnoreCase(currentOrganization.getState())) {
 
                     String formattedDisplayString = currentOrganization.getNameOrganization() + " (" + currentOrganization.getCity() + ") - " + currentOrganization.getState();
                     itemToIdentifierMap.put(formattedDisplayString, currentOrganization.getIdOrganization());
