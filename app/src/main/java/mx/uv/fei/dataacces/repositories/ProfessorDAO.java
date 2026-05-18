@@ -20,10 +20,10 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO professor (ID_PROFESSOR) VALUES (?)";
+    private static final String SQL_INSERT = "INSERT INTO professor (professor_id) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE FROM professor p INNER JOIN user u ON p.ID_PROFESSOR = u.ID_USER WHERE p.ID_PROFESSOR = ?";
-    private static final String SQL_SELECT_ALL = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE FROM professor p INNER JOIN user u ON p.ID_PROFESSOR = u.ID_USER";
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date FROM professor p INNER JOIN user u ON p.professor_id = u.user_id WHERE p.professor_id = ?";
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date FROM professor p INNER JOIN user u ON p.professor_id = u.user_id";
 
     @Inject
     public ProfessorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
@@ -98,25 +98,25 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     }
 
     private void mapProfessor(Professor professor, ResultSet resultSet) throws SQLException {
-        professor.setId(resultSet.getInt("ID_USER"));
-        professor.setUserName(resultSet.getString("USERNAME"));
-        professor.setPassword(resultSet.getString("PASSWORD"));
-        professor.setName(resultSet.getString("FIRST_NAME"));
-        professor.setLastName(resultSet.getString("LAST_NAME"));
-        professor.setEmail(resultSet.getString("EMAIL"));
-        professor.setRole(resultSet.getString("ROLE_NAME"));
+        professor.setId(resultSet.getInt("user_id"));
+        professor.setUserName(resultSet.getString("username"));
+        professor.setPassword(resultSet.getString("password"));
+        professor.setName(resultSet.getString("name"));
+        professor.setLastName(resultSet.getString("last_name"));
+        professor.setEmail(resultSet.getString("email"));
+        professor.setRole(resultSet.getString("role_name"));
 
-        String statusValue = resultSet.getString("STATUS");
+        String statusValue = resultSet.getString("status");
         professor.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-        String genderValue = resultSet.getString("GENDER");
+        String genderValue = resultSet.getString("gender");
         professor.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-        if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
-            professor.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("registration_date") != null) {
+            professor.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
         }
-        if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
-            professor.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("discharge_date") != null) {
+            professor.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }
     }
 }

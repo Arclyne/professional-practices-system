@@ -19,9 +19,9 @@ import java.util.List;
 @Component
 public class PostulationDAO extends BaseDAO implements IPostulationDAO {
 
-    private static final String SQL_CHECK_EXISTING_POSTULATIONS = "SELECT COUNT(*) FROM project_application WHERE ID_PRACTITIONER = ?";
-    private static final String SQL_INSERT_POSTULATION = "INSERT INTO project_application (ID_PRACTITIONER, ID_PROJECT, PRIORITY_LEVEL, APPLICATION_STATUS) VALUES (?, ?, ?, 'Pending')";
-    private static final String SQL_SELECT_POSTULATIONS = "SELECT p.ID_PRACTITIONER, p.ID_PROJECT, pr.PROJECT_NAME, p.PRIORITY_LEVEL, p.APPLICATION_STATUS FROM project_application p INNER JOIN project pr ON p.ID_PROJECT = pr.ID_PROJECT WHERE p.ID_PRACTITIONER = ? AND (p.APPLICATION_STATUS = 'Assigned' OR pr.VACANCIES > (SELECT COUNT(*) FROM project_application WHERE ID_PROJECT = pr.ID_PROJECT AND APPLICATION_STATUS = 'Assigned')) ORDER BY p.PRIORITY_LEVEL ASC";
+    private static final String SQL_CHECK_EXISTING_POSTULATIONS = "SELECT COUNT(*) FROM project_postulation WHERE practitioner_id = ?";
+    private static final String SQL_INSERT_POSTULATION = "INSERT INTO project_postulation (practitioner_id, project_id, priority_level, postulation_status) VALUES (?, ?, ?, 'Pending')";
+    private static final String SQL_SELECT_POSTULATIONS = "SELECT p.practitioner_id, p.project_id, pr.project_name, p.priority_level, p.postulation_status FROM project_postulation p INNER JOIN project pr ON p.project_id = pr.project_id WHERE p.practitioner_id = ? AND (p.postulation_status = 'Assigned' OR pr.participant_capacity > (SELECT COUNT(*) FROM project_postulation WHERE project_id = pr.project_id AND postulation_status = 'Assigned')) ORDER BY p.priority_level ASC";
     private static final String SQL_CALL_ASSIGNMENT_PROCEDURE = "{CALL assign_project_and_reject_others(?, ?)}";
 
     @Inject
@@ -82,11 +82,11 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
             try (ResultSet executionResultSet = selectStatement.executeQuery()) {
                 while (executionResultSet.next()) {
                     ProjectPostulation currentPostulation = new ProjectPostulation();
-                    currentPostulation.setPractitionerIdentifier(executionResultSet.getInt("ID_PRACTITIONER"));
-                    currentPostulation.setProjectIdentifier(executionResultSet.getInt("ID_PROJECT"));
-                    currentPostulation.setProjectName(executionResultSet.getString("PROJECT_NAME"));
-                    currentPostulation.setPriorityLevel(executionResultSet.getInt("PRIORITY_LEVEL"));
-                    currentPostulation.setPostulationStatus(executionResultSet.getString("APPLICATION_STATUS"));
+                    currentPostulation.setPractitionerIdentifier(executionResultSet.getInt("practitioner_id"));
+                    currentPostulation.setProjectIdentifier(executionResultSet.getInt("project_id"));
+                    currentPostulation.setProjectName(executionResultSet.getString("project_name"));
+                    currentPostulation.setPriorityLevel(executionResultSet.getInt("priority_level"));
+                    currentPostulation.setPostulationStatus(executionResultSet.getString("postulation_status"));
                     retrievedPostulationsList.add(currentPostulation);
                 }
             }

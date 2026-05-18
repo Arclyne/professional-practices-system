@@ -19,18 +19,17 @@ import mx.uv.fei.domain.enums.UserStatus;
 @Component
 public class UserDAO extends BaseDAO implements IUserDAO {
 
+    private static final String SQL_INSERT = "INSERT INTO user (username, password, name, last_name, email, role_name, status, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_DEACTIVATE = "UPDATE user SET status = 'Inactive', discharge_date = NOW() WHERE user_id = ?";
+    private static final String SQL_UPDATE = "UPDATE user SET username = ?, password = ?, name = ?, last_name = ?, email = ?, role_name = ?, status = ?, gender = ? WHERE user_id = ?";
 
-    private static final String SQL_INSERT = "INSERT INTO user (USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, EMAIL, ROLE_NAME, STATUS, GENDER) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_DEACTIVATE = "UPDATE user SET STATUS = 'Inactive', TERMINATION_DATE = NOW() WHERE ID_USER = ?";
-    private static final String SQL_UPDATE = "UPDATE user SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME = ?, EMAIL = ?, ROLE_NAME = ?, STATUS = ?, GENDER = ? WHERE ID_USER = ?";
+    private static final String SQL_SELECT_BY_USERNAME = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
+    private static final String SQL_SELECT_BY_EMAIL = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE email = ?";
 
-    private static final String SQL_SELECT_BY_USERNAME = "SELECT ID_USER, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, EMAIL, ROLE_NAME, STATUS, GENDER, REGISTRATION_DATE, TERMINATION_DATE FROM user WHERE USERNAME = ?";
-    private static final String SQL_SELECT_BY_EMAIL = "SELECT ID_USER, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME, EMAIL, ROLE_NAME, STATUS, GENDER, REGISTRATION_DATE, TERMINATION_DATE FROM user WHERE EMAIL = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM user WHERE email = ? AND password = ?";
 
-    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM user WHERE USERNAME = ? AND PASSWORD = ?";
-    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM user WHERE EMAIL = ? AND PASSWORD = ?";
-
-    private static final String SQL_GET_USER_ROLE = "SELECT ROLE_NAME FROM user WHERE USERNAME = ?";
+    private static final String SQL_GET_USER_ROLE = "SELECT role_name FROM user WHERE username = ?";
 
     @Inject
     public UserDAO(IDatabaseConnection databaseConnection) {
@@ -44,7 +43,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getUserName());
             statement.setString(2, user.getPassword());
-            statement.setString(3, user.getName()); // Se mapea a FIRST_NAME
+            statement.setString(3, user.getName());
             statement.setString(4, user.getLastName());
             statement.setString(5, user.getEmail());
             statement.setString(6, user.getRole());
@@ -140,7 +139,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    retrievedRole = resultSet.getString("ROLE_NAME"); // Actualizado a mayúsculas
+                    retrievedRole = resultSet.getString("role_name");
                 }
             }
         } catch (SQLException exception) {
@@ -172,25 +171,25 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 if (resultSet.next()) {
                     retrievedUser = new User();
 
-                    retrievedUser.setId(resultSet.getInt("ID_USER"));
-                    retrievedUser.setUserName(resultSet.getString("USERNAME"));
-                    retrievedUser.setPassword(resultSet.getString("PASSWORD"));
-                    retrievedUser.setName(resultSet.getString("FIRST_NAME"));
-                    retrievedUser.setLastName(resultSet.getString("LAST_NAME"));
-                    retrievedUser.setEmail(resultSet.getString("EMAIL"));
-                    retrievedUser.setRole(resultSet.getString("ROLE_NAME"));
+                    retrievedUser.setId(resultSet.getInt("user_id"));
+                    retrievedUser.setUserName(resultSet.getString("username"));
+                    retrievedUser.setPassword(resultSet.getString("password"));
+                    retrievedUser.setName(resultSet.getString("name"));
+                    retrievedUser.setLastName(resultSet.getString("last_name"));
+                    retrievedUser.setEmail(resultSet.getString("email"));
+                    retrievedUser.setRole(resultSet.getString("role_name"));
 
-                    String statusValue = resultSet.getString("STATUS");
+                    String statusValue = resultSet.getString("status");
                     retrievedUser.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-                    String genderValue = resultSet.getString("GENDER");
+                    String genderValue = resultSet.getString("gender");
                     retrievedUser.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-                    if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
-                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
+                    if (resultSet.getTimestamp("registration_date") != null) {
+                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
                     }
-                    if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
-                        retrievedUser.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
+                    if (resultSet.getTimestamp("discharge_date") != null) {
+                        retrievedUser.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
                     }
                 }
             }
