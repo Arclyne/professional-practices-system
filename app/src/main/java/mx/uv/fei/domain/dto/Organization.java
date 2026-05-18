@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Organization {
     private int idOrganization;
     private String nameOrganization;
-    private String region;
+    private String state;
     private String adress;
     private String city;
     private String business;
@@ -28,12 +28,12 @@ public class Organization {
         this.nameOrganization = nameOrganization;
     }
 
-    public String getRegion() {
-        return region;
+    public String getState() {
+        return state;
     }
 
-    public void setRegion(String region) {
-        this.region = region;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getAdress() {
@@ -87,12 +87,12 @@ public class Organization {
         Organization that = (Organization) object;
 
         return Objects.equals(nameOrganization, that.getNameOrganization()) &&
-                Objects.equals(region, that.getRegion()) &&
+                Objects.equals(state, that.getState()) &&
                 Objects.equals(mail, that.getMail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameOrganization, region, mail);
+        return Objects.hash(nameOrganization, state, mail);
     }
 }

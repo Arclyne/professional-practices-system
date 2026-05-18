@@ -14,7 +14,7 @@ import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 import java.io.IOException;
 
 @StartEtiquette
-@Profile("net")
+@Profile("local")
 public class MainApplication extends Application {
 
     private DependencyInjector systemDependencyInjector;

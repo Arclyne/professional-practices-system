@@ -26,7 +26,7 @@ public class ProjectPrioritizationManager {
         List<Project> availableProjectsList;
 
         try {
-            availableProjectsList = projectDAO.getAllProjects();
+            availableProjectsList = projectDAO.getAvailableProjectsWithCapacity();
         } catch (DAOException dataAccessObjectException) {
             throw new ManagerException("Ocurrio un problema al intentar recuperar los proyectos disponibles desde el servidor.", dataAccessObjectException);
         }

@@ -24,6 +24,21 @@ public class OrganizationManager {
         this.managerDAO = managerDAO;
     }
 
+    public boolean registerOrganization(Organization organizationToRegister) throws ManagerException {
+
+        try {
+            boolean isRegistered = organizationDAO.insertOrganization(organizationToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException("No se pudo completar el registro de la organización en el sistema.");
+            }
+            return true;
+
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
+    }
+
     public List<Organization> getAllOrganizations() throws ManagerException {
         try {
             return organizationDAO.getAllOrganization();
@@ -55,4 +70,18 @@ public class OrganizationManager {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
+
+    public void inactivateMultipleOrganizations(List<Integer> organizationIdentifiersList) throws ManagerException {
+        try {
+            boolean isProcessSuccessful = organizationDAO.deactivateMultipleOrganizations(organizationIdentifiersList);
+            if (!isProcessSuccessful) {
+                throw new ManagerException("No se pudieron inactivar las organizaciones seleccionadas.");
+            }
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error de base de datos al inactivar organizaciones.", dataAccessException);
+        }
+    }
+
+
+
 }

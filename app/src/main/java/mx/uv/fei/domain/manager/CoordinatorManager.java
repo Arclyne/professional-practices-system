@@ -22,10 +22,12 @@ public class CoordinatorManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CoordinatorManager.class);
     private final ICoordinatorDAO coordinatorDataAccessObject;
+    private final IUserDAO userDAO;
 
     @Inject
-    public CoordinatorManager(ICoordinatorDAO coordinatorDataAccessObject) {
+    public CoordinatorManager(ICoordinatorDAO coordinatorDataAccessObject, IUserDAO userDataAccessObject) {
         this.coordinatorDataAccessObject = coordinatorDataAccessObject;
+        this.userDAO = userDataAccessObject;
     }
 
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
@@ -44,9 +46,28 @@ public class CoordinatorManager {
 
             return temporaryGeneratedPassword;
 
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+        } catch (DAOException dataAccessObjectException) {
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", dataAccessObjectException);
+        }
+    }
+
+    public void inactivateCoordinator(int coordinatorIdentifier) throws ManagerException {
+        try {
+            boolean isCoordinatorDeactivated = userDAO.deactivateUser(coordinatorIdentifier);
+
+            if (!isCoordinatorDeactivated) {
+                throw new ManagerException("No se pudo inactivar. Verifique que el coordinador exista en el sistema.");
+            }
+        } catch (DAOException dataAccessObjectException) {
+            throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", dataAccessObjectException);
+        }
+    }
+
+    public Coordinator retrieveCurrentCoordinator() throws ManagerException {
+        try {
+            return coordinatorDataAccessObject.getCurrentCoordinator();
+        } catch (DAOException dataAccessObjectException) {
+            throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", dataAccessObjectException);
         }
     }
 

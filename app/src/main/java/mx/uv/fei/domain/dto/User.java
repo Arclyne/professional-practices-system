@@ -20,7 +20,7 @@ public class User {
     private Gender gender;
 
     private LocalDateTime registrationDate;
-    private LocalDateTime DischargeDate;
+    private LocalDateTime dischargeDate;
 
     public User() {
     }
@@ -106,21 +106,17 @@ public class User {
     }
 
     public LocalDateTime getDischargeDate() {
-        return DischargeDate;
+        return dischargeDate;
     }
 
-    public void setDischargeDate(LocalDateTime DischargeDate) {
-        this.DischargeDate = DischargeDate;
+    public void setDischargeDate(LocalDateTime dischargeDate) {
+        this.dischargeDate = dischargeDate;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
         User that = (User) object;
 

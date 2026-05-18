@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class Validator {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs|s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PERSONAL_NUMBER_PATTERN = Pattern.compile("^\\d+$");
 
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
@@ -17,6 +18,10 @@ public class Validator {
 
     public static boolean isValidEnrollment(String enrollment) {
         return enrollment != null && ENROLLMENT_PATTERN.matcher(enrollment).matches();
+    }
+
+    public static boolean isValidPersonalNumber(String personalNumber) {
+        return personalNumber != null && PERSONAL_NUMBER_PATTERN.matcher(personalNumber).matches();
     }
 
     public static void validateActivityData(Activity activityToValidate) throws ManagerException {
@@ -36,11 +41,19 @@ public class Validator {
     public static void validateProfessorData(Professor professorToValidate) throws ManagerException {
         validateUser(professorToValidate, "profesor");
         validateString(professorToValidate.getUserName(), "El No. personal es obligatorio.");
+
+        if (!isValidPersonalNumber(professorToValidate.getUserName())) {
+            throw new ManagerException("Formato inválido: El No. personal del profesor debe contener únicamente números.");
+        }
     }
 
     public static void validateCoordinatorData(Coordinator coordinatorToValidate) throws ManagerException {
         validateUser(coordinatorToValidate, "coordinador");
         validateString(coordinatorToValidate.getUserName(), "El No. personal es obligatorio.");
+
+        if (!isValidPersonalNumber(coordinatorToValidate.getUserName())) {
+            throw new ManagerException("Formato inválido: El No. personal del coordinador debe contener únicamente números.");
+        }
     }
 
     public static void validatePractitioner(Practitioner practitionerToValidate) throws ManagerException {
@@ -55,6 +68,10 @@ public class Validator {
     public static void validateAdministratorData(Administrator administratorToValidate) throws ManagerException {
         validateUser(administratorToValidate, "administrador");
         validateString(administratorToValidate.getUserName(), "El No. personal es obligatorio.");
+
+        if (!isValidPersonalNumber(administratorToValidate.getUserName())) {
+            throw new ManagerException("Formato inválido: El No. personal del administrador debe contener únicamente números.");
+        }
     }
 
     public static void validateManagerData(Manager managerToValidate) throws ManagerException {
