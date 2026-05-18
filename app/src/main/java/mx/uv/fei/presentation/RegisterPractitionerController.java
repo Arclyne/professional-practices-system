@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button; // <-- Importación necesaria
+import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.net.URL;
@@ -57,7 +57,6 @@ public class RegisterPractitionerController implements Initializable {
                 Gender.FEMALE.getDisplayValue(),
                 Gender.OTHER.getDisplayValue()
         );
-        ObservableList<String> opcionesSexo = FXCollections.observableArrayList("Masculino", "Femenino", "Otro");
         comboBoxSexo.setItems(opcionesSexo);
     }
 
@@ -122,8 +121,8 @@ public class RegisterPractitionerController implements Initializable {
 
         String selectedSex = (String) comboBoxSexo.getValue();
         newPractitioner.setGender(Gender.fromDisplayValue(selectedSex));
-
         newPractitioner.setRole("Practitioner");
+
         newPractitioner.setStatus(UserStatus.PENDING);
 
         return newPractitioner;
