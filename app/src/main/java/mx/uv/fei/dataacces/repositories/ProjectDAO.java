@@ -16,25 +16,23 @@ import mx.uv.fei.domain.dto.Project;
 @Component
 public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
+    private static final String SQL_INSERT = "INSERT INTO project (project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTONE = "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project WHERE project_name = ? AND manager_id = ?";
+    private static final String SQL_SELECTALL = "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project";
+    private static final String SQL_UPDATE = "UPDATE project SET project_name = ?, description = ?, participant_capacity = ?, manager_id = ?, status = ?, start_date = ?, end_date = ?, organization_id = ? WHERE project_id = ?";
+    private static final String SQL_DEACTIVATE_PROJECT = "UPDATE project SET status = 'Inactive' WHERE project_id = ?";
+    private static final String SQL_SELECT_AVAILABLE_WITH_CAPACITY =
+            "SELECT p.project_id, p.project_name, p.description, p.participant_capacity, p.manager_id, p.status, p.start_date, p.end_date, p.organization_id " +
+                    "FROM project p " +
+                    "LEFT JOIN project_postulation pa ON p.project_id = pa.project_id AND pa.postulation_status = 'Assigned' " +
+                    "WHERE p.status = 'Active' " +
+                    "GROUP BY p.project_id " +
+                    "HAVING COUNT(pa.practitioner_id) < p.participant_capacity";
+
     @Inject
     public ProjectDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
-
-    private static final String SQL_INSERT = "INSERT INTO project (PROJECT_NAME, DESCRIPTION, VACANCIES, ID_MANAGER, STATUS, START_DATE, END_DATE, ID_ORGANIZATION) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTONE = "SELECT ID_PROJECT, PROJECT_NAME, DESCRIPTION, VACANCIES, ID_MANAGER, STATUS, START_DATE, END_DATE, ID_ORGANIZATION FROM project WHERE PROJECT_NAME = ? AND ID_MANAGER = ?";
-    private static final String SQL_SELECTALL = "SELECT * FROM project";
-    private static final String SQL_UPDATE = "UPDATE project SET PROJECT_NAME = ?, DESCRIPTION = ?, VACANCIES = ?, ID_MANAGER = ?, STATUS = ?, START_DATE = ?, END_DATE = ?, ID_ORGANIZATION = ? WHERE ID_PROJECT = ?";
-
-    private static final String SQL_DEACTIVATE_PROJECT = "UPDATE project SET STATUS = 'Inactive' WHERE ID_PROJECT = ?";
-
-    private static final String SQL_SELECT_AVAILABLE_WITH_CAPACITY =
-            "SELECT p.ID_PROJECT, p.PROJECT_NAME, p.DESCRIPTION, p.VACANCIES, p.ID_MANAGER, p.STATUS, p.START_DATE, p.END_DATE, p.ID_ORGANIZATION " +
-                    "FROM project p " +
-                    "LEFT JOIN project_application pa ON p.ID_PROJECT = pa.ID_PROJECT AND pa.APPLICATION_STATUS = 'Assigned' " +
-                    "WHERE p.STATUS = 'Active' " +
-                    "GROUP BY p.ID_PROJECT " +
-                    "HAVING COUNT(pa.ID_PRACTITIONER) < p.VACANCIES";
 
     @Override
     public boolean insertProject(Project project) throws DAOException {
@@ -64,15 +62,15 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setInt(2, managerId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    projectToSearch.setProjectId(resultSet.getInt("ID_PROJECT"));
-                    projectToSearch.setProjectName(resultSet.getString("PROJECT_NAME"));
-                    projectToSearch.setDescription(resultSet.getString("DESCRIPTION"));
-                    projectToSearch.setParticipantCapacity(resultSet.getInt("VACANCIES"));
-                    projectToSearch.setManagerId(resultSet.getInt("ID_MANAGER"));
-                    projectToSearch.setStatus(resultSet.getString("STATUS"));
-                    projectToSearch.setStartDate(resultSet.getDate("START_DATE"));
-                    projectToSearch.setEndDate(resultSet.getDate("END_DATE"));
-                    projectToSearch.setCompanyId(resultSet.getInt("ID_ORGANIZATION"));
+                    projectToSearch.setProjectId(resultSet.getInt("project_id"));
+                    projectToSearch.setProjectName(resultSet.getString("project_name"));
+                    projectToSearch.setDescription(resultSet.getString("description"));
+                    projectToSearch.setParticipantCapacity(resultSet.getInt("participant_capacity"));
+                    projectToSearch.setManagerId(resultSet.getInt("manager_id"));
+                    projectToSearch.setStatus(resultSet.getString("status"));
+                    projectToSearch.setStartDate(resultSet.getDate("start_date"));
+                    projectToSearch.setEndDate(resultSet.getDate("end_date"));
+                    projectToSearch.setCompanyId(resultSet.getInt("organization_id"));
                 }
             }
         } catch (SQLException e) {
@@ -85,15 +83,15 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     public List<Project> getAllProjects() throws DAOException {
         return recoverALL(SQL_SELECTALL, resultSet -> {
             Project projectRecovered = new Project();
-            projectRecovered.setProjectId(resultSet.getInt("ID_PROJECT"));
-            projectRecovered.setProjectName(resultSet.getString("PROJECT_NAME"));
-            projectRecovered.setDescription(resultSet.getString("DESCRIPTION"));
-            projectRecovered.setParticipantCapacity(resultSet.getInt("VACANCIES"));
-            projectRecovered.setManagerId(resultSet.getInt("ID_MANAGER"));
-            projectRecovered.setStatus(resultSet.getString("STATUS"));
-            projectRecovered.setStartDate(resultSet.getDate("START_DATE"));
-            projectRecovered.setEndDate(resultSet.getDate("END_DATE"));
-            projectRecovered.setCompanyId(resultSet.getInt("ID_ORGANIZATION"));
+            projectRecovered.setProjectId(resultSet.getInt("project_id"));
+            projectRecovered.setProjectName(resultSet.getString("project_name"));
+            projectRecovered.setDescription(resultSet.getString("description"));
+            projectRecovered.setParticipantCapacity(resultSet.getInt("participant_capacity"));
+            projectRecovered.setManagerId(resultSet.getInt("manager_id"));
+            projectRecovered.setStatus(resultSet.getString("status"));
+            projectRecovered.setStartDate(resultSet.getDate("start_date"));
+            projectRecovered.setEndDate(resultSet.getDate("end_date"));
+            projectRecovered.setCompanyId(resultSet.getInt("organization_id"));
             return projectRecovered;
         });
     }
@@ -117,15 +115,15 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     public List<Project> getAvailableProjectsWithCapacity() throws DAOException {
         return recoverALL(SQL_SELECT_AVAILABLE_WITH_CAPACITY, resultSet -> {
             Project projectRecovered = new Project();
-            projectRecovered.setProjectId(resultSet.getInt("ID_PROJECT"));
-            projectRecovered.setProjectName(resultSet.getString("PROJECT_NAME"));
-            projectRecovered.setDescription(resultSet.getString("DESCRIPTION"));
-            projectRecovered.setParticipantCapacity(resultSet.getInt("VACANCIES"));
-            projectRecovered.setManagerId(resultSet.getInt("ID_MANAGER"));
-            projectRecovered.setStatus(resultSet.getString("STATUS"));
-            projectRecovered.setStartDate(resultSet.getDate("START_DATE"));
-            projectRecovered.setEndDate(resultSet.getDate("END_DATE"));
-            projectRecovered.setCompanyId(resultSet.getInt("ID_ORGANIZATION"));
+            projectRecovered.setProjectId(resultSet.getInt("project_id"));
+            projectRecovered.setProjectName(resultSet.getString("project_name"));
+            projectRecovered.setDescription(resultSet.getString("description"));
+            projectRecovered.setParticipantCapacity(resultSet.getInt("participant_capacity"));
+            projectRecovered.setManagerId(resultSet.getInt("manager_id"));
+            projectRecovered.setStatus(resultSet.getString("status"));
+            projectRecovered.setStartDate(resultSet.getDate("start_date"));
+            projectRecovered.setEndDate(resultSet.getDate("end_date"));
+            projectRecovered.setCompanyId(resultSet.getInt("organization_id"));
             return projectRecovered;
         });
     }

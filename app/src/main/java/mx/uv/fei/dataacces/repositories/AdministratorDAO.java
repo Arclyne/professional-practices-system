@@ -20,16 +20,16 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
     private final UserDAO userDAO;
 
-    private static final String SQL_INSERT = "INSERT INTO administrator (ID_ADMINISTRATOR) VALUES (?)";
+    private static final String SQL_INSERT = "INSERT INTO administrator (administrator_id) VALUES (?)";
 
-    private static final String SQL_SELECT_ONE = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
+    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
             "FROM administrator a " +
-            "INNER JOIN user u ON a.ID_ADMINISTRATOR = u.ID_USER " +
-            "WHERE a.ID_ADMINISTRATOR = ?";
+            "INNER JOIN user u ON a.administrator_id = u.user_id " +
+            "WHERE a.administrator_id = ?";
 
-    private static final String SQL_SELECT_ALL = "SELECT u.ID_USER, u.USERNAME, u.PASSWORD, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.ROLE_NAME, u.STATUS, u.GENDER, u.REGISTRATION_DATE, u.TERMINATION_DATE " +
+    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
             "FROM administrator a " +
-            "INNER JOIN user u ON a.ID_ADMINISTRATOR = u.ID_USER";
+            "INNER JOIN user u ON a.administrator_id = u.user_id";
 
     private static final String SQL_CHECK_EXISTS = "SELECT COUNT(*) FROM administrator";
 
@@ -119,25 +119,25 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     }
 
     private void mapAdministrator(Administrator admin, ResultSet resultSet) throws SQLException {
-        admin.setId(resultSet.getInt("ID_USER"));
-        admin.setUserName(resultSet.getString("USERNAME"));
-        admin.setPassword(resultSet.getString("PASSWORD"));
-        admin.setName(resultSet.getString("FIRST_NAME"));
-        admin.setLastName(resultSet.getString("LAST_NAME"));
-        admin.setEmail(resultSet.getString("EMAIL"));
-        admin.setRole(resultSet.getString("ROLE_NAME"));
+        admin.setId(resultSet.getInt("user_id"));
+        admin.setUserName(resultSet.getString("username"));
+        admin.setPassword(resultSet.getString("password"));
+        admin.setName(resultSet.getString("name"));
+        admin.setLastName(resultSet.getString("last_name"));
+        admin.setEmail(resultSet.getString("email"));
+        admin.setRole(resultSet.getString("role_name"));
 
-        String statusValue = resultSet.getString("STATUS");
+        String statusValue = resultSet.getString("status");
         admin.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
 
-        String genderValue = resultSet.getString("GENDER");
+        String genderValue = resultSet.getString("gender");
         admin.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
 
-        if (resultSet.getTimestamp("REGISTRATION_DATE") != null) {
-            admin.setRegistrationDate(resultSet.getTimestamp("REGISTRATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("registration_date") != null) {
+            admin.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
         }
-        if (resultSet.getTimestamp("TERMINATION_DATE") != null) {
-            admin.setDischargeDate(resultSet.getTimestamp("TERMINATION_DATE").toLocalDateTime());
+        if (resultSet.getTimestamp("discharge_date") != null) {
+            admin.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }
     }
 }

@@ -14,7 +14,6 @@ import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IInsterGeneric;
 import mx.uv.fei.dataacces.interfaces.ISelectedList;
 
-
 abstract class BaseDAO {
     protected final IDatabaseConnection databaseConnection;
 

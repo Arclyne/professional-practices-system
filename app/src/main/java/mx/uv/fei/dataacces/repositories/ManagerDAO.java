@@ -13,15 +13,13 @@ import mx.uv.fei.dataacces.exceptions.DAOException;
 import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataacces.interfaces.IManagerDAO;
 import mx.uv.fei.domain.dto.Manager;
-import mx.uv.fei.domain.enums.UserStatus;
 
 @Component
 public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
-    private static final String SQL_SELECT_BY_ORG = "SELECT ID_MANAGER, MANAGER_NAME, PHONE, EMAIL, STATUS FROM project_manager WHERE ID_ORGANIZATION = ?";
-    private static final String SQL_INSERT_MANAGER = "INSERT INTO project_manager (MANAGER_NAME, PHONE, EMAIL, ID_ORGANIZATION, STATUS) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT_ALL_MANAGERS = "SELECT ID_MANAGER, MANAGER_NAME, PHONE, EMAIL, ID_ORGANIZATION, STATUS FROM project_manager";
-    private static final String SQL_DEACTIVATE_MANAGER = "UPDATE project_manager SET STATUS = ? WHERE ID_MANAGER = ?";
+    private static final String SQL_SELECT_BY_ORG = "SELECT manager_id, manager_name, phone, email, organization_id FROM project_manager WHERE organization_id = ?";
+    private static final String SQL_INSERT_MANAGER = "INSERT INTO project_manager (manager_name, phone, email, organization_id) VALUES (?, ?, ?, ?)";
+    private static final String SQL_SELECT_ALL_MANAGERS = "SELECT manager_id, manager_name, phone, email, organization_id FROM project_manager";
 
     @Inject
     public ManagerDAO(IDatabaseConnection databaseConnection) {
@@ -37,12 +35,11 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Manager manager = new Manager();
-                    manager.setId(resultSet.getInt("ID_MANAGER"));
-                    manager.setName(resultSet.getString("MANAGER_NAME"));
-                    manager.setPhone(resultSet.getString("PHONE"));
-                    manager.setEmail(resultSet.getString("EMAIL"));
-                    manager.setOrganizationId(organizationId);
-                    manager.setStatus(UserStatus.fromString(resultSet.getString("STATUS")));
+                    manager.setId(resultSet.getInt("manager_id"));
+                    manager.setName(resultSet.getString("manager_name"));
+                    manager.setPhone(resultSet.getString("phone"));
+                    manager.setEmail(resultSet.getString("email"));
+                    manager.setOrganizationId(resultSet.getInt("organization_id"));
                     managersList.add(manager);
                 }
             }
@@ -60,7 +57,6 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             statement.setString(2, manager.getPhone());
             statement.setString(3, manager.getEmail());
             statement.setInt(4, manager.getOrganizationId());
-            statement.setString(5, manager.getStatus().getDatabaseValue());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DAOException("Error al intentar registrar el encargado en la base de datos.", e);
@@ -75,12 +71,11 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Manager manager = new Manager();
-                manager.setId(resultSet.getInt("ID_MANAGER"));
-                manager.setName(resultSet.getString("MANAGER_NAME"));
-                manager.setPhone(resultSet.getString("PHONE"));
-                manager.setEmail(resultSet.getString("EMAIL"));
-                manager.setOrganizationId(resultSet.getInt("ID_ORGANIZATION"));
-                manager.setStatus(UserStatus.fromString(resultSet.getString("STATUS")));
+                manager.setId(resultSet.getInt("manager_id"));
+                manager.setName(resultSet.getString("manager_name"));
+                manager.setPhone(resultSet.getString("phone"));
+                manager.setEmail(resultSet.getString("email"));
+                manager.setOrganizationId(resultSet.getInt("organization_id"));
                 managersList.add(manager);
             }
         } catch (SQLException e) {
@@ -91,36 +86,6 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
     @Override
     public boolean deactivateMultipleManagers(List<Integer> managerIdentifiersList) throws DAOException {
-        boolean allUpdatesSuccessful = true;
-        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
-            activeDatabaseConnection.setAutoCommit(false);
-            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE_MANAGER)) {
-                for (Integer currentIdentifier : managerIdentifiersList) {
-                    updateStatement.setString(1, UserStatus.INACTIVE.getDatabaseValue());
-                    updateStatement.setInt(2, currentIdentifier);
-                    updateStatement.addBatch();
-                }
-                int[] executionResults = updateStatement.executeBatch();
-                for (int result : executionResults) {
-                    if (result <= 0) {
-                        allUpdatesSuccessful = false;
-                        break;
-                    }
-                }
-                if (allUpdatesSuccessful) {
-                    activeDatabaseConnection.commit();
-                } else {
-                    activeDatabaseConnection.rollback();
-                }
-            } catch (SQLException executionException) {
-                activeDatabaseConnection.rollback();
-                throw new DAOException("Error al ejecutar la inactivación masiva de encargados.", executionException);
-            } finally {
-                activeDatabaseConnection.setAutoCommit(true);
-            }
-        } catch (SQLException connectionException) {
-            throw new DAOException("Error de conexión al procesar inactivación de encargados.", connectionException);
-        }
-        return allUpdatesSuccessful;
+        return false;
     }
 }
