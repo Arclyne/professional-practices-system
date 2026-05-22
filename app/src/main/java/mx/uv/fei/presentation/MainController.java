@@ -10,6 +10,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import java.net.URL;
 
+import java.io.IOException;
+
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import mx.uv.fei.config.annotation.etiquette.Component;
@@ -18,7 +20,6 @@ import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
-import mx.uv.fei.domain.manager.StartSessionManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -112,7 +113,7 @@ public class MainController {
         try {
             URL fxmlUrl = getClass().getResource(fxmlPath);
             if (fxmlUrl == null) {
-                throw new RuntimeException("Ruta FXML no encontrada: " + fxmlPath);
+                throw new IllegalArgumentException("Ruta FXML no encontrada: " + fxmlPath);
             }
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
@@ -128,10 +129,16 @@ public class MainController {
 
             contentArea.getChildren().setAll(view);
 
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (IOException exception) {
+            logger.error("Error de E/S al cargar la vista FXML: " + fxmlPath, exception);
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
+                    "No se pudo cargar el archivo visual. Detalle: " + exception.getMessage(),
+                    AlertType.ERROR);
+
+        } catch (IllegalArgumentException exception) {
+            logger.error("Ruta de vista inválida", exception);
+            Controller.showAlert("Error de Interfaz",
+                    "La ruta solicitada no existe en el sistema.",
                     AlertType.ERROR);
         }
     }
