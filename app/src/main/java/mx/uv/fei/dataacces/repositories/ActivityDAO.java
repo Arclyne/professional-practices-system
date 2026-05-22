@@ -21,10 +21,10 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO activity (NAME, START_DATE, END_DATE, DESCRIPTION, MANAGER) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTTOSEARCH = "SELECT ID_ACTIVITY, NAME, START_DATE, END_DATE, DESCRIPTION, MANAGER FROM activity WHERE NAME = ? AND MANAGER = ?";
-    private static final String SQL_SELECTALL = "SELECT * FROM activity";
-    private static final String SQL_UPDATE = "UPDATE activity SET NAME = ?, START_DATE = ?, END_DATE = ?, DESCRIPTION = ?, MANAGER = ? WHERE ID_ACTIVITY = ?";
+    private static final String SQL_INSERT = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECTTOSEARCH = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
+    private static final String SQL_SELECTALL = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity";
+    private static final String SQL_UPDATE = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
@@ -62,12 +62,12 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     }
 
     private void mapActivity(Activity activityToSearch, ResultSet resultSet) throws SQLException {
-        activityToSearch.setActivityId(resultSet.getInt("ID_ACTIVITY"));
-        activityToSearch.setName(resultSet.getString("NAME"));
-        activityToSearch.setStartDate(resultSet.getDate("START_DATE"));
-        activityToSearch.setEndDate(resultSet.getDate("END_DATE"));
-        activityToSearch.setDescription(resultSet.getString("DESCRIPTION"));
-        activityToSearch.setManager(resultSet.getString("MANAGER"));
+        activityToSearch.setActivityId(resultSet.getInt("activity_id"));
+        activityToSearch.setName(resultSet.getString("name"));
+        activityToSearch.setStartDate(resultSet.getDate("start_date"));
+        activityToSearch.setEndDate(resultSet.getDate("end_date"));
+        activityToSearch.setDescription(resultSet.getString("description"));
+        activityToSearch.setManager(resultSet.getString("manager"));
     }
 
     @Override
