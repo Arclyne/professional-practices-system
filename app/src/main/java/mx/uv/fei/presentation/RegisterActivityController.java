@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 public class RegisterActivityController implements Initializable {
 
     private final ProjectManager projectManager;
-    private final Store store;
+    private final AppStore store;
 
     public Button saveButton;
     public Button cancelButton;
@@ -64,7 +64,7 @@ public class RegisterActivityController implements Initializable {
     private Button buttonCancel;
 
     @Inject
-    public RegisterActivityController(ProjectManager projectManager, Store store) {
+    public RegisterActivityController(ProjectManager projectManager, AppStore store) {
 
         this.projectManager = projectManager;
         this.store = store;

@@ -16,7 +16,7 @@ import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -31,13 +31,13 @@ public class ProfessorManagementController {
     @FXML private ListView<String> professorsListView;
 
     private final ProfessorManager professorManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
     private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
 
     @Inject
-    public ProfessorManagementController(ProfessorManager professorManager, Store applicationNavigationStore) {
+    public ProfessorManagementController(ProfessorManager professorManager, AppStore applicationNavigationStore) {
         this.professorManager = professorManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

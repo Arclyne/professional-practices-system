@@ -15,7 +15,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -30,13 +30,13 @@ public class OrganizationManagementController {
     @FXML private ListView<String> organizationsListView;
 
     private final OrganizationManager organizationManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
     private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
 
     @Inject
-    public OrganizationManagementController(OrganizationManager organizationManager, Store applicationNavigationStore) {
+    public OrganizationManagementController(OrganizationManager organizationManager, AppStore applicationNavigationStore) {
         this.organizationManager = organizationManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

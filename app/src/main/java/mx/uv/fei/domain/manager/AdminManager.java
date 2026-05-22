@@ -2,23 +2,23 @@ package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IAdministratorDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 
 @Component
 public class AdminManager {
 
     private final IAdministratorDAO adminDAO;
-    private final Store store;
+    private final AppStore store;
 
     @Inject
-    public AdminManager(IAdministratorDAO adminDAO, Store store) {
+    public AdminManager(IAdministratorDAO adminDAO, AppStore store) {
         this.adminDAO = adminDAO;
         this.store = store;
     }

@@ -2,9 +2,9 @@ package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IManagerDAO; // <-- Interfaz corregida
-import mx.uv.fei.dataacces.interfaces.IOrganizationDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IManagerDAO; // <-- Interfaz corregida
+import mx.uv.fei.dataaccess.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;

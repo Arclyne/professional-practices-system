@@ -15,7 +15,7 @@ import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProjectPrioritizationManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -43,13 +43,13 @@ public class PrioritizeProjectsController {
     private Button cancelPostulationButton;
 
     private final ProjectPrioritizationManager projectPrioritizationManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private final ObservableList<Project> availableProjectsObservableList = FXCollections.observableArrayList();
     private final ObservableList<Project> prioritizedProjectsObservableList = FXCollections.observableArrayList();
 
     @Inject
-    public PrioritizeProjectsController(ProjectPrioritizationManager projectPrioritizationManager, Store applicationNavigationStore) {
+    public PrioritizeProjectsController(ProjectPrioritizationManager projectPrioritizationManager, AppStore applicationNavigationStore) {
         this.projectPrioritizationManager = projectPrioritizationManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

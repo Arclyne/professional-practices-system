@@ -15,7 +15,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -30,13 +30,13 @@ public class ProjectManagementController {
     @FXML private ListView<String> projectsListView;
 
     private final ProjectManager projectManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
     private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
 
     @Inject
-    public ProjectManagementController(ProjectManager projectManager, Store applicationNavigationStore) {
+    public ProjectManagementController(ProjectManager projectManager, AppStore applicationNavigationStore) {
         this.projectManager = projectManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

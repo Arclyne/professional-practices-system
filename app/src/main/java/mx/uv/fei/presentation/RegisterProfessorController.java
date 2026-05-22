@@ -15,7 +15,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormField;
@@ -27,7 +27,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 public class RegisterProfessorController implements Initializable {
 
     private final ProfessorManager manager;
-    private final Store store;
+    private final AppStore store;
 
     @FXML
     private FormField fieldNombre;
@@ -41,7 +41,7 @@ public class RegisterProfessorController implements Initializable {
     private FormComboBox comboBoxSexo;
 
     @Inject
-    public RegisterProfessorController(ProfessorManager manager, Store store) {
+    public RegisterProfessorController(ProfessorManager manager, AppStore store) {
         this.manager = manager;
         this.store = store;
     }

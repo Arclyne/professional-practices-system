@@ -13,7 +13,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PendingPractitionerManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -26,11 +26,11 @@ public class PendingPractitionerSelectionController {
     private ListView<Practitioner> pendingPractitionersListView;
 
     private final PendingPractitionerManager pendingPractitionerManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
     private final ObservableList<Practitioner> pendingPractitionersObservableList = FXCollections.observableArrayList();
 
     @Inject
-    public PendingPractitionerSelectionController(PendingPractitionerManager pendingPractitionerManager, Store applicationNavigationStore) {
+    public PendingPractitionerSelectionController(PendingPractitionerManager pendingPractitionerManager, AppStore applicationNavigationStore) {
         this.pendingPractitionerManager = pendingPractitionerManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

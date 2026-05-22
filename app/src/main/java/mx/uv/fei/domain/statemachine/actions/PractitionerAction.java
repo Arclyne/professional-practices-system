@@ -1,6 +1,8 @@
 package mx.uv.fei.domain.statemachine.actions;
 
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.statemachine.core.Action;
+
 import java.util.List;
 
 public sealed interface PractitionerAction extends Action {

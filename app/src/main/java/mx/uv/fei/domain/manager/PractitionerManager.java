@@ -11,8 +11,8 @@ import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.common.IFileBackup;
 import mx.uv.fei.domain.common.IPractitionerParser;
-import mx.uv.fei.dataacces.interfaces.IPractitionerDAO;
-import mx.uv.fei.dataacces.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 

@@ -17,7 +17,7 @@ import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
@@ -37,10 +37,10 @@ public class RegisterCoordinatorController implements Initializable {
     private FormComboBox comboBoxSexo;
 
     private final CoordinatorManager coordinatorManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     @Inject
-    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, Store applicationNavigationStore) {
+    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, AppStore applicationNavigationStore) {
         this.coordinatorManager = coordinatorManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

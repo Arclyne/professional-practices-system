@@ -16,7 +16,7 @@ import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ManagerManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -31,13 +31,13 @@ public class ManagerManagementController {
     @FXML private ListView<String> managersListView;
 
     private final ManagerManager managerManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
     private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
 
     @Inject
-    public ManagerManagementController(ManagerManager managerManager, Store applicationNavigationStore) {
+    public ManagerManagementController(ManagerManager managerManager, AppStore applicationNavigationStore) {
         this.managerManager = managerManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

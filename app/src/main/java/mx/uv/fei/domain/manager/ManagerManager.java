@@ -3,8 +3,8 @@ package mx.uv.fei.domain.manager;
 import java.util.List;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IManagerDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
