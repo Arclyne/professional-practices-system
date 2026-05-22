@@ -1,14 +1,19 @@
 package mx.uv.fei.presentation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+
+
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -20,15 +25,20 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ProfessorManagementController {
 
-    @FXML private ListView<String> professorsListView;
+    private static final String LOAD_ERROR_TITLE = "Error de carga";
+    private static final String NO_SELECTION_TITLE = "Sin selección";
+    private static final String NO_SELECTION_MESSAGE = "Debe seleccionar al menos un profesor para inactivar.";
+    private static final String SUCCESS_TITLE = "Proceso Exitoso";
+    private static final String SUCCESS_MESSAGE = "Los profesores seleccionados han sido inactivados.";
+    private static final String OPERATION_ERROR_TITLE = "Error en la Operación";
+    private static final String DISPLAY_ITEM_FORMAT = "%s %s (%s) - %s";
+
+    @FXML
+    private ListView<String> professorsListView;
 
     private final ProfessorManager professorManager;
     private final AppStore applicationNavigationStore;
@@ -44,7 +54,7 @@ public class ProfessorManagementController {
 
     @FXML
     public void initialize() {
-        professorsListView.setCellFactory(CheckBoxListCell.forListView(itemString -> itemSelectionStateMap.get(itemString)));
+        Controller.setupCheckBoxListView(professorsListView, itemSelectionStateMap);
         loadActiveProfessors();
     }
 
@@ -55,23 +65,29 @@ public class ProfessorManagementController {
 
         try {
             List<Professor> registeredProfessorsList = professorManager.getAllProfessors();
+
             for (Professor currentProfessor : registeredProfessorsList) {
                 if (currentProfessor.getStatus() != null && currentProfessor.getStatus() != UserStatus.INACTIVE) {
-                    String formattedDisplayString = currentProfessor.getName() + " " + currentProfessor.getLastName() + " (" + currentProfessor.getUserName() + ") - " + currentProfessor.getStatus().getDatabaseValue();
+                    String formattedDisplayString = String.format(DISPLAY_ITEM_FORMAT,
+                            currentProfessor.getName(),
+                            currentProfessor.getLastName(),
+                            currentProfessor.getUserName(),
+                            currentProfessor.getStatus().getDatabaseValue());
+
                     itemToIdentifierMap.put(formattedDisplayString, currentProfessor.getId());
                     itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
                     displayItemsList.add(formattedDisplayString);
                 }
             }
-        } catch (ManagerException dataRetrievalException) {
-            Controller.showAlert("Error de carga", dataRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException exception) {
+            Controller.showErrorAlert(LOAD_ERROR_TITLE, exception.getMessage());
         }
 
         professorsListView.setItems(displayItemsList);
     }
 
     @FXML
-    private void handleInactivateSelectedAction(ActionEvent userActionEvent) {
+    private void handleInactivateSelectedAction() {
         List<Integer> identifiersToInactivateList = new ArrayList<>();
 
         for (Map.Entry<String, BooleanProperty> currentMapEntry : itemSelectionStateMap.entrySet()) {
@@ -81,26 +97,25 @@ public class ProfessorManagementController {
         }
 
         if (identifiersToInactivateList.isEmpty()) {
-            Controller.showAlert("Sin selección", "Debe seleccionar al menos un profesor para inactivar.", AlertType.WARNING);
-            return;
-        }
-
-        try {
-            professorManager.inactivateMultipleProfessors(identifiersToInactivateList);
-            Controller.showAlert("Proceso Exitoso", "Los profesores seleccionados han sido inactivados.", AlertType.INFORMATION);
-            loadActiveProfessors();
-        } catch (ManagerException executionException) {
-            Controller.showAlert("Error en la Operación", executionException.getMessage(), AlertType.ERROR);
+            Controller.showAlert(NO_SELECTION_TITLE, NO_SELECTION_MESSAGE, AlertType.WARNING);
+        } else {
+            try {
+                professorManager.inactivateMultipleProfessors(identifiersToInactivateList);
+                Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+                loadActiveProfessors();
+            } catch (ManagerException exception) {
+                Controller.showErrorAlert(OPERATION_ERROR_TITLE, exception.getMessage());
+            }
         }
     }
 
     @FXML
-    private void handleRegisterNewProfessorAction(ActionEvent userActionEvent) {
+    private void handleRegisterNewProfessorAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent userActionEvent) {
+    private void handleReturnAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

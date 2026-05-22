@@ -1,39 +1,85 @@
 package mx.uv.fei.domain.manager;
 
 import java.util.List;
+
+
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
+import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
+
 
 @Component
 public class ManagerManager {
 
-    private final IManagerDAO managerDataAccessObject;
+    private static final String GET_ALL_ERROR_MESSAGE = "Error al obtener la lista de encargados.";
+    private static final String INACTIVATE_ERROR_MESSAGE = "No se pudieron inactivar los encargados seleccionados.";
+    private static final String INACTIVATE_CONNECTION_ERROR_MESSAGE = "Error de base de datos al inactivar encargados.";
+    private static final String GET_MANAGERS_ERROR_MESSAGE = "No se pudieron cargar los encargados de esta organización.";
+    private static final String REGISTER_MANAGER_ERROR_MESSAGE = "No se pudo completar el registro del encargado en el sistema.";
+    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema de conexión. Por favor, intente más tarde.";
+
+    private final IManagerDAO managerDAO;
 
     @Inject
-    public ManagerManager(IManagerDAO managerDataAccessObject) {
-        this.managerDataAccessObject = managerDataAccessObject;
+    public ManagerManager(IManagerDAO managerDAO) {
+        this.managerDAO = managerDAO;
     }
 
     public List<Manager> getAllManagers() throws ManagerException {
+        List<Manager> managers;
+
         try {
-            return managerDataAccessObject.getAllManagers();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de encargados.", dataAccessException);
+            managers = managerDAO.getAllManagers();
+        } catch (DAOException exception) {
+            throw new ManagerException(GET_ALL_ERROR_MESSAGE, exception);
         }
+
+        return managers;
+    }
+
+    public List<Manager> getManagersByOrganization(int organizationId) throws ManagerException {
+        List<Manager> managers;
+
+        try {
+            managers = managerDAO.getManagersByOrganization(organizationId);
+        } catch (DAOException exception) {
+            throw new ManagerException(GET_MANAGERS_ERROR_MESSAGE, exception);
+        }
+
+        return managers;
+    }
+
+    public boolean registerManager(Manager managerToRegister) throws ManagerException {
+        boolean isRegistered;
+
+        Validator.validateManagerData(managerToRegister);
+
+        try {
+            isRegistered = managerDAO.insertManager(managerToRegister);
+
+            if (!isRegistered) {
+                throw new ManagerException(REGISTER_MANAGER_ERROR_MESSAGE);
+            }
+        } catch (DAOException exception) {
+            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
+        }
+
+        return isRegistered;
     }
 
     public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {
         try {
-            boolean isProcessSuccessful = managerDataAccessObject.deactivateMultipleManagers(managerIdentifiersList);
+            boolean isProcessSuccessful = managerDAO.deactivateMultipleManagers(managerIdentifiersList);
+
             if (!isProcessSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los encargados seleccionados.");
+                throw new ManagerException(INACTIVATE_ERROR_MESSAGE);
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar encargados.", dataAccessException);
+        } catch (DAOException exception) {
+            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, exception);
         }
     }
 }
