@@ -22,7 +22,7 @@ import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.presentation.components.FormField;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.domain.manager.PractitionerManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -42,10 +42,10 @@ public class RegisterPractitionerController implements Initializable {
     @FXML private Button uploadCsvButton;
 
     private final PractitionerManager practitionerManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     @Inject
-    public RegisterPractitionerController(PractitionerManager practitionerManager, Store applicationNavigationStore) {
+    public RegisterPractitionerController(PractitionerManager practitionerManager, AppStore applicationNavigationStore) {
         this.practitionerManager = practitionerManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

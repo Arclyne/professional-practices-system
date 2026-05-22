@@ -12,7 +12,7 @@ public class AuthenticatorReducer {
                     a.exists(),
                     false);
 
-            case AuthenticatorAction.AdminCreatedSuccessfully a -> new AuthenticatorState(
+            case AuthenticatorAction.AdminCreatedSuccessfully _ -> new AuthenticatorState(
                     true,
                     false);
 

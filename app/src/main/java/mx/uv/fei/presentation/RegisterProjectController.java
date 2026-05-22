@@ -14,7 +14,7 @@ import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.manager.ProjectManager;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
@@ -38,7 +38,7 @@ public class RegisterProjectController implements Initializable {
 
     private final ProjectManager projectManager;
     private final OrganizationManager organizationManager;
-    private final Store store;
+    private final AppStore store;
 
     private final Map<String, Integer> organizationMap = new HashMap<>();
     private final Map<String, Integer> managerMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class RegisterProjectController implements Initializable {
     @FXML private Button buttonCancel;
 
     @Inject
-    public RegisterProjectController(ProjectManager projectManager, OrganizationManager organizationManager, Store store) {
+    public RegisterProjectController(ProjectManager projectManager, OrganizationManager organizationManager, AppStore store) {
         this.projectManager = projectManager;
         this.organizationManager = organizationManager;
         this.store = store;

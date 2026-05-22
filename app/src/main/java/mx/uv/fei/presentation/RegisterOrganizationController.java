@@ -2,7 +2,6 @@ package mx.uv.fei.presentation;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
@@ -11,7 +10,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormField;
@@ -20,7 +19,7 @@ import mx.uv.fei.presentation.components.FormField;
 public class RegisterOrganizationController{
 
     private final OrganizationManager organizationManager;
-    private final Store store;
+    private final AppStore store;
 
     @FXML private FormField fieldName;
     @FXML private FormField fieldAddress;
@@ -33,7 +32,7 @@ public class RegisterOrganizationController{
     @FXML private Button cancelButton;
 
     @Inject
-    public RegisterOrganizationController(OrganizationManager organizationManager, Store store) {
+    public RegisterOrganizationController(OrganizationManager organizationManager, AppStore store) {
         this.organizationManager = organizationManager;
         this.store = store;
     }
