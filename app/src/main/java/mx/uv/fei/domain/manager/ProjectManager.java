@@ -1,77 +1,72 @@
 package mx.uv.fei.domain.manager;
 
+import java.util.List;
+
+
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.Project;
-import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IProjectDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import java.util.List;
+
 
 @Component
 public class ProjectManager {
 
-    private final IActivityDAO activityDataAccessObject;
-    private final IProjectDAO projectDataAccessObject;
+    private static final String REGISTER_PROJECT_ERROR_MESSAGE = "No se pudo completar el registro del proyecto en el sistema.";
+    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema. Por favor, intente más tarde.";
+    private static final String INACTIVATE_PROJECTS_ERROR_MESSAGE = "No se pudieron inactivar los proyectos seleccionados.";
+    private static final String INACTIVATE_CONNECTION_ERROR_MESSAGE = "Error de base de datos al inactivar proyectos.";
+    private static final String GET_ALL_PROJECTS_ERROR_MESSAGE = "Error al obtener la lista de proyectos.";
+
+    private final IProjectDAO projectDAO;
 
     @Inject
-    public ProjectManager(IActivityDAO activityDataAccessObject, IProjectDAO projectDataAccessObject) {
-        this.activityDataAccessObject = activityDataAccessObject;
-        this.projectDataAccessObject = projectDataAccessObject;
-    }
-
-    public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
-        Validator.validateActivityData(activityToRegister);
-
-        try {
-            boolean isRegistered = activityDataAccessObject.insertActivity(activityToRegister);
-
-            if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro de la actividad en el sistema.");
-            }
-            return true;
-
-        } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
-        }
+    public ProjectManager(IProjectDAO projectDAO) {
+        this.projectDAO = projectDAO;
     }
 
     public boolean registerNewProject(Project projectToRegister) throws ManagerException {
+        boolean isRegistered;
+
         Validator.validateProjectData(projectToRegister);
 
         try {
-            boolean isRegistered = projectDataAccessObject.insertProject(projectToRegister);
+            isRegistered = projectDAO.insertProject(projectToRegister);
 
             if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro del proyecto en el sistema.");
+                throw new ManagerException(REGISTER_PROJECT_ERROR_MESSAGE);
             }
-            return true;
-
-        } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
+        } catch (DAOException exception) {
+            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
         }
+
+        return isRegistered;
     }
 
     public void inactivateMultipleProjects(List<Integer> projectIdentifiersList) throws ManagerException {
         try {
-            boolean isProcessSuccessful = projectDataAccessObject.deactivateMultipleProjects(projectIdentifiersList);
+            boolean isProcessSuccessful = projectDAO.deactivateMultipleProjects(projectIdentifiersList);
+
             if (!isProcessSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los proyectos seleccionados.");
+                throw new ManagerException(INACTIVATE_PROJECTS_ERROR_MESSAGE);
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar proyectos.", dataAccessException);
+        } catch (DAOException exception) {
+            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, exception);
         }
     }
 
     public List<Project> getAllProjects() throws ManagerException {
-        try {
-            return projectDataAccessObject.getAllProjects();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de proyectos.", dataAccessException);
-        }
-    }
+        List<Project> projects;
 
+        try {
+            projects = projectDAO.getAllProjects();
+        } catch (DAOException exception) {
+            throw new ManagerException(GET_ALL_PROJECTS_ERROR_MESSAGE, exception);
+        }
+
+        return projects;
+    }
 }

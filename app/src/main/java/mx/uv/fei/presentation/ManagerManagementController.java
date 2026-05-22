@@ -1,14 +1,19 @@
 package mx.uv.fei.presentation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.cell.CheckBoxListCell;
+
+
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -20,15 +25,20 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ManagerManagementController {
 
-    @FXML private ListView<String> managersListView;
+    private static final String LOAD_ERROR_TITLE = "Error de carga";
+    private static final String NO_SELECTION_TITLE = "Sin selección";
+    private static final String NO_SELECTION_MESSAGE = "Debe seleccionar al menos un encargado para inactivar.";
+    private static final String SUCCESS_TITLE = "Proceso Exitoso";
+    private static final String SUCCESS_MESSAGE = "Los encargados seleccionados han sido inactivados.";
+    private static final String OPERATION_ERROR_TITLE = "Error en la Operación";
+    private static final String DISPLAY_ITEM_FORMAT = "%s (%s) - %s";
+
+    @FXML
+    private ListView<String> managersListView;
 
     private final ManagerManager managerManager;
     private final AppStore applicationNavigationStore;
@@ -44,18 +54,7 @@ public class ManagerManagementController {
 
     @FXML
     public void initialize() {
-        managersListView.setCellFactory(CheckBoxListCell.forListView(itemString -> itemSelectionStateMap.get(itemString)));
-
-        managersListView.setOnMouseClicked(event -> {
-            String selectedItem = managersListView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                BooleanProperty checkboxState = itemSelectionStateMap.get(selectedItem);
-                if (checkboxState != null) {
-                    checkboxState.set(!checkboxState.get());
-                    managersListView.getSelectionModel().clearSelection();
-                }
-            }
-        });
+        Controller.setupCheckBoxListView(managersListView, itemSelectionStateMap);
         loadActiveManagers();
     }
 
@@ -66,23 +65,24 @@ public class ManagerManagementController {
 
         try {
             List<Manager> registeredManagersList = managerManager.getAllManagers();
+
             for (Manager currentManager : registeredManagersList) {
                 if (currentManager.getStatus() != null && currentManager.getStatus() != UserStatus.INACTIVE) {
-                    String formattedDisplayString = currentManager.getName() + " (" + currentManager.getEmail() + ") - " + currentManager.getStatus();
+                    String formattedDisplayString = String.format(DISPLAY_ITEM_FORMAT, currentManager.getName(), currentManager.getEmail(), currentManager.getStatus());
                     itemToIdentifierMap.put(formattedDisplayString, currentManager.getId());
                     itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
                     displayItemsList.add(formattedDisplayString);
                 }
             }
-        } catch (ManagerException dataRetrievalException) {
-            Controller.showAlert("Error de carga", dataRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException exception) {
+            Controller.showAlert(LOAD_ERROR_TITLE, exception.getMessage(), AlertType.ERROR);
         }
 
         managersListView.setItems(displayItemsList);
     }
 
     @FXML
-    private void handleInactivateSelectedAction(ActionEvent userActionEvent) {
+    private void handleInactivateSelectedAction() {
         List<Integer> identifiersToInactivateList = new ArrayList<>();
 
         for (Map.Entry<String, BooleanProperty> currentMapEntry : itemSelectionStateMap.entrySet()) {
@@ -92,26 +92,25 @@ public class ManagerManagementController {
         }
 
         if (identifiersToInactivateList.isEmpty()) {
-            Controller.showAlert("Sin selección", "Debe seleccionar al menos un encargado para inactivar.", AlertType.WARNING);
-            return;
-        }
-
-        try {
-            managerManager.inactivateMultipleManagers(identifiersToInactivateList);
-            Controller.showAlert("Proceso Exitoso", "Los encargados seleccionados han sido inactivados.", AlertType.INFORMATION);
-            loadActiveManagers();
-        } catch (ManagerException executionException) {
-            Controller.showAlert("Error en la Operación", executionException.getMessage(), AlertType.ERROR);
+            Controller.showAlert(NO_SELECTION_TITLE, NO_SELECTION_MESSAGE, AlertType.WARNING);
+        } else {
+            try {
+                managerManager.inactivateMultipleManagers(identifiersToInactivateList);
+                Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+                loadActiveManagers();
+            } catch (ManagerException exception) {
+                Controller.showErrorAlert(OPERATION_ERROR_TITLE, exception.getMessage());
+            }
         }
     }
 
     @FXML
-    private void handleRegisterNewManagerAction(ActionEvent userActionEvent) {
+    private void handleRegisterNewManagerAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_MANAGER));
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent userActionEvent) {
+    private void handleReturnAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

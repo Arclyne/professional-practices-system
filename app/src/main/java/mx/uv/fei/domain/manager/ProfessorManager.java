@@ -1,7 +1,7 @@
 package mx.uv.fei.domain.manager;
 
 import java.util.List;
-import java.util.UUID;
+
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -12,13 +12,19 @@ import mx.uv.fei.dataaccess.repositories.UserDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 @Component
 public class ProfessorManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProfessorManager.class);
+    private static final String ROLE_PROFESSOR = "Professor";
+    private static final String REGISTER_ERROR_MESSAGE = "No se pudo completar el registro del profesor en el sistema.";
+    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.";
+    private static final String INACTIVATE_ERROR_MESSAGE = "No se pudieron inactivar los profesores seleccionados.";
+    private static final String INACTIVATE_CONNECTION_ERROR_MESSAGE = "Error de base de datos al inactivar profesores.";
+    private static final String GET_ALL_ERROR_MESSAGE = "Error al obtener la lista de profesores.";
+    private static final int MINIMUM_VALID_ID = 1;
+
     private final ProfessorDAO professorDAO;
     private final UserDAO userDAO;
 
@@ -29,47 +35,48 @@ public class ProfessorManager {
     }
 
     public String registerNewProfessor(Professor professor) throws ManagerException {
-        String tempPassword = this.generatePassword();
+        String tempPassword = PasswordManager.generateTemporaryPassword();
+
         professor.setPassword(tempPassword);
-        professor.setRole("Professor");
+        professor.setRole(ROLE_PROFESSOR);
         professor.setStatus(UserStatus.PENDING);
+
         Validator.validateProfessorData(professor);
 
         try {
-            int resultId = this.professorDAO.insertProfessor(professor);
+            int resultId = professorDAO.insertProfessor(professor);
 
-            if (resultId <= 0) {
-                throw new ManagerException("No se pudo completar el registro del profesor en el sistema.");
+            if (resultId < MINIMUM_VALID_ID) {
+                throw new ManagerException(REGISTER_ERROR_MESSAGE);
             }
-
-            return tempPassword;
-
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+        } catch (DAOException exception) {
+            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
         }
+
+        return tempPassword;
     }
 
     public void inactivateMultipleProfessors(List<Integer> professorIdentifiersList) throws ManagerException {
         try {
             boolean isProcessSuccessful = userDAO.deactivateMultipleUsers(professorIdentifiersList);
+
             if (!isProcessSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los profesores seleccionados.");
+                throw new ManagerException(INACTIVATE_ERROR_MESSAGE);
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar profesores.", dataAccessException);
+        } catch (DAOException exception) {
+            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, exception);
         }
     }
 
     public List<Professor> getAllProfessors() throws ManagerException {
-        try {
-            return professorDAO.getAllProfessors();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de profesores.", dataAccessException);
-        }
-    }
+        List<Professor> professors;
 
-    private String generatePassword() {
-        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
+        try {
+            professors = professorDAO.getAllProfessors();
+        } catch (DAOException exception) {
+            throw new ManagerException(GET_ALL_ERROR_MESSAGE, exception);
+        }
+
+        return professors;
     }
 }
