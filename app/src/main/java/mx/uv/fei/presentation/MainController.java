@@ -18,26 +18,31 @@ import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.manager.StartSessionManager;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class MainController {
 
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+
     @FXML
     private StackPane contentArea;
-
     private Runnable unsubscribe;
     private final DependencyInjector dependencyInjector;
-    private final Store store;
+    private final AppStore store;
     private final AdminManager administratorManager;
+
 
     private AppSection activeApplicationSection = null;
 
     @Inject
-    public MainController(DependencyInjector dependencyInjector, Store applicationNavigationStore, AdminManager administratorManager) {
+    public MainController(DependencyInjector dependencyInjector, AppStore applicationNavigationStore, AdminManager administratorManager) {
         this.dependencyInjector = dependencyInjector;
         this.store = applicationNavigationStore;
         this.administratorManager = administratorManager;
@@ -96,6 +101,7 @@ public class MainController {
                     case MANAGER_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageManagers.fxml");
                     case ORGANIZATION_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageOrganizations.fxml");
                     case REGISTER_ORGANIZATION -> loadView("/mx/uv/fei/presentation/registerOrganization.fxml");
+                    case MESSAGES -> loadView("/mx/uv/fei/presentation/MessageView.fxml");
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }
             }
@@ -122,9 +128,10 @@ public class MainController {
 
             contentArea.getChildren().setAll(view);
 
-        } catch (Exception interfaceLoadException) {
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + interfaceLoadException.getMessage(),
+                    "No se pudo cargar la pantalla: " + fxmlPath + "\nDetalle: " + e.getMessage(),
                     AlertType.ERROR);
         }
     }
@@ -145,9 +152,10 @@ public class MainController {
                     store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
                 }
 
-            } catch (ManagerException startupException) {
+            } catch (ManagerException e) {
+                logger.error(e.getMessage(), e);
                 Controller.showAlert("Error de Arranque",
-                        "El sistema falló al iniciar: " + startupException.getMessage(),
+                        "El sistema falló al iniciar: " + e.getMessage(),
                         AlertType.ERROR);
             }
         });

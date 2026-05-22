@@ -21,7 +21,7 @@ import mx.uv.fei.domain.manager.AdminManager;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -42,10 +42,10 @@ public class RegisterAdminController implements Initializable {
     private FormComboBox comboBoxSexo;
 
     private final AdminManager manager;
-    private final Store store;
+    private final AppStore store;
 
     @Inject
-    public RegisterAdminController(AdminManager manager, Store store) {
+    public RegisterAdminController(AdminManager manager, AppStore store) {
         this.manager = manager;
         this.store = store;
     }

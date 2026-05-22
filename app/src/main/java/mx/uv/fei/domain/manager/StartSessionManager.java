@@ -2,12 +2,12 @@ package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IUserDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.enums.LoginMethod;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -23,13 +23,13 @@ public class StartSessionManager {
     private static final Logger logger = LoggerFactory.getLogger(StartSessionManager.class);
 
     private final IUserDAO userDAO;
-    private final Store store;
+    private final AppStore store;
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
 
     @Inject
-    public StartSessionManager(IUserDAO userDAO, Store store) {
+    public StartSessionManager(IUserDAO userDAO, AppStore store) {
         this.userDAO = userDAO;
         this.store = store;
     }

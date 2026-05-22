@@ -15,7 +15,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProjectAssignmentManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
@@ -35,13 +35,13 @@ public class AssignProjectController {
     private Button returnToDashboardButton;
 
     private final ProjectAssignmentManager projectAssignmentManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
     private final ObservableList<ProjectPostulation> postulationsObservableList = FXCollections.observableArrayList();
 
     private int targetPractitionerIdentifier;
 
     @Inject
-    public AssignProjectController(ProjectAssignmentManager projectAssignmentManager, Store applicationNavigationStore) {
+    public AssignProjectController(ProjectAssignmentManager projectAssignmentManager, AppStore applicationNavigationStore) {
         this.projectAssignmentManager = projectAssignmentManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

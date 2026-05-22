@@ -17,7 +17,7 @@ import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -31,12 +31,12 @@ public class CoordinatorDetailsController {
     @FXML private Button inactivateButton;
 
     private final CoordinatorManager coordinatorManager;
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     private int currentCoordinatorId;
 
     @Inject
-    public CoordinatorDetailsController(CoordinatorManager coordinatorManager, Store applicationNavigationStore) {
+    public CoordinatorDetailsController(CoordinatorManager coordinatorManager, AppStore applicationNavigationStore) {
         this.coordinatorManager = coordinatorManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

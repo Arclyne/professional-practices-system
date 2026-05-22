@@ -11,7 +11,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.manager.TokenManager;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.actions.SessionAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 public class TokenVerificationController implements Initializable {
 
     private final TokenManager tokenManager;
-    private final Store store;
+    private final AppStore store;
 
     @FXML
     private TextField textFieldToken;
@@ -36,7 +36,7 @@ public class TokenVerificationController implements Initializable {
     private Button buttonSend;
 
     @Inject
-    public TokenVerificationController(TokenManager tokenManager, Store store) {
+    public TokenVerificationController(TokenManager tokenManager, AppStore store) {
         this.tokenManager = tokenManager;
         this.store = store;
     }

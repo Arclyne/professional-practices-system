@@ -2,14 +2,14 @@ package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataacces.exceptions.DAOException;
-import mx.uv.fei.dataacces.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataacces.interfaces.IUserDAO;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.SessionFacade; // <-- Tu nuevo Facade
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -22,11 +22,10 @@ public class PasswordManager {
     private final IUserDAO userDAO;
     private final IDatabaseConnection databaseConnection;
     private final SessionFacade session;
-    private final Store store;
+    private final AppStore store;
 
     @Inject
-    public PasswordManager(IUserDAO userDAO, IDatabaseConnection databaseConnection, SessionFacade session,
-            Store store) {
+    public PasswordManager(IUserDAO userDAO, IDatabaseConnection databaseConnection, SessionFacade session, AppStore store) {
         this.userDAO = userDAO;
         this.databaseConnection = databaseConnection;
         this.session = session;

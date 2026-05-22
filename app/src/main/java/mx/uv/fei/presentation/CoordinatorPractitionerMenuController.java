@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -19,10 +19,10 @@ public class CoordinatorPractitionerMenuController {
     @FXML
     private Button returnToDashboardButton;
 
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
 
     @Inject
-    public CoordinatorPractitionerMenuController(Store applicationNavigationStore) {
+    public CoordinatorPractitionerMenuController(AppStore applicationNavigationStore) {
         this.applicationNavigationStore = applicationNavigationStore;
     }
 
