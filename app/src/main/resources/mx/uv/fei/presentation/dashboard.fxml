@@ -52,6 +52,9 @@
 
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="secondary-button" text="Inicio" />
 
+            <Button fx:id="navigateToMessagesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#handleNavigateToMessagesAction" styleClass="secondary-button" text="Mensajes" />
+
             <Region VBox.vgrow="ALWAYS"/>
 
             <Button fx:id="systemLogoutButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"

@@ -14,7 +14,7 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.manager.DashboardManager;
-import mx.uv.fei.domain.statemachine.Store;
+import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
@@ -47,13 +47,15 @@ public class DashboardController {
     private Button navigateToPractitionerProjectsButton;
     @FXML
     private Button systemLogoutButton;
+    @FXML
+    private Button navigateToMessagesButton;
 
-    private final Store applicationNavigationStore;
+    private final AppStore applicationNavigationStore;
     private final DashboardManager applicationDashboardManager;
     private final CoordinatorManager coordinatorManager;
 
     @Inject
-    public DashboardController(Store applicationNavigationStore, DashboardManager applicationDashboardManager, CoordinatorManager coordinatorManager) {
+    public DashboardController(AppStore applicationNavigationStore, DashboardManager applicationDashboardManager, CoordinatorManager coordinatorManager) {
         this.applicationNavigationStore = applicationNavigationStore;
         this.applicationDashboardManager = applicationDashboardManager;
         this.coordinatorManager = coordinatorManager;
@@ -216,6 +218,15 @@ public class DashboardController {
             applicationNavigationStore.dispatch(new NavigationAction.GoToSection(resolvedTargetNavigationSection));
         } catch (ManagerException verificationException) {
             Controller.showAlert("Acceso denegado", verificationException.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleNavigateToMessagesAction(ActionEvent userActionEvent) {
+        try {
+            applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.MESSAGES));
+        } catch (Exception dispatchException) {
+            Controller.showAlert("Error de Navegación", "No fue posible abrir la bandeja de mensajes.", AlertType.ERROR);
         }
     }
 

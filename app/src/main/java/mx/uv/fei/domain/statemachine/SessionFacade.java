@@ -9,10 +9,10 @@ import mx.uv.fei.domain.dto.User;
 @Keep
 public class SessionFacade {
 
-    private final Store store;
+    private final AppStore store;
 
     @Inject
-    public SessionFacade(Store store) {
+    public SessionFacade(AppStore store) {
         this.store = store;
     }
 
