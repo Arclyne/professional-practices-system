@@ -22,14 +22,15 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
     private static final String SQL_INSERT_PARTICIPANT = "INSERT INTO message_participant (message_id, sender_id, receiver_id) VALUES (?, ?, ?)";
     private static final String SQL_SELECT_ID_BY_EMAIL = "SELECT user_id FROM user WHERE email = ?";
     private static final String SQL_SELECT_BY_SENDER = "SELECT m.message_id, m.subject, m.body, m.send_date, " +
-            "p.sender_id, p.receiver_id, CONCAT(u.name, ' ', u.last_name) AS receiver_name " +
+            "p.sender_id, p.receiver_id, CONCAT(u.name, ' ', u.last_name) AS display_name " +
             "FROM message m " +
             "INNER JOIN message_participant p ON m.message_id = p.message_id " +
             "INNER JOIN user u ON p.receiver_id = u.user_id " +
             "WHERE p.sender_id = ? " +
             "ORDER BY m.send_date DESC LIMIT ? OFFSET ?";
+
     private static final String SQL_SELECT_BY_RECEIVER = "SELECT m.message_id, m.subject, m.body, m.send_date, " +
-            "p.sender_id, p.receiver_id, CONCAT(u.name, ' ', u.last_name) AS sender_name " +
+            "p.sender_id, p.receiver_id, CONCAT(u.name, ' ', u.last_name) AS display_name " +
             "FROM message m " +
             "INNER JOIN message_participant p ON m.message_id = p.message_id " +
             "INNER JOIN user u ON p.sender_id = u.user_id " +
@@ -116,7 +117,7 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
         message.setSendDate(resultSet.getTimestamp("send_date").toLocalDateTime());
         message.setSenderId(resultSet.getInt("sender_id"));
         message.setReceiverId(resultSet.getInt("receiver_id"));
-        message.setSenderName(resultSet.getString("sender_name"));
+        message.setSenderName(resultSet.getString("display_name"));
 
         return message;
     }
@@ -148,28 +149,15 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_SENDER)) {
-
-            statement.setInt(1, senderId);
-            statement.setInt(2, limit);
-            statement.setInt(3, offset);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Message message = new Message();
-                    message.setMessageId(resultSet.getInt("message_id"));
-                    message.setSubject(resultSet.getString("subject"));
-                    message.setBody(resultSet.getString("body"));
-                    message.setSendDate(resultSet.getTimestamp("send_date").toLocalDateTime());
-                    message.setSenderId(resultSet.getInt("sender_id"));
-                    message.setReceiverId(resultSet.getInt("receiver_id"));
-                    message.setSenderName(resultSet.getString("receiver_name"));
+                    Message message = mapResultSetToMessage(resultSet);
                     messagesList.add(message);
                 }
             }
         } catch (SQLException exception) {
             throw new DAOException("Error al consultar los mensajes enviados en la base de datos.", exception);
         }
-
         return messagesList;
     }
 }

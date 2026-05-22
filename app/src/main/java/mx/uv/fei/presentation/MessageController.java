@@ -197,37 +197,37 @@ public class MessageController implements Initializable {
 
     private void fetchMessages() {
         var currentUser = store.getState().sessionState().currentUserInSession();
-        if (currentUser == null) {
+
+        if (currentUser != null) {
+            int currentUserId = currentUser.getId();
+            store.dispatch(new MessageAction.FetchMessages(currentUserId, 0));
+
+            javafx.concurrent.Task<java.util.List<Message>> fetchTask = new javafx.concurrent.Task<>() {
+                @Override
+                protected java.util.List<Message> call() throws Exception {
+                    return isInboxViewActive
+                            ? messageManager.getInboxMessages(currentUserId, 50, 0)
+                            : messageManager.getSentMessages(currentUserId, 50, 0);
+                }
+            };
+
+            fetchTask.setOnSucceeded(event -> {
+                java.util.List<Message> retrievedMessages = fetchTask.getValue();
+                if (isInboxViewActive) {
+                    store.dispatch(new MessageAction.FetchInboxSuccess(retrievedMessages));
+                } else {
+                    store.dispatch(new MessageAction.FetchSentSuccess(retrievedMessages));
+                }
+            });
+
+            fetchTask.setOnFailed(event -> {
+                store.dispatch(new MessageAction.FetchMessagesFailure(fetchTask.getException().getMessage()));
+            });
+
+            new Thread(fetchTask).start();
+        } else {
             logger.warn("Se intentó cargar mensajes sin una sesión activa.");
-            return;
         }
-
-        int currentUserId = currentUser.getId();
-        store.dispatch(new MessageAction.FetchMessages(currentUserId, 0));
-
-        javafx.concurrent.Task<java.util.List<Message>> fetchTask = new javafx.concurrent.Task<>() {
-            @Override
-            protected java.util.List<Message> call() throws Exception {
-                return isInboxViewActive
-                        ? messageManager.getInboxMessages(currentUserId, 50, 0)
-                        : messageManager.getSentMessages(currentUserId, 50, 0);
-            }
-        };
-
-        fetchTask.setOnSucceeded(event -> {
-            java.util.List<Message> retrievedMessages = fetchTask.getValue();
-            if (isInboxViewActive) {
-                store.dispatch(new MessageAction.FetchInboxSuccess(retrievedMessages));
-            } else {
-                store.dispatch(new MessageAction.FetchSentSuccess(retrievedMessages));
-            }
-        });
-
-        fetchTask.setOnFailed(event -> {
-            store.dispatch(new MessageAction.FetchMessagesFailure(fetchTask.getException().getMessage()));
-        });
-
-        new Thread(fetchTask).start();
     }
 
     private void handleSendMessageAction() {
