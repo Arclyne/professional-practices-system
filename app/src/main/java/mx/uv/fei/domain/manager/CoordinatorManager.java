@@ -22,13 +22,13 @@ public class CoordinatorManager {
     private final IUserDAO userDAO;
 
     @Inject
-    public CoordinatorManager(ICoordinatorDAO coordinatorDataAccessObject, IUserDAO userDataAccessObject) {
-        this.coordinatorDataAccessObject = coordinatorDataAccessObject;
+    public CoordinatorManager(ICoordinatorDAO coordinatorDAO, IUserDAO userDataAccessObject) {
+        this.coordinatorDataAccessObject = coordinatorDAO;
         this.userDAO = userDataAccessObject;
     }
 
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
-        String temporaryGeneratedPassword = this.generateTemporaryPassword();
+        String temporaryGeneratedPassword = PasswordManager.generatePassword();
         coordinatorInformation.setPassword(temporaryGeneratedPassword);
         coordinatorInformation.setStatus(UserStatus.PENDING);
 
@@ -43,8 +43,9 @@ public class CoordinatorManager {
 
             return temporaryGeneratedPassword;
 
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", dataAccessObjectException);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 
@@ -55,20 +56,18 @@ public class CoordinatorManager {
             if (!isCoordinatorDeactivated) {
                 throw new ManagerException("No se pudo inactivar. Verifique que el coordinador exista en el sistema.");
             }
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", dataAccessObjectException);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", e);
         }
     }
 
     public Coordinator retrieveCurrentCoordinator() throws ManagerException {
         try {
             return coordinatorDataAccessObject.getCurrentCoordinator();
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", dataAccessObjectException);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", e);
         }
-    }
-
-    private String generateTemporaryPassword() {
-        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }

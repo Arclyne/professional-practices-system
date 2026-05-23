@@ -10,6 +10,7 @@ import javafx.scene.control.Alert.AlertType;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Coordinator;
@@ -23,18 +24,19 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
+@Component
 public class RegisterCoordinatorController implements Initializable {
 
     @FXML
-    private FormField fieldNombre;
+    private FormField nameFormField;
     @FXML
-    private FormField fieldApellido;
+    private FormField lastNameFormField;
     @FXML
-    private FormField fieldCorreo;
+    private FormField emailFormField;
     @FXML
-    private FormField fieldNoPersonal;
+    private FormField personalNumberFormField;
     @FXML
-    private FormComboBox comboBoxSexo;
+    private FormComboBox genderFormComboBox;
 
     private final CoordinatorManager coordinatorManager;
     private final AppStore applicationNavigationStore;
@@ -52,28 +54,27 @@ public class RegisterCoordinatorController implements Initializable {
                 Gender.FEMALE.getDisplayValue(),
                 Gender.OTHER.getDisplayValue()
         );
-        comboBoxSexo.setItems(genderOptionsObservableList);
+        genderFormComboBox.setItems(genderOptionsObservableList);
     }
 
     @FXML
     private void handleActionRegisterButton(ActionEvent userActionEvent) {
-        if (fieldNombre.getText().isEmpty() || fieldApellido.getText().isEmpty() ||
-                fieldCorreo.getText().isEmpty() || fieldNoPersonal.getText().isEmpty() ||
-                comboBoxSexo.getValue() == null) {
+        if (nameFormField.getText().isEmpty() || lastNameFormField.getText().isEmpty() ||
+                emailFormField.getText().isEmpty() || personalNumberFormField.getText().isEmpty() ||
+                genderFormComboBox.getValue() == null) {
 
             Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
 
         } else {
-            Coordinator newCoordinatorInformation = getNewCoordinator();
-
             try {
+                Coordinator newCoordinatorInformation = getNewCoordinator();
                 String assignedTemporaryPassword = coordinatorManager.registerNewCoordinator(newCoordinatorInformation);
 
                 Controller.showAlert("Registro Exitoso",
                         "El coordinador ha sido registrado correctamente en el sistema.\nContraseña temporal generada: " + assignedTemporaryPassword,
                         AlertType.INFORMATION);
 
-                clearForm();
+                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
             } catch (ManagerException registrationManagerException) {
                 Controller.showAlert("Error en el Registro", registrationManagerException.getMessage(), AlertType.ERROR);
@@ -83,16 +84,16 @@ public class RegisterCoordinatorController implements Initializable {
 
     private Coordinator getNewCoordinator() {
         Coordinator mappedCoordinator = new Coordinator();
-        mappedCoordinator.setName(fieldNombre.getText().trim());
-        mappedCoordinator.setLastName(fieldApellido.getText().trim());
-        mappedCoordinator.setEmail(fieldCorreo.getText().trim());
-        mappedCoordinator.setUserName(fieldNoPersonal.getText().trim());
 
-        String selectedSex = (String) comboBoxSexo.getValue();
+        mappedCoordinator.setName(nameFormField.getText().trim());
+        mappedCoordinator.setLastName(lastNameFormField.getText().trim());
+        mappedCoordinator.setEmail(emailFormField.getText().trim());
+        mappedCoordinator.setUserName(personalNumberFormField.getText().trim());
+
+        String selectedSex = (String) genderFormComboBox.getValue();
         mappedCoordinator.setGender(Gender.fromDisplayValue(selectedSex));
 
         mappedCoordinator.setRole("Coordinator");
-
         mappedCoordinator.setStatus(UserStatus.PENDING);
 
         return mappedCoordinator;
@@ -101,23 +102,5 @@ public class RegisterCoordinatorController implements Initializable {
     @FXML
     private void handleActionCancelButton(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-    }
-
-    private void clearForm() {
-        if (fieldNombre != null) {
-            fieldNombre.setText("");
-        }
-        if (fieldApellido != null) {
-            fieldApellido.setText("");
-        }
-        if (fieldCorreo != null) {
-            fieldCorreo.setText("");
-        }
-        if (fieldNoPersonal != null) {
-            fieldNoPersonal.setText("");
-        }
-        if (comboBoxSexo != null) {
-            comboBoxSexo.clearSelection();
-        }
     }
 }
