@@ -125,8 +125,10 @@ public class RegisterProjectController implements Initializable {
             managerMap.clear();
 
             for (Manager mgr : managers) {
-                managerNames.add(mgr.getName());
-                managerMap.put(mgr.getName(), mgr.getId());
+                if (mgr.getStatus() != null && "Active".equalsIgnoreCase(mgr.getStatus().getDatabaseValue())) {
+                    managerNames.add(mgr.getName());
+                    managerMap.put(mgr.getName(), mgr.getId());
+                }
             }
 
             comboBoxManager.setItems(managerNames);
@@ -134,6 +136,8 @@ public class RegisterProjectController implements Initializable {
 
             if (managerNames.isEmpty()) {
                 comboBoxManager.setPromptText(NO_MANAGERS_TEXT);
+            } else {
+                comboBoxManager.setPromptText("");
             }
 
         } catch (ManagerException exception) {

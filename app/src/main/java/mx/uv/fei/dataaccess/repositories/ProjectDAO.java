@@ -24,10 +24,12 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     private static final String SQL_SELECT_AVAILABLE_WITH_CAPACITY =
             "SELECT p.project_id, p.project_name, p.description, p.participant_capacity, p.manager_id, p.status, p.start_date, p.end_date, p.organization_id " +
                     "FROM project p " +
-                    "LEFT JOIN project_postulation pa ON p.project_id = pa.project_id AND pa.postulation_status = 'Assigned' " +
                     "WHERE p.status = 'Active' " +
-                    "GROUP BY p.project_id " +
-                    "HAVING COUNT(pa.practitioner_id) < p.participant_capacity";
+                    "AND p.participant_capacity > (" +
+                    "    SELECT COALESCE(COUNT(pa.postulation_id), 0) " +
+                    "    FROM project_postulation pa " +
+                    "    WHERE pa.project_id = p.project_id AND pa.postulation_status = 'Assigned'" +
+                    ")";
 
     @Inject
     public ProjectDAO(IDatabaseConnection databaseConnection) {
