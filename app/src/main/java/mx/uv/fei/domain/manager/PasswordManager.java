@@ -15,6 +15,7 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.UUID;
 
 @Component
 public class PasswordManager {
@@ -55,5 +56,10 @@ public class PasswordManager {
         } catch (DAOException | SQLException exception) {
             throw new ManagerException("Ocurrió un error de conexión al intentar actualizar el perfil.", exception);
         }
+    }
+
+    public static String generatePassword() {
+
+        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }
