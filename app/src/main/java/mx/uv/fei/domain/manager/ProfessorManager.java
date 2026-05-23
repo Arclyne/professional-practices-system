@@ -1,7 +1,6 @@
 package mx.uv.fei.domain.manager;
 
 import java.util.List;
-import java.util.UUID;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -29,7 +28,7 @@ public class ProfessorManager {
     }
 
     public String registerNewProfessor(Professor professor) throws ManagerException {
-        String tempPassword = this.generatePassword();
+        String tempPassword = PasswordManager.generatePassword();
         professor.setPassword(tempPassword);
         professor.setRole("Professor");
         professor.setStatus(UserStatus.PENDING);
@@ -67,9 +66,5 @@ public class ProfessorManager {
         } catch (DAOException dataAccessException) {
             throw new ManagerException("Error al obtener la lista de profesores.", dataAccessException);
         }
-    }
-
-    private String generatePassword() {
-        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }

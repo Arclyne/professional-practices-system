@@ -6,12 +6,15 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class ProjectAssignmentManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProjectAssignmentManager.class);
     private final IPostulationDAO postulationProjectDataAccessObject;
 
     @Inject
@@ -38,8 +41,9 @@ public class ProjectAssignmentManager {
             if (!isProjectAssignedSuccessfully) {
                 throw new ManagerException("No fue posible asignar el proyecto. Verifique que la postulacion exista y se encuentre activa.");
             }
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Ocurrio un problema de conexion al intentar registrar la asignacion.", dataAccessObjectException);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrio un problema de conexion al intentar registrar la asignacion.",e);
         }
     }
 }

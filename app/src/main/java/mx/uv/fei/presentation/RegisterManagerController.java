@@ -14,6 +14,7 @@ import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.manager.OrganizationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -31,6 +32,7 @@ import java.util.ResourceBundle;
 public class RegisterManagerController implements Initializable {
 
     private final OrganizationManager organizationManager;
+    private final ManagerManager managerManager;
     private final AppStore store;
 
     private final Map<String, Integer> organizationMap = new HashMap<>();
@@ -43,8 +45,9 @@ public class RegisterManagerController implements Initializable {
     @FXML private Button cancelButton;
 
     @Inject
-    public RegisterManagerController(OrganizationManager organizationManager, AppStore store) {
+    public RegisterManagerController(OrganizationManager organizationManager, ManagerManager managerManager, AppStore store) {
         this.organizationManager = organizationManager;
+        this.managerManager = managerManager;
         this.store = store;
     }
 
@@ -89,7 +92,7 @@ public class RegisterManagerController implements Initializable {
 
             managerToRegister.setOrganizationId(orgId);
 
-            boolean isSaved = organizationManager.registerManager(managerToRegister);
+            boolean isSaved = managerManager.registerManager(managerToRegister);
 
             if (isSaved) {
                 Controller.showSuccessAlert("Registro Exitoso", "El encargado ha sido guardado correctamente.");

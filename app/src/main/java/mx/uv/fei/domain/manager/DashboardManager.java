@@ -13,8 +13,8 @@ public class DashboardManager {
     private final IPostulationDAO postulationDataAccessObject;
 
     @Inject
-    public DashboardManager(IPostulationDAO postulationDataAccessObject) {
-        this.postulationDataAccessObject = postulationDataAccessObject;
+    public DashboardManager(IPostulationDAO postulationDAO) {
+        this.postulationDataAccessObject = postulationDAO;
     }
 
     public boolean isAdministratorMenuAvailable(String authenticatedUserRole) {
@@ -44,8 +44,8 @@ public class DashboardManager {
             } else {
                 resolvedTargetNavigationSection = AppSection.PRIORITIZE_PROJECTS;
             }
-        } catch (DAOException dataAccessObjectException) {
-            throw new ManagerException("Ocurrio un fallo al verificar el estado de las prioridades del practicante en el servidor.", dataAccessObjectException);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrio un fallo al verificar el estado de las prioridades del practicante en el servidor.", e);
         }
 
         return resolvedTargetNavigationSection;

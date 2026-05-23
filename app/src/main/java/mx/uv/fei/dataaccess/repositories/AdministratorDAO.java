@@ -11,6 +11,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
+import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -18,107 +19,130 @@ import mx.uv.fei.domain.enums.UserStatus;
 @Component
 public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
-    private final UserDAO userDAO;
-
-    private static final String SQL_INSERT = "INSERT INTO administrator (administrator_id) VALUES (?)";
-
-    private static final String SQL_SELECT_ONE = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+    private static final String SQL_INSERT_ADMINISTRATOR = "INSERT INTO administrator (administrator_id) VALUES (?)";
+    private static final String SQL_SELECT_ADMINISTRATOR_BY_ID = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
             "FROM administrator a " +
             "INNER JOIN user u ON a.administrator_id = u.user_id " +
             "WHERE a.administrator_id = ?";
-
-    private static final String SQL_SELECT_ALL = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+    private static final String SQL_SELECT_ALL_ADMINISTRATORS = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
             "FROM administrator a " +
             "INNER JOIN user u ON a.administrator_id = u.user_id";
+    private static final String SQL_CHECK_ADMINISTRATOR_EXISTS = "SELECT COUNT(*) FROM administrator";
 
-    private static final String SQL_CHECK_EXISTS = "SELECT COUNT(*) FROM administrator";
+    private final IUserDAO userDAO;
 
     @Inject
-    public AdministratorDAO(IDatabaseConnection databaseConnection, UserDAO userDAO) {
+    public AdministratorDAO(IDatabaseConnection databaseConnection, IUserDAO userDAO) {
         super(databaseConnection);
         this.userDAO = userDAO;
     }
 
     public boolean checkIfAdminExists() throws DAOException {
+        boolean adminExists = false;
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_CHECK_EXISTS);
+             PreparedStatement statement = connection.prepareStatement(SQL_CHECK_ADMINISTRATOR_EXISTS);
              ResultSet resultSet = statement.executeQuery()) {
+
             if (resultSet.next()) {
-                return resultSet.getInt(1) > 0;
+                adminExists = resultSet.getInt(1) > 0;
             }
         } catch (SQLException e) {
             throw new DAOException("Error al verificar la existencia del administrador en la base de datos.", e);
         }
-        return false;
+
+        return adminExists;
     }
 
     @Override
     public int insertAdministrator(Administrator administrator) throws DAOException {
         int resultId = -1;
+
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
+
             try {
-                int generatedUserId = userDAO.insertUser(administrator, connection);
-                if (generatedUserId > 0) {
-                    try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
-                        statement.setInt(1, generatedUserId);
-                        if (statement.executeUpdate() > 0) {
-                            resultId = generatedUserId;
-                        }
-                    }
+                resultId = executeAdministratorTransaction(connection, administrator);
+
+                if (resultId > 0) {
                     connection.commit();
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | DAOException e) {
                 connection.rollback();
-                throw new DAOException("SQL Error al insertar el administrador. Se ha hecho un rollback.", e);
+                throw new DAOException("Error al insertar el administrador. Se ha hecho un rollback.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
+
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
+
         return resultId;
+    }
+
+    private int executeAdministratorTransaction(Connection connection, Administrator administrator) throws SQLException, DAOException {
+        int insertedAdminId = -1;
+        int generatedUserId = userDAO.insertUser(administrator, connection);
+
+        if (generatedUserId > 0) {
+            try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ADMINISTRATOR)) {
+                statement.setInt(1, generatedUserId);
+
+                if (statement.executeUpdate() > 0) {
+                    insertedAdminId = generatedUserId;
+                }
+            }
+        }
+
+        return insertedAdminId;
     }
 
     @Override
     public Administrator recoverAdministrator(int administratorId) throws DAOException {
-        Administrator adminToSearch = new Administrator();
+        Administrator recoveredAdmin = new Administrator();
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ADMINISTRATOR_BY_ID)) {
+
             statement.setInt(1, administratorId);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    mapAdministrator(adminToSearch, resultSet);
+                    recoveredAdmin = mapResultSetToAdministrator(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al intentar recuperar el administrador de la base de datos.", e);
         }
-        return adminToSearch;
+
+        return recoveredAdmin;
     }
 
     @Override
     public List<Administrator> getAllAdministrators() throws DAOException {
-        return recoverALL(SQL_SELECT_ALL, resultSet -> {
-            Administrator adminRecovered = new Administrator();
-            mapAdministrator(adminRecovered, resultSet);
-            return adminRecovered;
-        });
+        return recoverALL(SQL_SELECT_ALL_ADMINISTRATORS, this::mapResultSetToAdministrator);
     }
 
     @Override
-    public boolean updateAdministrator(Administrator adminToUpdate, int id) throws DAOException {
-        adminToUpdate.setId(id);
+    public boolean updateAdministrator(Administrator adminToUpdate, int administratorId) throws DAOException {
+        boolean isUpdated = false;
+        adminToUpdate.setId(administratorId);
+
         try (Connection connection = databaseConnection.getConnection()) {
-            return userDAO.updateUser(adminToUpdate, connection);
+            isUpdated = userDAO.updateUser(adminToUpdate, connection);
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión al actualizar administrador.", e);
         }
+
+        return isUpdated;
     }
 
-    private void mapAdministrator(Administrator admin, ResultSet resultSet) throws SQLException {
+    private Administrator mapResultSetToAdministrator(ResultSet resultSet) throws SQLException {
+        Administrator admin = new Administrator();
+
         admin.setId(resultSet.getInt("user_id"));
         admin.setUserName(resultSet.getString("username"));
         admin.setPassword(resultSet.getString("password"));
@@ -139,5 +163,7 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         if (resultSet.getTimestamp("discharge_date") != null) {
             admin.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }
+
+        return admin;
     }
 }
