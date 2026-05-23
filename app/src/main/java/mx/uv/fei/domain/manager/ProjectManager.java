@@ -23,22 +23,6 @@ public class ProjectManager {
         this.projectDataAccessObject = projectDataAccessObject;
     }
 
-    public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
-        Validator.validateActivityData(activityToRegister);
-
-        try {
-            boolean isRegistered = activityDataAccessObject.insertActivity(activityToRegister);
-
-            if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro de la actividad en el sistema.");
-            }
-            return true;
-
-        } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema. Por favor, intente más tarde.", e);
-        }
-    }
-
     public boolean registerNewProject(Project projectToRegister) throws ManagerException {
         Validator.validateProjectData(projectToRegister);
 

@@ -16,79 +16,95 @@ import mx.uv.fei.domain.dto.Activity;
 @Component
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
+    private static final String SQL_INSERT_ACTIVITY = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_ACTIVITY_BY_NAME = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
+    private static final String SQL_SELECT_ALL_ACTIVITIES = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity";
+    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
+
     @Inject
     public ActivityDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
-    private static final String SQL_INSERT = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECTTOSEARCH = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
-    private static final String SQL_SELECTALL = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity";
-    private static final String SQL_UPDATE = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
-
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
+        boolean isInserted = false;
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ACTIVITY)) {
+
             statement.setString(1, activity.getName());
             statement.setDate(2, activity.getStartDate());
             statement.setDate(3, activity.getEndDate());
             statement.setString(4, activity.getDescription());
             statement.setString(5, activity.getManager());
 
-            return statement.executeUpdate() > 0;
+            isInserted = statement.executeUpdate() > 0;
+
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar la actividad en la base de datos.", e);
         }
+
+        return isInserted;
     }
 
     @Override
     public Activity recoverActivity(String activityName, String manager) throws DAOException {
-        Activity activityToSearch = new Activity();
+        Activity recoveredActivity = new Activity();
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECTTOSEARCH)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ACTIVITY_BY_NAME)) {
+
             statement.setString(1, activityName);
             statement.setString(2, manager);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    mapActivity(activityToSearch, resultSet);
+                    recoveredActivity = mapResultSetToActivity(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al intentar recuperar la actividad de la base de datos.", e);
         }
-        return activityToSearch;
+
+        return recoveredActivity;
     }
 
-    private void mapActivity(Activity activityToSearch, ResultSet resultSet) throws SQLException {
-        activityToSearch.setActivityId(resultSet.getInt("activity_id"));
-        activityToSearch.setName(resultSet.getString("name"));
-        activityToSearch.setStartDate(resultSet.getDate("start_date"));
-        activityToSearch.setEndDate(resultSet.getDate("end_date"));
-        activityToSearch.setDescription(resultSet.getString("description"));
-        activityToSearch.setManager(resultSet.getString("manager"));
-    }
+    private Activity mapResultSetToActivity(ResultSet resultSet) throws SQLException {
+        Activity activity = new Activity();
 
-    @Override
-    public List<Activity> getAllActivity() throws DAOException {
-        return recoverALL(SQL_SELECTALL,
-                resultSet -> {
-                    Activity activityRecovered = new Activity();
-                    mapActivity(activityRecovered, resultSet);
-                    return activityRecovered;
-                });
+        activity.setActivityId(resultSet.getInt("activity_id"));
+        activity.setName(resultSet.getString("name"));
+        activity.setStartDate(resultSet.getDate("start_date"));
+        activity.setEndDate(resultSet.getDate("end_date"));
+        activity.setDescription(resultSet.getString("description"));
+        activity.setManager(resultSet.getString("manager"));
+
+        return activity;
     }
 
     @Override
-    public boolean updateActivity(Activity activity, int ID) throws DAOException {
-        return updateTuple(SQL_UPDATE, statement -> {
+    public List<Activity> getAllActivities() throws DAOException {
+        List<Activity> activitiesList;
+
+        activitiesList = recoverALL(SQL_SELECT_ALL_ACTIVITIES, this::mapResultSetToActivity);
+
+        return activitiesList;
+    }
+
+    @Override
+    public boolean updateActivity(Activity activity, int activityId) throws DAOException {
+        boolean isUpdated = false;
+
+        isUpdated = updateTuple(SQL_UPDATE_ACTIVITY, statement -> {
             statement.setString(1, activity.getName());
             statement.setObject(2, activity.getStartDate());
             statement.setObject(3, activity.getEndDate());
             statement.setString(4, activity.getDescription());
             statement.setString(5, activity.getManager());
-            statement.setInt(6, ID);
+            statement.setInt(6, activityId);
         });
+
+        return isUpdated;
     }
 }

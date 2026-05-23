@@ -31,7 +31,7 @@ public class PractitionerManager {
     }
 
     public String registerNewPractitioner(Practitioner practitioner) throws ManagerException {
-        String temporalPassword = generateTemporalPassword();
+        String temporalPassword = PasswordManager.generatePassword();
 
         practitioner.setPassword(temporalPassword);
         practitioner.setUserName(practitioner.getEnrollment());
@@ -73,7 +73,4 @@ public class PractitionerManager {
         return registrationSummary;
     }
 
-    private String generateTemporalPassword() {
-        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
-    }
 }
