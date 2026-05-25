@@ -96,7 +96,7 @@ public class OrganizationDAOIT {
 
     @Test
     void testRecoverALLSuccess() throws DAOException {
-        List<Organization> resultTest = organizationTest.getAllOrganization();
+        List<Organization> resultTest = organizationTest.getAllOrganizations();
         assertEquals(expectedList, resultTest,
                 "La lista de organizaciones recuperada no coincide con la lista esperada.");
     }

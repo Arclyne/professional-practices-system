@@ -22,18 +22,18 @@ public class ManagerManager {
     private static final String REGISTER_MANAGER_ERROR_MESSAGE = "No se pudo completar el registro del encargado en el sistema.";
     private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema de conexión. Por favor, intente más tarde.";
 
-    private final IManagerDAO managerDAO;
+    private final IManagerDAO managerDataAccessObject;
 
     @Inject
-    public ManagerManager(IManagerDAO managerDAO) {
-        this.managerDAO = managerDAO;
+    public ManagerManager(IManagerDAO managerDataAccessObject) {
+        this.managerDataAccessObject = managerDataAccessObject;
     }
 
     public List<Manager> getAllManagers() throws ManagerException {
         List<Manager> managers;
 
         try {
-            managers = managerDAO.getAllManagers();
+            managers = managerDataAccessObject.getAllManagers();
         } catch (DAOException exception) {
             throw new ManagerException(GET_ALL_ERROR_MESSAGE, exception);
         }
@@ -45,7 +45,7 @@ public class ManagerManager {
         List<Manager> managers;
 
         try {
-            managers = managerDAO.getManagersByOrganization(organizationId);
+            managers = managerDataAccessObject.getManagersByOrganization(organizationId);
         } catch (DAOException exception) {
             throw new ManagerException(GET_MANAGERS_ERROR_MESSAGE, exception);
         }
@@ -59,7 +59,7 @@ public class ManagerManager {
         Validator.validateManagerData(managerToRegister);
 
         try {
-            isRegistered = managerDAO.insertManager(managerToRegister);
+            isRegistered = managerDataAccessObject.insertManager(managerToRegister);
 
             if (!isRegistered) {
                 throw new ManagerException(REGISTER_MANAGER_ERROR_MESSAGE);
@@ -73,7 +73,7 @@ public class ManagerManager {
 
     public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {
         try {
-            boolean isProcessSuccessful = managerDAO.deactivateMultipleManagers(managerIdentifiersList);
+            boolean isProcessSuccessful = managerDataAccessObject.deactivateMultipleManagers(managerIdentifiersList);
 
             if (!isProcessSuccessful) {
                 throw new ManagerException(INACTIVATE_ERROR_MESSAGE);

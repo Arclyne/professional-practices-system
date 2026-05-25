@@ -1,69 +1,70 @@
 package mx.uv.fei.domain.manager;
 
-import java.util.List;
-
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IManagerDAO; // <-- Interfaz corregida
 import mx.uv.fei.dataaccess.interfaces.IOrganizationDAO;
+import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+import java.util.List;
 
 @Component
 public class OrganizationManager {
 
-    private static final String REGISTER_ORG_ERROR_MESSAGE = "No se pudo completar el registro de la organización en el sistema.";
-    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema de conexión. Por favor, intente más tarde.";
-    private static final String GET_ALL_ORG_ERROR_MESSAGE = "Error al recuperar la lista de organizaciones.";
-    private static final String INACTIVATE_ORG_ERROR_MESSAGE = "No se pudieron inactivar las organizaciones seleccionadas.";
-    private static final String INACTIVATE_CONNECTION_ERROR_MESSAGE = "Error de base de datos al inactivar organizaciones.";
-
     private final IOrganizationDAO organizationDAO;
+    private final IManagerDAO managerDAO;
 
     @Inject
-    public OrganizationManager(IOrganizationDAO organizationDAO) {
+    public OrganizationManager(IOrganizationDAO organizationDAO, IManagerDAO managerDAO) {
         this.organizationDAO = organizationDAO;
+        this.managerDAO = managerDAO;
     }
 
     public boolean registerOrganization(Organization organizationToRegister) throws ManagerException {
-        boolean isRegistered;
 
         try {
-            isRegistered = organizationDAO.insertOrganization(organizationToRegister);
+            boolean isRegistered = organizationDAO.insertOrganization(organizationToRegister);
 
             if (!isRegistered) {
-                throw new ManagerException(REGISTER_ORG_ERROR_MESSAGE);
+                throw new ManagerException("No se pudo completar el registro de la organización en el sistema.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
-        }
+            return true;
 
-        return isRegistered;
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
     }
 
     public List<Organization> getAllOrganizations() throws ManagerException {
-        List<Organization> organizations;
-
         try {
-            organizations = organizationDAO.getAllOrganization();
-        } catch (DAOException exception) {
-            throw new ManagerException(GET_ALL_ORG_ERROR_MESSAGE, exception);
+            return organizationDAO.getAllOrganizations();
+        } catch (DAOException e) {
+            throw new ManagerException("Error al recuperar la lista de organizaciones.", e);
         }
+    }
 
-        return organizations;
+    public List<Manager> getManagersByOrganization(int organizationId) throws ManagerException {
+        try {
+            return managerDAO.getManagersByOrganization(organizationId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudieron cargar los encargados de esta organización.", e);
+        }
     }
 
     public void inactivateMultipleOrganizations(List<Integer> organizationIdentifiersList) throws ManagerException {
         try {
             boolean isProcessSuccessful = organizationDAO.deactivateMultipleOrganizations(organizationIdentifiersList);
-
             if (!isProcessSuccessful) {
-                throw new ManagerException(INACTIVATE_ORG_ERROR_MESSAGE);
+                throw new ManagerException("No se pudieron inactivar las organizaciones seleccionadas.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, exception);
+        } catch (DAOException dataAccessException) {
+            throw new ManagerException("Error de base de datos al inactivar organizaciones.", dataAccessException);
         }
     }
+
+
+
 }
