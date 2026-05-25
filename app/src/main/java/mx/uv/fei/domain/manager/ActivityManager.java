@@ -18,8 +18,8 @@ public class ActivityManager {
     private final IActivityDAO activityDataAccessObject;
 
     @Inject
-    public ActivityManager(IActivityDAO activityDataAccessObject) {
-        this.activityDataAccessObject = activityDataAccessObject;
+    public ActivityManager(IActivityDAO activityDAO) {
+        this.activityDataAccessObject = activityDAO;
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {

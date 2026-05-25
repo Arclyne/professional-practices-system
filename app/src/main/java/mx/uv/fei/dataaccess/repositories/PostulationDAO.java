@@ -32,82 +32,116 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     @Override
     public boolean hasPractitionerSubmittedPriorities(int practitionerIdentifier) throws DAOException {
         boolean hasSubmittedPriorities = false;
-        try (Connection currentDatabaseConnection = databaseConnection.getConnection();
-             PreparedStatement countStatement = currentDatabaseConnection.prepareStatement(SQL_CHECK_EXISTING_POSTULATIONS)) {
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement countStatement = connection.prepareStatement(SQL_CHECK_EXISTING_POSTULATIONS)) {
+
             countStatement.setInt(1, practitionerIdentifier);
-            try (ResultSet executionResultSet = countStatement.executeQuery()) {
-                if (executionResultSet.next()) {
-                    hasSubmittedPriorities = executionResultSet.getInt(1) > 0;
+
+            try (ResultSet resultSet = countStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    hasSubmittedPriorities = resultSet.getInt(1) > 0;
                 }
             }
-        } catch (SQLException executionException) {
-            throw new DAOException("Ocurrio un error al verificar el estado de las postulaciones del practicante.", executionException);
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error al verificar el estado de las postulaciones del practicante.", e);
         }
+
         return hasSubmittedPriorities;
     }
 
     @Override
     public boolean insertProjectPriorities(int targetPractitionerIdentifier, List<Project> prioritizedProjectList) throws DAOException {
         boolean isBatchExecutionSuccessful = false;
-        try (Connection currentDatabaseConnection = databaseConnection.getConnection()) {
-            currentDatabaseConnection.setAutoCommit(false);
-            try (PreparedStatement batchInsertStatement = currentDatabaseConnection.prepareStatement(SQL_INSERT_POSTULATION)) {
-                for (int priorityIndex = 0; priorityIndex < prioritizedProjectList.size(); priorityIndex++) {
-                    batchInsertStatement.setInt(1, targetPractitionerIdentifier);
-                    batchInsertStatement.setInt(2, prioritizedProjectList.get(priorityIndex).getProjectId());
-                    batchInsertStatement.setInt(3, priorityIndex + 1);
-                    batchInsertStatement.addBatch();
+
+        try (Connection connection = databaseConnection.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try {
+                isBatchExecutionSuccessful = executePriorityBatch(connection, targetPractitionerIdentifier, prioritizedProjectList);
+
+                if (isBatchExecutionSuccessful) {
+                    connection.commit();
+                } else {
+                    connection.rollback();
                 }
-                int[] batchExecutionResultsArray = batchInsertStatement.executeBatch();
-                currentDatabaseConnection.commit();
-                isBatchExecutionSuccessful = batchExecutionResultsArray.length == prioritizedProjectList.size();
-            } catch (SQLException executionException) {
-                currentDatabaseConnection.rollback();
-                throw new DAOException("Ocurrio un error SQL durante la insercion en lote de las prioridades.", executionException);
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DAOException("Ocurrió un error SQL durante la inserción en lote de las prioridades.", e);
             } finally {
-                currentDatabaseConnection.setAutoCommit(true);
+                connection.setAutoCommit(true);
             }
-        } catch (SQLException connectionException) {
-            throw new DAOException("Fallo critico de conexion con la base de datos al intentar guardar la postulacion.", connectionException);
+
+        } catch (SQLException e) {
+            throw new DAOException("Fallo crítico de conexión con la base de datos al intentar guardar la postulación.", e);
         }
+
         return isBatchExecutionSuccessful;
+    }
+
+    private boolean executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
+        try (PreparedStatement batchInsertStatement = connection.prepareStatement(SQL_INSERT_POSTULATION)) {
+            for (int priorityIndex = 0; priorityIndex < projects.size(); priorityIndex++) {
+                batchInsertStatement.setInt(1, practitionerId);
+                batchInsertStatement.setInt(2, projects.get(priorityIndex).getProjectId());
+                batchInsertStatement.setInt(3, priorityIndex + 1);
+                batchInsertStatement.addBatch();
+            }
+            int[] batchExecutionResultsArray = batchInsertStatement.executeBatch();
+            return batchExecutionResultsArray.length == projects.size();
+        }
     }
 
     @Override
     public List<ProjectPostulation> retrievePractitionerPostulations(int practitionerIdentifier) throws DAOException {
         List<ProjectPostulation> retrievedPostulationsList = new ArrayList<>();
-        try (Connection currentDatabaseConnection = databaseConnection.getConnection();
-             PreparedStatement selectStatement = currentDatabaseConnection.prepareStatement(SQL_SELECT_POSTULATIONS)) {
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_POSTULATIONS)) {
+
             selectStatement.setInt(1, practitionerIdentifier);
-            try (ResultSet executionResultSet = selectStatement.executeQuery()) {
-                while (executionResultSet.next()) {
-                    ProjectPostulation currentPostulation = new ProjectPostulation();
-                    currentPostulation.setPractitionerIdentifier(executionResultSet.getInt("practitioner_id"));
-                    currentPostulation.setProjectIdentifier(executionResultSet.getInt("project_id"));
-                    currentPostulation.setProjectName(executionResultSet.getString("project_name"));
-                    currentPostulation.setPriorityLevel(executionResultSet.getInt("priority_level"));
-                    currentPostulation.setPostulationStatus(executionResultSet.getString("postulation_status"));
-                    retrievedPostulationsList.add(currentPostulation);
+
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    retrievedPostulationsList.add(mapResultSetToPostulation(resultSet));
                 }
             }
-        } catch (SQLException executionException) {
-            throw new DAOException("Ocurrio un error al intentar recuperar las postulaciones del practicante.", executionException);
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error al intentar recuperar las postulaciones del practicante.", e);
         }
+
         return retrievedPostulationsList;
+    }
+
+    private ProjectPostulation mapResultSetToPostulation(ResultSet resultSet) throws SQLException {
+        ProjectPostulation postulation = new ProjectPostulation();
+
+        postulation.setPractitionerIdentifier(resultSet.getInt("practitioner_id"));
+        postulation.setProjectIdentifier(resultSet.getInt("project_id"));
+        postulation.setProjectName(resultSet.getString("project_name"));
+        postulation.setPriorityLevel(resultSet.getInt("priority_level"));
+        postulation.setPostulationStatus(resultSet.getString("postulation_status"));
+
+        return postulation;
     }
 
     @Override
     public boolean assignProjectUsingStoredProcedure(int practitionerIdentifier, int projectIdentifier) throws DAOException {
         boolean isProcedureExecutionSuccessful = false;
-        try (Connection currentDatabaseConnection = databaseConnection.getConnection();
-             CallableStatement assignmentProcedureStatement = currentDatabaseConnection.prepareCall(SQL_CALL_ASSIGNMENT_PROCEDURE)) {
+
+        try (Connection connection = databaseConnection.getConnection();
+             CallableStatement assignmentProcedureStatement = connection.prepareCall(SQL_CALL_ASSIGNMENT_PROCEDURE)) {
+
             assignmentProcedureStatement.setInt(1, practitionerIdentifier);
             assignmentProcedureStatement.setInt(2, projectIdentifier);
             assignmentProcedureStatement.execute();
+
             isProcedureExecutionSuccessful = true;
-        } catch (SQLException executionException) {
-            throw new DAOException("Ocurrio un error en el servidor al intentar ejecutar la asignacion automatica.", executionException);
+
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error en el servidor al intentar ejecutar la asignación automática.", e);
         }
+
         return isProcedureExecutionSuccessful;
     }
 }

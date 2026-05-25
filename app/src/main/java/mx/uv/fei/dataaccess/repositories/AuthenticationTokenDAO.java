@@ -38,9 +38,9 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
             return statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            String debugMsg = String.format("Fallo al insertar token [%d] para el usuario '%s'. SQLState: %s, ErrorCode: %d",
+            String debugMessage = String.format("Fallo al insertar token [%d] para el usuario '%s'. SQLState: %s, ErrorCode: %d",
                     tokenToInsert.getValueToken(), tokenToInsert.getUserName(), e.getSQLState(), e.getErrorCode());
-            throw new DAOException(debugMsg, e);
+            throw new DAOException(debugMessage, e);
         }
     }
 
