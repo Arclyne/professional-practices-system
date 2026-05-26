@@ -1,30 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-
-import mx.uv.fei.domain.dto.Manager;
-import mx.uv.fei.domain.dto.Organization;
-import mx.uv.fei.domain.dto.Project;
-import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
-import mx.uv.fei.presentation.components.FormComboBox;
-import mx.uv.fei.presentation.components.FormField;
-import mx.uv.fei.domain.common.Parse;
-import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.config.annotation.etiquette.Component;
-import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.Controller;
-
 import java.net.URL;
 import java.sql.Date;
 import java.time.format.DateTimeParseException;
@@ -33,11 +8,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+
+
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.common.Parse;
+import mx.uv.fei.domain.dto.Manager;
+import mx.uv.fei.domain.dto.Organization;
+import mx.uv.fei.domain.dto.Project;
+import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.ManagerManager;
+import mx.uv.fei.domain.manager.OrganizationManager;
+import mx.uv.fei.domain.manager.ProjectManager;
+import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.components.FormComboBox;
+import mx.uv.fei.presentation.components.FormField;
+
+
 @Component
 public class RegisterProjectController implements Initializable {
 
+    private static final String STATUS_ACTIVE = "Activo";
+    private static final String ERROR_TITLE = "Error";
+    private static final String LOAD_ERROR_TITLE = "Error de Carga";
+    private static final String SUCCESS_TITLE = "Registro Exitoso";
+    private static final String SUCCESS_MESSAGE = "El proyecto ha sido guardado correctamente.";
+    private static final String FORMAT_ERROR_TITLE = "Error de formato";
+    private static final String FORMAT_ERROR_MESSAGE = "El cupo de participantes debe ser un número entero válido.";
+    private static final String DATE_ERROR_TITLE = "Error de fecha";
+    private static final String DATE_ERROR_MESSAGE = "Por favor, introduzca fechas válidas (DD/MM/AAAA).";
+    private static final String SAVE_ERROR_TITLE = "Error al guardar";
+    private static final String VALIDATION_ERROR_MESSAGE = "Debe seleccionar una organización y un encargado asignado.";
+    private static final String NO_MANAGERS_TEXT = "Sin encargados registrados";
+
     private final ProjectManager projectManager;
     private final OrganizationManager organizationManager;
+    private final ManagerManager managerManager;
     private final AppStore store;
 
     private final Map<String, Integer> organizationMap = new HashMap<>();
@@ -47,37 +63,37 @@ public class RegisterProjectController implements Initializable {
     @FXML private FormField fieldCapacity;
     @FXML private FormComboBox comboBoxOrganization;
     @FXML private FormComboBox comboBoxManager;
-
     @FXML private TextField textFieldStartDay;
     @FXML private TextField textFieldStartMonth;
     @FXML private TextField textFieldStartYear;
     @FXML private TextField textFieldDeadlineDay;
     @FXML private TextField textFieldDeadlineMonth;
     @FXML private TextField textFieldDeadlineYear;
-
     @FXML private TextArea textAreaDescription;
     @FXML private Button buttonSave;
     @FXML private Button buttonCancel;
 
     @Inject
-    public RegisterProjectController(ProjectManager projectManager, OrganizationManager organizationManager, AppStore store) {
+    public RegisterProjectController(ProjectManager projectManager,
+                                     OrganizationManager organizationManager,
+                                     ManagerManager managerManager,
+                                     AppStore store) {
         this.projectManager = projectManager;
         this.organizationManager = organizationManager;
+        this.managerManager = managerManager;
         this.store = store;
     }
 
     @Override
     public void initialize(URL locationUrl, ResourceBundle resourcesBundle) {
-
         comboBoxManager.setDisable(true);
         loadOrganizations();
 
-        comboBoxOrganization.valueProperty().addListener((observable, oldValue, newValue) -> {
+        comboBoxOrganization.valueProperty().addListener((_, _, newValue) -> {
             if (newValue != null && !newValue.toString().trim().isEmpty()) {
                 int orgId = organizationMap.get((String) newValue);
                 loadManagersByOrganization(orgId);
             } else {
-
                 comboBoxManager.setDisable(true);
                 comboBoxManager.getItems().clear();
             }
@@ -90,97 +106,83 @@ public class RegisterProjectController implements Initializable {
             ObservableList<String> organizationOptions = FXCollections.observableArrayList();
 
             for (Organization org : organizations) {
-                if ("Activo".equalsIgnoreCase(org.getState())) { // Filtrar por activas
+                if (STATUS_ACTIVE.equalsIgnoreCase(org.getState())) {
                     organizationOptions.add(org.getNameOrganization());
                     organizationMap.put(org.getNameOrganization(), org.getIdOrganization());
                 }
             }
             comboBoxOrganization.setItems(organizationOptions);
 
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error de Carga", e.getMessage());
+        } catch (ManagerException exception) {
+            Controller.showErrorAlert(LOAD_ERROR_TITLE, exception.getMessage());
         }
     }
 
     private void loadManagersByOrganization(int organizationId) {
         try {
-            List<Manager> managers = organizationManager.getManagersByOrganization(organizationId);
+            List<Manager> managers = managerManager.getManagersByOrganization(organizationId);
             ObservableList<String> managerNames = FXCollections.observableArrayList();
-
             managerMap.clear();
 
             for (Manager mgr : managers) {
-                managerNames.add(mgr.getName());
-                managerMap.put(mgr.getName(), mgr.getId());
+                if (mgr.getStatus() != null && "Active".equalsIgnoreCase(mgr.getStatus().getDatabaseValue())) {
+                    managerNames.add(mgr.getName());
+                    managerMap.put(mgr.getName(), mgr.getId());
+                }
             }
 
             comboBoxManager.setItems(managerNames);
+            comboBoxManager.setDisable(managerNames.isEmpty());
 
-            if (!managerNames.isEmpty()) {
-                comboBoxManager.setDisable(false);
+            if (managerNames.isEmpty()) {
+                comboBoxManager.setPromptText(NO_MANAGERS_TEXT);
             } else {
-                comboBoxManager.setDisable(true);
-                comboBoxManager.setPromptText("Sin encargados registrados");
+                comboBoxManager.setPromptText("");
             }
 
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error", e.getMessage());
+        } catch (ManagerException exception) {
+            Controller.showErrorAlert(ERROR_TITLE, exception.getMessage());
             comboBoxManager.setDisable(true);
         }
     }
 
     @FXML
-    private void handleActionSaveButton(ActionEvent actionEvent) {
+    private void handleActionSaveButton() {
         try {
             Project projectInformation = new Project();
-
             projectInformation.setProjectName(fieldProjectName.getText());
             projectInformation.setDescription(textAreaDescription.getText());
-
-            int parsedProjectCapacity = Integer.parseInt(fieldCapacity.getText());
-            projectInformation.setParticipantCapacity(parsedProjectCapacity);
-
-            Date projectStartDate = Parse.parseDate(
-                    textFieldStartDay.getText(),
-                    textFieldStartMonth.getText(),
-                    textFieldStartYear.getText());
-            Date projectEndDate = Parse.parseDate(
-                    textFieldDeadlineDay.getText(),
-                    textFieldDeadlineMonth.getText(),
-                    textFieldDeadlineYear.getText());
-
-            projectInformation.setStartDate(projectStartDate);
-            projectInformation.setEndDate(projectEndDate);
-            projectInformation.setStatus("Activo");
+            projectInformation.setParticipantCapacity(Integer.parseInt(fieldCapacity.getText()));
+            projectInformation.setStartDate(Parse.parseDate(textFieldStartDay.getText(), textFieldStartMonth.getText(), textFieldStartYear.getText()));
+            projectInformation.setEndDate(Parse.parseDate(textFieldDeadlineDay.getText(), textFieldDeadlineMonth.getText(), textFieldDeadlineYear.getText()));
+            projectInformation.setStatus(STATUS_ACTIVE);
 
             String selectedOrg = (String) comboBoxOrganization.getValue();
             String selectedMgr = (String) comboBoxManager.getValue();
 
             if (selectedOrg == null || selectedMgr == null) {
-                throw new ManagerException("Debe seleccionar una organización y un encargado asignado.");
+                throw new ManagerException(VALIDATION_ERROR_MESSAGE);
             }
 
             projectInformation.setCompanyId(organizationMap.get(selectedOrg));
             projectInformation.setManagerId(managerMap.get(selectedMgr));
 
-            boolean isProjectSavedSuccessfully = projectManager.registerNewProject(projectInformation);
-
-            if (isProjectSavedSuccessfully) {
-                Controller.showSuccessAlert("Registro Exitoso", "El proyecto ha sido guardado correctamente.");
+            if (projectManager.registerNewProject(projectInformation)) {
+                Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
                 store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
             }
 
-        } catch (NumberFormatException e) {
-            Controller.showErrorAlert("Error de formato", "El cupo de participantes debe ser un número entero válido.");
-        } catch (IllegalArgumentException | DateTimeParseException e) {
-            Controller.showErrorAlert("Error de fecha", "Por favor, introduzca fechas válidas (DD/MM/AAAA).");
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error al guardar", e.getMessage());
+        } catch (NumberFormatException _) {
+            Controller.showErrorAlert(FORMAT_ERROR_TITLE, FORMAT_ERROR_MESSAGE);
+        } catch (IllegalArgumentException | DateTimeParseException _) {
+            Controller.showErrorAlert(DATE_ERROR_TITLE, DATE_ERROR_MESSAGE);
+        } catch (ManagerException exception) {
+            Controller.showErrorAlert(SAVE_ERROR_TITLE, exception.getMessage());
         }
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent event) {
+    private void handleActionCancelButton() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }
