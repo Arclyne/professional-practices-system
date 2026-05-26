@@ -37,7 +37,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
     @Override
     public boolean insertProject(Project project) throws DAOException {
-        boolean isInserted = false;
+        boolean isInserted;
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PROJECT)) {

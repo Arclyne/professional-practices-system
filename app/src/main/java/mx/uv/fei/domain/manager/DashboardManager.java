@@ -10,11 +10,11 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class DashboardManager {
 
-    private final IPostulationDAO postulationDataAccessObject;
+    private final IPostulationDAO postulationDAO;
 
     @Inject
     public DashboardManager(IPostulationDAO postulationDAO) {
-        this.postulationDataAccessObject = postulationDAO;
+        this.postulationDAO = postulationDAO;
     }
 
     public boolean isAdministratorMenuAvailable(String authenticatedUserRole) {
@@ -37,7 +37,7 @@ public class DashboardManager {
         AppSection resolvedTargetNavigationSection;
 
         try {
-            boolean hasPractitionerPrioritizedProjects = postulationDataAccessObject.hasPractitionerSubmittedPriorities(practitionerIdentifier);
+            boolean hasPractitionerPrioritizedProjects = postulationDAO.hasPractitionerSubmittedPriorities(practitionerIdentifier);
 
             if (hasPractitionerPrioritizedProjects) {
                 resolvedTargetNavigationSection = AppSection.VIEW_PRACTITIONER_PRIORITIES;

@@ -15,12 +15,10 @@ import java.util.List;
 public class OrganizationManager {
 
     private final IOrganizationDAO organizationDAO;
-    private final IManagerDAO managerDAO;
 
     @Inject
-    public OrganizationManager(IOrganizationDAO organizationDAO, IManagerDAO managerDAO) {
+    public OrganizationManager(IOrganizationDAO organizationDAO) {
         this.organizationDAO = organizationDAO;
-        this.managerDAO = managerDAO;
     }
 
     public boolean registerOrganization(Organization organizationToRegister) throws ManagerException {
@@ -43,14 +41,6 @@ public class OrganizationManager {
             return organizationDAO.getAllOrganizations();
         } catch (DAOException e) {
             throw new ManagerException("Error al recuperar la lista de organizaciones.", e);
-        }
-    }
-
-    public List<Manager> getManagersByOrganization(int organizationId) throws ManagerException {
-        try {
-            return managerDAO.getManagersByOrganization(organizationId);
-        } catch (DAOException e) {
-            throw new ManagerException("No se pudieron cargar los encargados de esta organización.", e);
         }
     }
 
