@@ -15,3 +15,5 @@ bin/
 
 # Java
 *.class
+
+repomix-output.xml

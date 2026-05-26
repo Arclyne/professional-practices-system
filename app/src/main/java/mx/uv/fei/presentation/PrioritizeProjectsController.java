@@ -14,7 +14,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.ProjectPrioritizationManager;
+import mx.uv.fei.domain.manager.PostulationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -42,15 +42,15 @@ public class PrioritizeProjectsController {
     @FXML
     private Button cancelPostulationButton;
 
-    private final ProjectPrioritizationManager projectPrioritizationManager;
+    private final PostulationManager PostulationManager;
     private final AppStore applicationNavigationStore;
 
     private final ObservableList<Project> availableProjectsObservableList = FXCollections.observableArrayList();
     private final ObservableList<Project> prioritizedProjectsObservableList = FXCollections.observableArrayList();
 
     @Inject
-    public PrioritizeProjectsController(ProjectPrioritizationManager projectPrioritizationManager, AppStore applicationNavigationStore) {
-        this.projectPrioritizationManager = projectPrioritizationManager;
+    public PrioritizeProjectsController(PostulationManager PostulationManager, AppStore applicationNavigationStore) {
+        this.PostulationManager = PostulationManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }
 
@@ -81,7 +81,7 @@ public class PrioritizeProjectsController {
         try {
             availableProjectsObservableList.clear();
             prioritizedProjectsObservableList.clear();
-            List<Project> retrievedAvailableProjectsList = projectPrioritizationManager.retrieveAllAvailableProjects();
+            List<Project> retrievedAvailableProjectsList = PostulationManager.retrieveAllAvailableProjects();
             availableProjectsObservableList.addAll(retrievedAvailableProjectsList);
         } catch (ManagerException managerRetrievalException) {
             Controller.showAlert("Error de conexion", managerRetrievalException.getMessage(), AlertType.ERROR);
@@ -147,7 +147,7 @@ public class PrioritizeProjectsController {
             try {
                 User currentAuthenticatedPractitioner = applicationNavigationStore.getState().sessionState().currentUserInSession();
                 List<Project> finalizedPriorityProjectList = new ArrayList<>(prioritizedProjectsObservableList);
-                projectPrioritizationManager.registerPractitionerPriorities(currentAuthenticatedPractitioner.getId(), finalizedPriorityProjectList);
+                PostulationManager.registerPractitionerPriorities(currentAuthenticatedPractitioner.getId(), finalizedPriorityProjectList);
                 Controller.showAlert("Postulacion Exitosa", "Sus prioridades han sido registradas en el sistema correctamente.", AlertType.INFORMATION);
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
             } catch (ManagerException priorityRegistrationException) {

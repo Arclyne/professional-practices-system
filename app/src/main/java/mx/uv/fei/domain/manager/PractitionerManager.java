@@ -73,4 +73,15 @@ public class PractitionerManager {
         return registrationSummary;
     }
 
+    public List<Practitioner> retrievePractitionersPendingAssignment() throws ManagerException {
+        List<Practitioner> retrievedPendingList;
+
+        try {
+            retrievedPendingList = practitionerDAO.retrievePractitionersPendingAssignment();
+        } catch (DAOException DAOException) {
+            throw new ManagerException("Ocurrio un error al intentar recuperar la lista de practicantes pendientes.", DAOException);
+        }
+
+        return retrievedPendingList;
+    }
 }

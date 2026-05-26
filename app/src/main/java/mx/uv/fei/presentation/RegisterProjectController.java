@@ -167,10 +167,10 @@ public class RegisterProjectController implements Initializable {
             projectInformation.setCompanyId(organizationMap.get(selectedOrg));
             projectInformation.setManagerId(managerMap.get(selectedMgr));
 
-            if (projectManager.registerNewProject(projectInformation)) {
-                Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
-                store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-            }
+            projectManager.registerNewProject(projectInformation);
+
+            Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
         } catch (NumberFormatException _) {
             Controller.showErrorAlert(FORMAT_ERROR_TITLE, FORMAT_ERROR_MESSAGE);

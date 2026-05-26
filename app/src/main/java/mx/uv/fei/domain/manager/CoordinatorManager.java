@@ -18,13 +18,13 @@ import org.slf4j.LoggerFactory;
 public class CoordinatorManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CoordinatorManager.class);
-    private final ICoordinatorDAO coordinatorDataAccessObject;
+    private final ICoordinatorDAO coordinatorDAO;
     private final IUserDAO userDAO;
 
     @Inject
-    public CoordinatorManager(ICoordinatorDAO coordinatorDAO, IUserDAO userDataAccessObject) {
-        this.coordinatorDataAccessObject = coordinatorDAO;
-        this.userDAO = userDataAccessObject;
+    public CoordinatorManager(ICoordinatorDAO coordinatorDAO, IUserDAO userDAO) {
+        this.coordinatorDAO = coordinatorDAO;
+        this.userDAO = userDAO;
     }
 
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
@@ -35,7 +35,7 @@ public class CoordinatorManager {
         Validator.validateCoordinatorData(coordinatorInformation);
 
         try {
-            int insertedCoordinatorId = this.coordinatorDataAccessObject.insertCoordinator(coordinatorInformation);
+            int insertedCoordinatorId = this.coordinatorDAO.insertCoordinator(coordinatorInformation);
 
             if (insertedCoordinatorId <= 0) {
                 throw new ManagerException("No se pudo completar el registro del coordinador en el sistema.");
@@ -64,7 +64,7 @@ public class CoordinatorManager {
 
     public Coordinator retrieveCurrentCoordinator() throws ManagerException {
         try {
-            return coordinatorDataAccessObject.getCurrentCoordinator();
+            return coordinatorDAO.getCurrentCoordinator();
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
             throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", e);
