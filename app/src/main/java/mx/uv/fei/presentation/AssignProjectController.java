@@ -14,7 +14,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.ProjectAssignmentManager;
+import mx.uv.fei.domain.manager.PostulationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -34,14 +34,14 @@ public class AssignProjectController {
     @FXML
     private Button returnToDashboardButton;
 
-    private final ProjectAssignmentManager projectAssignmentManager;
+    private final PostulationManager projectAssignmentManager;
     private final AppStore applicationNavigationStore;
     private final ObservableList<ProjectPostulation> postulationsObservableList = FXCollections.observableArrayList();
 
     private int targetPractitionerIdentifier;
 
     @Inject
-    public AssignProjectController(ProjectAssignmentManager projectAssignmentManager, AppStore applicationNavigationStore) {
+    public AssignProjectController(PostulationManager projectAssignmentManager, AppStore applicationNavigationStore) {
         this.projectAssignmentManager = projectAssignmentManager;
         this.applicationNavigationStore = applicationNavigationStore;
     }

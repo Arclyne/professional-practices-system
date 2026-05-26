@@ -371,7 +371,7 @@ java.lang.IllegalArgumentException: Ruta FXML no encontrada: /mx/uv/fei/presenta
 2026-05-22 16:51:19 [JavaFX Application Thread] ERROR m.u.f.d.m.ProjectAssignmentManager - Ocurrio un error en el servidor al intentar ejecutar la asignacion automatica.
 mx.uv.fei.dataaccess.exceptions.DAOException: Ocurrio un error en el servidor al intentar ejecutar la asignacion automatica.
 	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.PostulationDAO.assignProjectUsingStoredProcedure(PostulationDAO.java:109)
-	at mx.uv.fei/mx.uv.fei.domain.manager.ProjectAssignmentManager.assignProjectToPractitioner(ProjectAssignmentManager.java:39)
+	at mx.uv.fei/mx.uv.fei.domain.manager.PostulationManager.assignProjectToPractitioner(ProjectAssignmentManager.java:39)
 	at mx.uv.fei/mx.uv.fei.presentation.AssignProjectController.handleConfirmAssignmentAction(AssignProjectController.java:102)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
@@ -436,7 +436,7 @@ Caused by: java.sql.SQLSyntaxErrorException: execute command denied to user 'spp
 2026-05-22 17:36:17 [JavaFX Application Thread] ERROR m.u.f.d.m.ProjectAssignmentManager - Ocurrio un error en el servidor al intentar ejecutar la asignacion automatica.
 mx.uv.fei.dataaccess.exceptions.DAOException: Ocurrio un error en el servidor al intentar ejecutar la asignacion automatica.
 	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.PostulationDAO.assignProjectUsingStoredProcedure(PostulationDAO.java:109)
-	at mx.uv.fei/mx.uv.fei.domain.manager.ProjectAssignmentManager.assignProjectToPractitioner(ProjectAssignmentManager.java:39)
+	at mx.uv.fei/mx.uv.fei.domain.manager.PostulationManager.assignProjectToPractitioner(ProjectAssignmentManager.java:39)
 	at mx.uv.fei/mx.uv.fei.presentation.AssignProjectController.handleConfirmAssignmentAction(AssignProjectController.java:102)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
