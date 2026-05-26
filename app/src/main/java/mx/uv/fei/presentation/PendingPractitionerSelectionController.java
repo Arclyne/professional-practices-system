@@ -12,7 +12,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.PendingPractitionerManager;
+import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -25,14 +25,14 @@ public class PendingPractitionerSelectionController {
     @FXML
     private ListView<Practitioner> pendingPractitionersListView;
 
-    private final PendingPractitionerManager pendingPractitionerManager;
+    private final PractitionerManager practitionerManager;
     private final AppStore applicationNavigationStore;
     private final ObservableList<Practitioner> pendingPractitionersObservableList = FXCollections.observableArrayList();
 
     @Inject
-    public PendingPractitionerSelectionController(PendingPractitionerManager pendingPractitionerManager, AppStore applicationNavigationStore) {
-        this.pendingPractitionerManager = pendingPractitionerManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+    public PendingPractitionerSelectionController(PractitionerManager pendingPractitionerManager, AppStore store) {
+        this.practitionerManager = pendingPractitionerManager;
+        this.applicationNavigationStore = store;
     }
 
     @FXML
@@ -60,7 +60,7 @@ public class PendingPractitionerSelectionController {
     private void loadPendingPractitioners() {
         try {
             pendingPractitionersObservableList.clear();
-            List<Practitioner> retrievedPendingList = pendingPractitionerManager.retrievePractitionersPendingAssignment();
+            List<Practitioner> retrievedPendingList = practitionerManager.retrievePractitionersPendingAssignment();
             pendingPractitionersObservableList.addAll(retrievedPendingList);
         } catch (ManagerException retrievalException) {
             Controller.showAlert("Error de conexion", retrievalException.getMessage(), AlertType.ERROR);

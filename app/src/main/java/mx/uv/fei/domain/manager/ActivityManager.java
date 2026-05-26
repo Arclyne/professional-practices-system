@@ -15,11 +15,11 @@ public class ActivityManager {
     private static final String REGISTER_ACTIVITY_ERROR_MESSAGE = "No se pudo completar el registro de la actividad en el sistema.";
     private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema. Por favor, intente más tarde.";
 
-    private final IActivityDAO activityDataAccessObject;
+    private final IActivityDAO activityDAO;
 
     @Inject
     public ActivityManager(IActivityDAO activityDAO) {
-        this.activityDataAccessObject = activityDAO;
+        this.activityDAO = activityDAO;
     }
 
     public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
@@ -28,7 +28,7 @@ public class ActivityManager {
         Validator.validateActivityData(activityToRegister);
 
         try {
-            isRegistered = activityDataAccessObject.insertActivity(activityToRegister);
+            isRegistered = activityDAO.insertActivity(activityToRegister);
 
             if (!isRegistered) {
                 throw new ManagerException(REGISTER_ACTIVITY_ERROR_MESSAGE);
