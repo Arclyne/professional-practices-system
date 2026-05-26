@@ -16,4 +16,6 @@ public interface IPractitionerDAO {
 
     List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException;
 
+    List<Practitioner> retrieveAssignedPractitioners() throws DAOException;
+
 }
