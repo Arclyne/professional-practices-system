@@ -24,6 +24,7 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
+import mx.uv.fei.presentation.interfaces.IDisposable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +39,8 @@ public class MainController {
     private final DependencyInjector dependencyInjector;
     private final AppStore store;
     private final AdminManager administratorManager;
-
-
     private AppSection activeApplicationSection = null;
+    private Object currentViewController = null;
 
     @Inject
     public MainController(DependencyInjector dependencyInjector, AppStore applicationNavigationStore, AdminManager administratorManager) {
@@ -117,10 +117,14 @@ public class MainController {
             }
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
-
             loader.setControllerFactory(dependencyInjector::retrieveInstance);
-
             Parent view = loader.load();
+
+            if (currentViewController instanceof IDisposable disposableController) {
+                disposableController.dispose();
+            }
+
+            currentViewController = loader.getController();
 
             if (view instanceof Region regionView) {
                 regionView.prefWidthProperty().bind(contentArea.widthProperty());

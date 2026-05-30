@@ -22,13 +22,11 @@ public class ActivityManager {
         this.activityDAO = activityDAO;
     }
 
-    public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
-        boolean isRegistered;
-
+    public void registerNewActivity(Activity activityToRegister) throws ManagerException {
         Validator.validateActivityData(activityToRegister);
 
         try {
-            isRegistered = activityDAO.insertActivity(activityToRegister);
+            boolean isRegistered = activityDAO.insertActivity(activityToRegister);
 
             if (!isRegistered) {
                 throw new ManagerException(REGISTER_ACTIVITY_ERROR_MESSAGE);
@@ -36,7 +34,5 @@ public class ActivityManager {
         } catch (DAOException exception) {
             throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
         }
-
-        return isRegistered;
     }
 }
