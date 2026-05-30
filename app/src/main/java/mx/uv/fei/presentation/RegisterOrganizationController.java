@@ -49,13 +49,10 @@ public class RegisterOrganizationController{
             organizationToRegister.setCellphone(fieldCellphone.getText());
             organizationToRegister.setState("Activo");
 
-            boolean isSaved = organizationManager.registerOrganization(organizationToRegister);
+            organizationManager.registerOrganization(organizationToRegister);
 
-            if (isSaved) {
-                Controller.showSuccessAlert("Registro Exitoso", "La organización ha sido guardada correctamente.");
-                store.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
-            }
-
+            Controller.showSuccessAlert("Registro Exitoso", "La organización ha sido guardada correctamente.");
+            store.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
         } catch (ManagerException e) {
             Controller.showErrorAlert("Validación", e.getMessage());
         }

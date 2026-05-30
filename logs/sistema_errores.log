@@ -567,3 +567,63 @@ Caused by: java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '1
 	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdate(ClientPreparedStatement.java:1086)
 	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.UserDAO.insertUser(UserDAO.java:53)
 	... 56 common frames omitted
+2026-05-26 15:56:24 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:30)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:154)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:28)
+	... 16 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Table 'profesionalpractice.administrator' doesn't exist
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:45)
+	... 17 common frames omitted
+2026-05-26 16:01:42 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:30)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:154)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:28)
+	... 16 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Table 'profesionalpractice.administrator' doesn't exist
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:45)
+	... 17 common frames omitted

@@ -21,16 +21,13 @@ public class OrganizationManager {
         this.organizationDAO = organizationDAO;
     }
 
-    public boolean registerOrganization(Organization organizationToRegister) throws ManagerException {
-
+    public void registerOrganization(Organization organizationToRegister) throws ManagerException {
         try {
             boolean isRegistered = organizationDAO.insertOrganization(organizationToRegister);
 
             if (!isRegistered) {
                 throw new ManagerException("No se pudo completar el registro de la organización en el sistema.");
             }
-            return true;
-
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }

@@ -28,7 +28,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public boolean insertActivity(Activity activity) throws DAOException {
-        boolean isInserted = false;
+        boolean isInserted;
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ACTIVITY)) {
@@ -94,7 +94,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public boolean updateActivity(Activity activity, int activityId) throws DAOException {
-        boolean isUpdated = false;
+        boolean isUpdated;
 
         isUpdated = updateTuple(SQL_UPDATE_ACTIVITY, statement -> {
             statement.setString(1, activity.getName());

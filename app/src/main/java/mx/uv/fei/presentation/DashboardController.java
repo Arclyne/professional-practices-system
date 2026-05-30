@@ -27,9 +27,6 @@ public class DashboardController {
     @FXML
     private Label systemUserRoleLabel;
     @FXML
-    private StackPane dashboardMainContentArea;
-
-    @FXML
     private Button navigateToRegisterCoordinatorButton;
     @FXML
     private Button navigateToPractitionerManagementMenuButton;
