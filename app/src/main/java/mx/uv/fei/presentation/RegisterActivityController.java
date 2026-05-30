@@ -118,10 +118,10 @@ public class RegisterActivityController implements Initializable {
         try {
             Activity activity = createActivity();
 
-            if (activityManager.registerNewActivity(activity)) {
-                Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
-                store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-            }
+            activityManager.registerNewActivity(activity);
+            Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+
         } catch (IllegalArgumentException | DateTimeParseException _) {
             Controller.showErrorAlert(DATE_ERROR_TITLE, DATE_ERROR_MESSAGE);
         } catch (ManagerException exception) {

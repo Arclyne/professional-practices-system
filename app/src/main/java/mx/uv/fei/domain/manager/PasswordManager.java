@@ -59,7 +59,6 @@ public class PasswordManager {
     }
 
     public static String generatePassword() {
-
-        return "temp-" + UUID.randomUUID().toString().substring(0, 8);
+        return "Temp-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }

@@ -12,13 +12,6 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class CoordinatorPractitionerMenuController {
 
-    @FXML
-    private Button registerNewPractitionerButton;
-    @FXML
-    private Button assignProjectsButton;
-    @FXML
-    private Button returnToDashboardButton;
-
     private final AppStore applicationNavigationStore;
 
     @Inject
