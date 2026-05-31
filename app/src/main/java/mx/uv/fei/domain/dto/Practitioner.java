@@ -7,6 +7,7 @@ public class Practitioner extends User {
     private String indigenousLanguage;
     private double grade;
     private String enrollment;
+    private Integer groupId;
 
     public Practitioner() {
         super();
@@ -37,18 +38,31 @@ public class Practitioner extends User {
         return this.enrollment;
     }
 
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
+
     @Override
     public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        if (!super.equals(object)) return false;
+        boolean isEqual = false;
 
-        Practitioner that = (Practitioner) object;
-        return Objects.equals(this.enrollment, that.enrollment);
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass() && super.equals(object)) {
+            Practitioner that = (Practitioner) object;
+            isEqual = Objects.equals(this.enrollment, that.getEnrollment()) &&
+                    Objects.equals(this.groupId, that.getGroupId());
+        }
+
+        return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), enrollment);
+        return Objects.hash(super.hashCode(), enrollment, groupId);
     }
 }

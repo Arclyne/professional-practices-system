@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 
-<AnchorPane prefHeight="600.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
+<AnchorPane prefHeight="650.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterPractitionerController">
     <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
@@ -31,14 +31,16 @@
             </VBox.margin>
         </Label>
 
-        <FormField fx:id="fieldMatricula" labelText="Matrícula del Practicante" promptText="Ingrese la matrícula" />
-        <FormField fx:id="fieldNombre" labelText="Nombre del Practicante" promptText="Ingrese el nombre" />
-        <FormField fx:id="fieldApellido" labelText="Apellido del Practicante" promptText="Ingrese el apellido" />
-        <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="Ingrese el correo electrónico" />
+        <FormField fx:id="fieldEnrollment" labelText="Matrícula del Practicante" promptText="Ingrese la matrícula" />
+        <FormField fx:id="fieldName" labelText="Nombre del Practicante" promptText="Ingrese el nombre" />
+        <FormField fx:id="fieldLastName" labelText="Apellido del Practicante" promptText="Ingrese el apellido" />
+        <FormField fx:id="fieldEmail" labelText="Correo Electrónico" promptText="Ingrese el correo electrónico" />
 
-        <FormComboBox fx:id="comboBoxSexo" labelText="Sexo del Practicante" />
+        <FormComboBox fx:id="comboBoxGender" labelText="Sexo del Practicante" />
 
-        <FormField fx:id="fieldLengua" labelText="Lengua Indígena (Opcional)" promptText="Ej. Náhuatl, Totonaco..." />
+        <FormComboBox fx:id="comboBoxPracticeGroup" labelText="Grupo de Prácticas" />
+
+        <FormField fx:id="fieldIndigenousLanguage" labelText="Lengua Indígena (Opcional)" promptText="Ej. Náhuatl, Totonaco..." />
 
         <HBox spacing="15.0">
             <VBox.margin>
