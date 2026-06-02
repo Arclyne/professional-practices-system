@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -22,30 +21,22 @@ import mx.uv.fei.domain.statemachine.state.RootState;
 @Component
 public class DashboardController {
 
-    @FXML
-    private Label systemUserNameLabel;
-    @FXML
-    private Label systemUserRoleLabel;
-    @FXML
-    private Button navigateToRegisterCoordinatorButton;
-    @FXML
-    private Button navigateToPractitionerManagementMenuButton;
-    @FXML
-    private Button navigateToRegisterProfessorButton;
-    @FXML
-    private Button navigateToRegisterProjectButton;
-    @FXML
-    private Button navigateToRegisterManagerButton;
-    @FXML
-    private Button navigateToRegisterOrganizationButton;
-    @FXML
-    private Button navigateToRegisterActivityButton;
-    @FXML
-    private Button navigateToPractitionerProjectsButton;
-    @FXML
-    private Button systemLogoutButton;
-    @FXML
-    private Button navigateToMessagesButton;
+    @FXML private Label systemUserNameLabel;
+    @FXML private Label systemUserRoleLabel;
+
+    @FXML private Button navigateToRegisterCoordinatorButton;
+    @FXML private Button navigateToPractitionerManagementMenuButton;
+    @FXML private Button navigateToRegisterProfessorButton;
+    @FXML private Button navigateToRegisterProjectButton;
+    @FXML private Button navigateToRegisterManagerButton;
+    @FXML private Button navigateToRegisterOrganizationButton;
+    @FXML private Button navigateToRegisterActivityButton;
+    @FXML private Button navigateToPractitionerProjectsButton;
+    @FXML private Button systemLogoutButton;
+    @FXML private Button navigateToMessagesButton;
+
+    @FXML private Button navigateToRegisterPeriodButton;
+    @FXML private Button navigateToRegisterPracticeGroupButton;
 
     private final AppStore applicationNavigationStore;
     private final DashboardManager applicationDashboardManager;
@@ -109,6 +100,15 @@ public class DashboardController {
             navigateToRegisterOrganizationButton.setVisible(true);
             navigateToRegisterOrganizationButton.setManaged(true);
 
+            if (navigateToRegisterPeriodButton != null) {
+                navigateToRegisterPeriodButton.setVisible(true);
+                navigateToRegisterPeriodButton.setManaged(true);
+            }
+            if (navigateToRegisterPracticeGroupButton != null) {
+                navigateToRegisterPracticeGroupButton.setVisible(true);
+                navigateToRegisterPracticeGroupButton.setManaged(true);
+            }
+
         } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
             navigateToRegisterActivityButton.setVisible(true);
             navigateToRegisterActivityButton.setManaged(true);
@@ -151,6 +151,14 @@ public class DashboardController {
         if (navigateToPractitionerProjectsButton != null) {
             navigateToPractitionerProjectsButton.setVisible(false);
             navigateToPractitionerProjectsButton.setManaged(false);
+        }
+        if (navigateToRegisterPeriodButton != null) {
+            navigateToRegisterPeriodButton.setVisible(false);
+            navigateToRegisterPeriodButton.setManaged(false);
+        }
+        if (navigateToRegisterPracticeGroupButton != null) {
+            navigateToRegisterPracticeGroupButton.setVisible(false);
+            navigateToRegisterPracticeGroupButton.setManaged(false);
         }
     }
 
@@ -195,7 +203,6 @@ public class DashboardController {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.MANAGER_MANAGEMENT_MENU));
     }
 
-
     @FXML
     private void handleNavigateToRegisterOrganizationAction(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
@@ -216,6 +223,16 @@ public class DashboardController {
         } catch (ManagerException verificationException) {
             Controller.showAlert("Acceso denegado", verificationException.getMessage(), AlertType.ERROR);
         }
+    }
+
+    @FXML
+    private void handleNavigateToRegisterPeriodAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PERIOD));
+    }
+
+    @FXML
+    private void handleNavigateToRegisterPracticeGroupAction(ActionEvent userActionEvent) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PRACTICE_GROUP));
     }
 
     @FXML
