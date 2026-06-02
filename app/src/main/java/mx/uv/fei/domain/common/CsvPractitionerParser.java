@@ -6,12 +6,10 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.exceptions.ManagerException;
-
 
 @Component
 public class CsvPractitionerParser implements IPractitionerParser {
@@ -23,12 +21,15 @@ public class CsvPractitionerParser implements IPractitionerParser {
     private static final int EMAIL_INDEX = 3;
     private static final int GENDER_INDEX = 4;
     private static final int LANGUAGE_INDEX = 5;
+    private static final int GROUP_INDEX = 6;
+
     private static final String CSV_SEPARATOR = ",";
     private static final String QUOTES_REGEX = "\"";
     private static final String NON_ALPHANUMERIC_REGEX = "[^a-zA-Z0-9]";
     private static final String EMPTY_STRING = "";
+
     private static final String DEFAULT_LANGUAGE = "Ninguna";
-    private static final String PARSE_ERROR_MESSAGE = "Error al leer el archivo proporcionado.";
+    private static final String MSG_PARSE_ERROR = "Error al leer el archivo proporcionado.";
 
     @Override
     public List<Practitioner> parsePractitioners(File file) throws ManagerException {
@@ -36,8 +37,8 @@ public class CsvPractitionerParser implements IPractitionerParser {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             parsedPractitioners = processFileLines(reader);
-        } catch (Exception _) {
-            throw new ManagerException(PARSE_ERROR_MESSAGE);
+        } catch (Exception exception) {
+            throw new ManagerException(MSG_PARSE_ERROR, exception);
         }
 
         return parsedPractitioners;
@@ -79,6 +80,7 @@ public class CsvPractitionerParser implements IPractitionerParser {
 
         setGenderSafe(practitioner, rawData[GENDER_INDEX]);
         setLanguageSafe(practitioner, rawData);
+        setGroupSafe(practitioner, rawData);
 
         return practitioner;
     }
@@ -88,7 +90,7 @@ public class CsvPractitionerParser implements IPractitionerParser {
 
         try {
             practitioner.setGender(Gender.fromDisplayValue(parsedGender));
-        } catch (IllegalArgumentException _) {
+        } catch (IllegalArgumentException exception) {
             practitioner.setGender(Gender.OTHER);
         }
     }
@@ -101,5 +103,21 @@ public class CsvPractitionerParser implements IPractitionerParser {
         }
 
         practitioner.setIndigenousLanguage(indigenousLanguage);
+    }
+
+    private void setGroupSafe(Practitioner practitioner, String[] rawData) {
+        Integer groupId = null;
+
+        if (rawData.length > GROUP_INDEX && !rawData[GROUP_INDEX].trim().isEmpty()) {
+            String groupString = rawData[GROUP_INDEX].replace(QUOTES_REGEX, EMPTY_STRING).trim();
+
+            try {
+                groupId = Integer.parseInt(groupString);
+            } catch (NumberFormatException exception) {
+                groupId = null;
+            }
+        }
+
+        practitioner.setGroupId(groupId);
     }
 }

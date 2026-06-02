@@ -3,7 +3,7 @@ package mx.uv.fei.domain.dto;
 import java.util.Objects;
 
 public class PracticeGroup {
-    private int groupIndex;
+    private int groupId;
     private String section;
     private int professorId;
     private int periodId;
@@ -11,12 +11,12 @@ public class PracticeGroup {
     public PracticeGroup() {
     }
 
-    public int getGroupIndex() {
-        return groupIndex;
+    public int getGroupId() {
+        return groupId;
     }
 
-    public void setGroupIndex(int groupIndex) {
-        this.groupIndex = groupIndex;
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     public String getSection() {
