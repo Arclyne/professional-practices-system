@@ -149,6 +149,11 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_SENDER)) {
+
+            statement.setInt(1, senderId);
+            statement.setInt(2, limit);
+            statement.setInt(3, offset);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Message message = mapResultSetToMessage(resultSet);
