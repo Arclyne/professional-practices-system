@@ -93,7 +93,7 @@ public class MessageController implements Initializable, IDisposable {
     private final MessageManager messageManager;
     private Runnable unsubscribe;
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService;
 
     @Inject
     public MessageController(AppStore store, MessageManager messageManager) {
@@ -103,9 +103,12 @@ public class MessageController implements Initializable, IDisposable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
+
         configureTableView();
         setupListeners();
-
         unsubscribe = store.subscribe(this::onStateChanged);
         fetchMessages();
     }

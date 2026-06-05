@@ -97,3 +97,533 @@ javafx.fxml.LoadException: Error resolving onAction='#handleNavigateToTemplatesA
 	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
 	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
 	at java.base/java.lang.Thread.run(Thread.java:1474)
+2026-06-05 01:05:15 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:30)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:163)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:28)
+	... 16 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Table 'profesionalpractice.administrator' doesn't exist
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:45)
+	... 17 common frames omitted
+2026-06-05 01:44:18 [pool-3-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:44:18 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:54:11 [pool-5-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:54:11 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:54:13 [pool-5-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:54:13 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:58:52 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:58:52 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:58:55 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:58:55 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:58:57 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:58:57 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:58:58 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:58:58 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:00 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:00 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:01 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:01 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:03 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:03 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:03 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:03 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:03 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:03 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:04 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:04 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:04 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:04 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:04 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:04 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:05 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:05 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:05 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:05 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:05 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:05 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:06 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:06 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:06 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:06 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:06 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:06 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:07 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:07 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:07 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:07 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:08 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:08 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 01:59:08 [pool-2-thread-1] ERROR m.u.f.domain.manager.MessageManager - Fallo al consultar los mensajes enviados en la base de datos
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al consultar los mensajes enviados en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:159)
+	at mx.uv.fei/mx.uv.fei.domain.manager.MessageManager.getSentMessages(MessageManager.java:82)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:217)
+	at mx.uv.fei/mx.uv.fei.presentation.MessageController$1.call(MessageController.java:212)
+	at javafx.graphics@23.0.1/javafx.concurrent.Task$TaskCallable.call(Task.java:1401)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.sql.SQLException: No value specified for parameter 1
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1081)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
+	... 10 common frames omitted
+2026-06-05 01:59:08 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
