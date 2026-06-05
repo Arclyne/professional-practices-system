@@ -22,13 +22,13 @@ import mx.uv.fei.domain.dto.Organization;
 
 @StartEtiquetteTest
 @Profile("test")
-public class OrganizationDAOIT {
+public class OrganizationDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private IOrganizationDAO organizationTest;
+    private IOrganizationDAO organizationDAO;
 
     private Organization expectedOrganizationInserted;
     private Organization organizationToCompare01;
@@ -37,33 +37,27 @@ public class OrganizationDAOIT {
 
     @BeforeEach
     void setUp() throws SQLException {
-
-        assertNotNull(dbConnection, "dbConnection no fue inyectado.");
-        assertNotNull(organizationTest, "organizationTest no fue inyectado.");
-
+        assertNotNull(dbConnection);
+        assertNotNull(organizationDAO);
         TestDatabaseSetup.initialize(dbConnection);
-
         expectedOrganizationInserted = new Organization();
         expectedOrganizationInserted.setIdOrganization(1);
         expectedOrganizationInserted.setNameOrganization("toRecover");
         expectedOrganizationInserted.setMail("torecover@uv.mx");
         expectedOrganizationInserted.setState("Veracruz");
         expectedOrganizationInserted.setBusiness("Technology");
-
         organizationToCompare01 = new Organization();
         organizationToCompare01.setIdOrganization(2);
         organizationToCompare01.setNameOrganization("Dummy 1");
         organizationToCompare01.setMail("dummy1@uv.mx");
         organizationToCompare01.setState("Veracruz");
         organizationToCompare01.setBusiness("Technology");
-
         organizationToCompare02 = new Organization();
         organizationToCompare02.setIdOrganization(3);
         organizationToCompare02.setNameOrganization("Dummy 2");
         organizationToCompare02.setMail("dummy2@uv.mx");
         organizationToCompare02.setState("Veracruz");
         organizationToCompare02.setBusiness("Technology");
-
         expectedList = new ArrayList<>();
         expectedList.add(expectedOrganizationInserted);
         expectedList.add(organizationToCompare01);
@@ -71,9 +65,9 @@ public class OrganizationDAOIT {
     }
 
     @Test
-    void testInsertOrganizationSuccess() throws DAOException {
+    void insertOrganization_ValidOrganization_ReturnsTrue() throws DAOException {
         Organization testOrganization = new Organization();
-        testOrganization.setNameOrganization("Python Software"); // Corregido typo
+        testOrganization.setNameOrganization("Python Software");
         testOrganization.setState("Veracruz");
         testOrganization.setAdress("Av. Xalapa");
         testOrganization.setCity("Xalapa");
@@ -81,31 +75,31 @@ public class OrganizationDAOIT {
         testOrganization.setMail("python@softwareuv.mx");
         testOrganization.setCellphone("7485961234");
 
-        boolean resultTest = organizationTest.insertOrganization(testOrganization);
-        assertTrue(resultTest, "La organización debería haberse insertado exitosamente.");
+        boolean resultTest = organizationDAO.insertOrganization(testOrganization);
+
+        assertTrue(resultTest);
     }
 
     @Test
-    void testRecoverOrganizationSuccess() throws DAOException {
-        Organization resultTest = organizationTest.recoverOrganization("toRecover");
+    void recoverOrganization_ExistingName_ReturnsOrganization() throws DAOException {
 
-        assertNotNull(resultTest, "No se pudo recuperar la organización.");
-        assertEquals(expectedOrganizationInserted, resultTest,
-                "La organización recuperada no coincide con la esperada.");
+        Organization resultTest = organizationDAO.recoverOrganization("toRecover");
+
+        assertNotNull(resultTest);
+        assertEquals(expectedOrganizationInserted, resultTest);
     }
 
     @Test
-    void testRecoverALLSuccess() throws DAOException {
-        List<Organization> resultTest = organizationTest.getAllOrganizations();
-        assertEquals(expectedList, resultTest,
-                "La lista de organizaciones recuperada no coincide con la lista esperada.");
+    void getAllOrganizations_WithExistingData_ReturnsList() throws DAOException {
+
+        List<Organization> resultTest = organizationDAO.getAllOrganizations();
+
+        assertEquals(expectedList, resultTest);
     }
 
     @Test
-    void testUpdateTuplaSuccess() throws DAOException {
-        Organization toUpdateOrganization = organizationTest.recoverOrganization("toRecover");
-        assertNotNull(toUpdateOrganization, "La organización base para el update no existe.");
-
+    void updateOrganization_ValidModifiedData_ReturnsUpdatedOrganization() throws DAOException {
+        Organization toUpdateOrganization = organizationDAO.recoverOrganization("toRecover");
         Organization toUpdatedData = new Organization();
         toUpdatedData.setNameOrganization("UV Soft Updated");
         toUpdatedData.setState("Veracruz");
@@ -115,11 +109,10 @@ public class OrganizationDAOIT {
         toUpdatedData.setMail("nuevo_correo@uv.mx");
         toUpdatedData.setCellphone("1234567890");
 
-        organizationTest.updateOrganization(toUpdatedData, toUpdateOrganization.getIdOrganization());
+        organizationDAO.updateOrganization(toUpdatedData, toUpdateOrganization.getIdOrganization());
+        Organization result = organizationDAO.recoverOrganization("UV Soft Updated");
 
-        Organization result = organizationTest.recoverOrganization("UV Soft Updated");
-
-        assertNotNull(result, "No se pudo recuperar la organización tras la actualización.");
-        assertEquals(toUpdatedData, result, "Los datos actualizados no coinciden.");
+        assertNotNull(result);
+        assertEquals(toUpdatedData, result);
     }
 }

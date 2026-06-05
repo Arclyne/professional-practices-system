@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ListView?>
 <AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerLogbookController">
     <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
@@ -48,24 +49,18 @@
                 <TextArea fx:id="textAreaDescription" wrapText="true" promptText="Describe qué hiciste, qué problemas encontraste..." VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveActivity" styleClass="primary-button" text="Guardar en Bitácora" />
+            <Button fx:id="btnSaveActivity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveActivity" styleClass="primary-button" text="Guardar en Bitácora" />
         </VBox>
 
         <Separator orientation="VERTICAL" />
 
         <VBox spacing="15.0" HBox.hgrow="ALWAYS">
             <Label styleClass="form-title" text="Mi Historial de Bitácora" />
-            <Label text="Aquí aparecen todas las actividades que has registrado. Las actividades en verde están listas para ser empaquetadas en tu próximo reporte mensual." textFill="#6b7280" wrapText="true"/>
+            <Label text="Aquí aparecen todas las actividades que has registrado. Las actividades libres pueden ser editadas." textFill="#6b7280" wrapText="true"/>
 
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox fx:id="activitiesContainer" spacing="15.0">
-                        <padding>
-                            <Insets bottom="10.0" left="5.0" right="15.0" top="10.0"/>
-                        </padding>
-                    </VBox>
-                </content>
-            </ScrollPane>
+            <ListView fx:id="activitiesListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
+
+            <Button fx:id="btnEditSelected" disable="true" mnemonicParsing="false" onAction="#handleEditSelectedAction" text="✏️ Editar Actividad Seleccionada" style="-fx-background-color: white; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
         </VBox>
 
     </HBox>

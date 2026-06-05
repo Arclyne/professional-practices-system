@@ -36,25 +36,21 @@ public class Activity {
     public void setDurationHours(int durationHours) { this.durationHours = durationHours; }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            Activity that = (Activity) object;
-            isEqual = activityId == that.activityId &&
-                    practitionerId == that.practitionerId &&
-                    durationHours == that.durationHours &&
-                    Objects.equals(reportId, that.reportId) &&
-                    Objects.equals(title, that.title) &&
-                    Objects.equals(description, that.description) &&
-                    Objects.equals(activityDate, that.activityDate);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Activity that = (Activity) obj;
+            isEqual = this.practitionerId == that.practitionerId &&
+                    Objects.equals(this.title, that.title) &&
+                    Objects.equals(this.activityDate, that.activityDate);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(activityId, practitionerId, reportId, title, description, activityDate, durationHours);
+        return Objects.hash(practitionerId, title, activityDate);
     }
 }

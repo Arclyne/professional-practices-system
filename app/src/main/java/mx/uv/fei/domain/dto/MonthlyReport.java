@@ -48,28 +48,21 @@ public class MonthlyReport {
     public void setSignedFileUrl(String signedFileUrl) { this.signedFileUrl = signedFileUrl; }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            MonthlyReport that = (MonthlyReport) object;
-            isEqual = reportId == that.reportId &&
-                    practitionerId == that.practitionerId &&
-                    year == that.year &&
-                    Objects.equals(monthName, that.monthName) &&
-                    Objects.equals(startDate, that.startDate) &&
-                    Objects.equals(endDate, that.endDate) &&
-                    Objects.equals(grade, that.grade) &&
-                    Objects.equals(professorFeedback, that.professorFeedback) &&
-                    Objects.equals(status, that.status);
-                    Objects.equals(signedFileUrl, that.signedFileUrl);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            MonthlyReport that = (MonthlyReport) obj;
+            isEqual = this.practitionerId == that.practitionerId &&
+                    this.year == that.year &&
+                    Objects.equals(this.monthName, that.monthName);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reportId, practitionerId, monthName, year, startDate, endDate, grade, professorFeedback, status, signedFileUrl);
+        return Objects.hash(practitionerId, monthName, year);
     }
 }

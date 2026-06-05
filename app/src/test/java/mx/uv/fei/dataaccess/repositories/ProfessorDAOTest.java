@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.sql.SQLException;
 import java.util.List;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,61 +24,64 @@ import mx.uv.fei.dataaccess.interfaces.IProfessorDAO;
 
 @StartEtiquetteTest
 @Profile("test")
-public class ProfessorDAOIT {
+public class ProfessorDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private IProfessorDAO professorDAOTest;
+    private IProfessorDAO professorDAO;
 
     private Professor testProfessor;
 
     @BeforeEach
     void setUp() throws SQLException {
         assertNotNull(dbConnection);
-        assertNotNull(professorDAOTest);
-
+        assertNotNull(professorDAO);
         TestDatabaseSetup.initialize(dbConnection);
-
         testProfessor = new Professor();
         testProfessor.setName("Angel");
         testProfessor.setLastName("Aguilar");
         testProfessor.setPassword("profesorPass123");
-        testProfessor.setStatus("Activo");
-        testProfessor.setGender("Masculino");
+        testProfessor.setStatus(UserStatus.valueOf("Activo"));
+        testProfessor.setGender(Gender.valueOf("Masculino"));
     }
 
     @Test
-    void testInsertProfessorSuccess() throws DAOException {
-        int resultId = professorDAOTest.insertProfessor(testProfessor);
+    void insertProfessor_ValidProfessor_ReturnsGeneratedId() throws DAOException {
+
+        int resultId = professorDAO.insertProfessor(testProfessor);
+
         assertTrue(resultId > 0);
     }
 
     @Test
-    void testRecoverProfessorSuccess() throws DAOException {
-        int generatedId = professorDAOTest.insertProfessor(testProfessor);
-        Professor recovered = professorDAOTest.recoverProfessor(generatedId);
+    void recoverProfessor_ExistingId_ReturnsProfessor() throws DAOException {
+        int generatedId = professorDAO.insertProfessor(testProfessor);
+
+        Professor recovered = professorDAO.recoverProfessor(generatedId);
+
         assertEquals(testProfessor, recovered);
     }
 
     @Test
-    void testGetAllProfessorsSuccess() throws DAOException {
-        professorDAOTest.insertProfessor(testProfessor);
-        List<Professor> list = professorDAOTest.getAllProfessors();
+    void getAllProfessors_WithExistingData_ReturnsList() throws DAOException {
+        professorDAO.insertProfessor(testProfessor);
+
+        List<Professor> list = professorDAO.getAllProfessors();
+
         assertFalse(list.isEmpty());
     }
 
     @Test
-    void testUpdateProfessorSuccess() throws DAOException {
-        int generatedId = professorDAOTest.insertProfessor(testProfessor);
-
+    void updateProfessor_ValidModifiedData_ReturnsUpdatedProfessor() throws DAOException {
+        int generatedId = professorDAO.insertProfessor(testProfessor);
         testProfessor.setName("Angel Gabriel");
-        testProfessor.setStatus("No Activo");
+        testProfessor.setStatus(UserStatus.valueOf("No Activo"));
 
-        professorDAOTest.updateProfessor(testProfessor, generatedId);
+        professorDAO.updateProfessor(testProfessor, generatedId);
+        Professor recovered = professorDAO.recoverProfessor(generatedId);
 
-        Professor recovered = professorDAOTest.recoverProfessor(generatedId);
         assertEquals(testProfessor, recovered);
     }
 }
