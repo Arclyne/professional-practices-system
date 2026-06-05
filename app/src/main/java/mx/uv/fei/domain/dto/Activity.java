@@ -11,7 +11,6 @@ public class Activity {
     private String description;
     private Date activityDate;
     private int durationHours;
-    private String fileUrl;
 
     public Activity() {}
 
@@ -36,9 +35,6 @@ public class Activity {
     public int getDurationHours() { return durationHours; }
     public void setDurationHours(int durationHours) { this.durationHours = durationHours; }
 
-    public String getFileUrl() { return fileUrl; }
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
-
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
@@ -52,14 +48,13 @@ public class Activity {
                     Objects.equals(reportId, that.reportId) &&
                     Objects.equals(title, that.title) &&
                     Objects.equals(description, that.description) &&
-                    Objects.equals(activityDate, that.activityDate) &&
-                    Objects.equals(fileUrl, that.fileUrl);
+                    Objects.equals(activityDate, that.activityDate);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(activityId, practitionerId, reportId, title, description, activityDate, durationHours, fileUrl);
+        return Objects.hash(activityId, practitionerId, reportId, title, description, activityDate, durationHours);
     }
 }
