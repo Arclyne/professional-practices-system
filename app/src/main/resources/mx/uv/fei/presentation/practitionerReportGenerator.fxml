@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ListView?>
 <AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerReportGeneratorController">
     <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
@@ -59,18 +60,12 @@
         <VBox spacing="15.0" HBox.hgrow="ALWAYS">
             <VBox spacing="5.0">
                 <Label styleClass="form-title" text="Selecciona tus Actividades" />
-                <Label text="Las actividades listadas a continuación aún no han sido asignadas a ningún reporte. Selecciona las que correspondan a las fechas de este mes." textFill="#6b7280" wrapText="true"/>
+                <Label text="Usa CTRL (Windows) o CMD (Mac) más el clic del ratón para seleccionar múltiples actividades." textFill="#6b7280" wrapText="true"/>
             </VBox>
 
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox fx:id="availableActivitiesContainer" spacing="10.0">
-                        <padding>
-                            <Insets bottom="10.0" left="5.0" right="15.0" top="5.0"/>
-                        </padding>
-                    </VBox>
-                </content>
-            </ScrollPane>
+            <ListView fx:id="freeActivitiesListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
+
+            <Button fx:id="btnQuickEdit" disable="true" mnemonicParsing="false" onAction="#handleQuickEditAction" text="✏️ Editar Actividad Seleccionada" style="-fx-background-color: white; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
         </VBox>
 
     </HBox>

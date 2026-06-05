@@ -7,14 +7,15 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
+import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
 public class MonthlyReportManager {
 
-    private static final String MSG_EMPTY_FIELDS = "Debe especificar el mes, el año y el rango de fechas del reporte.";
-    private static final String MSG_INVALID_DATES = "La fecha de inicio no puede ser posterior a la fecha de fin del reporte.";
     private static final String MSG_REGISTER_ERROR = "No se pudo generar el reporte mensual.";
     private static final String MSG_RETRIEVE_ERROR = "Ocurrió un error al cargar los reportes.";
     private static final String MSG_LINK_ERROR = "El reporte se creó, pero hubo un problema al vincular las actividades seleccionadas.";
@@ -28,8 +29,8 @@ public class MonthlyReportManager {
         this.activityDAO = activityDAO;
     }
 
-    public void createReportAndLinkActivities(MonthlyReport report, List<Integer> selectedActivityIds) throws ManagerException {
-        validateReportData(report);
+    public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
+        Validator.validateMonthlyReportCreation(report, selectedActivities);
 
         try {
             int reportId = reportDAO.insertReport(report);
@@ -37,16 +38,16 @@ public class MonthlyReportManager {
                 throw new ManagerException(MSG_REGISTER_ERROR);
             }
 
-            if (selectedActivityIds != null && !selectedActivityIds.isEmpty()) {
-                for (Integer activityId : selectedActivityIds) {
-                    boolean isLinked = activityDAO.assignActivityToReport(activityId, reportId);
+            if (selectedActivities != null && !selectedActivities.isEmpty()) {
+                for (Activity activity : selectedActivities) {
+                    boolean isLinked = activityDAO.assignActivityToReport(activity.getActivityId(), reportId);
                     if (!isLinked) {
                         throw new ManagerException(MSG_LINK_ERROR);
                     }
                 }
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
@@ -61,20 +62,18 @@ public class MonthlyReportManager {
     }
 
     public void submitSignedReport(MonthlyReport report, String signedFileUrl) throws ManagerException {
-        if (signedFileUrl == null || signedFileUrl.trim().isEmpty()) {
-            throw new ManagerException("El enlace del archivo firmado es obligatorio.");
-        }
+        Validator.validateSignedReport(signedFileUrl);
 
         report.setSignedFileUrl(signedFileUrl);
-        report.setStatus("Entregado");
+        report.setStatus(ReportStatus.SUBMITTED.getDatabaseValue());
 
         try {
             boolean isUpdated = reportDAO.updateReport(report, report.getReportId());
             if (!isUpdated) {
                 throw new ManagerException("No se pudo actualizar el estado del reporte en la base de datos.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException("Error al enviar el reporte firmado. Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al enviar el reporte firmado. Causa: " + e.getMessage(), e);
         }
     }
 
@@ -87,12 +86,7 @@ public class MonthlyReportManager {
     }
 
     public void evaluateReport(int reportId, Double grade, String feedback) throws ManagerException {
-        if (grade == null || grade < 0 || grade > 10) {
-            throw new ManagerException("La calificación debe ser un número entre 0 y 10.");
-        }
-        if (feedback == null || feedback.trim().isEmpty()) {
-            throw new ManagerException("La retroalimentación (feedback) es obligatoria.");
-        }
+        Validator.validateReportEvaluation(grade, feedback);
 
         try {
             MonthlyReport report = reportDAO.getReportById(reportId);
@@ -102,25 +96,14 @@ public class MonthlyReportManager {
 
             report.setGrade(grade);
             report.setProfessorFeedback(feedback.trim());
-            report.setStatus("Evaluado");
+            report.setStatus(ReportStatus.EVALUATED.getDatabaseValue());
 
             boolean isUpdated = reportDAO.updateReport(report, reportId);
             if (!isUpdated) {
                 throw new ManagerException("No se pudo guardar la evaluación en la base de datos.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException("Ocurrió un error al intentar guardar la evaluación. Causa: " + exception.getMessage(), exception);
-        }
-    }
-
-    private void validateReportData(MonthlyReport report) throws ManagerException {
-        if (report.getMonthName() == null || report.getMonthName().trim().isEmpty() ||
-                report.getStartDate() == null || report.getEndDate() == null || report.getYear() <= 0) {
-            throw new ManagerException(MSG_EMPTY_FIELDS);
-        }
-
-        if (report.getStartDate().after(report.getEndDate())) {
-            throw new ManagerException(MSG_INVALID_DATES);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al intentar guardar la evaluación. Causa: " + e.getMessage(), e);
         }
     }
 }

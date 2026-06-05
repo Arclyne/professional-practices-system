@@ -23,23 +23,21 @@ import mx.uv.fei.dataaccess.interfaces.ISchoolPeriodDAO;
 
 @StartEtiquetteTest
 @Profile("test")
-public class SchoolPeriodDAOIT {
+public class SchoolPeriodDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private ISchoolPeriodDAO periodDAOTest;
+    private ISchoolPeriodDAO periodDAO;
 
     private SchoolPeriod testPeriod;
 
     @BeforeEach
     void setUp() throws SQLException {
         assertNotNull(dbConnection);
-        assertNotNull(periodDAOTest);
-
+        assertNotNull(periodDAO);
         TestDatabaseSetup.initialize(dbConnection);
-
         testPeriod = new SchoolPeriod();
         testPeriod.setPeriodName("Febrero - Julio 2026");
         testPeriod.setStartDate(LocalDate.of(2026, 2, 10));
@@ -48,36 +46,41 @@ public class SchoolPeriodDAOIT {
     }
 
     @Test
-    void testInsertSchoolPeriodSuccess() throws DAOException {
-        int resultId = periodDAOTest.insertSchoolPeriod(testPeriod);
+    void insertSchoolPeriod_ValidPeriod_ReturnsGeneratedId() throws DAOException {
+
+        int resultId = periodDAO.insertSchoolPeriod(testPeriod);
+
         assertTrue(resultId > 0);
     }
 
     @Test
-    void testRecoverSchoolPeriodSuccess() throws DAOException {
-        int generatedId = periodDAOTest.insertSchoolPeriod(testPeriod);
-        SchoolPeriod recovered = periodDAOTest.recoverSchoolPeriod(generatedId);
+    void recoverSchoolPeriod_ExistingId_ReturnsPeriod() throws DAOException {
+        int generatedId = periodDAO.insertSchoolPeriod(testPeriod);
+
+        SchoolPeriod recovered = periodDAO.recoverSchoolPeriod(generatedId);
+
         assertEquals(testPeriod, recovered);
     }
 
     @Test
-    void testGetAllSchoolPeriodsSuccess() throws DAOException {
-        periodDAOTest.insertSchoolPeriod(testPeriod);
-        List<SchoolPeriod> list = periodDAOTest.getAllSchoolPeriods();
+    void getAllSchoolPeriods_WithExistingData_ReturnsList() throws DAOException {
+        periodDAO.insertSchoolPeriod(testPeriod);
+
+        List<SchoolPeriod> list = periodDAO.getAllSchoolPeriods();
+
         assertFalse(list.isEmpty());
     }
 
     @Test
-    void testUpdateSchoolPeriodSuccess() throws DAOException {
-        int generatedId = periodDAOTest.insertSchoolPeriod(testPeriod);
-
+    void updateSchoolPeriod_ValidModifiedData_ReturnsUpdatedPeriod() throws DAOException {
+        int generatedId = periodDAO.insertSchoolPeriod(testPeriod);
         testPeriod.setPeriodName("Agosto - Enero 2027");
         testPeriod.setStatus("activo");
         testPeriod.setStartDate(LocalDate.of(2026, 8, 15));
 
-        periodDAOTest.updateSchoolPeriod(testPeriod, generatedId);
+        periodDAO.updateSchoolPeriod(testPeriod, generatedId);
+        SchoolPeriod recovered = periodDAO.recoverSchoolPeriod(generatedId);
 
-        SchoolPeriod recovered = periodDAOTest.recoverSchoolPeriod(generatedId);
         assertEquals(testPeriod, recovered);
     }
 }
