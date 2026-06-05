@@ -1,6 +1,5 @@
 package mx.uv.fei.presentation;
 
-import java.io.File;
 import java.net.URL;
 import java.sql.Date;
 import java.util.List;
@@ -11,16 +10,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.DatePicker;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -29,7 +26,6 @@ import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ActivityManager;
-import mx.uv.fei.domain.manager.CloudStorageManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
@@ -45,22 +41,17 @@ public class PractitionerLogbookController implements Initializable {
     private static final String MSG_DURATION_ERROR = "La duración debe ser un número entero (ej. 2, 4, 8).";
 
     private final ActivityManager activityManager;
-    private final CloudStorageManager cloudStorageManager;
     private final AppStore store;
-
-    private File selectedEvidenceFile = null;
 
     @FXML private TextField fieldTitle;
     @FXML private DatePicker datePickerActivity;
     @FXML private TextField fieldDuration;
     @FXML private TextArea textAreaDescription;
-    @FXML private Label labelSelectedFile;
     @FXML private VBox activitiesContainer;
 
     @Inject
-    public PractitionerLogbookController(ActivityManager activityManager, CloudStorageManager cloudStorageManager, AppStore store) {
+    public PractitionerLogbookController(ActivityManager activityManager, AppStore store) {
         this.activityManager = activityManager;
-        this.cloudStorageManager = cloudStorageManager;
         this.store = store;
     }
 
@@ -93,25 +84,6 @@ public class PractitionerLogbookController implements Initializable {
     }
 
     @FXML
-    private void handleSelectFileAction(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar Evidencia");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Documentos e Imágenes", "*.pdf", "*.docx", "*.png", "*.jpg", "*.zip")
-        );
-
-        selectedEvidenceFile = fileChooser.showOpenDialog(activitiesContainer.getScene().getWindow());
-
-        if (selectedEvidenceFile != null) {
-            labelSelectedFile.setText(selectedEvidenceFile.getName());
-            labelSelectedFile.setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold;"); // Verde éxito
-        } else {
-            labelSelectedFile.setText("Ningún archivo seleccionado");
-            labelSelectedFile.setStyle("-fx-text-fill: #6b7280;");
-        }
-    }
-
-    @FXML
     private void handleSaveActivity(ActionEvent event) {
         if (!validateForm()) return;
 
@@ -128,11 +100,6 @@ public class PractitionerLogbookController implements Initializable {
                 newActivity.setDurationHours(Integer.parseInt(fieldDuration.getText().trim()));
             } else {
                 newActivity.setDurationHours(0);
-            }
-
-            if (selectedEvidenceFile != null) {
-                String generatedUrl = cloudStorageManager.uploadEvidenceFile(selectedEvidenceFile);
-                newActivity.setFileUrl(generatedUrl);
             }
 
             activityManager.registerActivity(newActivity);
@@ -163,10 +130,6 @@ public class PractitionerLogbookController implements Initializable {
         textAreaDescription.clear();
         datePickerActivity.setValue(null);
         fieldDuration.clear();
-
-        selectedEvidenceFile = null;
-        labelSelectedFile.setText("Ningún archivo seleccionado");
-        labelSelectedFile.setStyle("-fx-text-fill: #6b7280;");
     }
 
     private VBox createActivityCard(Activity activity) {
@@ -195,23 +158,8 @@ public class PractitionerLogbookController implements Initializable {
 
         bottomRow.getChildren().addAll(statusLabel, spacer);
 
-        if (activity.getFileUrl() != null && !activity.getFileUrl().trim().isEmpty()) {
-            Button fileButton = new Button("Ver Evidencia");
-            fileButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;");
-            fileButton.setOnAction(e -> openUrlInBrowser(activity.getFileUrl()));
-            bottomRow.getChildren().add(fileButton);
-        }
-
         card.getChildren().addAll(titleLabel, infoLabel, descLabel, bottomRow);
         return card;
-    }
-
-    private void openUrlInBrowser(String url) {
-        try {
-            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
-        } catch (Exception e) {
-            Controller.showAlert("Error de Enlace", "No se pudo abrir el enlace en el navegador.", AlertType.ERROR);
-        }
     }
 
     @FXML

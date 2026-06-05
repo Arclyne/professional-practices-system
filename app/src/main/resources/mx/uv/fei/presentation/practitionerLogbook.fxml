@@ -43,14 +43,6 @@
                 </VBox>
             </HBox>
 
-            <VBox spacing="5.0">
-                <Label text="Evidencia (Opcional)" styleClass="field-label" />
-                <HBox spacing="10.0" alignment="CENTER_LEFT">
-                    <Button mnemonicParsing="false" onAction="#handleSelectFileAction" styleClass="secondary-button" text="Examinar..." />
-                    <Label fx:id="labelSelectedFile" text="Ningún archivo seleccionado" textFill="#6b7280" />
-                </HBox>
-            </VBox>
-
             <VBox spacing="5.0" VBox.vgrow="ALWAYS">
                 <Label text="Descripción (*)" styleClass="field-label" />
                 <TextArea fx:id="textAreaDescription" wrapText="true" promptText="Describe qué hiciste, qué problemas encontraste..." VBox.vgrow="ALWAYS" />
@@ -61,7 +53,6 @@
 
         <Separator orientation="VERTICAL" />
 
-        <!-- Panel Derecho: Muro de Actividades -->
         <VBox spacing="15.0" HBox.hgrow="ALWAYS">
             <Label styleClass="form-title" text="Mi Historial de Bitácora" />
             <Label text="Aquí aparecen todas las actividades que has registrado. Las actividades en verde están listas para ser empaquetadas en tu próximo reporte mensual." textFill="#6b7280" wrapText="true"/>
