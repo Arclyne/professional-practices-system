@@ -5,77 +5,61 @@ import java.util.Objects;
 
 public class Activity {
     private int activityId;
-    private String name;
-    private Date startDate;
-    private Date endDate;
+    private int practitionerId;
+    private Integer reportId;
+    private String title;
     private String description;
-    private int groupId;
+    private Date activityDate;
+    private int durationHours;
+    private String fileUrl;
 
-    public int getActivityId() {
-        return activityId;
-    }
+    public Activity() {}
 
-    public void setActivityId(int activityId) {
-        this.activityId = activityId;
-    }
+    public int getActivityId() { return activityId; }
+    public void setActivityId(int activityId) { this.activityId = activityId; }
 
-    public String getName() {
-        return name;
-    }
+    public int getPractitionerId() { return practitionerId; }
+    public void setPractitionerId(int practitionerId) { this.practitionerId = practitionerId; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public Integer getReportId() { return reportId; }
+    public void setReportId(Integer reportId) { this.reportId = reportId; }
 
-    public Date getStartDate() {
-        return startDate;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public Date getEndDate() {
-        return endDate;
-    }
+    public Date getActivityDate() { return activityDate; }
+    public void setActivityDate(Date activityDate) { this.activityDate = activityDate; }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+    public int getDurationHours() { return durationHours; }
+    public void setDurationHours(int durationHours) { this.durationHours = durationHours; }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
+    public String getFileUrl() { return fileUrl; }
+    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
-
         if (this == object) {
             isEqual = true;
         } else if (object != null && getClass() == object.getClass()) {
             Activity that = (Activity) object;
-            isEqual = groupId == that.getGroupId() &&
-                    Objects.equals(name, that.getName());
+            isEqual = activityId == that.activityId &&
+                    practitionerId == that.practitionerId &&
+                    durationHours == that.durationHours &&
+                    Objects.equals(reportId, that.reportId) &&
+                    Objects.equals(title, that.title) &&
+                    Objects.equals(description, that.description) &&
+                    Objects.equals(activityDate, that.activityDate) &&
+                    Objects.equals(fileUrl, that.fileUrl);
         }
-
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, groupId);
+        return Objects.hash(activityId, practitionerId, reportId, title, description, activityDate, durationHours, fileUrl);
     }
 }
