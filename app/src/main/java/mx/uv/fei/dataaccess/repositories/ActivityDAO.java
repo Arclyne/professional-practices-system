@@ -17,8 +17,8 @@ import mx.uv.fei.domain.dto.Activity;
 @Component
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO activity (practitioner_id, report_id, title, description, activity_date, duration_hours, file_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE activity SET title = ?, description = ?, activity_date = ?, duration_hours = ?, file_url = ? WHERE activity_id = ?";
+    private static final String SQL_INSERT = "INSERT INTO activity (practitioner_id, title, description, activity_date, duration_hours) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE activity SET title = ?, description = ?, activity_date = ?, duration_hours = ? WHERE activity_id = ?";
     private static final String SQL_SELECT_BY_PRACTITIONER = "SELECT * FROM activity WHERE practitioner_id = ? ORDER BY activity_date DESC";
     private static final String SQL_SELECT_BY_REPORT = "SELECT * FROM activity WHERE report_id = ? ORDER BY activity_date ASC";
     private static final String SQL_ASSIGN_REPORT = "UPDATE activity SET report_id = ? WHERE activity_id = ?";
@@ -36,18 +36,10 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, activity.getPractitionerId());
-
-            if (activity.getReportId() != null) {
-                statement.setInt(2, activity.getReportId());
-            } else {
-                statement.setNull(2, java.sql.Types.INTEGER);
-            }
-
-            statement.setString(3, activity.getTitle());
-            statement.setString(4, activity.getDescription());
-            statement.setDate(5, activity.getActivityDate());
-            statement.setInt(6, activity.getDurationHours());
-            statement.setString(7, activity.getFileUrl());
+            statement.setString(2, activity.getTitle());
+            statement.setString(3, activity.getDescription());
+            statement.setDate(4, activity.getActivityDate());
+            statement.setInt(5, activity.getDurationHours());
 
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -69,8 +61,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             statement.setString(2, activity.getDescription());
             statement.setDate(3, activity.getActivityDate());
             statement.setInt(4, activity.getDurationHours());
-            statement.setString(5, activity.getFileUrl());
-            statement.setInt(6, activityId);
+            statement.setInt(5, activityId);
         });
     }
 
@@ -111,7 +102,6 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         activity.setDescription(resultSet.getString("description"));
         activity.setActivityDate(resultSet.getDate("activity_date"));
         activity.setDurationHours(resultSet.getInt("duration_hours"));
-        activity.setFileUrl(resultSet.getString("file_url"));
 
         return activity;
     }
