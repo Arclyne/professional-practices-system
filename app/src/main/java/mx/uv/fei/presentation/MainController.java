@@ -87,7 +87,6 @@ public class MainController {
                     case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/tokenVerification.fxml");
                     case REGISTER_PRACTITIONER -> loadView("/mx/uv/fei/presentation/registerPractitioner.fxml");
                     case REGISTER_PROFESSOR -> loadView("/mx/uv/fei/presentation/registerProfessor.fxml");
-                    case REGISTER_ACTIVITY -> loadView("/mx/uv/fei/presentation/activityForms.fxml");
                     case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
                     case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
                     case COORDINATOR_DETAILS -> loadView("/mx/uv/fei/presentation/coordinatorDetails.fxml");
@@ -106,7 +105,10 @@ public class MainController {
                     case REGISTER_PERIOD -> loadView("/mx/uv/fei/presentation/registerPeriod.fxml");
                     case REGISTER_PRACTICE_GROUP -> loadView("/mx/uv/fei/presentation/registerPracticeGroup.fxml");
                     case TEMPLATE_GENERATOR -> loadView("/mx/uv/fei/presentation/templateGenerator.fxml");
-
+                    case PRACTITIONER_LOGBOOK -> loadView("/mx/uv/fei/presentation/practitionerLogbook.fxml");
+                    case PRACTITIONER_REPORT_GENERATOR -> loadView("/mx/uv/fei/presentation/practitionerReportGenerator.fxml");
+                    case PRACTITIONER_REPORTS_LIST -> loadView("/mx/uv/fei/presentation/practitionerReportsList.fxml");
+                    case PROFESSOR_EVALUATE_REPORT -> loadView("/mx/uv/fei/presentation/professorEvaluateReport.fxml");
 
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }

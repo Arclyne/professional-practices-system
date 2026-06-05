@@ -2,9 +2,10 @@ package mx.uv.fei.dataaccess.repositories;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -16,13 +17,12 @@ import mx.uv.fei.domain.dto.Activity;
 @Component
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
-    private static final String SQL_INSERT_ACTIVITY = "INSERT INTO activity (name, start_date, end_date, description, group_id) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT_ACTIVITY_BY_NAME_AND_GROUP = "SELECT activity_id, name, start_date, end_date, description, group_id FROM activity WHERE name = ? AND group_id = ?";
-    private static final String SQL_SELECT_ALL_ACTIVITIES = "SELECT activity_id, name, start_date, end_date, description, group_id FROM activity";
-    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, group_id = ? WHERE activity_id = ?";
-
-    private static final String MSG_INSERT_ERROR = "Database error while attempting to insert the activity.";
-    private static final String MSG_RECOVER_ERROR = "Database error while attempting to recover the activity.";
+    private static final String SQL_INSERT = "INSERT INTO activity (practitioner_id, report_id, title, description, activity_date, duration_hours, file_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE activity SET title = ?, description = ?, activity_date = ?, duration_hours = ?, file_url = ? WHERE activity_id = ?";
+    private static final String SQL_SELECT_BY_PRACTITIONER = "SELECT * FROM activity WHERE practitioner_id = ? ORDER BY activity_date DESC";
+    private static final String SQL_SELECT_BY_REPORT = "SELECT * FROM activity WHERE report_id = ? ORDER BY activity_date ASC";
+    private static final String SQL_ASSIGN_REPORT = "UPDATE activity SET report_id = ? WHERE activity_id = ?";
+    private static final String SQL_REMOVE_REPORT = "UPDATE activity SET report_id = NULL WHERE activity_id = ?";
 
     @Inject
     public ActivityDAO(IDatabaseConnection databaseConnection) {
@@ -30,84 +30,89 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     }
 
     @Override
-    public boolean insertActivity(Activity activity) throws DAOException {
-        boolean isInserted = false;
-
+    public int insertActivity(Activity activity) throws DAOException {
+        int generatedId = -1;
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_ACTIVITY)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setString(1, activity.getName());
-            statement.setDate(2, activity.getStartDate());
-            statement.setDate(3, activity.getEndDate());
+            statement.setInt(1, activity.getPractitionerId());
+
+            if (activity.getReportId() != null) {
+                statement.setInt(2, activity.getReportId());
+            } else {
+                statement.setNull(2, java.sql.Types.INTEGER);
+            }
+
+            statement.setString(3, activity.getTitle());
             statement.setString(4, activity.getDescription());
-            statement.setInt(5, activity.getGroupId());
+            statement.setDate(5, activity.getActivityDate());
+            statement.setInt(6, activity.getDurationHours());
+            statement.setString(7, activity.getFileUrl());
 
-            isInserted = statement.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new DAOException(MSG_INSERT_ERROR, e);
-        }
-
-        return isInserted;
-    }
-
-    @Override
-    public Activity recoverActivity(String activityName, int groupId) throws DAOException {
-        Activity recoveredActivity = new Activity();
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ACTIVITY_BY_NAME_AND_GROUP)) {
-
-            statement.setString(1, activityName);
-            statement.setInt(2, groupId);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    recoveredActivity = mapResultSetToActivity(resultSet);
+            if (statement.executeUpdate() > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedId = generatedKeys.getInt(1);
+                    }
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_RECOVER_ERROR, e);
+            throw new DAOException("Error al guardar la actividad en la base de datos.", e);
         }
-
-        return recoveredActivity;
-    }
-
-    private Activity mapResultSetToActivity(ResultSet resultSet) throws SQLException {
-        Activity activity = new Activity();
-
-        activity.setActivityId(resultSet.getInt("activity_id"));
-        activity.setName(resultSet.getString("name"));
-        activity.setStartDate(resultSet.getDate("start_date"));
-        activity.setEndDate(resultSet.getDate("end_date"));
-        activity.setDescription(resultSet.getString("description"));
-        activity.setGroupId(resultSet.getInt("group_id"));
-
-        return activity;
-    }
-
-    @Override
-    public List<Activity> getAllActivities() throws DAOException {
-        List<Activity> activitiesList;
-
-        activitiesList = recoverALL(SQL_SELECT_ALL_ACTIVITIES, this::mapResultSetToActivity);
-
-        return activitiesList;
+        return generatedId;
     }
 
     @Override
     public boolean updateActivity(Activity activity, int activityId) throws DAOException {
-        boolean isUpdated;
-
-        isUpdated = updateTuple(SQL_UPDATE_ACTIVITY, statement -> {
-            statement.setString(1, activity.getName());
-            statement.setDate(2, activity.getStartDate());
-            statement.setDate(3, activity.getEndDate());
-            statement.setString(4, activity.getDescription());
-            statement.setInt(5, activity.getGroupId());
+        return updateTuple(SQL_UPDATE, statement -> {
+            statement.setString(1, activity.getTitle());
+            statement.setString(2, activity.getDescription());
+            statement.setDate(3, activity.getActivityDate());
+            statement.setInt(4, activity.getDurationHours());
+            statement.setString(5, activity.getFileUrl());
             statement.setInt(6, activityId);
         });
+    }
 
-        return isUpdated;
+    @Override
+    public List<Activity> getActivitiesByPractitioner(int practitionerId) throws DAOException {
+        return recoverALL(SQL_SELECT_BY_PRACTITIONER, this::mapResultSetToActivity, practitionerId);
+    }
+
+    @Override
+    public List<Activity> getActivitiesByReport(int reportId) throws DAOException {
+        return recoverALL(SQL_SELECT_BY_REPORT, this::mapResultSetToActivity, reportId);
+    }
+
+    @Override
+    public boolean assignActivityToReport(int activityId, int reportId) throws DAOException {
+        return updateTuple(SQL_ASSIGN_REPORT, statement -> {
+            statement.setInt(1, reportId);
+            statement.setInt(2, activityId);
+        });
+    }
+
+    @Override
+    public boolean removeActivityFromReport(int activityId) throws DAOException {
+        return updateTuple(SQL_REMOVE_REPORT, statement -> {
+            statement.setInt(1, activityId);
+        });
+    }
+
+    private Activity mapResultSetToActivity(ResultSet resultSet) throws SQLException {
+        Activity activity = new Activity();
+        activity.setActivityId(resultSet.getInt("activity_id"));
+        activity.setPractitionerId(resultSet.getInt("practitioner_id"));
+
+        int reportId = resultSet.getInt("report_id");
+        activity.setReportId(resultSet.wasNull() ? null : reportId);
+
+        activity.setTitle(resultSet.getString("title"));
+        activity.setDescription(resultSet.getString("description"));
+        activity.setActivityDate(resultSet.getDate("activity_date"));
+        activity.setDurationHours(resultSet.getInt("duration_hours"));
+        activity.setFileUrl(resultSet.getString("file_url"));
+
+        return activity;
     }
 }

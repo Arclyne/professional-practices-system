@@ -110,12 +110,20 @@
                             mnemonicParsing="false" onAction="#handleNavigateToRegisterOrganizationAction" styleClass="secondary-button" text="Gestión de Organizaciones"
                             visible="false" managed="false"/>
 
-                    <Button fx:id="navigateToRegisterActivityButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToRegisterActivityAction" styleClass="secondary-button" text="Registrar Actividad"
-                            visible="false" managed="false"/>
-
                     <Button fx:id="navigateToPractitionerProjectsButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToPractitionerProjectsAction" styleClass="secondary-button" text="Mis Proyectos"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToLogbookButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToLogbookAction" styleClass="secondary-button" text="Mis Actividades"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToReportGeneratorButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToReportsList" styleClass="secondary-button" text="Generar Reporte"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToEvaluateReportsButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToEvaluateReportsAction" styleClass="secondary-button" text="Evaluar Reportes"
                             visible="false" managed="false"/>
                 </VBox>
             </VBox>
