@@ -37,6 +37,7 @@ public class DashboardController {
 
     @FXML private Button navigateToRegisterPeriodButton;
     @FXML private Button navigateToRegisterPracticeGroupButton;
+    @FXML private Button navigateToTemplatesButton;
 
     private final AppStore applicationNavigationStore;
     private final DashboardManager applicationDashboardManager;
@@ -99,6 +100,10 @@ public class DashboardController {
             navigateToRegisterManagerButton.setManaged(true);
             navigateToRegisterOrganizationButton.setVisible(true);
             navigateToRegisterOrganizationButton.setManaged(true);
+            if (navigateToTemplatesButton != null) {
+                navigateToTemplatesButton.setVisible(true);
+                navigateToTemplatesButton.setManaged(true);
+            }
 
             if (navigateToRegisterPeriodButton != null) {
                 navigateToRegisterPeriodButton.setVisible(true);
@@ -159,6 +164,10 @@ public class DashboardController {
         if (navigateToRegisterPracticeGroupButton != null) {
             navigateToRegisterPracticeGroupButton.setVisible(false);
             navigateToRegisterPracticeGroupButton.setManaged(false);
+        }
+        if (navigateToTemplatesButton != null) {
+            navigateToTemplatesButton.setVisible(false);
+            navigateToTemplatesButton.setManaged(false);
         }
     }
 
@@ -248,4 +257,14 @@ public class DashboardController {
     private void handleSystemLogoutAction(ActionEvent userActionEvent) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
     }
+
+    @FXML
+    private void handleNavigateToTemplatesAction(ActionEvent userActionEvent) {
+        try {
+            applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.TEMPLATE_GENERATOR));
+        } catch (Exception dispatchException) {
+            Controller.showAlert("Error de Navegación", "No fue posible abrir el generador de plantillas.", AlertType.ERROR);
+        }
+    }
+
 }

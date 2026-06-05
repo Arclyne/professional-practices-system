@@ -55,6 +55,10 @@
             <Button fx:id="navigateToMessagesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
                     onAction="#handleNavigateToMessagesAction" styleClass="secondary-button" text="Mensajes" />
 
+            <Button fx:id="navigateToTemplatesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#handleNavigateToTemplatesAction" styleClass="secondary-button" text="Generador de Plantillas"
+                    visible="false" managed="false"/>
+
             <Region VBox.vgrow="ALWAYS"/>
 
             <Button fx:id="systemLogoutButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
