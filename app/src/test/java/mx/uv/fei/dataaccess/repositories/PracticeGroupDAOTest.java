@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,19 +29,19 @@ import mx.uv.fei.dataaccess.interfaces.ISchoolPeriodDAO;
 
 @StartEtiquetteTest
 @Profile("test")
-public class PracticeGroupDAOIT {
+public class PracticeGroupDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private IPracticeGroupDAO groupDAOTest;
+    private IPracticeGroupDAO groupDAO;
 
     @Inject
-    private IProfessorDAO professorDAOTest;
+    private IProfessorDAO professorDAO;
 
     @Inject
-    private ISchoolPeriodDAO periodDAOTest;
+    private ISchoolPeriodDAO periodDAO;
 
     private PracticeGroup testGroup;
 
@@ -49,9 +51,9 @@ public class PracticeGroupDAOIT {
     @BeforeEach
     void setUp() throws DAOException, SQLException {
         assertNotNull(dbConnection);
-        assertNotNull(groupDAOTest);
-        assertNotNull(professorDAOTest);
-        assertNotNull(periodDAOTest);
+        assertNotNull(groupDAO);
+        assertNotNull(professorDAO);
+        assertNotNull(periodDAO);
 
         TestDatabaseSetup.initialize(dbConnection);
 
@@ -59,16 +61,16 @@ public class PracticeGroupDAOIT {
         tempProf.setName("Profesor");
         tempProf.setLastName("Prueba Grupo");
         tempProf.setPassword("1234");
-        tempProf.setStatus("Activo");
-        tempProf.setGender("Masculino");
-        validProfessorId = professorDAOTest.insertProfessor(tempProf);
+        tempProf.setStatus(UserStatus.valueOf("Activo"));
+        tempProf.setGender(Gender.valueOf("Masculino"));
+        validProfessorId = professorDAO.insertProfessor(tempProf);
 
         SchoolPeriod tempPeriod = new SchoolPeriod();
         tempPeriod.setPeriodName("Periodo Prueba Grupo");
         tempPeriod.setStartDate(LocalDate.of(2026, 8, 15));
         tempPeriod.setEndDate(LocalDate.of(2027, 1, 20));
         tempPeriod.setStatus("activo");
-        validPeriodId = periodDAOTest.insertSchoolPeriod(tempPeriod);
+        validPeriodId = periodDAO.insertSchoolPeriod(tempPeriod);
 
         testGroup = new PracticeGroup();
         testGroup.setSection("NRC-84932");
@@ -77,31 +79,47 @@ public class PracticeGroupDAOIT {
     }
 
     @Test
-    void testInsertPracticeGroupSuccess() throws DAOException {
-        int resultId = groupDAOTest.insertPracticeGroup(testGroup);
-        assertTrue(resultId > 0);
+    void insertPracticeGroup_ValidGroup_ReturnsGeneratedId() throws DAOException {
+        int resultId = groupDAO.insertPracticeGroup(testGroup);
+
+        assertTrue(resultId > 0, "El grupo de práctica debió insertarse y generar un ID mayor a cero.");
     }
 
     @Test
-    void testRecoverPracticeGroupSuccess() throws DAOException {
-        int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
-        PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
-        assertEquals(testGroup, recovered);
+    void recoverPracticeGroup_ExistingId_ReturnsGroup() throws DAOException {
+
+        int generatedId = groupDAO.insertPracticeGroup(testGroup);
+
+
+        PracticeGroup recovered = groupDAO.recoverPracticeGroup(generatedId);
+
+
+        assertEquals(testGroup, recovered, "El grupo recuperado debe ser idéntico al original.");
     }
 
     @Test
-    void testGetAllPracticeGroupsSuccess() throws DAOException {
-        groupDAOTest.insertPracticeGroup(testGroup);
-        List<PracticeGroup> list = groupDAOTest.getAllPracticeGroups();
-        assertFalse(list.isEmpty());
+    void getAllPracticeGroups_WithExistingData_ReturnsList() throws DAOException {
+
+        groupDAO.insertPracticeGroup(testGroup);
+
+
+        List<PracticeGroup> list = groupDAO.getAllPracticeGroups();
+
+
+        assertFalse(list.isEmpty(), "La lista recuperada no debe estar vacía.");
     }
 
     @Test
-    void testUpdatePracticeGroupSuccess() throws DAOException {
-        int generatedId = groupDAOTest.insertPracticeGroup(testGroup);
+    void updatePracticeGroup_ValidModifiedData_ReturnsTrue() throws DAOException {
+
+        int generatedId = groupDAO.insertPracticeGroup(testGroup);
         testGroup.setSection("NRC-99999");
-        groupDAOTest.updatePracticeGroup(testGroup, generatedId);
-        PracticeGroup recovered = groupDAOTest.recoverPracticeGroup(generatedId);
-        assertEquals(testGroup, recovered);
+
+
+        groupDAO.updatePracticeGroup(testGroup, generatedId);
+        PracticeGroup recovered = groupDAO.recoverPracticeGroup(generatedId);
+
+
+        assertEquals(testGroup, recovered, "La sección recuperada debe coincidir con la modificación.");
     }
 }

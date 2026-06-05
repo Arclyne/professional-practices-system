@@ -866,3 +866,23 @@ java.io.IOException: 'head' table is mandatory
 2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
 2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
 2026-06-05 05:44:03 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Finished building on-disk font cache, found 789 fonts
+2026-06-05 16:26:09 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error de E/S al cargar la vista FXML: /mx/uv/fei/presentation/practitionerReportsList.fxml
+javafx.fxml.LoadException: 
+/Users/angelgabrielaguilarhernandez/Downloads/Proyecto-Practicas-profesionales/professional-practices-system/app/target/classes/mx/uv/fei/presentation/practitionerReportsList.fxml
+
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2727)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2705)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2568)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2536)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.loadView(MainController.java:128)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$handleApplicationStateChange$0(MainController.java:110)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+Caused by: java.lang.NullPointerException: Cannot invoke "javafx.scene.control.ListView.setCellFactory(javafx.util.Callback)" because "this.reportsListView" is null
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.configureListView(PractitionerReportsListController.java:84)
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.initialize(PractitionerReportsListController.java:79)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2675)
+	... 8 common frames omitted
+2026-06-05 17:14:07 [JavaFX Application Thread] WARN  o.apache.pdfbox.pdmodel.PDDocument - You are overwriting the existing file Reporte_Junio_2026.pdf, this will produce a corrupted file if you're also reading from it

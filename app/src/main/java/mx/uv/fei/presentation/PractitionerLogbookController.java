@@ -5,19 +5,18 @@ import java.sql.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.DatePicker;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -33,8 +32,7 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class PractitionerLogbookController implements Initializable {
 
-    private static final String TITLE_SUCCESS = "Actividad Registrada";
-    private static final String MSG_SUCCESS = "Tu actividad se ha guardado en la bitácora.";
+    private static final String TITLE_SUCCESS = "Operación Exitosa";
     private static final String TITLE_ERROR = "Error en la Bitácora";
     private static final String TITLE_VALIDATION = "Campos Incompletos";
     private static final String MSG_VALIDATION = "Por favor, completa los campos obligatorios: Título, Fecha y Descripción.";
@@ -43,11 +41,16 @@ public class PractitionerLogbookController implements Initializable {
     private final ActivityManager activityManager;
     private final AppStore store;
 
+    private int editingActivityId = -1;
+
     @FXML private TextField fieldTitle;
     @FXML private DatePicker datePickerActivity;
     @FXML private TextField fieldDuration;
     @FXML private TextArea textAreaDescription;
-    @FXML private VBox activitiesContainer;
+    @FXML private Button btnSaveActivity;
+
+    @FXML private ListView<Activity> activitiesListView;
+    @FXML private Button btnEditSelected;
 
     @Inject
     public PractitionerLogbookController(ActivityManager activityManager, AppStore store) {
@@ -57,72 +60,102 @@ public class PractitionerLogbookController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        configureListView();
         loadActivitiesLog();
     }
 
-    private void loadActivitiesLog() {
-        activitiesContainer.getChildren().clear();
+    private void configureListView() {
+        activitiesListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(Activity activity, boolean empty) {
+                super.updateItem(activity, empty);
+                if (empty || activity == null) {
+                    setText(null);
+                } else {
+                    String status = activity.getReportId() != null ? "Empaquetada" : "Libre";
+                    setText("• " + activity.getTitle() + "\n  Fecha: " + activity.getActivityDate() + " | Horas: " + activity.getDurationHours() + " | Estado: " + status);
+                }
+            }
+        });
 
+        activitiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null && newSelection.getReportId() == null) {
+                btnEditSelected.setDisable(false);
+            } else {
+                btnEditSelected.setDisable(true);
+            }
+        });
+    }
+
+    private void loadActivitiesLog() {
         try {
             User currentPractitioner = store.getState().sessionState().currentUserInSession();
             int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
 
             List<Activity> activities = activityManager.getPractitionerLogbook(practitionerId);
+            ObservableList<Activity> observableActivities = FXCollections.observableArrayList(activities);
+            activitiesListView.setItems(observableActivities);
 
-            if (activities.isEmpty()) {
-                Label emptyLabel = new Label("Tu bitácora está vacía. Registra tu primera actividad.");
-                emptyLabel.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-style: italic;");
-                activitiesContainer.getChildren().add(emptyLabel);
-            } else {
-                for (Activity activity : activities) {
-                    activitiesContainer.getChildren().add(createActivityCard(activity));
-                }
-            }
-        } catch (ManagerException exception) {
-            Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
-        }
-    }
-
-    @FXML
-    private void handleSaveActivity(ActionEvent event) {
-        if (!validateForm()) return;
-
-        try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-
-            Activity newActivity = new Activity();
-            newActivity.setPractitionerId(currentPractitioner.getId());
-            newActivity.setTitle(fieldTitle.getText().trim());
-            newActivity.setDescription(textAreaDescription.getText().trim());
-            newActivity.setActivityDate(Date.valueOf(datePickerActivity.getValue()));
-
-            if (!fieldDuration.getText().trim().isEmpty()) {
-                newActivity.setDurationHours(Integer.parseInt(fieldDuration.getText().trim()));
-            } else {
-                newActivity.setDurationHours(0);
-            }
-
-            activityManager.registerActivity(newActivity);
-
-            Controller.showAlert(TITLE_SUCCESS, MSG_SUCCESS, AlertType.INFORMATION);
-            clearForm();
-            loadActivitiesLog();
-
-        } catch (NumberFormatException e) {
-            Controller.showAlert(TITLE_VALIDATION, MSG_DURATION_ERROR, AlertType.WARNING);
         } catch (ManagerException e) {
             Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
         }
     }
 
-    private boolean validateForm() {
-        if (fieldTitle.getText().trim().isEmpty() ||
-                textAreaDescription.getText().trim().isEmpty() ||
-                datePickerActivity.getValue() == null) {
-            Controller.showAlert(TITLE_VALIDATION, MSG_VALIDATION, AlertType.WARNING);
-            return false;
+    @FXML
+    private void handleSaveActivity(ActionEvent event) {
+        try {
+            User currentPractitioner = store.getState().sessionState().currentUserInSession();
+
+            Activity currentActivity = new Activity();
+            currentActivity.setPractitionerId(currentPractitioner.getId());
+            currentActivity.setTitle(fieldTitle.getText().trim());
+            currentActivity.setDescription(textAreaDescription.getText().trim());
+
+            if (datePickerActivity.getValue() != null) {
+                currentActivity.setActivityDate(Date.valueOf(datePickerActivity.getValue()));
+            }
+
+            int hours = 0;
+            if (!fieldDuration.getText().trim().isEmpty()) {
+                hours = Integer.parseInt(fieldDuration.getText().trim());
+            }
+            currentActivity.setDurationHours(hours);
+
+            if (editingActivityId == -1) {
+                activityManager.registerActivity(currentActivity);
+                Controller.showAlert("Éxito", "Actividad guardada.", AlertType.INFORMATION);
+            } else {
+                activityManager.modifyActivity(currentActivity, editingActivityId);
+                Controller.showAlert("Éxito", "Actividad actualizada.", AlertType.INFORMATION);
+
+                editingActivityId = -1;
+                btnSaveActivity.setText("Guardar en Bitácora");
+                btnSaveActivity.setStyle("");
+            }
+
+            clearForm();
+            loadActivitiesLog();
+
+        } catch (NumberFormatException e) {
+            Controller.showAlert("Formato Inválido", "Las horas deben ser un número.", AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Datos Inválidos", e.getMessage(), AlertType.WARNING);
         }
-        return true;
+    }
+
+    @FXML
+    private void handleEditSelectedAction(ActionEvent event) {
+        Activity selected = activitiesListView.getSelectionModel().getSelectedItem();
+        if (selected != null && selected.getReportId() == null) {
+            editingActivityId = selected.getActivityId();
+            fieldTitle.setText(selected.getTitle());
+            datePickerActivity.setValue(selected.getActivityDate().toLocalDate());
+            fieldDuration.setText(String.valueOf(selected.getDurationHours()));
+            textAreaDescription.setText(selected.getDescription());
+
+            btnSaveActivity.setText("Actualizar Actividad");
+            btnSaveActivity.setStyle("-fx-background-color: #F59E0B; -fx-text-fill: white;");
+        }
     }
 
     private void clearForm() {
@@ -130,36 +163,10 @@ public class PractitionerLogbookController implements Initializable {
         textAreaDescription.clear();
         datePickerActivity.setValue(null);
         fieldDuration.clear();
-    }
 
-    private VBox createActivityCard(Activity activity) {
-        VBox card = new VBox(8);
-        String borderColor = activity.getReportId() != null ? "#3B82F6" : "#10B981";
-        card.setStyle("-fx-background-color: white; -fx-border-color: " + borderColor + "; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 15px;");
-
-        Label titleLabel = new Label(activity.getTitle());
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #1f2937;");
-
-        Label infoLabel = new Label("Fecha: " + activity.getActivityDate() + " | Duración: " + activity.getDurationHours() + " hrs");
-        infoLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #6b7280;");
-
-        Label descLabel = new Label(activity.getDescription());
-        descLabel.setWrapText(true);
-        descLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #4b5563;");
-
-        HBox bottomRow = new HBox(15);
-        bottomRow.setPadding(new Insets(10, 0, 0, 0));
-
-        Label statusLabel = new Label(activity.getReportId() != null ? "Empaquetada en Reporte" : "Actividad Libre");
-        statusLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: " + borderColor + ";");
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        bottomRow.getChildren().addAll(statusLabel, spacer);
-
-        card.getChildren().addAll(titleLabel, infoLabel, descLabel, bottomRow);
-        return card;
+        editingActivityId = -1;
+        btnSaveActivity.setText("Guardar en Bitácora");
+        btnSaveActivity.setStyle("");
     }
 
     @FXML

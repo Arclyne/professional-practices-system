@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.List;
 import java.sql.SQLException;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,64 +24,67 @@ import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
 
 @StartEtiquetteTest
 @Profile("test")
-public class PractitionerDAOIT {
+public class PractitionerDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private IPractitionerDAO practitionerDAOTest;
+    private IPractitionerDAO practitionerDAO;
 
     private Practitioner testPractitioner;
 
     @BeforeEach
     void setUp() throws SQLException {
         assertNotNull(dbConnection);
-        assertNotNull(practitionerDAOTest);
-
+        assertNotNull(practitionerDAO);
         TestDatabaseSetup.initialize(dbConnection);
-
         testPractitioner = new Practitioner();
         testPractitioner.setName("Angel Gabriel");
         testPractitioner.setLastName("Aguilar Hernandez");
         testPractitioner.setPassword("practicantePass123");
-        testPractitioner.setStatus("Activo");
-        testPractitioner.setGender("Masculino");
+        testPractitioner.setStatus(UserStatus.valueOf("Activo"));
+        testPractitioner.setGender(Gender.valueOf("Masculino"));
         testPractitioner.setIndigenousLanguage("Náhuatl");
         testPractitioner.setGrade(9.5);
     }
 
     @Test
-    void testInsertPractitionerSuccess() throws DAOException {
-        int resultId = practitionerDAOTest.insertPractitioner(testPractitioner);
+    void insertPractitioner_ValidPractitioner_ReturnsGeneratedId() throws DAOException {
+
+        int resultId = practitionerDAO.insertPractitioner(testPractitioner);
+
         assertTrue(resultId > 0);
     }
 
     @Test
-    void testRecoverPractitionerSuccess() throws DAOException {
-        int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
-        Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
+    void recoverPractitioner_ExistingId_ReturnsPractitioner() throws DAOException {
+        int generatedId = practitionerDAO.insertPractitioner(testPractitioner);
+
+        Practitioner recovered = practitionerDAO.recoverPractitioner(generatedId);
+
         assertEquals(testPractitioner, recovered);
     }
 
     @Test
-    void testGetAllPractitionersSuccess() throws DAOException {
-        practitionerDAOTest.insertPractitioner(testPractitioner);
-        List<Practitioner> list = practitionerDAOTest.getAllPractitioners();
+    void getAllPractitioners_WithExistingData_ReturnsList() throws DAOException {
+        practitionerDAO.insertPractitioner(testPractitioner);
+
+        List<Practitioner> list = practitionerDAO.getAllPractitioners();
+
         assertFalse(list.isEmpty());
     }
 
     @Test
-    void testUpdatePractitionerSuccess() throws DAOException {
-        int generatedId = practitionerDAOTest.insertPractitioner(testPractitioner);
-
+    void updatePractitioner_ValidModifiedData_ReturnsUpdatedPractitioner() throws DAOException {
+        int generatedId = practitionerDAO.insertPractitioner(testPractitioner);
         testPractitioner.setGrade(10.0);
         testPractitioner.setIndigenousLanguage("Maya");
-        testPractitioner.setStatus("No Activo");
+        testPractitioner.setStatus(UserStatus.valueOf("No Activo"));
 
-        practitionerDAOTest.updatePractitioner(testPractitioner, generatedId);
+        practitionerDAO.updatePractitioner(testPractitioner, generatedId);
+        Practitioner recovered = practitionerDAO.recoverPractitioner(generatedId);
 
-        Practitioner recovered = practitionerDAOTest.recoverPractitioner(generatedId);
         assertEquals(testPractitioner, recovered);
     }
 }
