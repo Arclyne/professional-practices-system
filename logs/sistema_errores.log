@@ -627,3 +627,242 @@ Caused by: java.sql.SQLException: No value specified for parameter 1
 	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.MessageDAO.getMessagesBySender(MessageDAO.java:152)
 	... 10 common frames omitted
 2026-06-05 01:59:08 [JavaFX Application Thread] ERROR m.u.f.presentation.MessageController - No fue posible cargar los mensajes enviados.
+2026-06-05 04:20:11 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error de E/S al cargar la vista FXML: /mx/uv/fei/presentation/dashboard.fxml
+javafx.fxml.LoadException: Error resolving onAction='#handleNavigateToRegisterActivityAction', either the event handler is not in the Namespace or there is an error in the script.
+/Users/angelgabrielaguilarhernandez/Downloads/Proyecto-Practicas-profesionales/professional-practices-system/app/target/classes/mx/uv/fei/presentation/dashboard.fxml:115
+
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2723)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$Element.processEventHandlerAttributes(FXMLLoader.java:623)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processEndElement(FXMLLoader.java:783)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.processEndElement(FXMLLoader.java:2974)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2659)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2568)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2536)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.loadView(MainController.java:125)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$handleApplicationStateChange$0(MainController.java:85)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.mac.MacApplication._enterNestedEventLoopImpl(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.mac.MacApplication._enterNestedEventLoop(MacApplication.java:173)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.Application.enterNestedEventLoop(Application.java:513)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.EventLoop.enter(EventLoop.java:107)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.enterNestedEventLoop(QuantumToolkit.java:656)
+	at javafx.graphics@23.0.1/javafx.stage.Stage.showAndWait(Stage.java:469)
+	at javafx.controls@23.0.1/javafx.scene.control.HeavyweightDialog.showAndWait(HeavyweightDialog.java:162)
+	at javafx.controls@23.0.1/javafx.scene.control.Dialog.showAndWait(Dialog.java:346)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+2026-06-05 05:44:00 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - 372 new fonts found, font cache will be re-built
+2026-06-05 05:44:00 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Building on-disk font cache, this may take a while
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Could not load font file: /System/Library/Fonts/LastResort.otf
+java.io.IOException: Invalid character code 0xD800
+	at org.apache.fontbox.ttf.CmapSubtable.processSubtype13(CmapSubtable.java:320)
+	at org.apache.fontbox.ttf.CmapSubtable.initSubtable(CmapSubtable.java:113)
+	at org.apache.fontbox.ttf.CmapTable.read(CmapTable.java:87)
+	at org.apache.fontbox.ttf.TrueTypeFont.readTable(TrueTypeFont.java:365)
+	at org.apache.fontbox.ttf.TTFParser.parseTables(TTFParser.java:165)
+	at org.apache.fontbox.ttf.TTFParser.parse(TTFParser.java:144)
+	at org.apache.fontbox.ttf.OTFParser.parse(OTFParser.java:56)
+	at org.apache.fontbox.ttf.OTFParser.parse(OTFParser.java:27)
+	at org.apache.fontbox.ttf.TTFParser.parse(TTFParser.java:66)
+	at org.apache.fontbox.ttf.OTFParser.parse(OTFParser.java:50)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.addTrueTypeFont(FileSystemFontProvider.java:684)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.scanFonts(FileSystemFontProvider.java:390)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:365)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl$DefaultFontProvider.<clinit>(FontMapperImpl.java:139)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.getProvider(FontMapperImpl.java:158)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFont(FontMapperImpl.java:410)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFontBoxFont(FontMapperImpl.java:373)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.getFontBoxFont(FontMapperImpl.java:347)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.PDType1Font.<init>(PDType1Font.java:127)
+	at mx.uv.fei/mx.uv.fei.domain.common.ReportPdfGenerator.generatePdf(ReportPdfGenerator.java:33)
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.handleDownloadPdf(PractitionerReportsListController.java:143)
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.lambda$createReportCard$0(PractitionerReportsListController.java:117)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Node.fireEvent(Node.java:8963)
+	at javafx.controls@23.0.1/javafx.scene.control.Button.fire(Button.java:203)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.behavior.ButtonBehavior.mouseReleased(ButtonBehavior.java:207)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.inputmap.InputMap.handle(InputMap.java:274)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler$NormalEventHandlerRecord.handleBubblingEvent(CompositeEventHandler.java:247)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:80)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$MouseHandler.process(Scene.java:3987)
+	at javafx.graphics@23.0.1/javafx.scene.Scene.processMouseEvent(Scene.java:1893)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$ScenePeerListener.mouseEvent(Scene.java:2711)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:411)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:301)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleMouseEvent$2(GlassViewEventHandler.java:450)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:430)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleMouseEvent(GlassViewEventHandler.java:449)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.handleMouseEvent(View.java:560)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.notifyMouse(View.java:946)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.mac.MacView.notifyMouse(MacView.java:128)
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font HiraMinProN-W3
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font HiraMinPro-W3
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font HiraMinProN-W6
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font HiraMinPro-W6
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:01 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Could not load font file: /System/Library/Fonts/Supplemental/NISC18030.ttf
+java.io.IOException: 'head' table is mandatory
+	at org.apache.fontbox.ttf.TTFParser.parseTables(TTFParser.java:176)
+	at org.apache.fontbox.ttf.TTFParser.parse(TTFParser.java:144)
+	at org.apache.fontbox.ttf.TTFParser.parse(TTFParser.java:66)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.addTrueTypeFont(FileSystemFontProvider.java:691)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.scanFonts(FileSystemFontProvider.java:390)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FileSystemFontProvider.<init>(FileSystemFontProvider.java:365)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl$DefaultFontProvider.<clinit>(FontMapperImpl.java:139)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.getProvider(FontMapperImpl.java:158)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFont(FontMapperImpl.java:410)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.findFontBoxFont(FontMapperImpl.java:373)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.FontMapperImpl.getFontBoxFont(FontMapperImpl.java:347)
+	at org.apache.pdfbox@3.0.2/org.apache.pdfbox.pdmodel.font.PDType1Font.<init>(PDType1Font.java:127)
+	at mx.uv.fei/mx.uv.fei.domain.common.ReportPdfGenerator.generatePdf(ReportPdfGenerator.java:33)
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.handleDownloadPdf(PractitionerReportsListController.java:143)
+	at mx.uv.fei/mx.uv.fei.presentation.PractitionerReportsListController.lambda$createReportCard$0(PractitionerReportsListController.java:117)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Node.fireEvent(Node.java:8963)
+	at javafx.controls@23.0.1/javafx.scene.control.Button.fire(Button.java:203)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.behavior.ButtonBehavior.mouseReleased(ButtonBehavior.java:207)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.inputmap.InputMap.handle(InputMap.java:274)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler$NormalEventHandlerRecord.handleBubblingEvent(CompositeEventHandler.java:247)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:80)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$MouseHandler.process(Scene.java:3987)
+	at javafx.graphics@23.0.1/javafx.scene.Scene.processMouseEvent(Scene.java:1893)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$ScenePeerListener.mouseEvent(Scene.java:2711)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:411)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:301)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleMouseEvent$2(GlassViewEventHandler.java:450)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:430)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleMouseEvent(GlassViewEventHandler.java:449)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.handleMouseEvent(View.java:560)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.notifyMouse(View.java:946)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.mac.MacView.notifyMouse(MacView.java:128)
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagari-Book
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagari-Bold
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagari-Demi
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagari-Light
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagari-Medium
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagariMarathi-Book
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagariMarathi-Bold
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagariMarathi-Demi
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagariMarathi-Light
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font ITFDevanagariMarathi-Medium
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font SignPainter-HouseScript
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font SignPainter-HouseScriptSemibold
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.a.f.ttf.GlyphSubstitutionTable - lookupListOffset is 0, LookupListTable is considered empty
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-SC-Black
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-SC-Bold
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-TC-Bold
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-SC-Light
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSong
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-TC-Light
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-SC-Regular
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font STSongti-TC-Regular
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:02 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-05 05:44:03 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Finished building on-disk font cache, found 789 fonts

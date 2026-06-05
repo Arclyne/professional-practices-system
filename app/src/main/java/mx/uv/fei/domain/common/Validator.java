@@ -17,8 +17,9 @@ public class Validator {
     private static final String MSG_INVALID_ENROLLMENT = "The provided enrollment format is invalid.";
     private static final String MSG_INVALID_PERSONAL_NUM = "Invalid format: The personal number must contain only numbers.";
 
-    private static final String MSG_REQ_ACT_NAME = "The activity name is required.";
-    private static final String MSG_REQ_ACT_GROUP = "The activity practice group is required.";
+    private static final String MSG_REQ_ACT_TITLE = "The activity title is required.";
+    private static final String MSG_REQ_ACT_DESC = "The activity description is required.";
+    private static final String MSG_REQ_ACT_DATE = "The activity date is required.";
 
     private static final String MSG_REQ_PROJ_NAME = "The project name is required.";
     private static final String MSG_REQ_PROJ_ORG = "You must select a linked organization.";
@@ -69,9 +70,12 @@ public class Validator {
     }
 
     public static void validateActivityData(Activity activityToValidate) throws ManagerException {
-        validateString(activityToValidate.getName(), MSG_REQ_ACT_NAME);
-        validateId(activityToValidate.getGroupId(), MSG_REQ_ACT_GROUP);
-        validateDateRange(activityToValidate.getStartDate(), activityToValidate.getEndDate());
+        validateString(activityToValidate.getTitle(), MSG_REQ_ACT_TITLE);
+        validateString(activityToValidate.getDescription(), MSG_REQ_ACT_DESC);
+
+        if (activityToValidate.getActivityDate() == null) {
+            throw new ManagerException(MSG_REQ_ACT_DATE);
+        }
     }
 
     public static void validateProjectData(Project projectToValidate) throws ManagerException {

@@ -22,5 +22,9 @@ module mx.uv.fei {
         opens mx.uv.fei.presentation ;
         opens mx.uv.fei.presentation.components;
 
-        exports mx.uv.fei.app;
+        requires java.desktop;
+    requires java.net.http;
+
+    exports mx.uv.fei.app;
+    opens mx.uv.fei.domain.common;
 }
