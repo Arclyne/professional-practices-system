@@ -89,4 +89,17 @@ public class PractitionerManager {
 
         return retrievedPendingList;
     }
+
+    public List<Practitioner> retrieveAssignedPractitioners() throws ManagerException {
+        List<Practitioner> retrievedAssignedList;
+
+        try {
+            retrievedAssignedList = practitionerDAO.retrieveAssignedPractitioners();
+        } catch (DAOException exception) {
+            throw new ManagerException("Ocurrió un error al intentar recuperar la lista de practicantes asignados.", exception);
+        }
+
+        return retrievedAssignedList;
+    }
+
 }
