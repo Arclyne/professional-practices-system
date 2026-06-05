@@ -22,6 +22,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.MonthlyReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -66,7 +67,7 @@ public class ProfessorEvaluateReportController implements Initializable {
                 if (empty || report == null) {
                     setText(null);
                 } else {
-                    String statusMark = "Evaluado".equals(report.getStatus()) ? "✅ " : "⏳ ";
+                    String statusMark = ReportStatus.EVALUATED.getDatabaseValue().equals(report.getStatus()) ? "Revisado" : "Pendiente";
                     setText(statusMark + report.getMonthName() + " " + report.getYear() + " - Practicante ID: " + report.getPractitionerId());
                 }
             }
@@ -124,23 +125,27 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     @FXML
     private void handleSaveEvaluationAction(ActionEvent event) {
-        if (selectedReport == null) return;
+        if (selectedReport != null) {
+            try {
+                Double grade = null;
+                if (!fieldGrade.getText().trim().isEmpty()) {
+                    grade = Double.parseDouble(fieldGrade.getText().trim());
+                }
 
-        try {
-            Double grade = Double.parseDouble(fieldGrade.getText().trim());
-            String feedback = areaFeedback.getText().trim();
+                String feedback = areaFeedback.getText().trim();
 
-            reportManager.evaluateReport(selectedReport.getReportId(), grade, feedback);
+                reportManager.evaluateReport(selectedReport.getReportId(), grade, feedback);
 
-            Controller.showAlert("Evaluación Exitosa", "La calificación y retroalimentación han sido guardadas.", AlertType.INFORMATION);
+                Controller.showAlert("Evaluación Exitosa", "Calificación guardada.", AlertType.INFORMATION);
 
-            loadSubmittedReports();
-            evaluationContainer.setVisible(false);
+                loadSubmittedReports();
+                evaluationContainer.setVisible(false);
 
-        } catch (NumberFormatException e) {
-            Controller.showAlert("Formato Inválido", "La calificación debe ser un número válido (ej. 9.5).", AlertType.WARNING);
-        } catch (ManagerException e) {
-            Controller.showAlert("Error al Evaluar", e.getMessage(), AlertType.ERROR);
+            } catch (NumberFormatException e) {
+                Controller.showAlert("Formato Inválido", "La calificación debe ser un número (ej. 9.5).", AlertType.WARNING);
+            } catch (ManagerException e) {
+                Controller.showAlert("Datos Inválidos", e.getMessage(), AlertType.WARNING);
+            }
         }
     }
 

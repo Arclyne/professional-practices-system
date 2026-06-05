@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,20 +22,20 @@ import mx.uv.fei.domain.dto.User;
 
 @StartEtiquetteTest
 @Profile("test")
-public class UserDAOIT {
+public class UserDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private IUserDAO userDAOTest;
+    private IUserDAO userDAO;
 
     private User testUser;
 
     @BeforeEach
     void setUp() throws SQLException {
         assertNotNull(dbConnection);
-        assertNotNull(userDAOTest);
+        assertNotNull(userDAO);
 
         TestDatabaseSetup.initialize(dbConnection);
 
@@ -41,38 +43,42 @@ public class UserDAOIT {
         testUser.setName("Angel");
         testUser.setLastName("Aguilar");
         testUser.setPassword("password123");
-        testUser.setStatus("activo");
-        testUser.setGender("Masculino");
+        testUser.setStatus(UserStatus.valueOf("activo"));
+        testUser.setGender(Gender.valueOf("Masculino"));
     }
 
     @Test
-    void testInsertUserSuccess() throws SQLException, DAOException {
+    void insertUser_ValidUser_ReturnsGeneratedId() throws SQLException, DAOException {
         try (Connection conn = dbConnection.getConnection()) {
-            int generatedId = userDAOTest.insertUser(testUser, conn);
-            assertTrue(generatedId > 0);
+
+            int generatedId = userDAO.insertUser(testUser, conn);
+
+            assertTrue(generatedId > 0, "El usuario debió insertarse y generar un ID mayor a cero.");
         }
     }
 
     @Test
-    void testDeactivateUserSuccess() throws SQLException, DAOException {
+    void deactivateUser_ExistingId_ReturnsTrue() throws SQLException, DAOException {
         try (Connection conn = dbConnection.getConnection()) {
-            int generatedId = userDAOTest.insertUser(testUser, conn);
-            boolean result = userDAOTest.deactivateUser(generatedId);
-            assertTrue(result);
+            int generatedId = userDAO.insertUser(testUser, conn);
+
+            boolean result = userDAO.deactivateUser(generatedId);
+
+            assertTrue(result, "La desactivación del usuario debió retornar true.");
         }
     }
 
     @Test
-    void testUpdateUserSuccess() throws SQLException, DAOException {
+    void updateUser_ValidModifiedData_ReturnsTrue() throws SQLException, DAOException {
         try (Connection conn = dbConnection.getConnection()) {
-            int generatedId = userDAOTest.insertUser(testUser, conn);
-
+            int generatedId = userDAO.insertUser(testUser, conn);
             testUser.setId(generatedId);
-            testUser.setStatus("no activo");
+            testUser.setStatus(UserStatus.valueOf("no activo"));
             testUser.setPassword("newpassword456");
 
-            boolean result = userDAOTest.updateUser(testUser, conn);
-            assertTrue(result);
+            boolean result = userDAO.updateUser(testUser, conn);
+
+            assertTrue(result, "La actualización del usuario debió retornar true.");
         }
     }
 }

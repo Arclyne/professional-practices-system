@@ -17,53 +17,56 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataaccess.interfaces.IAuthenticationToken;
 import mx.uv.fei.domain.dto.AuthenticationToken;
 
 @StartEtiquetteTest
 @Profile("test")
-public class AuthenticationTokenDAOIT {
+public class AuthenticationTokenDAOTest {
 
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
-    private AuthenticationTokenDAO tokenDAO;
+    private IAuthenticationToken tokenDAO;
 
     private AuthenticationToken expectedToken;
 
     @BeforeEach
     void setUp() throws SQLException {
-        assertNotNull(dbConnection, "La conexión a la base de datos no fue inyectada.");
-        assertNotNull(tokenDAO, "El DAO no fue inyectado correctamente.");
-
+        assertNotNull(dbConnection);
+        assertNotNull(tokenDAO);
         TestDatabaseSetup.initialize(dbConnection);
-
         expectedToken = new AuthenticationToken();
         expectedToken.setUserName("Test");
         expectedToken.setValueToken(123456);
     }
 
     @Test
-    void testInsertTokenSuccess() throws DAOException {
+    void insertToken_ValidToken_ReturnsTrue() throws DAOException {
         AuthenticationToken token = new AuthenticationToken();
         token.setValueToken(12345);
         token.setUserName("test");
         token.setTimeCreation(LocalDateTime.now());
 
         boolean result = tokenDAO.insertToken(token);
-        assertTrue(result, "El token debería haberse insertado con éxito.");
+
+        assertTrue(result);
     }
 
     @Test
-    void testSelectTokenNullSuccess() throws DAOException {
+    void recoverToken_NonExistingToken_ReturnsNull() throws DAOException {
 
         AuthenticationToken tokenTest = tokenDAO.recoverToken(999999);
-        assertNull(tokenTest, "Se esperaba null para un token inexistente.");
+
+        assertNull(tokenTest);
     }
 
     @Test
-    void testSelectTokenSucces() throws DAOException {
+    void recoverToken_ExistingToken_ReturnsToken() throws DAOException {
+
         AuthenticationToken tokenTest = tokenDAO.recoverToken(123456);
-        assertEquals(expectedToken, tokenTest, "El token recuperado no coincide con el esperado.");
+
+        assertEquals(expectedToken, tokenTest);
     }
 }

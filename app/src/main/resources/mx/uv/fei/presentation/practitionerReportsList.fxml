@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -26,15 +26,7 @@
                 <Label text="Selecciona un reporte de la lista para ver sus detalles y gestionar los archivos PDF." textFill="#6b7280" wrapText="true" />
             </VBox>
 
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox fx:id="reportsContainer" spacing="12.0">
-                        <padding>
-                            <Insets bottom="10.0" left="5.0" right="15.0" top="5.0"/>
-                        </padding>
-                    </VBox>
-                </content>
-            </ScrollPane>
+            <ListView fx:id="reportsListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
 
             <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateNewReportAction" styleClass="primary-button" text="＋ Crear Nuevo Reporte Mensual" />
         </VBox>
@@ -56,15 +48,13 @@
                 <TextArea fx:id="detailFeedback" editable="false" wrapText="true" VBox.vgrow="ALWAYS" style="-fx-control-inner-background: #F3F4F6;" />
             </VBox>
 
-            <Region VBox.vgrow="ALWAYS" />
+            <Region VBox.vgrow="ALWAYS" /> <VBox spacing="10.0">
+            <Button fx:id="btnDownloadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDownloadPdfAction" text="⬇ Descargar PDF para Firma" style="-fx-background-color: white; -fx-text-fill: #374151; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
 
-            <VBox spacing="10.0">
-                <Button fx:id="btnDownloadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDownloadPdfAction" text="⬇ Descargar PDF para Firma" style="-fx-background-color: white; -fx-text-fill: #374151; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
+            <Button fx:id="btnUploadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleUploadSignedPdfAction" styleClass="primary-button" text="⬆ Subir PDF Firmado" />
 
-                <Button fx:id="btnUploadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleUploadSignedPdfAction" styleClass="primary-button" text="⬆ Subir PDF Firmado" />
-
-                <Button fx:id="btnViewSignedPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewSignedPdfAction" text="📄 Ver Archivo Entregado" style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;" />
-            </VBox>
+            <Button fx:id="btnViewSignedPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewSignedPdfAction" text="📄 Ver Archivo Entregado" style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;" />
+        </VBox>
         </VBox>
 
     </HBox>

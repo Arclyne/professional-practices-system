@@ -5,18 +5,17 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
@@ -27,6 +26,7 @@ import mx.uv.fei.domain.common.ReportPdfGenerator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ActivityManager;
 import mx.uv.fei.domain.manager.CloudStorageManager;
@@ -44,7 +44,7 @@ public class PractitionerReportsListController implements Initializable {
     private final CloudStorageManager cloudStorageManager;
     private final AppStore store;
 
-    @FXML private VBox reportsContainer;
+    @FXML private ListView<MonthlyReport> reportsListView;
 
     @FXML private VBox reportDetailsContainer;
     @FXML private Label detailTitle;
@@ -76,73 +76,42 @@ public class PractitionerReportsListController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reportDetailsContainer.setVisible(false);
+        configureListView();
         loadReportsList();
     }
 
-    private void loadReportsList() {
-        reportsContainer.getChildren().clear();
+    private void configureListView() {
+        reportsListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(MonthlyReport report, boolean empty) {
+                super.updateItem(report, empty);
+                if (empty || report == null) {
+                    setText(null);
+                } else {
+                    setText("Reporte de " + report.getMonthName() + " " + report.getYear() + "\nEstado: " + report.getStatus());
+                }
+            }
+        });
 
+        reportsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                showReportDetails(newSelection);
+            }
+        });
+    }
+
+    private void loadReportsList() {
         try {
             User currentPractitioner = store.getState().sessionState().currentUserInSession();
             int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
 
             List<MonthlyReport> reports = reportManager.getPractitionerReports(practitionerId);
+            ObservableList<MonthlyReport> observableReports = FXCollections.observableArrayList(reports);
+            reportsListView.setItems(observableReports);
 
-            if (reports.isEmpty()) {
-                Label emptyLabel = new Label("Aún no tienes reportes generados. Crea tu primer reporte cuando termine el mes.");
-                emptyLabel.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 14px; -fx-font-style: italic;");
-                reportsContainer.getChildren().add(emptyLabel);
-            } else {
-                for (MonthlyReport report : reports) {
-                    reportsContainer.getChildren().add(createReportCard(report));
-                }
-            }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
-    }
-
-    private HBox createReportCard(MonthlyReport report) {
-        HBox card = new HBox(15);
-        String defaultStyle = "-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 15px; -fx-cursor: hand;";
-        String hoverStyle = "-fx-background-color: #F9FAFB; -fx-border-color: #D1D5DB; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 15px; -fx-cursor: hand;";
-
-        card.setStyle(defaultStyle);
-        card.setAlignment(Pos.CENTER_LEFT);
-
-        VBox infoBox = new VBox(5);
-
-        Label titleLabel = new Label("Reporte de " + report.getMonthName() + " " + report.getYear());
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #1f2937;");
-
-        String statusColor = "#F59E0B";
-        if ("Entregado".equalsIgnoreCase(report.getStatus())) statusColor = "#3B82F6";
-        if ("Evaluado".equalsIgnoreCase(report.getStatus())) statusColor = "#10B981";
-
-        Label statusLabel = new Label("Estado: " + report.getStatus());
-        statusLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: " + statusColor + ";");
-
-        infoBox.getChildren().addAll(titleLabel, statusLabel);
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        VBox rightBox = new VBox();
-        rightBox.setAlignment(Pos.CENTER_RIGHT);
-
-        if (report.getGrade() != null) {
-            Label gradeLabel = new Label(String.valueOf(report.getGrade()));
-            gradeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #10B981;");
-            rightBox.getChildren().add(gradeLabel);
-        }
-
-        card.getChildren().addAll(infoBox, spacer, rightBox);
-
-        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
-        card.setOnMouseExited(e -> card.setStyle(defaultStyle));
-        card.setOnMouseClicked(e -> showReportDetails(report));
-
-        return card;
     }
 
     private void showReportDetails(MonthlyReport report) {
@@ -151,21 +120,13 @@ public class PractitionerReportsListController implements Initializable {
 
         detailTitle.setText("Reporte de " + report.getMonthName() + " " + report.getYear());
         detailPeriod.setText("Periodo: " + report.getStartDate() + " al " + report.getEndDate());
-
-        String statusColor = "#F59E0B";
-        if ("Entregado".equalsIgnoreCase(report.getStatus())) statusColor = "#3B82F6";
-        if ("Evaluado".equalsIgnoreCase(report.getStatus())) statusColor = "#10B981";
-
         detailStatus.setText("Estado: " + report.getStatus());
-        detailStatus.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: " + statusColor + ";");
 
         if (report.getGrade() != null) {
             detailGrade.setText("Calificación: " + report.getGrade());
-            detailGrade.setVisible(true);
-            detailGrade.setManaged(true);
+            detailGrade.setVisible(true); detailGrade.setManaged(true);
         } else {
-            detailGrade.setVisible(false);
-            detailGrade.setManaged(false);
+            detailGrade.setVisible(false); detailGrade.setManaged(false);
         }
 
         if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().trim().isEmpty()) {
@@ -178,7 +139,7 @@ public class PractitionerReportsListController implements Initializable {
         btnUploadPdf.setVisible(false); btnUploadPdf.setManaged(false);
         btnViewSignedPdf.setVisible(false); btnViewSignedPdf.setManaged(false);
 
-        if ("Pendiente de Firma".equalsIgnoreCase(report.getStatus())) {
+        if (ReportStatus.PENDING.getDatabaseValue().equalsIgnoreCase(report.getStatus())) {
             btnDownloadPdf.setVisible(true); btnDownloadPdf.setManaged(true);
             btnUploadPdf.setVisible(true); btnUploadPdf.setManaged(true);
         } else {
@@ -188,46 +149,47 @@ public class PractitionerReportsListController implements Initializable {
 
     @FXML
     private void handleDownloadPdfAction(ActionEvent event) {
-        if (selectedReport == null) return;
-        try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-            List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
-            String pdfPath = pdfGenerator.generatePdf(selectedReport, currentPractitioner, reportActivities);
+        if (selectedReport != null) {
+            try {
+                User currentPractitioner = store.getState().sessionState().currentUserInSession();
+                List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
+                String pdfPath = pdfGenerator.generatePdf(selectedReport, currentPractitioner, reportActivities);
 
-            File generatedFile = new File(pdfPath);
-            if (generatedFile.exists()) {
-                java.awt.Desktop.getDesktop().open(generatedFile);
-                Controller.showAlert("PDF Generado", "El reporte se ha guardado en tu carpeta de Descargas y se abrirá a continuación.", AlertType.INFORMATION);
+                File generatedFile = new File(pdfPath);
+                if (generatedFile.exists()) {
+                    java.awt.Desktop.getDesktop().open(generatedFile);
+                    Controller.showAlert("PDF Generado", "El reporte se ha guardado en Descargas.", AlertType.INFORMATION);
+                }
+            } catch (ManagerException e) {
+                Controller.showAlert("Error de Generación", e.getMessage(), AlertType.ERROR);
+            } catch (Exception e) {
+                Controller.showAlert("Error de Sistema", "No se pudo abrir el visor de PDF.", AlertType.ERROR);
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Generación", exception.getMessage(), AlertType.ERROR);
-        } catch (Exception e) {
-            Controller.showAlert("Error de Sistema", "No se pudo abrir el visor de PDF.", AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleUploadSignedPdfAction(ActionEvent event) {
-        if (selectedReport == null) return;
+        if (selectedReport != null) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Seleccionar Reporte Firmado");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar Reporte Firmado");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
+            File selectedFile = fileChooser.showOpenDialog(reportsListView.getScene().getWindow());
 
-        File selectedFile = fileChooser.showOpenDialog(reportsContainer.getScene().getWindow());
+            if (selectedFile != null) {
+                try {
+                    String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
+                    reportManager.submitSignedReport(selectedReport, fileUrl);
 
-        if (selectedFile != null) {
-            try {
-                String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
-                reportManager.submitSignedReport(selectedReport, fileUrl);
+                    Controller.showAlert("Reporte Enviado", "Documento subido exitosamente.", AlertType.INFORMATION);
 
-                Controller.showAlert("Reporte Enviado", "El documento firmado se subió exitosamente. Ahora el profesor podrá evaluarlo.", AlertType.INFORMATION);
+                    loadReportsList();
+                    showReportDetails(selectedReport);
 
-                loadReportsList();
-                showReportDetails(selectedReport);
-
-            } catch (ManagerException exception) {
-                Controller.showAlert("Error al Subir", exception.getMessage(), AlertType.ERROR);
+                } catch (ManagerException e) {
+                    Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
+                }
             }
         }
     }

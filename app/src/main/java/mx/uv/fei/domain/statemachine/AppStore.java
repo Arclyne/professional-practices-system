@@ -6,7 +6,11 @@ import mx.uv.fei.config.annotation.etiquette.Keep;
 import mx.uv.fei.statemachine.core.Store;
 import mx.uv.fei.statemachine.core.CombineReducers;
 import mx.uv.fei.domain.statemachine.state.RootState;
-import mx.uv.fei.domain.statemachine.reducers.*;
+import mx.uv.fei.domain.statemachine.reducers.PractitionerSlice;
+import mx.uv.fei.domain.statemachine.reducers.NavigationSlice;
+import mx.uv.fei.domain.statemachine.reducers.AuthenticatorSlice;
+import mx.uv.fei.domain.statemachine.reducers.SessionSlice;
+import mx.uv.fei.domain.statemachine.reducers.MessageSlice;
 
 @Component
 @Keep

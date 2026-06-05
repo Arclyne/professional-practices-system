@@ -55,25 +55,19 @@ public class Period {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            Period that = (Period) object;
-            isEqual = this.periodId == that.getPeriodId() &&
-                    Objects.equals(this.periodName, that.getPeriodName()) &&
-                    Objects.equals(this.startDate, that.getStartDate()) &&
-                    Objects.equals(this.endDate, that.getEndDate()) &&
-                    Objects.equals(this.periodStatus, that.getPeriodStatus());
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Period that = (Period) obj;
+            isEqual = Objects.equals(this.periodName, that.getPeriodName());
         }
-
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(periodId, periodName, startDate, endDate, periodStatus);
+        return Objects.hash(periodName);
     }
 }

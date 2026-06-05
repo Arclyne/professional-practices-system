@@ -57,22 +57,18 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
-        try {
-            RootState currentSystemState = applicationNavigationStore.getState();
+        RootState currentSystemState = applicationNavigationStore.getState();
 
-            if (currentSystemState != null && currentSystemState.sessionState() != null) {
-                User currentAuthenticatedUser = currentSystemState.sessionState().currentUserInSession();
+        if (currentSystemState != null && currentSystemState.sessionState() != null) {
+            User currentAuthenticatedUser = currentSystemState.sessionState().currentUserInSession();
 
-                if (currentAuthenticatedUser != null) {
-                    systemUserNameLabel.setText(currentAuthenticatedUser.getName() + " " + currentAuthenticatedUser.getLastName());
-                    systemUserRoleLabel.setText("Rol: " + currentAuthenticatedUser.getRole());
-                    adjustUserInterfacePermissionsByRole(currentAuthenticatedUser.getRole());
-                } else {
-                    Controller.showAlert("Sesión inválida", "No se detectó un usuario activo en el sistema. Por favor, inicie sesión nuevamente.", AlertType.WARNING);
-                }
+            if (currentAuthenticatedUser != null) {
+                systemUserNameLabel.setText(currentAuthenticatedUser.getName() + " " + currentAuthenticatedUser.getLastName());
+                systemUserRoleLabel.setText("Rol: " + currentAuthenticatedUser.getRole());
+                adjustUserInterfacePermissionsByRole(currentAuthenticatedUser.getRole());
+            } else {
+                Controller.showAlert("Sesión inválida", "No se detectó un usuario activo en el sistema. Por favor, inicie sesión nuevamente.", AlertType.WARNING);
             }
-        } catch (Exception initializationException) {
-            Controller.showAlert("Error del Sistema", "No se pudo inicializar el panel de control.", AlertType.ERROR);
         }
     }
 
@@ -211,27 +207,23 @@ public class DashboardController {
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_COORDINATOR));
             }
 
-        } catch (ManagerException managerRetrievalException) {
-            Controller.showAlert("Error de Servidor", managerRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Servidor", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleNavigateToPractitionerManagementAction(ActionEvent userActionEvent) {
-        try {
-            applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
-        } catch (Exception dispatchException) {
-            Controller.showAlert("Error de Navegación", "No fue posible abrir el menú de gestión de practicantes.", AlertType.ERROR);
-        }
+    private void handleNavigateToPractitionerManagementAction() {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
     }
 
     @FXML
-    private void handleNavigateToRegisterProfessorAction(ActionEvent userActionEvent) {
+    private void handleNavigateToRegisterProfessorAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_MANAGEMENT_MENU));
     }
 
     @FXML
-    private void handleNavigateToRegisterProjectAction(ActionEvent userActionEvent) {
+    private void handleNavigateToRegisterProjectAction() {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROJECT_MANAGEMENT_MENU));
     }
 

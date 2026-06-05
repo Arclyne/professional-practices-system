@@ -26,7 +26,7 @@ public class ActivityManager {
     }
 
     public void registerActivity(Activity activity) throws ManagerException {
-        Validator.validateActivityData(activity);
+        Validator.validateLogbookActivity(activity);
 
         try {
             int resultId = activityDAO.insertActivity(activity);
@@ -39,7 +39,7 @@ public class ActivityManager {
     }
 
     public void modifyActivity(Activity activity, int activityId) throws ManagerException {
-        Validator.validateActivityData(activity);
+        Validator.validateLogbookActivity(activity);
 
         try {
             boolean isUpdated = activityDAO.updateActivity(activity, activityId);
