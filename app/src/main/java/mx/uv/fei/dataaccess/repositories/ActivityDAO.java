@@ -16,10 +16,13 @@ import mx.uv.fei.domain.dto.Activity;
 @Component
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
-    private static final String SQL_INSERT_ACTIVITY = "INSERT INTO activity (name, start_date, end_date, description, manager) VALUES (?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT_ACTIVITY_BY_NAME = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity WHERE name = ? AND manager = ?";
-    private static final String SQL_SELECT_ALL_ACTIVITIES = "SELECT activity_id, name, start_date, end_date, description, manager FROM activity";
-    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, manager = ? WHERE activity_id = ?";
+    private static final String SQL_INSERT_ACTIVITY = "INSERT INTO activity (name, start_date, end_date, description, group_id) VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_ACTIVITY_BY_NAME_AND_GROUP = "SELECT activity_id, name, start_date, end_date, description, group_id FROM activity WHERE name = ? AND group_id = ?";
+    private static final String SQL_SELECT_ALL_ACTIVITIES = "SELECT activity_id, name, start_date, end_date, description, group_id FROM activity";
+    private static final String SQL_UPDATE_ACTIVITY = "UPDATE activity SET name = ?, start_date = ?, end_date = ?, description = ?, group_id = ? WHERE activity_id = ?";
+
+    private static final String MSG_INSERT_ERROR = "Database error while attempting to insert the activity.";
+    private static final String MSG_RECOVER_ERROR = "Database error while attempting to recover the activity.";
 
     @Inject
     public ActivityDAO(IDatabaseConnection databaseConnection) {
@@ -37,26 +40,26 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
             statement.setDate(2, activity.getStartDate());
             statement.setDate(3, activity.getEndDate());
             statement.setString(4, activity.getDescription());
-            statement.setString(5, activity.getManager());
+            statement.setInt(5, activity.getGroupId());
 
             isInserted = statement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar insertar la actividad en la base de datos.", e);
+            throw new DAOException(MSG_INSERT_ERROR, e);
         }
 
         return isInserted;
     }
 
     @Override
-    public Activity recoverActivity(String activityName, String manager) throws DAOException {
+    public Activity recoverActivity(String activityName, int groupId) throws DAOException {
         Activity recoveredActivity = new Activity();
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ACTIVITY_BY_NAME)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ACTIVITY_BY_NAME_AND_GROUP)) {
 
             statement.setString(1, activityName);
-            statement.setString(2, manager);
+            statement.setInt(2, groupId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -64,7 +67,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar recuperar la actividad de la base de datos.", e);
+            throw new DAOException(MSG_RECOVER_ERROR, e);
         }
 
         return recoveredActivity;
@@ -78,7 +81,7 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         activity.setStartDate(resultSet.getDate("start_date"));
         activity.setEndDate(resultSet.getDate("end_date"));
         activity.setDescription(resultSet.getString("description"));
-        activity.setManager(resultSet.getString("manager"));
+        activity.setGroupId(resultSet.getInt("group_id"));
 
         return activity;
     }
@@ -94,14 +97,14 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     @Override
     public boolean updateActivity(Activity activity, int activityId) throws DAOException {
-        boolean isUpdated = false;
+        boolean isUpdated;
 
         isUpdated = updateTuple(SQL_UPDATE_ACTIVITY, statement -> {
             statement.setString(1, activity.getName());
-            statement.setObject(2, activity.getStartDate());
-            statement.setObject(3, activity.getEndDate());
+            statement.setDate(2, activity.getStartDate());
+            statement.setDate(3, activity.getEndDate());
             statement.setString(4, activity.getDescription());
-            statement.setString(5, activity.getManager());
+            statement.setInt(5, activity.getGroupId());
             statement.setInt(6, activityId);
         });
 

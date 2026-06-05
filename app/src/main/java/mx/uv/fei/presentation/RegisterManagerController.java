@@ -92,12 +92,10 @@ public class RegisterManagerController implements Initializable {
 
             managerToRegister.setOrganizationId(orgId);
 
-            boolean isSaved = managerManager.registerManager(managerToRegister);
+            managerManager.registerManager(managerToRegister);
 
-            if (isSaved) {
-                Controller.showSuccessAlert("Registro Exitoso", "El encargado ha sido guardado correctamente.");
-                store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-            }
+            Controller.showSuccessAlert("Registro Exitoso", "El encargado ha sido guardado correctamente.");
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
         } catch (ManagerException e) {
             Controller.showErrorAlert("Validación", e.getMessage());

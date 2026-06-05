@@ -8,12 +8,11 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.common.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-
 @Component
 public class ActivityManager {
 
-    private static final String REGISTER_ACTIVITY_ERROR_MESSAGE = "No se pudo completar el registro de la actividad en el sistema.";
-    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema. Por favor, intente más tarde.";
+    private static final String MSG_REGISTER_ERROR = "The activity could not be registered in the system.";
+    private static final String MSG_CONNECTION_ERROR = "A connection problem occurred. Please try again later.";
 
     private final IActivityDAO activityDAO;
 
@@ -22,21 +21,17 @@ public class ActivityManager {
         this.activityDAO = activityDAO;
     }
 
-    public boolean registerNewActivity(Activity activityToRegister) throws ManagerException {
-        boolean isRegistered;
-
+    public void registerNewActivity(Activity activityToRegister) throws ManagerException {
         Validator.validateActivityData(activityToRegister);
 
         try {
-            isRegistered = activityDAO.insertActivity(activityToRegister);
+            boolean isRegistered = activityDAO.insertActivity(activityToRegister);
 
             if (!isRegistered) {
-                throw new ManagerException(REGISTER_ACTIVITY_ERROR_MESSAGE);
+                throw new ManagerException(MSG_REGISTER_ERROR);
             }
         } catch (DAOException exception) {
-            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
+            throw new ManagerException(MSG_CONNECTION_ERROR, exception);
         }
-
-        return isRegistered;
     }
 }

@@ -2,7 +2,6 @@ package mx.uv.fei.domain.manager;
 
 import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -18,6 +17,12 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
 public class PractitionerManager {
+
+    private static final String MSG_REGISTRATION_FAILED = "Registration failed in the database.";
+    private static final String MSG_CONNECTION_ERROR = "Database connection error.";
+    private static final String MSG_RETRIEVE_ERROR = "An error occurred while trying to retrieve the list of pending practitioners.";
+
+    private static final String ROLE_PRACTITIONER = "Practitioner";
 
     private final IPractitionerDAO practitionerDAO;
     private final IFileBackup fileBackup;
@@ -35,7 +40,7 @@ public class PractitionerManager {
 
         practitioner.setPassword(temporalPassword);
         practitioner.setUserName(practitioner.getEnrollment());
-        practitioner.setRole("Practitioner");
+        practitioner.setRole(ROLE_PRACTITIONER);
         practitioner.setStatus(UserStatus.PENDING);
         practitioner.setGrade(0.0);
 
@@ -45,14 +50,14 @@ public class PractitionerManager {
             int resultId = practitionerDAO.insertPractitioner(practitioner);
 
             if (resultId <= 0) {
-                throw new ManagerException("Fallo en el registro.");
+                throw new ManagerException(MSG_REGISTRATION_FAILED);
             }
 
-            return temporalPassword;
-
         } catch (DAOException exception) {
-            throw new ManagerException("Error de conexion.", exception);
+            throw new ManagerException(MSG_CONNECTION_ERROR, exception);
         }
+
+        return temporalPassword;
     }
 
     public BatchRegistrationSummary registerPractitionerBatch(File batchFile, String coordinatorName) throws ManagerException {
@@ -78,8 +83,8 @@ public class PractitionerManager {
 
         try {
             retrievedPendingList = practitionerDAO.retrievePractitionersPendingAssignment();
-        } catch (DAOException DAOException) {
-            throw new ManagerException("Ocurrio un error al intentar recuperar la lista de practicantes pendientes.", DAOException);
+        } catch (DAOException exception) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
         }
 
         return retrievedPendingList;

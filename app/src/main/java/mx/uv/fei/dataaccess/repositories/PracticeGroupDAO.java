@@ -56,7 +56,7 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
             statement.setInt(1, groupIndex);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    groupToSearch.setGroupIndex(resultSet.getInt("group_id"));
+                    groupToSearch.setGroupId(resultSet.getInt("group_id"));
                     groupToSearch.setSection(resultSet.getString("section"));
                     groupToSearch.setProfessorId(resultSet.getInt("professor_id"));
                     groupToSearch.setPeriodId(resultSet.getInt("period_id"));
@@ -72,7 +72,7 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     public List<PracticeGroup> getAllPracticeGroups() throws DAOException {
         return recoverALL(SQL_SELECT_ALL, resultSet -> {
             PracticeGroup groupRecovered = new PracticeGroup();
-            groupRecovered.setGroupIndex(resultSet.getInt("group_id"));
+            groupRecovered.setGroupId(resultSet.getInt("group_id"));
             groupRecovered.setSection(resultSet.getString("section"));
             groupRecovered.setProfessorId(resultSet.getInt("professor_id"));
             groupRecovered.setPeriodId(resultSet.getInt("period_id"));

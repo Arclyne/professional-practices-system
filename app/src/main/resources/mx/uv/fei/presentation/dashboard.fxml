@@ -86,6 +86,14 @@
                             mnemonicParsing="false" onAction="#handleNavigateToRegisterProfessorAction" styleClass="secondary-button" text="Gestión de Profesores"
                             visible="false" managed="false"/>
 
+                    <Button fx:id="navigateToRegisterPeriodButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterPeriodAction" styleClass="secondary-button" text="Registrar Periodo"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToRegisterPracticeGroupButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToRegisterPracticeGroupAction" styleClass="secondary-button" text="Registrar Grupo de Prácticas"
+                            visible="false" managed="false"/>
+
                     <Button fx:id="navigateToRegisterProjectButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToRegisterProjectAction" styleClass="secondary-button" text="Gestión de Proyectos"
                             visible="false" managed="false"/>
