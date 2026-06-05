@@ -18,7 +18,6 @@ import java.io.IOException;
 public class MainApplication extends Application {
 
     private DependencyInjector systemDependencyInjector;
-
     @Override
     public void init() {
         this.systemDependencyInjector = EtiquetteApplication.run(this.getClass());

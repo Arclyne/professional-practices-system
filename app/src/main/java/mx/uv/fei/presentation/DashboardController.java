@@ -30,8 +30,13 @@ public class DashboardController {
     @FXML private Button navigateToRegisterProjectButton;
     @FXML private Button navigateToRegisterManagerButton;
     @FXML private Button navigateToRegisterOrganizationButton;
-    @FXML private Button navigateToRegisterActivityButton;
+
+    @FXML private Button navigateToReportGeneratorButton;
+    @FXML private Button navigateToLogbookButton;
     @FXML private Button navigateToPractitionerProjectsButton;
+
+    @FXML private Button navigateToEvaluateReportsButton;
+
     @FXML private Button systemLogoutButton;
     @FXML private Button navigateToMessagesButton;
 
@@ -115,12 +120,24 @@ public class DashboardController {
             }
 
         } else if (applicationDashboardManager.isProfessorMenuAvailable(authenticatedUserRole)) {
-            navigateToRegisterActivityButton.setVisible(true);
-            navigateToRegisterActivityButton.setManaged(true);
+            if (navigateToEvaluateReportsButton != null) {
+                navigateToEvaluateReportsButton.setVisible(true);
+                navigateToEvaluateReportsButton.setManaged(true);
+            }
 
         } else if (applicationDashboardManager.isPractitionerMenuAvailable(authenticatedUserRole)) {
             navigateToPractitionerProjectsButton.setVisible(true);
             navigateToPractitionerProjectsButton.setManaged(true);
+
+            if (navigateToLogbookButton != null) {
+                navigateToLogbookButton.setVisible(true);
+                navigateToLogbookButton.setManaged(true);
+            }
+
+            if (navigateToReportGeneratorButton != null) {
+                navigateToReportGeneratorButton.setVisible(true);
+                navigateToReportGeneratorButton.setManaged(true);
+            }
         }
     }
 
@@ -149,10 +166,6 @@ public class DashboardController {
             navigateToRegisterOrganizationButton.setVisible(false);
             navigateToRegisterOrganizationButton.setManaged(false);
         }
-        if (navigateToRegisterActivityButton != null) {
-            navigateToRegisterActivityButton.setVisible(false);
-            navigateToRegisterActivityButton.setManaged(false);
-        }
         if (navigateToPractitionerProjectsButton != null) {
             navigateToPractitionerProjectsButton.setVisible(false);
             navigateToPractitionerProjectsButton.setManaged(false);
@@ -168,6 +181,21 @@ public class DashboardController {
         if (navigateToTemplatesButton != null) {
             navigateToTemplatesButton.setVisible(false);
             navigateToTemplatesButton.setManaged(false);
+        }
+
+        if (navigateToLogbookButton != null) {
+            navigateToLogbookButton.setVisible(false);
+            navigateToLogbookButton.setManaged(false);
+        }
+
+        if (navigateToReportGeneratorButton != null) {
+            navigateToReportGeneratorButton.setVisible(false);
+            navigateToReportGeneratorButton.setManaged(false);
+        }
+
+        if (navigateToEvaluateReportsButton != null) {
+            navigateToEvaluateReportsButton.setVisible(false);
+            navigateToEvaluateReportsButton.setManaged(false);
         }
     }
 
@@ -218,11 +246,6 @@ public class DashboardController {
     }
 
     @FXML
-    private void handleNavigateToRegisterActivityAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_ACTIVITY));
-    }
-
-    @FXML
     private void handleNavigateToPractitionerProjectsAction(ActionEvent userActionEvent) {
         User currentAuthenticatedPractitioner = applicationNavigationStore.getState().sessionState().currentUserInSession();
 
@@ -259,6 +282,21 @@ public class DashboardController {
     }
 
     @FXML
+    private void handleNavigateToLogbookAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_LOGBOOK));
+    }
+
+    @FXML
+    private void handleNavigateToReportsList(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_REPORTS_LIST));
+    }
+
+    @FXML
+    private void handleNavigateToEvaluateReportsAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_EVALUATE_REPORT));
+    }
+
+    @FXML
     private void handleNavigateToTemplatesAction(ActionEvent userActionEvent) {
         try {
             applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.TEMPLATE_GENERATOR));
@@ -266,5 +304,4 @@ public class DashboardController {
             Controller.showAlert("Error de Navegación", "No fue posible abrir el generador de plantillas.", AlertType.ERROR);
         }
     }
-
 }
