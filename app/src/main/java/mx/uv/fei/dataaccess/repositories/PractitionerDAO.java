@@ -1,10 +1,6 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +26,13 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             "FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id " +
             "WHERE p.practitioner_id IN (SELECT practitioner_id FROM project_postulation) " +
             "AND p.practitioner_id NOT IN (SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
+
+    private static final String SQL_SELECT_ASSIGNED_PRACTITIONERS =
+            "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
+                    "WHERE u.status = 'Active' AND pp.postulation_status = 'Assigned'";
 
     private static final String MSG_INSERT_ROLLBACK = "SQL error while inserting the practitioner. Changes reverted.";
     private static final String MSG_CRITICAL_CONN = "Critical database connection error.";
@@ -229,4 +232,29 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
         return practitioner;
     }
+
+    @Override
+    public List<Practitioner> retrieveAssignedPractitioners() throws DAOException {
+        List<Practitioner> assignedPractitionersList = new ArrayList<>();
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_ASSIGNED_PRACTITIONERS);
+             ResultSet resultSet = selectStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Practitioner currentPractitioner = new Practitioner();
+                currentPractitioner.setId(resultSet.getInt("user_id"));
+                currentPractitioner.setEnrollment(resultSet.getString("matricula"));
+                currentPractitioner.setName(resultSet.getString("name"));
+                currentPractitioner.setLastName(resultSet.getString("last_name"));
+                currentPractitioner.setEmail(resultSet.getString("email"));
+                assignedPractitionersList.add(currentPractitioner);
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error al consultar los practicantes asignados.", e);
+        }
+
+        return assignedPractitionersList;
+    }
+
 }

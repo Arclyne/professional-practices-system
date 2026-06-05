@@ -8,6 +8,8 @@ module mx.uv.fei {
     requires org.slf4j;
     requires statemachine.core;
     requires jakarta.mail;
+    requires org.apache.pdfbox;
+    requires org.apache.pdfbox.io;
 
     opens mx.uv.fei.appconfiguration ;
 
