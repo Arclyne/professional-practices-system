@@ -53,13 +53,11 @@ public class ManagerManager {
         return managers;
     }
 
-    public boolean registerManager(Manager managerToRegister) throws ManagerException {
-        boolean isRegistered;
-
+    public void registerManager(Manager managerToRegister) throws ManagerException {
         Validator.validateManagerData(managerToRegister);
 
         try {
-            isRegistered = managerDAO.insertManager(managerToRegister);
+            boolean isRegistered = managerDAO.insertManager(managerToRegister);
 
             if (!isRegistered) {
                 throw new ManagerException(REGISTER_MANAGER_ERROR_MESSAGE);
@@ -67,8 +65,6 @@ public class ManagerManager {
         } catch (DAOException exception) {
             throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
         }
-
-        return isRegistered;
     }
 
     public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {

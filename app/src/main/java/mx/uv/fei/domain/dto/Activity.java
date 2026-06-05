@@ -9,7 +9,7 @@ public class Activity {
     private Date startDate;
     private Date endDate;
     private String description;
-    private String manager;
+    private int groupId;
 
     public int getActivityId() {
         return activityId;
@@ -51,30 +51,31 @@ public class Activity {
         this.description = description;
     }
 
-    public String getManager() {
-        return manager;
+    public int getGroupId() {
+        return groupId;
     }
 
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (this == object)
-            return true;
+        boolean isEqual = false;
 
-        if (object == null || getClass() != object.getClass())
-            return false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Activity that = (Activity) object;
+            isEqual = groupId == that.getGroupId() &&
+                    Objects.equals(name, that.getName());
+        }
 
-        Activity that = (Activity) object;
-
-        return Objects.equals(name, that.getName()) &&
-                Objects.equals(manager, that.getManager());
+        return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, manager);
+        return Objects.hash(name, groupId);
     }
 }

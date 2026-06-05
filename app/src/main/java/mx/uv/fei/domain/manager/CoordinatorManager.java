@@ -28,8 +28,8 @@ public class CoordinatorManager {
     }
 
     public String registerNewCoordinator(Coordinator coordinatorInformation) throws ManagerException {
-        String temporaryGeneratedPassword = PasswordManager.generatePassword();
-        coordinatorInformation.setPassword(temporaryGeneratedPassword);
+        String temporaryPassword = PasswordManager.generatePassword();
+        coordinatorInformation.setPassword(temporaryPassword);
         coordinatorInformation.setStatus(UserStatus.PENDING);
 
         Validator.validateCoordinatorData(coordinatorInformation);
@@ -41,7 +41,7 @@ public class CoordinatorManager {
                 throw new ManagerException("No se pudo completar el registro del coordinador en el sistema.");
             }
 
-            return temporaryGeneratedPassword;
+            return temporaryPassword;
 
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);

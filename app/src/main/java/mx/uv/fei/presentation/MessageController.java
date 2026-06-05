@@ -23,16 +23,19 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.MessageAction;
 import mx.uv.fei.domain.statemachine.state.MessageState;
 import mx.uv.fei.domain.statemachine.state.RootState;
+import mx.uv.fei.presentation.interfaces.IDisposable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 @Component
-public class MessageController implements Initializable {
+public class MessageController implements Initializable, IDisposable {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
@@ -90,6 +93,7 @@ public class MessageController implements Initializable {
     private final MessageManager messageManager;
     private Runnable unsubscribe;
 
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Inject
     public MessageController(AppStore store, MessageManager messageManager) {
@@ -224,7 +228,8 @@ public class MessageController implements Initializable {
                 store.dispatch(new MessageAction.FetchMessagesFailure(fetchTask.getException().getMessage()));
             });
 
-            new Thread(fetchTask).start();
+            executorService.submit(fetchTask);
+
         } else {
             logger.warn("Se intentó cargar mensajes sin una sesión activa.");
         }
@@ -238,14 +243,14 @@ public class MessageController implements Initializable {
         if (!receiverEmail.isEmpty() && !subject.isEmpty() && !body.isEmpty()) {
             try {
                 int senderId = store.getState().sessionState().currentUserInSession().getId();
-                boolean isSent = messageManager.sendMessage(senderId, receiverEmail, subject, body);
 
-                if (isSent) {
-                    Controller.showAlert("Éxito", "El mensaje institucional ha sido enviado correctamente.", AlertType.INFORMATION);
-                    clearComposeForm();
-                    showInboxView();
-                    fetchMessages();
-                }
+                messageManager.sendMessage(senderId, receiverEmail, subject, body);
+
+                Controller.showAlert("Éxito", "El mensaje institucional ha sido enviado correctamente.", AlertType.INFORMATION);
+                clearComposeForm();
+                showInboxView();
+                fetchMessages();
+
             } catch (ManagerException e) {
                 logger.error("Error al despachar el envío de mensaje desde el controlador gráfico", e);
                 Controller.showAlert("Error de Envío", e.getMessage(), AlertType.ERROR);
@@ -280,9 +285,14 @@ public class MessageController implements Initializable {
         });
     }
 
+    @Override
     public void dispose() {
         if (unsubscribe != null) {
             unsubscribe.run();
+        }
+
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
         }
     }
 }
