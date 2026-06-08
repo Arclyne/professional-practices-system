@@ -3,14 +3,14 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
+
 public class Project {
+
     private int projectId;
     private String projectName;
     private String description;
     private int participantCapacity;
-
     private int managerId;
-
     private String status;
     private Date startDate;
     private Date endDate;
@@ -90,16 +90,18 @@ public class Project {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object)
-            return true;
+        boolean isEqual = false;
 
-        if (object == null || getClass() != object.getClass())
-            return false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Project that = (Project) object;
+            isEqual = managerId == that.managerId
+                    && companyId == that.companyId
+                    && Objects.equals(projectName, that.projectName);
+        }
 
-        Project that = (Project) object;
-        return managerId == that.managerId &&
-                companyId == that.companyId &&
-                Objects.equals(projectName, that.projectName);
+        return isEqual;
     }
 
     @Override

@@ -1,31 +1,34 @@
 package mx.uv.fei.dataaccess.repositories;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.ICoordinatorDAO;
+import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.dto.Coordinator;
+import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import mx.uv.fei.config.annotation.etiquette.Component;
-import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.dataaccess.exceptions.DAOException;
-import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataaccess.interfaces.ICoordinatorDAO;
-import mx.uv.fei.dataaccess.interfaces.IUserDAO;
-import mx.uv.fei.domain.dto.Coordinator;
-import mx.uv.fei.domain.enums.Gender;
-import mx.uv.fei.domain.enums.UserStatus;
-
 @Component
 public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
     private static final String SQL_INSERT_COORDINATOR = "INSERT INTO coordinator (coordinator_id) VALUES (?)";
-    private static final String SQL_SELECT_COORDINATOR_BY_ID = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
-            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE c.coordinator_id = ?";
-    private static final String SQL_SELECT_ALL_COORDINATORS = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
-            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id";
-    private static final String SQL_SELECT_ACTIVE_COORDINATOR = "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
-            "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE u.status IN ('Active', 'Pending') LIMIT 1";
+    private static final String SQL_SELECT_COORDINATOR_BY_ID =
+            "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+                    "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE c.coordinator_id = ?";
+    private static final String SQL_SELECT_ALL_COORDINATORS =
+            "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+                    "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id";
+    private static final String SQL_SELECT_ACTIVE_COORDINATOR =
+            "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
+                    "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE u.status IN ('Active', 'Pending') LIMIT 1";
 
     private final IUserDAO userDAO;
 
@@ -50,14 +53,14 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException exception) {
+            } catch (SQLException e) {
                 connection.rollback();
-                throw new DAOException("Error SQL al intentar insertar el coordinador. Cambios revertidos.", exception);
+                throw new DAOException("Error SQL al intentar insertar el coordinador. Cambios revertidos.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error crítico de conexión a la base de datos.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error critico de conexion a la base de datos.", e);
         }
 
         return resultId;
@@ -94,8 +97,8 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                     recoveredCoordinator = mapResultSetToCoordinator(resultSet);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al intentar recuperar el coordinador de la base de datos.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al intentar recuperar el coordinador de la base de datos.", e);
         }
 
         return recoveredCoordinator;
@@ -112,8 +115,8 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
             if (resultSet.next()) {
                 currentCoordinator = mapResultSetToCoordinator(resultSet);
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al intentar recuperar el coordinador actual activo de la base de datos.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al intentar recuperar el coordinador actual activo de la base de datos.", e);
         }
 
         return currentCoordinator;
@@ -147,7 +150,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException("Error crítico de conexión a la base de datos.", e);
+            throw new DAOException("Error critico de conexion a la base de datos.", e);
         }
 
         return isUpdated;
@@ -173,6 +176,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         if (resultSet.getTimestamp("registration_date") != null) {
             coordinator.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
         }
+
         if (resultSet.getTimestamp("discharge_date") != null) {
             coordinator.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
         }

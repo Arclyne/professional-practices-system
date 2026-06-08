@@ -38,7 +38,7 @@ public class AuthenticationTokenDAOTest {
         assertNotNull(tokenDAO);
         TestDatabaseSetup.initialize(dbConnection);
         expectedToken = new AuthenticationToken();
-        expectedToken.setUserName("Test");
+        expectedToken.setUserName("test");
         expectedToken.setValueToken(123456);
     }
 

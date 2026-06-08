@@ -2,7 +2,9 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+
 public class Organization {
+
     private int idOrganization;
     private String nameOrganization;
     private String state;
@@ -77,22 +79,22 @@ public class Organization {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object)
-            return true;
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
 
-        if (object == null || getClass() != object.getClass())
-            return false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Organization other = (Organization) obj;
+            isEqual = Objects.equals(this.nameOrganization, other.nameOrganization)
+                    && Objects.equals(this.mail, other.mail);
+        }
 
-        Organization that = (Organization) object;
-
-        return Objects.equals(nameOrganization, that.getNameOrganization()) &&
-                Objects.equals(state, that.getState()) &&
-                Objects.equals(mail, that.getMail());
+        return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameOrganization, state, mail);
+        return Objects.hash(nameOrganization, mail);
     }
 }
