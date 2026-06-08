@@ -18,23 +18,25 @@
         </padding>
 
         <VBox spacing="15.0" prefWidth="450.0" HBox.hgrow="ALWAYS">
+
             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Button mnemonicParsing="false" onAction="#handleReturnAction" styleClass="secondary-button" text="← Volver al Menú" />
+                <Button mnemonicParsing="false" onAction="#handleReturnAction" style="-fx-background-color: #E0E0E0; -fx-cursor: hand;" text="← Volver al Menú" />
             </HBox>
+
             <VBox spacing="5.0">
-                <Label styleClass="form-title" text="Mis Reportes Mensuales" />
+                <Label styleClass="form-title" text="Mis Reportes Mensuales" style="-fx-font-weight: bold; -fx-font-size: 20px;"/>
                 <Label text="Selecciona un reporte de la lista para ver sus detalles y gestionar los archivos PDF." textFill="#6b7280" wrapText="true" />
             </VBox>
 
             <ListView fx:id="reportsListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateNewReportAction" styleClass="primary-button" text="＋ Crear Nuevo Reporte Mensual" />
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateNewReportAction" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 10;" text="＋ Crear Nuevo Reporte Mensual" />
         </VBox>
 
         <Separator orientation="VERTICAL" />
 
         <VBox fx:id="reportDetailsContainer" spacing="15.0" prefWidth="450.0" HBox.hgrow="ALWAYS" style="-fx-background-color: #F9FAFB; -fx-padding: 25px; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-background-radius: 8px;">
-            <Label styleClass="form-title" text="Detalles del Reporte" />
+            <Label styleClass="form-title" text="Detalles del Reporte" style="-fx-font-weight: bold; -fx-font-size: 18px;" />
 
             <VBox spacing="8.0" style="-fx-background-color: white; -fx-padding: 15px; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;">
                 <Label fx:id="detailTitle" text="Título" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #1f2937;" />
@@ -48,13 +50,13 @@
                 <TextArea fx:id="detailFeedback" editable="false" wrapText="true" VBox.vgrow="ALWAYS" style="-fx-control-inner-background: #F3F4F6;" />
             </VBox>
 
-            <Region VBox.vgrow="ALWAYS" /> <VBox spacing="10.0">
-            <Button fx:id="btnDownloadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDownloadPdfAction" text="⬇ Descargar PDF para Firma" style="-fx-background-color: white; -fx-text-fill: #374151; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
+            <Region VBox.vgrow="ALWAYS" />
 
-            <Button fx:id="btnUploadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleUploadSignedPdfAction" styleClass="primary-button" text="⬆ Subir PDF Firmado" />
-
-            <Button fx:id="btnViewSignedPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewSignedPdfAction" text="📄 Ver Archivo Entregado" style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;" />
-        </VBox>
+            <VBox spacing="10.0">
+                <Button fx:id="btnDownloadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDownloadPdfAction" text="⬇ Descargar PDF para Firma" style="-fx-background-color: white; -fx-text-fill: #374151; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand; -fx-padding: 10;" />
+                <Button fx:id="btnUploadPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleUploadSignedPdfAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 10;" text="⬆ Subir PDF Firmado" />
+                <Button fx:id="btnViewSignedPdf" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewSignedPdfAction" text="📄 Ver Archivo Entregado" style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;" />
+            </VBox>
         </VBox>
 
     </HBox>
