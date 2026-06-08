@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PostulationDAOTest {
 
+    private static final int MISS_PRACTITIONER_ID = 99999;
     private static final int PRACTITIONER_ID = 123;
 
     @Inject
@@ -48,7 +49,7 @@ public class PostulationDAOTest {
 
     @Test
     void hasPractitionerSubmittedPriorities_WithNoPriorSubmission_ReturnsFalse() throws DAOException {
-        boolean hasSubmitted = postulationDAO.hasPractitionerSubmittedPriorities(PRACTITIONER_ID);
+        boolean hasSubmitted = postulationDAO.hasPractitionerSubmittedPriorities(MISS_PRACTITIONER_ID);
         assertFalse(hasSubmitted);
     }
 

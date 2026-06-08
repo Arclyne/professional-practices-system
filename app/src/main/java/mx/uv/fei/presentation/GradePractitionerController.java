@@ -31,7 +31,13 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class GradePractitionerController implements Initializable {
 
-    private static final String PERIOD_ACTIVE = "Junio-Diciembre 2026";
+    private static final String PERIOD_ACTIVE          = "Junio-Diciembre 2026";
+    private static final String MSG_NO_PRACTITIONERS   = "No tienes practicantes asignados en este periodo.";
+    private static final String MSG_SELECT_FIRST       = "Selecciona un practicante de la lista para calificarlo.";
+    private static final String MSG_GRADE_REQUIRED     = "Campo requerido";
+    private static final String MSG_ENTER_GRADE        = "Ingresa la calificación antes de continuar.";
+    private static final String MSG_INVALID_FORMAT     = "Formato inválido";
+    private static final String MSG_NUMBER_FORMAT      = "La calificación debe ser un número decimal (ej. 9.5).";
 
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private VBox gradeContainer;
@@ -39,6 +45,7 @@ public class GradePractitionerController implements Initializable {
     @FXML private Label labelTentativeGrade;
     @FXML private TextField fieldFinalGrade;
     @FXML private Label labelAlreadyGraded;
+    @FXML private Label labelNoPractitioners;
 
     private final GradingManager gradingManager;
     private final PractitionerManager practitionerManager;
@@ -64,9 +71,11 @@ public class GradePractitionerController implements Initializable {
 
         gradeContainer.setVisible(false);
         gradeContainer.setManaged(false);
+        labelNoPractitioners.setVisible(false);
+        labelNoPractitioners.setManaged(false);
 
         configurePractitionerList();
-        loadPractitioners();
+        loadPractitionersForProfessor();
     }
 
     private void configurePractitionerList() {
@@ -84,42 +93,62 @@ public class GradePractitionerController implements Initializable {
         });
 
         practitionersListView.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldVal, newVal) -> {
-                    if (newVal != null) {
-                        loadPractitionerGradePanel(newVal);
+                (observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        loadGradePanelForPractitioner(newValue);
                     }
                 }
         );
     }
 
-    private void loadPractitioners() {
+    private void loadPractitionersForProfessor() {
         try {
-            List<Practitioner> practitioners = practitionerManager.retrieveAssignedPractitioners();
-            practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
+            List<Practitioner> practitioners = practitionerManager
+                    .retrievePractitionersByProfessor(professorId);
+
+            if (practitioners.isEmpty()) {
+                labelNoPractitioners.setVisible(true);
+                labelNoPractitioners.setManaged(true);
+                labelNoPractitioners.setText(MSG_NO_PRACTITIONERS);
+            } else {
+                practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
+            }
         } catch (ManagerException exception) {
             Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
         }
     }
 
-    private void loadPractitionerGradePanel(Practitioner practitioner) {
+    private void loadGradePanelForPractitioner(Practitioner practitioner) {
         selectedPractitioner = practitioner;
 
         gradeContainer.setVisible(true);
         gradeContainer.setManaged(true);
 
-        labelPractitionerName.setText(practitioner.getName() + " " + practitioner.getLastName());
+        labelPractitionerName.setText(
+                practitioner.getName() + " " + practitioner.getLastName());
         labelAlreadyGraded.setVisible(false);
         labelAlreadyGraded.setManaged(false);
         fieldFinalGrade.setDisable(false);
         fieldFinalGrade.clear();
 
-        try {
-            double tentative = gradingManager.previewTentativeGrade(practitioner.getId());
-            labelTentativeGrade.setText(String.format("Calificación tentativa del sistema: %.2f", tentative));
+        loadTentativeGradeForPractitioner(practitioner.getId());
+        checkIfAlreadyGraded(practitioner.getId());
+    }
 
-            boolean alreadyGraded = gradingManager.getGradesByProfessor(professorId).stream()
-                    .anyMatch(g -> g.getPractitionerId() == practitioner.getId()
-                            && PERIOD_ACTIVE.equals(g.getPeriod()));
+    private void loadTentativeGradeForPractitioner(int practitionerId) {
+        try {
+            double tentativeGrade = gradingManager.previewTentativeGrade(practitionerId);
+            labelTentativeGrade.setText(
+                    String.format("Calificación tentativa del sistema: %.2f / 10.0", tentativeGrade));
+        } catch (ManagerException exception) {
+            labelTentativeGrade.setText("No se pudo calcular la calificación tentativa.");
+        }
+    }
+
+    private void checkIfAlreadyGraded(int practitionerId) {
+        try {
+            boolean alreadyGraded = gradingManager
+                    .getGradeByPractitionerAndPeriod(practitionerId, PERIOD_ACTIVE) != null;
 
             if (alreadyGraded) {
                 labelAlreadyGraded.setVisible(true);
@@ -134,13 +163,13 @@ public class GradePractitionerController implements Initializable {
     @FXML
     private void handleSaveGrade(ActionEvent event) {
         if (selectedPractitioner == null) {
+            Controller.showAlert(MSG_SELECT_FIRST, MSG_SELECT_FIRST, AlertType.WARNING);
             return;
         }
 
         String rawGrade = fieldFinalGrade.getText().trim();
         if (rawGrade.isEmpty()) {
-            Controller.showAlert("Campo requerido",
-                    "Ingresa la calificación final antes de guardar.", AlertType.WARNING);
+            Controller.showAlert(MSG_GRADE_REQUIRED, MSG_ENTER_GRADE, AlertType.WARNING);
             return;
         }
 
@@ -151,14 +180,14 @@ public class GradePractitionerController implements Initializable {
 
             Controller.showAlert("Calificación Guardada",
                     "Se registró la calificación de "
-                    + selectedPractitioner.getName() + " " + selectedPractitioner.getLastName()
-                    + " como " + finalGrade + ".",
+                            + selectedPractitioner.getName() + " "
+                            + selectedPractitioner.getLastName()
+                            + " como " + finalGrade + ".",
                     AlertType.INFORMATION);
 
-            loadPractitionerGradePanel(selectedPractitioner);
+            loadGradePanelForPractitioner(selectedPractitioner);
         } catch (NumberFormatException exception) {
-            Controller.showAlert("Formato Inválido",
-                    "La calificación debe ser un número (ej. 9.5).", AlertType.WARNING);
+            Controller.showAlert(MSG_INVALID_FORMAT, MSG_NUMBER_FORMAT, AlertType.WARNING);
         } catch (ManagerException exception) {
             Controller.showAlert("Error al Guardar", exception.getMessage(), AlertType.WARNING);
         }
@@ -167,30 +196,31 @@ public class GradePractitionerController implements Initializable {
     @FXML
     private void handleUpdateGrade(ActionEvent event) {
         if (selectedPractitioner == null) {
+            Controller.showAlert(MSG_SELECT_FIRST, MSG_SELECT_FIRST, AlertType.WARNING);
             return;
         }
 
         String rawGrade = fieldFinalGrade.getText().trim();
         if (rawGrade.isEmpty()) {
-            Controller.showAlert("Campo requerido",
-                    "Ingresa la nueva calificación.", AlertType.WARNING);
+            Controller.showAlert(MSG_GRADE_REQUIRED, MSG_ENTER_GRADE, AlertType.WARNING);
             return;
         }
 
         try {
             double newGrade = Double.parseDouble(rawGrade);
-            gradingManager.updateFinalGrade(selectedPractitioner.getId(), PERIOD_ACTIVE, newGrade);
+            gradingManager.updateFinalGrade(
+                    selectedPractitioner.getId(), PERIOD_ACTIVE, newGrade);
 
             Controller.showAlert("Calificación Actualizada",
                     "La calificación de "
-                    + selectedPractitioner.getName() + " " + selectedPractitioner.getLastName()
-                    + " fue actualizada a " + newGrade + ".",
+                            + selectedPractitioner.getName() + " "
+                            + selectedPractitioner.getLastName()
+                            + " fue actualizada a " + newGrade + ".",
                     AlertType.INFORMATION);
 
-            loadPractitionerGradePanel(selectedPractitioner);
+            loadGradePanelForPractitioner(selectedPractitioner);
         } catch (NumberFormatException exception) {
-            Controller.showAlert("Formato Inválido",
-                    "La calificación debe ser un número.", AlertType.WARNING);
+            Controller.showAlert(MSG_INVALID_FORMAT, MSG_NUMBER_FORMAT, AlertType.WARNING);
         } catch (ManagerException exception) {
             Controller.showAlert("Error al Actualizar", exception.getMessage(), AlertType.WARNING);
         }

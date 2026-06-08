@@ -38,7 +38,7 @@ import mx.uv.fei.presentation.components.FormField;
 @Component
 public class RegisterProjectController implements Initializable {
 
-    private static final String STATUS_ACTIVE = "Activo";
+    private static final String STATUS_ACTIVE = "Active";
     private static final String ERROR_TITLE = "Error";
     private static final String LOAD_ERROR_TITLE = "Error de Carga";
     private static final String SUCCESS_TITLE = "Registro Exitoso";
