@@ -3,6 +3,8 @@ package mx.uv.fei.dataaccess.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -52,82 +54,105 @@ public class UserDAOTest {
     void insertUser_ValidUser_ReturnsGeneratedId() throws SQLException, DAOException {
         try (Connection conn = dbConnection.getConnection()) {
             int generatedId = userDAO.insertUser(testUser, conn);
-
             assertTrue(generatedId > 0);
         }
     }
 
     @Test
-    void deactivateUser_ExistingId_ReturnsTrue() throws SQLException, DAOException {
-        int generatedId;
-        try (Connection conn = dbConnection.getConnection()) {
-            generatedId = userDAO.insertUser(testUser, conn);
-        }
-
-        boolean result = userDAO.deactivateUser(generatedId);
-
+    void deactivateUser_ExistingId_ReturnsTrue() throws DAOException {
+        boolean result = userDAO.deactivateUser(13);
         assertTrue(result);
     }
 
     @Test
     void updateUser_ValidModifiedData_ReturnsTrue() throws SQLException, DAOException {
         try (Connection conn = dbConnection.getConnection()) {
-            int generatedId = userDAO.insertUser(testUser, conn);
-            testUser.setId(generatedId);
+            testUser.setId(13);
             testUser.setStatus(UserStatus.INACTIVE);
             testUser.setPassword("newPassword456");
 
             boolean result = userDAO.updateUser(testUser, conn);
-
             assertTrue(result);
         }
     }
 
     @Test
     void verifyCredentialsByUserName_ValidCredentials_ReturnsTrue() throws DAOException {
-
         boolean result = userDAO.verifyCredentialsByUserName("12345", "12345");
-
         assertTrue(result);
     }
 
     @Test
     void verifyCredentialsByEmail_ValidCredentials_ReturnsTrue() throws DAOException {
-
         boolean result = userDAO.verifyCredentialsByEmail("adm@adm.com", "12345");
-
         assertTrue(result);
     }
 
     @Test
     void getUserRole_ExistingUser_ReturnsRole() throws DAOException {
-
         String role = userDAO.getUserRole("12345");
-
         assertEquals("Administrator", role);
     }
 
     @Test
     void getUserByUserName_ExistingUser_ReturnsUser() throws DAOException {
+        User expectedUser = new User();
+        expectedUser.setId(13);
+        expectedUser.setUserName("12345");
+        expectedUser.setPassword("12345");
+        expectedUser.setName("adm");
+        expectedUser.setLastName("adm");
+        expectedUser.setEmail("adm@adm.com");
+        expectedUser.setRole("Administrator");
+        expectedUser.setStatus(UserStatus.ACTIVE);
+        expectedUser.setGender(Gender.MALE);
 
         User recovered = userDAO.getUserByUserName("12345");
-
-        assertNotNull(recovered);
+        assertEquals(expectedUser, recovered);
     }
 
     @Test
     void getUserByEmail_ExistingUser_ReturnsUser() throws DAOException {
+        User expectedUser = new User();
+        expectedUser.setId(13);
+        expectedUser.setUserName("12345");
+        expectedUser.setPassword("12345");
+        expectedUser.setName("adm");
+        expectedUser.setLastName("adm");
+        expectedUser.setEmail("adm@adm.com");
+        expectedUser.setRole("Administrator");
+        expectedUser.setStatus(UserStatus.ACTIVE);
+        expectedUser.setGender(Gender.MALE);
 
         User recovered = userDAO.getUserByEmail("adm@adm.com");
-
-        assertNotNull(recovered);
+        assertEquals(expectedUser, recovered);
     }
 
     @Test
     void deactivateMultipleUsers_ValidIds_ReturnsTrue() throws DAOException {
-
         boolean result = userDAO.deactivateMultipleUsers(List.of(13, 67));
-
         assertTrue(result);
+    }
+
+    @Test
+    void insertUser_DuplicateUsername_ThrowsDAOException() throws SQLException {
+        testUser.setUserName("12345");
+        try (Connection conn = dbConnection.getConnection()) {
+            assertThrows(DAOException.class, () -> {
+                userDAO.insertUser(testUser, conn);
+            });
+        }
+    }
+
+    @Test
+    void verifyCredentialsByUserName_InvalidPassword_ReturnsFalse() throws DAOException {
+        boolean result = userDAO.verifyCredentialsByUserName("12345", "wrongpass");
+        assertTrue(!result);
+    }
+
+    @Test
+    void getUserByUserName_NonExistentUser_ReturnsNull() throws DAOException {
+        User recovered = userDAO.getUserByUserName("fantasma");
+        assertNull(recovered);
     }
 }
