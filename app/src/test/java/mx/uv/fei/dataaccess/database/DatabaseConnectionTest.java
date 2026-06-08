@@ -29,7 +29,7 @@ public class DatabaseConnectionTest {
     }
 
     @Test
-    void testGetConnectionSuccess() throws SQLException {
+    void getConnection_ValidConfiguration_ReturnsConnection() throws SQLException {
 
         try (Connection connectionTest = dbConnection.getConnection()) {
 

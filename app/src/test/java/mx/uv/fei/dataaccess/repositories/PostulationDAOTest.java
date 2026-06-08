@@ -2,6 +2,7 @@ package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -47,35 +48,40 @@ public class PostulationDAOTest {
 
     @Test
     void hasPractitionerSubmittedPriorities_WithNoPriorSubmission_ReturnsFalse() throws DAOException {
-
         boolean hasSubmitted = postulationDAO.hasPractitionerSubmittedPriorities(PRACTITIONER_ID);
-
         assertFalse(hasSubmitted);
     }
 
     @Test
     void insertProjectPriorities_ValidProjects_ReturnsTrue() throws DAOException {
-
         boolean isInserted = postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
-
         assertTrue(isInserted);
     }
 
     @Test
     void retrievePractitionerPostulations_WithExistingPostulations_ReturnsList() throws DAOException {
         postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
-
         List<ProjectPostulation> resultList = postulationDAO.retrievePractitionerPostulations(PRACTITIONER_ID);
-
         assertFalse(resultList.isEmpty());
     }
 
     @Test
     void assignProjectUsingStoredProcedure_ValidIds_ReturnsTrue() throws DAOException {
         postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
-
         boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, 1);
-
         assertTrue(isAssigned);
+    }
+
+    @Test
+    void insertProjectPriorities_NonExistentPractitioner_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> {
+            postulationDAO.insertProjectPriorities(9999, prioritizedProjects);
+        });
+    }
+
+    @Test
+    void retrievePractitionerPostulations_NonExistentPractitioner_ReturnsEmptyList() throws DAOException {
+        List<ProjectPostulation> resultList = postulationDAO.retrievePractitionerPostulations(9999);
+        assertTrue(resultList.isEmpty());
     }
 }

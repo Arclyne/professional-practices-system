@@ -249,19 +249,24 @@ CREATE TABLE professor_evaluation (
 );
 
 -- Procedimiento almacenado: equivalente H2 al stored procedure de MySQL
-CREATE ALIAS AssignProjectAndRejectOthers AS $$
+DROP ALIAS IF EXISTS assign_project_and_reject_others;
+
+CREATE ALIAS assign_project_and_reject_others AS $$
 void assignProject(Connection conn, int targetPractitionerIdentifier, int targetProjectIdentifier) throws SQLException {
     conn.setAutoCommit(false);
     try (PreparedStatement ps1 = conn.prepareStatement(
              "UPDATE project_postulation SET postulation_status = 'Assigned' WHERE practitioner_id = ? AND project_id = ?");
          PreparedStatement ps2 = conn.prepareStatement(
              "UPDATE project_postulation SET postulation_status = 'Rejected' WHERE practitioner_id = ? AND project_id != ?")) {
+
         ps1.setInt(1, targetPractitionerIdentifier);
         ps1.setInt(2, targetProjectIdentifier);
         ps1.executeUpdate();
+
         ps2.setInt(1, targetPractitionerIdentifier);
         ps2.setInt(2, targetProjectIdentifier);
         ps2.executeUpdate();
+
         conn.commit();
 } catch (SQLException e) {
         conn.rollback();

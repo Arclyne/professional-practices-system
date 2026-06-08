@@ -53,7 +53,7 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
 
     @Override
     public Organization recoverOrganization(String organizationName) throws DAOException {
-        Organization organizationToSearch = null;
+        Organization organizationToSearch = new Organization();
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ORGANIZATION_BY_NAME)) {
