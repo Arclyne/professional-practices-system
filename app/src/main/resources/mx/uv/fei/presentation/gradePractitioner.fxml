@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@../styles.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.GradePractitionerController">
+
+    <HBox spacing="0.0"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+        <!-- Lista de practicantes -->
+        <VBox spacing="12.0" prefWidth="320.0"
+              style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
+            <padding><Insets bottom="24.0" left="20.0" right="20.0" top="24.0"/></padding>
+
+            <HBox alignment="CENTER_LEFT">
+                <Button mnemonicParsing="false" onAction="#handleReturnAction"
+                        styleClass="secondary-button" text="← Volver"/>
+            </HBox>
+
+            <Label styleClass="form-title" text="Calificar Practicantes"/>
+            <Label textFill="#6b7280" wrapText="true"
+                   text="Selecciona un practicante para ver su calificación tentativa y asignar la definitiva."/>
+
+            <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
+                      style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
+        </VBox>
+
+        <Separator orientation="VERTICAL"/>
+
+        <!-- Panel de calificación -->
+        <VBox fx:id="gradeContainer" spacing="16.0" HBox.hgrow="ALWAYS">
+            <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/></padding>
+
+            <Label styleClass="form-title" text="Asignar Calificación"/>
+
+            <VBox spacing="8.0"
+                  style="-fx-background-color: #F3F4F6; -fx-border-radius: 8px; -fx-padding: 16px;">
+                <Label fx:id="labelPractitionerName"
+                       style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                <Label fx:id="labelTentativeGrade" textFill="#6b7280"/>
+            </VBox>
+
+            <Label fx:id="labelAlreadyGraded"
+                   text="✓ Este practicante ya tiene una calificación registrada para este periodo."
+                   style="-fx-text-fill: #10B981; -fx-font-weight: bold;"
+                   visible="false" managed="false" wrapText="true"/>
+
+            <Separator/>
+
+            <VBox spacing="6.0">
+                <Label text="Calificación final (0.0 – 10.0):" styleClass="field-label"/>
+                <TextField fx:id="fieldFinalGrade" promptText="Ej. 9.5" maxWidth="160.0"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <HBox spacing="12.0">
+                <Button onAction="#handleSaveGrade"
+                        text="💾  Guardar Calificación"
+                        style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
+                        HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
+                <Button onAction="#handleUpdateGrade"
+                        text="✏  Actualizar"
+                        style="-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
+                        HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</AnchorPane>
