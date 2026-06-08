@@ -299,6 +299,6 @@ public class TemplateManagerTest {
 
     @Test
     void deleteTemplate_NonExistentId_DoesNotThrowException() {
-        assertDoesNotThrow(() -> templateManager.deleteTemplate("uuid-que-no-existe"));
+        assertDoesNotThrow(()-> templateManager.deleteTemplate("uuid-que-no-existe"));
     }
 }
