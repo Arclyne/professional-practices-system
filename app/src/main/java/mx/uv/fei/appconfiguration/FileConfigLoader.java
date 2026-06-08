@@ -20,8 +20,8 @@ public class FileConfigLoader {
             }
 
             properties.load(input);
-        } catch (IOException ex) {
-            throw new RuntimeException("Critical error reading the file: " + fileName, ex);
+        } catch (IOException e) {
+            throw new RuntimeException("Critical error reading the file: " + fileName, e);
         }
 
         return properties;
