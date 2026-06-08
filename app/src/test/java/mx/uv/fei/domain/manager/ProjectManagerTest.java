@@ -9,6 +9,7 @@ import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Project;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +34,15 @@ public class ProjectManagerTest {
         p.setStartDate(Date.valueOf("2026-01-01"));
         p.setEndDate(Date.valueOf("2026-06-01"));
         assertDoesNotThrow(() -> projectManager.registerNewProject(p));
+    }
+
+    @Test
+    void getAllProjects_ReturnsList() throws ManagerException {
+        assertNotNull(projectManager.getAllProjects());
+    }
+
+    @Test
+    void inactivateMultipleProjects_ValidList_DoesNotThrow() {
+        assertDoesNotThrow(() -> projectManager.inactivateMultipleProjects(java.util.List.of(1)));
     }
 }

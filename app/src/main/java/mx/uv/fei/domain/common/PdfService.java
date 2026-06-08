@@ -22,22 +22,27 @@ public class PdfService {
 
     public void fillPdfTemplate(String templatePath, String outputPath, Map<String, String> fieldData) throws IOException {
         InputStream templateStream = null;
-        File fileAttempt = null;
+        File fileAttempt = new File(templatePath);
 
         try {
-            templateStream = getClass().getResourceAsStream(templatePath);
+            if (fileAttempt.exists() && fileAttempt.canRead() && fileAttempt.isFile()) {
+                templateStream = new FileInputStream(fileAttempt);
+            } else {
+                templateStream = getClass().getResourceAsStream(templatePath);
 
-            if (templateStream == null) {
-                String cleanPath = templatePath.startsWith("/") ? templatePath.substring(1) : templatePath;
-                fileAttempt = Paths.get(System.getProperty("user.dir"), "app", "src", "main", "resources", cleanPath).toFile();
+                if (templateStream == null) {
+                    String cleanPath = templatePath.startsWith("/") ? templatePath.substring(1) : templatePath;
+                    fileAttempt = Paths.get(System.getProperty("user.dir"), "app", "src", "main", "resources", cleanPath).toFile();
 
-                if (fileAttempt.exists() && fileAttempt.canRead()) {
-                    templateStream = new FileInputStream(fileAttempt);
-                } else {
-                    String reason = !fileAttempt.exists() ? "El archivo no existe" : "El archivo no tiene permisos de lectura";
-                    throw new IOException(reason + " en la ruta: " + fileAttempt.getAbsolutePath());
+                    if (fileAttempt.exists() && fileAttempt.canRead()) {
+                        templateStream = new FileInputStream(fileAttempt);
+                    } else {
+                        String reason = !fileAttempt.exists() ? "El archivo no existe" : "El archivo no tiene permisos de lectura";
+                        throw new IOException(reason + " en la ruta: " + fileAttempt.getAbsolutePath());
+                    }
                 }
             }
+
             try (InputStream finalStream = templateStream;
                  PDDocument pdfDocument = Loader.loadPDF(new RandomAccessReadBuffer(finalStream))) {
 
