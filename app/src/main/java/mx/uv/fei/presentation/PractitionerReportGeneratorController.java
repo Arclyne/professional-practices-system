@@ -121,8 +121,8 @@ public class PractitionerReportGeneratorController implements Initializable {
             ObservableList<Activity> observableActivities = FXCollections.observableArrayList(freeActivities);
             freeActivitiesListView.setItems(observableActivities);
 
-        } catch (ManagerException e) {
-            Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
+        } catch (ManagerException exception) {
+            Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -170,10 +170,10 @@ public class PractitionerReportGeneratorController implements Initializable {
 
                 loadAvailableActivities();
 
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException exception) {
                 Controller.showAlert("Error de Formato", "Las horas deben ser un número.", AlertType.WARNING);
-            } catch (ManagerException e) {
-                Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+            } catch (ManagerException exception) {
+                Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
             }
         }
     }
@@ -210,10 +210,10 @@ public class PractitionerReportGeneratorController implements Initializable {
             clearForm();
             loadAvailableActivities();
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException exception) {
             Controller.showAlert("Formato Inválido", "El año debe ser un número.", AlertType.WARNING);
-        } catch (ManagerException e) {
-            Controller.showAlert("Datos Inválidos", e.getMessage(), AlertType.WARNING);
+        } catch (ManagerException exception) {
+            Controller.showAlert("Datos Inválidos", exception.getMessage(), AlertType.WARNING);
         }
     }
 
