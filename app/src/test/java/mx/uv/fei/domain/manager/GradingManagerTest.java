@@ -197,7 +197,6 @@ public class GradingManagerTest {
         assertEquals(0.0, result);
     }
 
-    // ── getGradesByProfessor ──────────────────────────────────────────────
 
     @Test
     void getGradesByProfessor_WithGrades_ReturnsList() throws ManagerException {

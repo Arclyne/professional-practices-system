@@ -173,7 +173,7 @@ public class ReportPdfGenerator {
 
                 float cursorY = PAGE_HEIGHT - MARGIN;
 
-                // Cabecera
+
                 contentStream.beginText();
                 contentStream.setFont(fontBold, 16);
                 contentStream.newLineAtOffset(MARGIN, cursorY);
@@ -188,7 +188,7 @@ public class ReportPdfGenerator {
                 contentStream.endText();
                 cursorY -= 30;
 
-                // Título
+
                 contentStream.beginText();
                 contentStream.setFont(fontBold, 14);
                 contentStream.newLineAtOffset(MARGIN, cursorY);
@@ -196,7 +196,7 @@ public class ReportPdfGenerator {
                 contentStream.endText();
                 cursorY -= 25;
 
-                // Datos del practicante y periodo
+
                 contentStream.beginText();
                 contentStream.setFont(fontNormal, 12);
                 contentStream.newLineAtOffset(MARGIN, cursorY);
@@ -208,7 +208,7 @@ public class ReportPdfGenerator {
                 contentStream.endText();
                 cursorY -= 60;
 
-                // Espacio para comentarios (si existen)
+
                 if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().isEmpty()) {
                     contentStream.beginText();
                     contentStream.setFont(fontBold, 12);
@@ -225,10 +225,10 @@ public class ReportPdfGenerator {
                     cursorY -= 60;
                 }
 
-                // Firmas (igual que en tu reporte mensual)
+
                 float signatureY = cursorY - 100;
 
-                // Línea firma 1
+
                 contentStream.moveTo(MARGIN, signatureY);
                 contentStream.lineTo(MARGIN + 150, signatureY);
                 contentStream.stroke();
@@ -238,7 +238,7 @@ public class ReportPdfGenerator {
                 contentStream.showText("Firma del Profesor");
                 contentStream.endText();
 
-                // Línea firma 2
+
                 contentStream.moveTo(PAGE_WIDTH - MARGIN - 150, signatureY);
                 contentStream.lineTo(PAGE_WIDTH - MARGIN, signatureY);
                 contentStream.stroke();
