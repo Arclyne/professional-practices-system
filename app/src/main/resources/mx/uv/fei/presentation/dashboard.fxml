@@ -125,6 +125,18 @@
                     <Button fx:id="navigateToEvaluateReportsButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToEvaluateReportsAction" styleClass="secondary-button" text="Evaluar Reportes"
                             visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToGradePractitionerButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToGradePractitionerAction" styleClass="secondary-button" text="Calificar Practicantes"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToProgressReportButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToProgressReportAction" styleClass="secondary-button" text="Reporte de Avance"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToGradeViewButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToGradeViewAction" styleClass="secondary-button" text="Mi Calificación"
+                            visible="false" managed="false"/>
                 </VBox>
             </VBox>
         </StackPane>

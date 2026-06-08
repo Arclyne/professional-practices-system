@@ -36,6 +36,9 @@ public class DashboardController {
     @FXML private Button navigateToPractitionerProjectsButton;
 
     @FXML private Button navigateToEvaluateReportsButton;
+    @FXML private Button navigateToGradePractitionerButton;
+    @FXML private Button navigateToProgressReportButton;
+    @FXML private Button navigateToGradeViewButton;
 
     @FXML private Button systemLogoutButton;
     @FXML private Button navigateToMessagesButton;
@@ -120,6 +123,10 @@ public class DashboardController {
                 navigateToEvaluateReportsButton.setVisible(true);
                 navigateToEvaluateReportsButton.setManaged(true);
             }
+            if (navigateToGradePractitionerButton != null) {
+                navigateToGradePractitionerButton.setVisible(true);
+                navigateToGradePractitionerButton.setManaged(true);
+            }
 
         } else if (applicationDashboardManager.isPractitionerMenuAvailable(authenticatedUserRole)) {
             navigateToPractitionerProjectsButton.setVisible(true);
@@ -133,6 +140,14 @@ public class DashboardController {
             if (navigateToReportGeneratorButton != null) {
                 navigateToReportGeneratorButton.setVisible(true);
                 navigateToReportGeneratorButton.setManaged(true);
+            }
+            if (navigateToProgressReportButton != null) {
+                navigateToProgressReportButton.setVisible(true);
+                navigateToProgressReportButton.setManaged(true);
+            }
+            if (navigateToGradeViewButton != null) {
+                navigateToGradeViewButton.setVisible(true);
+                navigateToGradeViewButton.setManaged(true);
             }
         }
     }
@@ -192,6 +207,18 @@ public class DashboardController {
         if (navigateToEvaluateReportsButton != null) {
             navigateToEvaluateReportsButton.setVisible(false);
             navigateToEvaluateReportsButton.setManaged(false);
+        }
+        if (navigateToGradePractitionerButton != null) {
+            navigateToGradePractitionerButton.setVisible(false);
+            navigateToGradePractitionerButton.setManaged(false);
+        }
+        if (navigateToProgressReportButton != null) {
+            navigateToProgressReportButton.setVisible(false);
+            navigateToProgressReportButton.setManaged(false);
+        }
+        if (navigateToGradeViewButton != null) {
+            navigateToGradeViewButton.setVisible(false);
+            navigateToGradeViewButton.setManaged(false);
         }
     }
 
@@ -295,5 +322,20 @@ public class DashboardController {
         } catch (Exception dispatchException) {
             Controller.showAlert("Error de Navegación", "No fue posible abrir el generador de plantillas.", AlertType.ERROR);
         }
+    }
+
+    @FXML
+    private void handleNavigateToGradePractitionerAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.GRADE_PRACTITIONER));
+    }
+
+    @FXML
+    private void handleNavigateToProgressReportAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROGRESS_REPORT_GENERATOR));
+    }
+
+    @FXML
+    private void handleNavigateToGradeViewAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_GRADE_VIEW));
     }
 }
