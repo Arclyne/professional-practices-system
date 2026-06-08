@@ -8,6 +8,7 @@ import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.PracticeGroup;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +31,10 @@ public class PracticeGroupManagerTest {
         group.setProfessorId(68);
         group.setPeriodId(5);
         assertDoesNotThrow(() -> practiceGroupManager.registerNewPracticeGroup(group));
+    }
+
+    @Test
+    void getAllPracticeGroups_ReturnsList() throws ManagerException {
+        assertNotNull(practiceGroupManager.getAllPracticeGroups());
     }
 }

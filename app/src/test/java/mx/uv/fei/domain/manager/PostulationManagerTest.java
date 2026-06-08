@@ -34,4 +34,14 @@ public class PostulationManagerTest {
     void registerPractitionerPriorities_EmptyList_ThrowsManagerException() {
         assertThrows(ManagerException.class, () -> postulationManager.registerPractitionerPriorities(123, List.of()));
     }
+
+    @Test
+    void assignProjectToPractitioner_ValidIds_DoesNotThrow() {
+        assertDoesNotThrow(() -> postulationManager.assignProjectToPractitioner(123, 1));
+    }
+
+    @Test
+    void retrieveAllAvailableProjects_ReturnsList() throws ManagerException {
+        assertNotNull(postulationManager.retrieveAllAvailableProjects());
+    }
 }
