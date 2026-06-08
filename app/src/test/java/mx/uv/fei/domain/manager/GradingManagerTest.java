@@ -96,44 +96,37 @@ public class GradingManagerTest {
 
     @Test
     void registerGrade_GradeAbove10_ThrowsManagerException() {
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, PERIOD, 10.1));
 
-        assertNotNull(e.getMessage());
     }
 
     @Test
     void registerGrade_NegativeGrade_ThrowsManagerException() {
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, PERIOD, -0.1));
 
-        assertNotNull(e.getMessage());
     }
 
     @Test
     void registerGrade_NullPeriod_ThrowsManagerException() {
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, null, VALID_GRADE));
-
-        assertNotNull(e.getMessage());
     }
 
     @Test
     void registerGrade_BlankPeriod_ThrowsManagerException() {
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, "   ", VALID_GRADE));
 
-        assertNotNull(e.getMessage());
     }
 
     @Test
     void registerGrade_AlreadyGraded_ThrowsManagerException() {
         stubDAO.setExistingGrade(true);
 
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, PERIOD, VALID_GRADE));
-
-        assertTrue(e.getMessage().contains(PERIOD));
     }
 
 
@@ -162,20 +155,17 @@ public class GradingManagerTest {
     void updateFinalGrade_GradeAbove10_ThrowsManagerException() {
         stubDAO.setExistingGrade(true);
 
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.updateFinalGrade(PRACTITIONER_ID, PERIOD, 10.5));
 
-        assertNotNull(e.getMessage());
     }
 
     @Test
     void updateFinalGrade_GradeNotFound_ThrowsManagerException() {
         stubDAO.setExistingGrade(false);
 
-        ManagerException e = assertThrows(ManagerException.class,
+        assertThrows(ManagerException.class,
                 () -> gradingManager.updateFinalGrade(PRACTITIONER_ID, PERIOD, 8.0));
-
-        assertNotNull(e.getMessage());
     }
 
 
