@@ -886,6 +886,39 @@ Caused by: java.lang.NullPointerException: Cannot invoke "javafx.scene.control.L
 	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2675)
 	... 8 common frames omitted
 2026-06-05 17:14:07 [JavaFX Application Thread] WARN  o.apache.pdfbox.pdmodel.PDDocument - You are overwriting the existing file Reporte_Junio_2026.pdf, this will produce a corrupted file if you're also reading from it
+2026-06-05 17:55:13 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:30)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:165)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:28)
+	... 19 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Table 'professional-practices-system.administrator' doesn't exist
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:45)
+	... 20 common frames omitted
 2026-06-07 17:44:00 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
 2026-06-07 17:44:00 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
 2026-06-07 17:44:00 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
@@ -939,3 +972,161 @@ Caused by: java.sql.SQLSyntaxErrorException: Access denied for user 'spp_app_use
 2026-06-07 18:24:58 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
 2026-06-07 18:24:58 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
 2026-06-07 18:24:58 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:16:54 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 10:16:54 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 10:16:54 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 10:16:54 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-08 10:16:54 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:23:32 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error de E/S al cargar la vista FXML: /mx/uv/fei/presentation/registerCoordinator.fxml
+javafx.fxml.LoadException: 
+/C:/Users/josep/Documents/escuela/SISTEMAS_OPERATIVO/java/professional-practices-system/app/target/classes/mx/uv/fei/presentation/registerCoordinator.fxml
+
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2727)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2705)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2568)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2536)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.loadView(MainController.java:131)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$handleApplicationStateChange$0(MainController.java:91)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.lang.NullPointerException: Cannot invoke "mx.uv.fei.presentation.components.FormComboBox.setItems(javafx.collections.ObservableList)" because "this.genderFormComboBox" is null
+	at mx.uv.fei/mx.uv.fei.presentation.RegisterCoordinatorController.initialize(RegisterCoordinatorController.java:57)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2675)
+	... 11 common frames omitted
+2026-06-08 10:26:31 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 10:26:31 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 10:26:31 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:26:31 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 10:26:31 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-08 10:27:49 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error de E/S al cargar la vista FXML: /mx/uv/fei/presentation/passwordReset.fxml
+javafx.fxml.LoadException: 
+/C:/Users/josep/Documents/escuela/SISTEMAS_OPERATIVO/java/professional-practices-system/app/target/classes/mx/uv/fei/presentation/passwordReset.fxml:12
+
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2727)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processAttribute(FXMLLoader.java:946)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$InstanceDeclarationElement.processAttribute(FXMLLoader.java:983)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$Element.processStartElement(FXMLLoader.java:230)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processStartElement(FXMLLoader.java:757)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.processStartElement(FXMLLoader.java:2858)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2654)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2568)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2536)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.loadView(MainController.java:131)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$handleApplicationStateChange$0(MainController.java:86)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.lang.IllegalArgumentException: No hay proveedor registrado para el tipo: mx.uv.fei.presentation.PasswordResetController
+	at etiquette.core/mx.uv.fei.config.annotation.core.DependencyInjector.resolveFromScanner(DependencyInjector.java:84)
+	at etiquette.core/mx.uv.fei.config.annotation.core.DependencyInjector.resolve(DependencyInjector.java:44)
+	at etiquette.core/mx.uv.fei.config.annotation.core.DependencyInjector.retrieveInstance(DependencyInjector.java:52)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processAttribute(FXMLLoader.java:943)
+	... 16 common frames omitted
+2026-06-08 10:29:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 10:29:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 10:29:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:29:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-08 10:29:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 10:37:53 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 10:37:53 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 10:37:53 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:37:53 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-08 10:37:53 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 10:43:29 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error de E/S al cargar la vista FXML: /mx/uv/fei/presentation/practitionerGradeView.fxml
+javafx.fxml.LoadException: 
+/C:/Users/josep/Documents/escuela/SISTEMAS_OPERATIVO/java/professional-practices-system/app/target/classes/mx/uv/fei/presentation/practitionerGradeView.fxml:52
+
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.constructLoadException(FXMLLoader.java:2727)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2705)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2568)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2536)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.loadView(MainController.java:131)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$handleApplicationStateChange$0(MainController.java:114)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: java.lang.IllegalArgumentException: Can not set javafx.scene.control.Label field mx.uv.fei.presentation.PractitionerGradeViewController.labelNoGradeYet to javafx.scene.layout.VBox
+	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:223)
+	at java.base/jdk.internal.reflect.FieldAccessorImpl.throwSetIllegalArgumentException(FieldAccessorImpl.java:227)
+	at java.base/jdk.internal.reflect.MethodHandleObjectFieldAccessorImpl.set(MethodHandleObjectFieldAccessorImpl.java:115)
+	at java.base/java.lang.reflect.Field.set(Field.java:832)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.injectFields(FXMLLoader.java:1180)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processValue(FXMLLoader.java:870)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ValueElement.processStartElement(FXMLLoader.java:764)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.processStartElement(FXMLLoader.java:2858)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2654)
+	... 11 common frames omitted
+2026-06-08 10:51:37 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 10:51:37 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 10:51:37 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 10:51:37 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-08 10:51:38 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - 359 new fonts found, font cache will be re-built
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Building on-disk font cache, this may take a while
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font BIZ-UDPGothic-Bold
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font BIZ-UDPGothic
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font BIZ-UDPMincho-Medium
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:19 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:20 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:21 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  o.apache.fontbox.ttf.PostScriptTable - No PostScript name data is provided for the font NSimSun
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:22 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:23 [JavaFX Application Thread] WARN  org.apache.fontbox.ttf.CmapSubtable - Format 14 cmap table is not supported and will be ignored
+2026-06-08 10:57:23 [JavaFX Application Thread] WARN  o.a.p.p.font.FileSystemFontProvider - Finished building on-disk font cache, found 396 fonts
+2026-06-08 11:19:24 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-08 11:19:24 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-08 11:19:24 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-08 11:19:24 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-08 11:19:24 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig

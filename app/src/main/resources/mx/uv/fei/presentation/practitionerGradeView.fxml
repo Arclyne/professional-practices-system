@@ -48,7 +48,7 @@
         </VBox>
 
         <!-- Mensaje cuando aún no hay calificación definitiva -->
-        <VBox fx:id="labelNoGradeYet" alignment="CENTER"
+        <VBox fx:id="noGradeYetContainer" alignment="CENTER"
               style="-fx-background-color: #FFFBEB; -fx-border-color: #FCD34D; -fx-border-radius: 12px; -fx-padding: 24px;">
             <Label text="⏳  El profesor aún no ha registrado tu calificación definitiva."
                    textFill="#92400E" wrapText="true" style="-fx-font-size: 14px;"/>

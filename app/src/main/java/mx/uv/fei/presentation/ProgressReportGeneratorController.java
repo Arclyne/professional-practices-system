@@ -17,6 +17,7 @@ import javafx.stage.FileChooser;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.common.ReportPdfGenerator;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ProgressReportType;
@@ -26,7 +27,6 @@ import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
-
 
 @Component
 public class ProgressReportGeneratorController {
@@ -39,6 +39,7 @@ public class ProgressReportGeneratorController {
     @FXML private DatePicker periodEndDatePicker;
     @FXML private Label hoursInfoLabel;
     @FXML private Button generateReportButton;
+    @FXML private Button downloadReportButton;
 
     @FXML private VBox existingReportContainer;
     @FXML private Label existingReportStatusLabel;
@@ -48,6 +49,7 @@ public class ProgressReportGeneratorController {
 
     private final ProgressReportManager progressReportManager;
     private final CloudStorageManager cloudStorageManager;
+    private final ReportPdfGenerator pdfGenerator;
     private final AppStore store;
 
     private ProgressReport currentProgressReport;
@@ -57,9 +59,11 @@ public class ProgressReportGeneratorController {
     public ProgressReportGeneratorController(
             ProgressReportManager progressReportManager,
             CloudStorageManager cloudStorageManager,
+            ReportPdfGenerator pdfGenerator,
             AppStore store) {
         this.progressReportManager = progressReportManager;
         this.cloudStorageManager = cloudStorageManager;
+        this.pdfGenerator = pdfGenerator;
         this.store = store;
     }
 
@@ -122,13 +126,32 @@ public class ProgressReportGeneratorController {
 
             Controller.showAlert("Reporte Generado",
                     "El reporte " + reportType.getDatabaseValue() + " fue generado.\n" +
-                    "Horas acumuladas: " + generated.getTotalHoursAtSubmission() + "\n" +
-                    "Descárgalo, fírmalo y súbelo para su revisión.",
+                            "Horas acumuladas: " + generated.getTotalHoursAtSubmission() + "\n" +
+                            "Descárgalo, fírmalo y súbelo para su revisión.",
                     AlertType.INFORMATION);
 
             showExistingReport(generated);
         } catch (ManagerException exception) {
             Controller.showAlert("No se pudo generar", exception.getMessage(), AlertType.WARNING);
+        }
+    }
+
+    @FXML
+    private void handleDownloadReport(ActionEvent event) {
+        if (currentProgressReport != null) {
+            try {
+                User currentPractitioner = store.getState().sessionState().currentUserInSession();
+
+                String pdfPath = pdfGenerator.generateProgressReportPdf(currentProgressReport, currentPractitioner);
+
+                File generatedFile = new File(pdfPath);
+                if (generatedFile.exists()) {
+                    java.awt.Desktop.getDesktop().open(generatedFile);
+                    Controller.showAlert("PDF Generado", "El reporte se ha guardado y abierto.", AlertType.INFORMATION);
+                }
+            } catch (Exception e) {
+                Controller.showAlert("Error de Sistema", "No se pudo generar o abrir el reporte: " + e.getMessage(), AlertType.ERROR);
+            }
         }
     }
 
@@ -144,14 +167,11 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleUploadSignedReport(ActionEvent event) {
-        if (currentProgressReport == null) {
-            return;
-        }
+        if (currentProgressReport == null) return;
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Reporte Firmado");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
 
         File selectedFile = fileChooser.showOpenDialog(uploadSignedButton.getScene().getWindow());
 
@@ -161,10 +181,7 @@ public class ProgressReportGeneratorController {
                 ProgressReportType reportType = ProgressReportType.fromString(currentProgressReport.getReportType());
                 progressReportManager.submitSignedProgressReport(practitionerId, reportType, fileUrl);
 
-                Controller.showAlert("Reporte Enviado",
-                        "El reporte firmado fue subido correctamente para revisión del profesor.",
-                        AlertType.INFORMATION);
-
+                Controller.showAlert("Reporte Enviado", "El reporte firmado fue subido correctamente.", AlertType.INFORMATION);
                 loadExistingReports();
             } catch (ManagerException exception) {
                 Controller.showAlert("Error al Subir", exception.getMessage(), AlertType.ERROR);
@@ -176,11 +193,9 @@ public class ProgressReportGeneratorController {
     private void handleViewSignedReport(ActionEvent event) {
         if (currentProgressReport != null && currentProgressReport.getSignedFileUrl() != null) {
             try {
-                java.awt.Desktop.getDesktop().browse(
-                        new java.net.URI(currentProgressReport.getSignedFileUrl()));
+                java.awt.Desktop.getDesktop().browse(new java.net.URI(currentProgressReport.getSignedFileUrl()));
             } catch (Exception exception) {
-                Controller.showAlert("Error de Archivo",
-                        "No se pudo abrir el archivo firmado.", AlertType.ERROR);
+                Controller.showAlert("Error de Archivo", "No se pudo abrir el archivo firmado.", AlertType.ERROR);
             }
         }
     }

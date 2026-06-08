@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 
+import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.domain.manager.PasswordManager;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -14,6 +15,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Component
 public class PasswordResetController implements Initializable {
 
     private final PasswordManager passwordManager;

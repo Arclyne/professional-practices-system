@@ -27,7 +27,7 @@ public class PractitionerGradeViewController {
     @FXML private Label labelFinalGrade;
     @FXML private Label labelPeriod;
     @FXML private VBox finalGradeContainer;
-    @FXML private Label labelNoGradeYet;
+    @FXML private VBox noGradeYetContainer;
 
     private final GradingManager gradingManager;
     private final AppStore store;
@@ -68,8 +68,9 @@ public class PractitionerGradeViewController {
 
             finalGradeContainer.setVisible(hasFinalGrade);
             finalGradeContainer.setManaged(hasFinalGrade);
-            labelNoGradeYet.setVisible(!hasFinalGrade);
-            labelNoGradeYet.setManaged(!hasFinalGrade);
+
+            noGradeYetContainer.setVisible(!hasFinalGrade);
+            noGradeYetContainer.setManaged(!hasFinalGrade);
 
             if (hasFinalGrade) {
                 labelFinalGrade.setText(String.format(GRADE_FORMAT, grade.getFinalGrade()));
