@@ -16,11 +16,16 @@ import mx.uv.fei.domain.dto.Project;
 @Component
 public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
-    private static final String SQL_INSERT_PROJECT = "INSERT INTO project (project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_SELECT_PROJECT_BY_NAME_AND_MANAGER = "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project WHERE project_name = ? AND manager_id = ?";
-    private static final String SQL_SELECT_ALL_PROJECTS = "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project";
-    private static final String SQL_UPDATE_PROJECT = "UPDATE project SET project_name = ?, description = ?, participant_capacity = ?, manager_id = ?, status = ?, start_date = ?, end_date = ?, organization_id = ? WHERE project_id = ?";
-    private static final String SQL_DEACTIVATE_PROJECT = "UPDATE project SET status = 'Inactive' WHERE project_id = ?";
+    private static final String SQL_INSERT_PROJECT =
+            "INSERT INTO project (project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_PROJECT_BY_NAME_AND_MANAGER =
+            "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project WHERE project_name = ? AND manager_id = ?";
+    private static final String SQL_SELECT_ALL_PROJECTS =
+            "SELECT project_id, project_name, description, participant_capacity, manager_id, status, start_date, end_date, organization_id FROM project";
+    private static final String SQL_UPDATE_PROJECT =
+            "UPDATE project SET project_name = ?, description = ?, participant_capacity = ?, manager_id = ?, status = ?, start_date = ?, end_date = ?, organization_id = ? WHERE project_id = ?";
+    private static final String SQL_DEACTIVATE_PROJECT =
+            "UPDATE project SET status = 'Inactive' WHERE project_id = ?";
     private static final String SQL_SELECT_AVAILABLE_PROJECTS_WITH_CAPACITY =
             "SELECT p.project_id, p.project_name, p.description, p.participant_capacity, p.manager_id, p.status, p.start_date, p.end_date, p.organization_id " +
                     "FROM project p " +
@@ -52,7 +57,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             statement.setInt(8, project.getCompanyId());
 
             isInserted = statement.executeUpdate() > 0;
-
         } catch (SQLException e) {
             throw new DAOException("Error al intentar insertar el proyecto en la base de datos.", e);
         }
@@ -89,9 +93,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
 
     @Override
     public boolean updateProject(Project projectToUpdate, int projectId) throws DAOException {
-        boolean isUpdated = false;
-
-        isUpdated = updateTuple(SQL_UPDATE_PROJECT, statement -> {
+        boolean isUpdated = updateTuple(SQL_UPDATE_PROJECT, statement -> {
             statement.setString(1, projectToUpdate.getProjectName());
             statement.setString(2, projectToUpdate.getDescription());
             statement.setInt(3, projectToUpdate.getParticipantCapacity());
@@ -128,12 +130,12 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                 }
             } catch (SQLException e) {
                 activeDatabaseConnection.rollback();
-                throw new DAOException("Error al ejecutar la inactivación masiva de proyectos.", e);
+                throw new DAOException("Error al ejecutar la inactivacion masiva de proyectos.", e);
             } finally {
                 activeDatabaseConnection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException("Error de conexión al procesar inactivación de proyectos.", e);
+            throw new DAOException("Error de conexion al procesar inactivacion de proyectos.", e);
         }
 
         return allUpdatesSuccessful;

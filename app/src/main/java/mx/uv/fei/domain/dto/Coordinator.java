@@ -10,15 +10,15 @@ public class Coordinator extends User {
 
     @Override
     public boolean equals(Object objectToCompare) {
+        boolean isEqual = false;
+
         if (this == objectToCompare) {
-            return true;
+            isEqual = true;
+        } else if (objectToCompare != null && getClass() == objectToCompare.getClass()) {
+            isEqual = super.equals(objectToCompare);
         }
 
-        if (objectToCompare == null || getClass() != objectToCompare.getClass()) {
-            return false;
-        }
-
-        return super.equals(objectToCompare);
+        return isEqual;
     }
 
     @Override

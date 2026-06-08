@@ -5,36 +5,48 @@ import mx.uv.fei.config.annotation.etiquette.Profile;
 
 import java.lang.reflect.Constructor;
 
+
 public class ReflectionHelper {
 
-    public static Constructor<?> selectConstructor(Class<?> targetClassType) {
-        Constructor<?> selectedConstructorToUse = null;
+    public static Constructor<?> selectConstructor(Class<?> targetClass) {
+        Constructor<?> selectedConstructor = findAnnotatedConstructor(targetClass);
 
-        for (Constructor<?> currentTargetConstructor : targetClassType.getConstructors()) {
-            if (currentTargetConstructor.isAnnotationPresent(Inject.class)) {
-                selectedConstructorToUse = currentTargetConstructor;
-                break;
-            }
+        if (selectedConstructor == null) {
+            selectedConstructor = selectFirstPublicConstructor(targetClass);
         }
 
-        if (selectedConstructorToUse == null) {
-            Constructor<?>[] availablePublicConstructorsArray = targetClassType.getConstructors();
-            if (availablePublicConstructorsArray.length == 0) {
-                throw new IllegalStateException("No se encontro ningun constructor publico disponible para instanciar la clase: " + targetClassType.getName());
-            }
-            selectedConstructorToUse = availablePublicConstructorsArray[0];
-        }
-
-        return selectedConstructorToUse;
+        return selectedConstructor;
     }
 
-    public static String resolveProfile(Class<?> targetClassType, String fallbackProfileConfiguration) {
-        String resolvedProfileName = fallbackProfileConfiguration;
+    public static String resolveProfile(Class<?> targetClass, String fallbackProfile) {
+        String resolvedProfile = fallbackProfile;
 
-        if (targetClassType.isAnnotationPresent(Profile.class)) {
-            resolvedProfileName = targetClassType.getAnnotation(Profile.class).value();
+        if (targetClass.isAnnotationPresent(Profile.class)) {
+            resolvedProfile = targetClass.getAnnotation(Profile.class).value();
         }
 
-        return resolvedProfileName;
+        return resolvedProfile;
+    }
+
+    private static Constructor<?> findAnnotatedConstructor(Class<?> targetClass) {
+        Constructor<?> annotatedConstructor = null;
+
+        for (Constructor<?> constructor : targetClass.getConstructors()) {
+            if (constructor.isAnnotationPresent(Inject.class) && annotatedConstructor == null) {
+                annotatedConstructor = constructor;
+            }
+        }
+
+        return annotatedConstructor;
+    }
+
+    private static Constructor<?> selectFirstPublicConstructor(Class<?> targetClass) {
+        Constructor<?>[] publicConstructors = targetClass.getConstructors();
+
+        if (publicConstructors.length == 0) {
+            throw new IllegalStateException("No se encontro ningun constructor publico para instanciar: " + targetClass.getName());
+        }
+
+        return publicConstructors[0];
     }
 }

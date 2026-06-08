@@ -2,7 +2,9 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+
 public class PracticeGroup {
+
     private int groupId;
     private String section;
     private int professorId;
@@ -44,19 +46,23 @@ public class PracticeGroup {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            PracticeGroup other = (PracticeGroup) obj;
+            isEqual = this.professorId == other.professorId
+                    && this.periodId == other.periodId
+                    && Objects.equals(this.section, other.section);
         }
 
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
+        return isEqual;
+    }
 
-        PracticeGroup that = (PracticeGroup) object;
-
-        return this.professorId == that.professorId &&
-                this.periodId == that.periodId &&
-                Objects.equals(this.section, that.section);
+    @Override
+    public int hashCode() {
+        return Objects.hash(section, professorId, periodId);
     }
 }
