@@ -2,24 +2,28 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+
 public class Professor extends User {
+
     public Professor() {
         super();
     }
 
     @Override
     public boolean equals(Object object) {
+        boolean isEqual = false;
+
         if (this == object) {
-            return true;
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            isEqual = super.equals(object);
         }
 
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
+        return isEqual;
+    }
 
-        Professor that = (Professor) object;
-
-        return Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getLastName(), that.getLastName());
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 }

@@ -1,34 +1,40 @@
 package mx.uv.fei.config.annotation.provider;
 
 import mx.uv.fei.config.annotation.Interfaces.IProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MethodBasedProvider implements IProvider {
 
-    private final Method providerMethod;
-    private final Object targetInstanceToInvoke;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodBasedProvider.class);
 
-    public MethodBasedProvider(Method providerMethod, Object targetInstanceToInvoke) {
+    private final Method providerMethod;
+    private final Object targetInstance;
+
+    public MethodBasedProvider(Method providerMethod, Object targetInstance) {
         this.providerMethod = providerMethod;
-        this.targetInstanceToInvoke = targetInstanceToInvoke;
+        this.targetInstance = targetInstance;
         this.providerMethod.setAccessible(true);
     }
 
     @Override
     public Object provide() {
-        Object providedInstanceResult;
+        Object providedInstance;
 
         try {
-            providedInstanceResult = providerMethod.invoke(targetInstanceToInvoke);
-        } catch (IllegalAccessException illegalAccessException) {
-            throw new IllegalStateException("El metodo proveedor no tiene nivel de acceso permitido para la clase solicitada: " + getReturnType().getName(), illegalAccessException);
-        } catch (InvocationTargetException invocationTargetException) {
-            throw new IllegalStateException("El metodo proveedor lanzo una excepcion interna durante su ejecucion para la clase solicitada: " + getReturnType().getName(), invocationTargetException.getCause());
+            providedInstance = providerMethod.invoke(targetInstance);
+        } catch (IllegalAccessException e) {
+            LOG.error("El metodo proveedor no tiene nivel de acceso permitido para: {}", getReturnType().getName(), e);
+            throw new IllegalStateException("El metodo proveedor no tiene nivel de acceso permitido para: " + getReturnType().getName(), e);
+        } catch (InvocationTargetException e) {
+            LOG.error("El metodo proveedor lanzo una excepcion interna para: {}", getReturnType().getName(), e.getCause());
+            throw new IllegalStateException("El metodo proveedor lanzo una excepcion interna para: " + getReturnType().getName(), e.getCause());
         }
 
-        return providedInstanceResult;
+        return providedInstance;
     }
 
     @Override

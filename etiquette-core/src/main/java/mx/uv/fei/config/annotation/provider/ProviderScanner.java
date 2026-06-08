@@ -7,21 +7,20 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ProviderScanner {
 
-    public static List<IProvider> scanForProviders(Object targetInstanceToScan) {
-        List<IProvider> discoveredProvidersList = new ArrayList<>();
+    public static List<IProvider> scanForProviders(Object targetInstance) {
+        List<IProvider> discoveredProviders = new ArrayList<>();
 
-        if (targetInstanceToScan != null) {
-            Method[] declaredMethodsInInstanceArray = targetInstanceToScan.getClass().getDeclaredMethods();
-
-            for (Method currentMethodToInspect : declaredMethodsInInstanceArray) {
-                if (currentMethodToInspect.isAnnotationPresent(Provide.class)) {
-                    discoveredProvidersList.add(new MethodBasedProvider(currentMethodToInspect, targetInstanceToScan));
+        if (targetInstance != null) {
+            for (Method method : targetInstance.getClass().getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Provide.class)) {
+                    discoveredProviders.add(new MethodBasedProvider(method, targetInstance));
                 }
             }
         }
 
-        return discoveredProvidersList;
+        return discoveredProviders;
     }
 }
