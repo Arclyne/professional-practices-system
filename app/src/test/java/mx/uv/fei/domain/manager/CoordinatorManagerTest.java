@@ -41,4 +41,16 @@ public class CoordinatorManagerTest {
 
         assertNotNull(assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(coordinator)));
     }
+
+    @Test
+    void inactivateCoordinator_ExistingId_DoesNotThrow() {
+        assertDoesNotThrow(() -> coordinatorManager.inactivateCoordinator(67));
+    }
+
+    @Test
+    void retrieveCurrentCoordinator_ReturnsCoordinator() {
+        assertDoesNotThrow(() -> coordinatorManager.retrieveCurrentCoordinator());
+    }
+
+
 }

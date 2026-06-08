@@ -1,26 +1,23 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.sql.SQLException;
-
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.dto.Professor;
+import mx.uv.fei.domain.enums.Gender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-public class MessageManagerTest {
+public class ProfessorManagerTest {
 
-    @Inject
-    private IDatabaseConnection dbConnection;
-
-    @Inject
-    private MessageManager messageManager;
+    @Inject private IDatabaseConnection dbConnection;
+    @Inject private ProfessorManager professorManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -28,17 +25,13 @@ public class MessageManagerTest {
     }
 
     @Test
-    void sendMessage_ValidData_DoesNotThrow() {
-        assertDoesNotThrow(() -> messageManager.sendMessage(13, "angel24@gmail.com", "Asunto", "Cuerpo"));
-    }
-
-    @Test
-    void getInboxMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getInboxMessages(123, 10, 0));
-    }
-
-    @Test
-    void getSentMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getSentMessages(13, 10, 0));
+    void registerNewProfessor_ValidData_ReturnsPassword() {
+        Professor p = new Professor();
+        p.setName("Prof");
+        p.setLastName("Test");
+        p.setUserName("111222");
+        p.setEmail("prof@uv.mx");
+        p.setGender(Gender.MALE);
+        assertNotNull(assertDoesNotThrow(() -> professorManager.registerNewProfessor(p)));
     }
 }

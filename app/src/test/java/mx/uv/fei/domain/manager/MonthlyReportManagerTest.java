@@ -49,4 +49,20 @@ public class MonthlyReportManagerTest {
 
         assertDoesNotThrow(() -> reportManager.createReportAndLinkActivities(report, activities));
     }
+
+    @Test
+    void getPractitionerReports_ValidId_ReturnsList() {
+        assertDoesNotThrow(() -> reportManager.getPractitionerReports(123));
+    }
+
+    @Test
+    void getReportsForEvaluation_ReturnsList() {
+        assertDoesNotThrow(() -> reportManager.getReportsForEvaluation());
+    }
+
+    @Test
+    void evaluateReport_ValidData_DoesNotThrow() {
+        assertDoesNotThrow(() -> reportManager.evaluateReport(1, 10.0, "Excelente trabajo"));
+    }
+
 }
