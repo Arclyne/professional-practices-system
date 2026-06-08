@@ -12,6 +12,7 @@ import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.enums.UserStatus;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +45,15 @@ public class ManagerManagerTest {
         manager.setStatus(UserStatus.ACTIVE);
         manager.setOrganizationId(1);
         assertDoesNotThrow(() -> managerManager.registerManager(manager));
+    }
+
+    @Test
+    void getManagersByOrganization_ValidId_ReturnsList() throws ManagerException {
+        assertNotNull(managerManager.getManagersByOrganization(1));
+    }
+
+    @Test
+    void inactivateMultipleManagers_ValidList_DoesNotThrow() {
+        assertDoesNotThrow(() -> managerManager.inactivateMultipleManagers(List.of(1)));
     }
 }

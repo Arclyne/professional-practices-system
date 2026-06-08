@@ -3,6 +3,7 @@ package mx.uv.fei.domain.manager;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -36,5 +37,15 @@ public class OrganizationManagerTest {
         org.setMail("nueva@uv.mx");
 
         assertDoesNotThrow(() -> organizationManager.registerOrganization(org));
+    }
+
+    @Test
+    void getAllOrganizations_ReturnsList() {
+        assertDoesNotThrow(() -> organizationManager.getAllOrganizations());
+    }
+
+    @Test
+    void inactivateMultipleOrganizations_ValidList_DoesNotThrow() {
+        assertDoesNotThrow(() -> organizationManager.inactivateMultipleOrganizations(List.of(1)));
     }
 }
