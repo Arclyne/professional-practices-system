@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -60,10 +61,17 @@ public class PdfServiceTest {
     }
 
     @Test
-    void fillPdfTemplate_InvalidTemplatePath_ThrowsIOException() {
-        String badPath = tempDir.resolve("missing_file.pdf").toAbsolutePath().toString();
+    void fillPdfTemplate_NonExistentFile_ThrowsIOException() {
+
+        String badPath = "plantilla_que_no_existe.pdf";
+
+
+        String outputPath = tempDir.resolve("salida.pdf").toAbsolutePath().toString();
+
         Map<String, String> data = Map.of("NombrePracticante", "Angel Aguilar");
 
-        assertThrows(IOException.class, () -> pdfService.fillPdfTemplate(badPath, outputPdfPath, data));
+        assertThrows(IOException.class, () -> {
+            pdfService.fillPdfTemplate(badPath, outputPath, data);
+        });
     }
 }
