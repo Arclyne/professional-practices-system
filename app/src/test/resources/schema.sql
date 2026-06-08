@@ -1,7 +1,20 @@
+-- =============================================================================
+--  SCHEMA H2 — Sistema de Prácticas Profesionales UV-FEI (SGP-FEI)
+--  Versión unificada y alineada sin comillas en palabras reservadas
+--
+--  URL de conexión requerida en database.properties:
+--  jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+--  DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=USER,ROLE,YEAR
+-- =============================================================================
+
 SET REFERENTIAL_INTEGRITY FALSE;
 
-DROP ALIAS IF EXISTS AssignProjectAndRejectOthers;
+-- ── Stored procedure (alias H2) ──────────────────────────────────────────────
+DROP ALIAS IF EXISTS assign_project_and_reject_others;
 
+-- ── Tablas en orden inverso de dependencia ────────────────────────────────────
+DROP TABLE IF EXISTS practitioner_grade;
+DROP TABLE IF EXISTS progress_report;
 DROP TABLE IF EXISTS professor_evaluation;
 DROP TABLE IF EXISTS organization_evaluation;
 DROP TABLE IF EXISTS self_evaluation;
@@ -26,14 +39,16 @@ DROP TABLE IF EXISTS linked_organization;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
--- Tabla de roles: alineada con MySQL (CREATE TABLE `role`, no `roles`)
+-- =============================================================================
+--  TABLAS BASE
+-- =============================================================================
+
 CREATE TABLE role (
                       role_name   VARCHAR(50)  NOT NULL,
                       description VARCHAR(255) DEFAULT NULL,
                       PRIMARY KEY (role_name)
 );
 
--- Tabla de usuarios: alineada con MySQL ENUM → H2 CHECK equivalente
 CREATE TABLE user (
                       user_id           INT          NOT NULL AUTO_INCREMENT,
                       username          VARCHAR(20)  NOT NULL UNIQUE,
@@ -76,7 +91,10 @@ CREATE TABLE professor (
                            CONSTRAINT fk_professor_user FOREIGN KEY (professor_id) REFERENCES user (user_id) ON DELETE CASCADE
 );
 
--- school_period: MySQL usa ENUM → H2 CHECK equivalente
+-- =============================================================================
+--  PERIODOS Y GRUPOS
+-- =============================================================================
+
 CREATE TABLE school_period (
                                period_id     INT         NOT NULL AUTO_INCREMENT,
                                period_name   VARCHAR(50) NOT NULL,
@@ -106,7 +124,10 @@ CREATE TABLE practitioner (
                               CONSTRAINT fk_practitioner_practice_group FOREIGN KEY (group_id)        REFERENCES practice_group (group_id) ON DELETE SET NULL
 );
 
--- linked_organization: email UNIQUE pero nullable (igual que MySQL)
+-- =============================================================================
+--  ORGANIZACIONES Y PROYECTOS
+-- =============================================================================
+
 CREATE TABLE linked_organization (
                                      organization_id   INT          NOT NULL AUTO_INCREMENT,
                                      organization_name VARCHAR(150) NOT NULL,
@@ -119,7 +140,6 @@ CREATE TABLE linked_organization (
                                      PRIMARY KEY (organization_id)
 );
 
--- project_manager: status ENUM → H2 CHECK; sin FK ON DELETE (igual que MySQL)
 CREATE TABLE project_manager (
                                  manager_id      INT          NOT NULL AUTO_INCREMENT,
                                  manager_name    VARCHAR(150) NOT NULL,
@@ -131,7 +151,6 @@ CREATE TABLE project_manager (
                                  CONSTRAINT fk_manager_organization FOREIGN KEY (organization_id) REFERENCES linked_organization (organization_id)
 );
 
--- project: solo FK hacia linked_organization (igual que MySQL — NO hay FK hacia project_manager)
 CREATE TABLE project (
                          project_id           INT          NOT NULL AUTO_INCREMENT,
                          project_name         VARCHAR(200) NOT NULL,
@@ -166,12 +185,16 @@ CREATE TABLE project_postulation (
                                      CONSTRAINT fk_postulation_project      FOREIGN KEY (project_id)      REFERENCES project (project_id)          ON DELETE CASCADE
 );
 
--- monthly_report: columna "year" entre comillas porque es reservada en H2
+-- =============================================================================
+--  REPORTES Y ACTIVIDADES
+-- =============================================================================
+
+-- Nota: year sin comillas gracias a NON_KEYWORDS=YEAR
 CREATE TABLE monthly_report (
                                 report_id          INT           NOT NULL AUTO_INCREMENT,
                                 practitioner_id    INT           NOT NULL,
                                 month_name         VARCHAR(20)   NOT NULL,
-                                "year"             INT           NOT NULL,
+                                year               INT           NOT NULL,
                                 start_date         DATE          NOT NULL,
                                 end_date           DATE          NOT NULL,
                                 grade              DECIMAL(5, 2) DEFAULT NULL,
@@ -195,6 +218,27 @@ CREATE TABLE activity (
                           CONSTRAINT fk_activity_report       FOREIGN KEY (report_id)       REFERENCES monthly_report (report_id)    ON DELETE SET NULL
 );
 
+CREATE TABLE progress_report (
+                                 report_id                 INT          NOT NULL AUTO_INCREMENT,
+                                 practitioner_id           INT          NOT NULL,
+                                 report_type               VARCHAR(20)  NOT NULL CHECK (report_type IN ('Intermedio', 'Final')),
+                                 generation_date           DATE         NOT NULL,
+                                 period_covered_start      DATE         NOT NULL,
+                                 period_covered_end        DATE         NOT NULL,
+                                 total_hours_at_submission DECIMAL(6,2) NOT NULL,
+                                 status                    VARCHAR(50)  DEFAULT 'Pendiente de Firma',
+                                 signed_file_url           VARCHAR(500) DEFAULT NULL,
+                                 grade                     DECIMAL(5,2) DEFAULT NULL,
+                                 professor_feedback        TEXT,
+                                 PRIMARY KEY (report_id),
+                                 CONSTRAINT uq_progress_report_type UNIQUE (practitioner_id, report_type),
+                                 CONSTRAINT fk_progress_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE
+);
+
+-- =============================================================================
+--  MENSAJERÍA
+-- =============================================================================
+
 CREATE TABLE message (
                          message_id INT          NOT NULL AUTO_INCREMENT,
                          send_date  DATETIME     DEFAULT CURRENT_TIMESTAMP,
@@ -212,6 +256,10 @@ CREATE TABLE message_participant (
                                      CONSTRAINT fk_participant_sender   FOREIGN KEY (sender_id)   REFERENCES user (user_id)       ON DELETE CASCADE,
                                      CONSTRAINT fk_participant_receiver FOREIGN KEY (receiver_id) REFERENCES user (user_id)       ON DELETE CASCADE
 );
+
+-- =============================================================================
+--  EVALUACIONES
+-- =============================================================================
 
 CREATE TABLE self_evaluation (
                                  self_eval_id    INT           NOT NULL AUTO_INCREMENT,
@@ -248,23 +296,38 @@ CREATE TABLE professor_evaluation (
                                       CONSTRAINT fk_profeval_professor    FOREIGN KEY (professor_id)    REFERENCES professor (professor_id)       ON DELETE SET NULL
 );
 
--- Procedimiento almacenado: equivalente H2 al stored procedure de MySQL
-DROP ALIAS IF EXISTS assign_project_and_reject_others;
+CREATE TABLE practitioner_grade (
+                                    grade_id        INT          NOT NULL AUTO_INCREMENT,
+                                    practitioner_id INT          NOT NULL,
+                                    professor_id    INT          DEFAULT NULL,
+                                    tentative_grade DECIMAL(5,2) NOT NULL,
+                                    final_grade     DECIMAL(5,2) DEFAULT NULL,
+                                    period          VARCHAR(100) NOT NULL,
+                                    graded_at       DATETIME     DEFAULT CURRENT_TIMESTAMP,
+                                    PRIMARY KEY (grade_id),
+                                    CONSTRAINT uq_grade_period     UNIQUE (practitioner_id, period),
+                                    CONSTRAINT fk_grade_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE,
+                                    CONSTRAINT fk_grade_professor    FOREIGN KEY (professor_id)    REFERENCES professor (professor_id)       ON DELETE SET NULL
+);
+
+-- =============================================================================
+--  STORED PROCEDURE
+-- =============================================================================
 
 CREATE ALIAS assign_project_and_reject_others AS $$
-void assignProject(Connection conn, int targetPractitionerIdentifier, int targetProjectIdentifier) throws SQLException {
+void assignProject(Connection conn, int targetPractitionerId, int targetProjectId) throws SQLException {
     conn.setAutoCommit(false);
     try (PreparedStatement ps1 = conn.prepareStatement(
              "UPDATE project_postulation SET postulation_status = 'Assigned' WHERE practitioner_id = ? AND project_id = ?");
          PreparedStatement ps2 = conn.prepareStatement(
              "UPDATE project_postulation SET postulation_status = 'Rejected' WHERE practitioner_id = ? AND project_id != ?")) {
 
-        ps1.setInt(1, targetPractitionerIdentifier);
-        ps1.setInt(2, targetProjectIdentifier);
+        ps1.setInt(1, targetPractitionerId);
+        ps1.setInt(2, targetProjectId);
         ps1.executeUpdate();
 
-        ps2.setInt(1, targetPractitionerIdentifier);
-        ps2.setInt(2, targetProjectIdentifier);
+        ps2.setInt(1, targetPractitionerId);
+        ps2.setInt(2, targetProjectId);
         ps2.executeUpdate();
 
         conn.commit();

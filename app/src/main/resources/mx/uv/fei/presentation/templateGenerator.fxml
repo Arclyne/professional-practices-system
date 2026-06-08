@@ -5,41 +5,177 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.TemplateGeneratorController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+<VBox spacing="0.0" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.TemplateGeneratorController">
 
-    <Label styleClass="form-title" text="Generador de Plantillas (Coordinación)" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-    <Label text="Selecciona un tipo de documento y haz doble clic en las piezas para ensamblarlo." textFill="#6b7280" />
+    <!-- Encabezado -->
+    <VBox style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
+        <padding><Insets bottom="16.0" left="24.0" right="24.0" top="16.0"/></padding>
+        <Label styleClass="form-title" text="Gestión de Plantillas de Documentos"/>
+        <Label text="Crea y reutiliza plantillas para bitácoras y oficios oficiales con tokens automáticos."
+               textFill="#6b7280" style="-fx-font-size: 13px;"/>
+    </VBox>
 
-    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
-        <VBox spacing="10.0" prefWidth="250.0">
-            <Label text="1. Tipo de Documento:" style="-fx-font-weight: bold;"/>
-            <ComboBox fx:id="documentTypeComboBox" maxWidth="1.7976931348623157E308" />
+    <!-- TabPane principal -->
+    <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE"
+             style="-fx-background-color: #FFFFFF;">
 
-            <Label text="2. Piezas Disponibles:" style="-fx-font-weight: bold;">
-                <VBox.margin>
-                    <Insets top="10.0" />
-                </VBox.margin>
-            </Label>
-            <ListView fx:id="templatePartsListView" VBox.vgrow="ALWAYS" />
+        <!-- ══════════════════════════════════════════════════
+             TAB 1: CREAR / EDITAR PLANTILLA
+             ══════════════════════════════════════════════════ -->
+        <Tab text="✏️  Crear / Editar Plantilla">
+            <HBox spacing="0.0" VBox.vgrow="ALWAYS">
+                <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/></padding>
 
-            <Button mnemonicParsing="false" onAction="#handleInsertSelectedPart" text="Insertar Pieza Seleccionada" maxWidth="1.7976931348623157E308"/>
-        </VBox>
+                <!-- Panel izquierdo: metadatos + tokens -->
+                <VBox spacing="12.0" prefWidth="280.0"
+                      style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0; -fx-border-radius: 0;">
+                    <padding><Insets bottom="16.0" left="16.0" right="16.0" top="4.0"/></padding>
 
-        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-            <Label text="Previsualización del Documento:" style="-fx-font-weight: bold;"/>
-            <TextArea fx:id="documentPreviewTextArea" VBox.vgrow="ALWAYS" promptText="El contenido del documento aparecerá aquí..." />
+                    <Label text="Nombre de la plantilla:" styleClass="field-label"/>
+                    <TextField fx:id="templateNameField"
+                               promptText="Ej: Oficio de aceptación 2026"
+                               styleClass="text-input"/>
 
-            <HBox alignment="CENTER_RIGHT" spacing="15.0">
-                <Button mnemonicParsing="false" onAction="#handleClear" text="Limpiar Todo" style="-fx-text-fill: #EF4444;" />
-                <Button mnemonicParsing="false" onAction="#handleSaveDocument" text="Generar y Guardar Documento" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold;" />
+                    <Label text="Tipo de documento:" styleClass="field-label"/>
+                    <ComboBox fx:id="documentTypeComboBox" maxWidth="1.7976931348623157E308"/>
+
+                    <Separator>
+                        <VBox.margin><Insets top="8.0" bottom="8.0"/></VBox.margin>
+                    </Separator>
+
+                    <Label text="Tokens disponibles:" styleClass="field-label"/>
+                    <Label text="Doble clic para insertar en el editor →"
+                           textFill="#6b7280" style="-fx-font-size: 11px;" wrapText="true"/>
+                    <ListView fx:id="availableTokensListView" VBox.vgrow="ALWAYS"
+                              style="-fx-background-color: #FFFFFF; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;"/>
+
+                    <Button fx:id="insertTokenButton" text="Insertar Token Seleccionado"
+                            onAction="#handleInsertToken"
+                            maxWidth="1.7976931348623157E308" styleClass="secondary-button"/>
+                </VBox>
+
+                <!-- Panel derecho: editor del cuerpo -->
+                <VBox spacing="12.0" HBox.hgrow="ALWAYS">
+                    <padding><Insets bottom="0.0" left="20.0" right="0.0" top="4.0"/></padding>
+
+                    <Label text="Cuerpo de la plantilla:" styleClass="field-label"/>
+                    <Label text="Escribe el texto del documento. Usa los tokens del panel izquierdo para datos dinámicos."
+                           textFill="#6b7280" style="-fx-font-size: 11px;" wrapText="true"/>
+
+                    <TextArea fx:id="templateBodyTextArea" VBox.vgrow="ALWAYS"
+                              promptText="Escribe aquí el contenido de tu plantilla...&#10;&#10;Ejemplo:&#10;UNIVERSIDAD VERACRUZANA&#10;Por medio de la presente, se certifica que %NOMBRE_PRACTICANTE%&#10;con matrícula %MATRICULA% ha sido aceptado en el proyecto %PROYECTO_NOMBRE%."
+                              style="-fx-font-family: 'Courier New', monospace; -fx-font-size: 13px; -fx-background-color: #FAFAFA; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;"/>
+
+                    <!-- Barra de acciones -->
+                    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                        <Button fx:id="clearEditorButton" text="Limpiar"
+                                onAction="#handleClearEditor"
+                                style="-fx-text-fill: #6b7280; -fx-border-color: #D1D5DB; -fx-border-radius: 8px; -fx-background-color: transparent; -fx-cursor: hand;"/>
+                        <Button fx:id="saveTemplateButton" text="💾  Guardar Plantilla"
+                                onAction="#handleSaveTemplate"
+                                style="-fx-background-color: #0A0A14; -fx-text-fill: #FFFFFF; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
+                    </HBox>
+                </VBox>
             </HBox>
-        </VBox>
-    </HBox>
+        </Tab>
+
+        <!-- ══════════════════════════════════════════════════
+             TAB 2: USAR PLANTILLA / GENERAR DOCUMENTOS
+             ══════════════════════════════════════════════════ -->
+        <Tab text="📄  Usar Plantilla / Generar Docs">
+            <HBox spacing="0.0" VBox.vgrow="ALWAYS">
+
+                <!-- Panel izquierdo: lista de plantillas guardadas -->
+                <VBox spacing="10.0" prefWidth="260.0"
+                      style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
+                    <padding><Insets bottom="16.0" left="16.0" right="16.0" top="20.0"/></padding>
+
+                    <Label text="Plantillas guardadas:" styleClass="field-label"/>
+                    <ListView fx:id="savedTemplatesListView" VBox.vgrow="ALWAYS"
+                              style="-fx-background-color: #FFFFFF; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;"/>
+
+                    <Button fx:id="loadTemplateButton" text="Cargar para usar"
+                            onAction="#handleLoadTemplate"
+                            maxWidth="1.7976931348623157E308" styleClass="primary-button"/>
+                    <Button text="✏️  Editar plantilla"
+                            onAction="#handleEditTemplate"
+                            maxWidth="1.7976931348623157E308" styleClass="secondary-button"/>
+                    <Button fx:id="deleteTemplateButton" text="🗑  Eliminar plantilla"
+                            onAction="#handleDeleteTemplate" maxWidth="1.7976931348623157E308"
+                            style="-fx-text-fill: #EF4444; -fx-border-color: #FCA5A5; -fx-border-radius: 8px; -fx-background-color: #FEF2F2; -fx-cursor: hand;"/>
+                </VBox>
+
+                <!-- Panel central: valores de tokens -->
+                <VBox spacing="10.0" prefWidth="260.0"
+                      style="-fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
+                    <padding><Insets bottom="16.0" left="16.0" right="16.0" top="20.0"/></padding>
+
+                    <Label text="Valores de los tokens:" styleClass="field-label"/>
+                    <Label text="Rellena los campos para generar el documento."
+                           textFill="#6b7280" style="-fx-font-size: 11px;" wrapText="true"/>
+
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                        <VBox fx:id="tokenValuesContainer" spacing="4.0">
+                            <padding><Insets right="8.0"/></padding>
+                            <Label text="← Carga una plantilla primero."
+                                   textFill="#9CA3AF" style="-fx-font-style: italic;"/>
+                        </VBox>
+                    </ScrollPane>
+
+                    <Separator/>
+
+                    <!-- Controles de generación en lote -->
+                    <VBox spacing="8.0"
+                          style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 8px; -fx-padding: 12px;">
+                        <Label text="Generación en lote" styleClass="field-label"
+                               style="-fx-text-fill: #1D4ED8;"/>
+                        <Label fx:id="batchCountLabel" text="Documentos en cola: 0"
+                               style="-fx-font-size: 12px; -fx-text-fill: #1D4ED8;"/>
+                        <Button fx:id="addToBatchButton" text="+ Añadir a cola"
+                                onAction="#handleAddToBatch" maxWidth="1.7976931348623157E308"
+                                style="-fx-background-color: #DBEAFE; -fx-text-fill: #1D4ED8; -fx-border-color: #93C5FD; -fx-border-radius: 8px; -fx-cursor: hand;"/>
+                        <Button fx:id="generateBatchButton" text="⚡ Generar lote completo"
+                                onAction="#handleGenerateBatch" maxWidth="1.7976931348623157E308"
+                                style="-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Panel derecho: previsualización -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <padding><Insets bottom="16.0" left="16.0" right="20.0" top="20.0"/></padding>
+
+                    <Label text="Previsualización del documento:" styleClass="field-label"/>
+                    <TextArea fx:id="documentPreviewTextArea" VBox.vgrow="ALWAYS"
+                              promptText="La previsualización del documento aparecerá aquí..."
+                              editable="false"
+                              style="-fx-font-family: 'Courier New', monospace; -fx-font-size: 13px; -fx-background-color: #FAFAFA; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;"/>
+
+                    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                        <Button fx:id="previewButton" text="👁  Previsualizar"
+                                onAction="#handlePreviewDocument"
+                                styleClass="secondary-button"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="generateSingleButton" text="📄 Generar documento"
+                                onAction="#handleGenerateSingleDocument"
+                                style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </Tab>
+    </TabPane>
 </VBox>

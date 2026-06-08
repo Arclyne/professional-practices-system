@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="900.0" stylesheets="@../styles.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.ProgressReportGeneratorController">
+
+    <VBox spacing="20.0"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <padding><Insets bottom="30.0" left="40.0" right="40.0" top="30.0"/></padding>
+
+        <!-- Cabecera -->
+        <HBox alignment="CENTER_LEFT" spacing="15.0">
+            <Button mnemonicParsing="false" onAction="#handleReturnAction"
+                    styleClass="secondary-button" text="← Volver a Mis Reportes"/>
+        </HBox>
+
+        <VBox spacing="4.0">
+            <Label styleClass="form-title" text="Reporte de Avance"/>
+            <Label textFill="#6b7280" wrapText="true"
+                   text="Genera tu reporte Intermedio (≥ 210 horas) o Final (≥ 420 horas). Descárgalo, fírmalo y súbelo para revisión del profesor."/>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Reporte existente (se muestra si ya hay uno generado) -->
+        <VBox fx:id="existingReportContainer" spacing="12.0"
+              style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 8px; -fx-padding: 16px;">
+            <Label text="Tu reporte de avance" style="-fx-font-weight: bold; -fx-text-fill: #1D4ED8;"/>
+            <Label fx:id="existingReportStatusLabel" text="..." style="-fx-text-fill: #1e40af;"/>
+            <Label fx:id="existingReportHoursLabel" text="..." style="-fx-text-fill: #1e40af;"/>
+            <HBox spacing="10.0">
+                <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedReport"
+                        text="⬆ Subir PDF Firmado"
+                        style="-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
+                <Button fx:id="viewSignedButton" onAction="#handleViewSignedReport"
+                        text="📄 Ver Archivo Entregado"
+                        style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;"/>
+            </HBox>
+        </VBox>
+
+        <!-- Formulario de generación -->
+        <VBox spacing="16.0"
+              style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-padding: 20px;">
+            <Label text="Generar nuevo reporte de avance" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+
+            <VBox spacing="6.0">
+                <Label text="Tipo de reporte:" styleClass="field-label"/>
+                <ComboBox fx:id="reportTypeComboBox" maxWidth="300.0"/>
+            </VBox>
+
+            <HBox spacing="20.0">
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Inicio del periodo:" styleClass="field-label"/>
+                    <DatePicker fx:id="periodStartDatePicker" maxWidth="1.7976931348623157E308"/>
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Fin del periodo:" styleClass="field-label"/>
+                    <DatePicker fx:id="periodEndDatePicker" maxWidth="1.7976931348623157E308"/>
+                </VBox>
+            </HBox>
+
+            <Label fx:id="hoursInfoLabel" text=""
+                   style="-fx-text-fill: #6b7280; -fx-font-style: italic;"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="generateReportButton" onAction="#handleGenerateReport"
+                    maxWidth="1.7976931348623157E308"
+                    text="⚡ Generar Reporte de Avance"
+                    style="-fx-background-color: #0A0A14; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 10 20 10 20;"/>
+        </VBox>
+    </VBox>
+</AnchorPane>
