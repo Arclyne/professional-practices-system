@@ -41,6 +41,9 @@
             <Label fx:id="existingReportStatusLabel" text="..." style="-fx-text-fill: #1e40af;"/>
             <Label fx:id="existingReportHoursLabel" text="..." style="-fx-text-fill: #1e40af;"/>
             <HBox spacing="10.0">
+                <Button fx:id="downloadReportButton" onAction="#handleDownloadReport"
+                        text="⬇ Descargar PDF"
+                        style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
                 <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedReport"
                         text="⬆ Subir PDF Firmado"
                         style="-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
+import mx.uv.fei.domain.dto.ProgressReport;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -158,6 +159,105 @@ public class ReportPdfGenerator {
 
         } catch (IOException e) {
             throw new ManagerException("Error al generar el documento PDF.", e);
+        }
+    }
+    public String generateProgressReportPdf(ProgressReport report, User practitioner) throws ManagerException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.LETTER);
+            document.addPage(page);
+
+            PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+            PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+
+                float cursorY = PAGE_HEIGHT - MARGIN;
+
+                // Cabecera
+                contentStream.beginText();
+                contentStream.setFont(fontBold, 16);
+                contentStream.newLineAtOffset(MARGIN, cursorY);
+                contentStream.showText("UNIVERSIDAD VERACRUZANA");
+                contentStream.endText();
+                cursorY -= 20;
+
+                contentStream.beginText();
+                contentStream.setFont(fontNormal, 12);
+                contentStream.newLineAtOffset(MARGIN, cursorY);
+                contentStream.showText("Facultad de Estadística e Informática - Licenciatura en Ingeniería de Software");
+                contentStream.endText();
+                cursorY -= 30;
+
+                // Título
+                contentStream.beginText();
+                contentStream.setFont(fontBold, 14);
+                contentStream.newLineAtOffset(MARGIN, cursorY);
+                contentStream.showText("Reporte de Avance: " + report.getReportType());
+                contentStream.endText();
+                cursorY -= 25;
+
+                // Datos del practicante y periodo
+                contentStream.beginText();
+                contentStream.setFont(fontNormal, 12);
+                contentStream.newLineAtOffset(MARGIN, cursorY);
+                contentStream.showText("Practicante: " + practitioner.getName() + " " + practitioner.getLastName());
+                contentStream.newLineAtOffset(0, -15);
+                contentStream.showText("Periodo cubierto: " + report.getPeriodCoveredStart() + " al " + report.getPeriodCoveredEnd());
+                contentStream.newLineAtOffset(0, -15);
+                contentStream.showText("Total de horas acumuladas: " + report.getTotalHoursAtSubmission() + " hrs");
+                contentStream.endText();
+                cursorY -= 60;
+
+                // Espacio para comentarios (si existen)
+                if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().isEmpty()) {
+                    contentStream.beginText();
+                    contentStream.setFont(fontBold, 12);
+                    contentStream.newLineAtOffset(MARGIN, cursorY);
+                    contentStream.showText("Observaciones del Profesor:");
+                    contentStream.endText();
+                    cursorY -= 20;
+
+                    contentStream.beginText();
+                    contentStream.setFont(fontNormal, 11);
+                    contentStream.newLineAtOffset(MARGIN, cursorY);
+                    contentStream.showText(report.getProfessorFeedback());
+                    contentStream.endText();
+                    cursorY -= 60;
+                }
+
+                // Firmas (igual que en tu reporte mensual)
+                float signatureY = cursorY - 100;
+
+                // Línea firma 1
+                contentStream.moveTo(MARGIN, signatureY);
+                contentStream.lineTo(MARGIN + 150, signatureY);
+                contentStream.stroke();
+                contentStream.beginText();
+                contentStream.setFont(fontNormal, 10);
+                contentStream.newLineAtOffset(MARGIN + 15, signatureY - 15);
+                contentStream.showText("Firma del Profesor");
+                contentStream.endText();
+
+                // Línea firma 2
+                contentStream.moveTo(PAGE_WIDTH - MARGIN - 150, signatureY);
+                contentStream.lineTo(PAGE_WIDTH - MARGIN, signatureY);
+                contentStream.stroke();
+                contentStream.beginText();
+                contentStream.setFont(fontNormal, 10);
+                contentStream.newLineAtOffset(PAGE_WIDTH - MARGIN - 130, signatureY - 15);
+                contentStream.showText("Firma del Practicante");
+                contentStream.endText();
+            }
+
+            String home = System.getProperty("user.home");
+            String fileName = "Reporte_Avance_" + report.getReportType() + ".pdf";
+            File outputFile = Paths.get(home, "Downloads", fileName).toFile();
+
+            document.save(outputFile);
+            return outputFile.getAbsolutePath();
+
+        } catch (IOException e) {
+            throw new ManagerException("Error al generar el documento PDF de avance.", e);
         }
     }
 }

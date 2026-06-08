@@ -21,26 +21,27 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="mx.uv.fei.presentation.TemplateGeneratorController">
 
-    <!-- Encabezado -->
-    <VBox style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
+    <HBox alignment="CENTER_LEFT" style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
         <padding><Insets bottom="16.0" left="24.0" right="24.0" top="16.0"/></padding>
-        <Label styleClass="form-title" text="Gestión de Plantillas de Documentos"/>
-        <Label text="Crea y reutiliza plantillas para bitácoras y oficios oficiales con tokens automáticos."
-               textFill="#6b7280" style="-fx-font-size: 13px;"/>
-    </VBox>
+        <VBox>
+            <Label styleClass="form-title" text="Gestión de Plantillas de Documentos"/>
+            <Label text="Crea y reutiliza plantillas para bitácoras y oficios oficiales con tokens automáticos."
+                   textFill="#6b7280" style="-fx-font-size: 13px;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="backToDashboardButton" text="⬅ Regresar al Dashboard"
+                onAction="#handleBackToDashboard"
+                styleClass="secondary-button"
+                style="-fx-cursor: hand; -fx-border-color: #D1D5DB; -fx-border-radius: 8px; -fx-background-color: #FFFFFF; -fx-text-fill: #374151; -fx-padding: 8 16 8 16;"/>
+    </HBox>
 
-    <!-- TabPane principal -->
     <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE"
              style="-fx-background-color: #FFFFFF;">
 
-        <!-- ══════════════════════════════════════════════════
-             TAB 1: CREAR / EDITAR PLANTILLA
-             ══════════════════════════════════════════════════ -->
-        <Tab text="✏️  Crear / Editar Plantilla">
+        <Tab text="️  Crear / Editar Plantilla">
             <HBox spacing="0.0" VBox.vgrow="ALWAYS">
                 <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/></padding>
 
-                <!-- Panel izquierdo: metadatos + tokens -->
                 <VBox spacing="12.0" prefWidth="280.0"
                       style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0; -fx-border-radius: 0;">
                     <padding><Insets bottom="16.0" left="16.0" right="16.0" top="4.0"/></padding>
@@ -68,7 +69,6 @@
                             maxWidth="1.7976931348623157E308" styleClass="secondary-button"/>
                 </VBox>
 
-                <!-- Panel derecho: editor del cuerpo -->
                 <VBox spacing="12.0" HBox.hgrow="ALWAYS">
                     <padding><Insets bottom="0.0" left="20.0" right="0.0" top="4.0"/></padding>
 
@@ -80,12 +80,11 @@
                               promptText="Escribe aquí el contenido de tu plantilla...&#10;&#10;Ejemplo:&#10;UNIVERSIDAD VERACRUZANA&#10;Por medio de la presente, se certifica que %NOMBRE_PRACTICANTE%&#10;con matrícula %MATRICULA% ha sido aceptado en el proyecto %PROYECTO_NOMBRE%."
                               style="-fx-font-family: 'Courier New', monospace; -fx-font-size: 13px; -fx-background-color: #FAFAFA; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;"/>
 
-                    <!-- Barra de acciones -->
                     <HBox spacing="10.0" alignment="CENTER_RIGHT">
                         <Button fx:id="clearEditorButton" text="Limpiar"
                                 onAction="#handleClearEditor"
                                 style="-fx-text-fill: #6b7280; -fx-border-color: #D1D5DB; -fx-border-radius: 8px; -fx-background-color: transparent; -fx-cursor: hand;"/>
-                        <Button fx:id="saveTemplateButton" text="💾  Guardar Plantilla"
+                        <Button fx:id="saveTemplateButton" text="  Guardar Plantilla"
                                 onAction="#handleSaveTemplate"
                                 style="-fx-background-color: #0A0A14; -fx-text-fill: #FFFFFF; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
                     </HBox>
@@ -93,13 +92,9 @@
             </HBox>
         </Tab>
 
-        <!-- ══════════════════════════════════════════════════
-             TAB 2: USAR PLANTILLA / GENERAR DOCUMENTOS
-             ══════════════════════════════════════════════════ -->
-        <Tab text="📄  Usar Plantilla / Generar Docs">
+        <Tab text="  Usar Plantilla / Generar Docs">
             <HBox spacing="0.0" VBox.vgrow="ALWAYS">
 
-                <!-- Panel izquierdo: lista de plantillas guardadas -->
                 <VBox spacing="10.0" prefWidth="260.0"
                       style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
                     <padding><Insets bottom="16.0" left="16.0" right="16.0" top="20.0"/></padding>
@@ -119,7 +114,6 @@
                             style="-fx-text-fill: #EF4444; -fx-border-color: #FCA5A5; -fx-border-radius: 8px; -fx-background-color: #FEF2F2; -fx-cursor: hand;"/>
                 </VBox>
 
-                <!-- Panel central: valores de tokens -->
                 <VBox spacing="10.0" prefWidth="260.0"
                       style="-fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
                     <padding><Insets bottom="16.0" left="16.0" right="16.0" top="20.0"/></padding>
@@ -139,7 +133,6 @@
 
                     <Separator/>
 
-                    <!-- Controles de generación en lote -->
                     <VBox spacing="8.0"
                           style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 8px; -fx-padding: 12px;">
                         <Label text="Generación en lote" styleClass="field-label"
@@ -155,7 +148,6 @@
                     </VBox>
                 </VBox>
 
-                <!-- Panel derecho: previsualización -->
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <padding><Insets bottom="16.0" left="16.0" right="20.0" top="20.0"/></padding>
 

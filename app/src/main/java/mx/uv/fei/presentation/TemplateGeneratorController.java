@@ -30,7 +30,8 @@ import mx.uv.fei.domain.enums.TemplateToken;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.TemplateManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 @Component
 public class TemplateGeneratorController {
@@ -54,7 +55,7 @@ public class TemplateGeneratorController {
     @FXML private Button saveTemplateButton;
     @FXML private Button insertTokenButton;
     @FXML private Button clearEditorButton;
-
+    @FXML private Button backToDashboardButton;
 
     @FXML private ListView<DocumentTemplate> savedTemplatesListView;
     @FXML private VBox tokenValuesContainer;
@@ -69,6 +70,7 @@ public class TemplateGeneratorController {
 
     private final TemplateManager templateManager;
     private final AppStore applicationStore;
+
 
     private DocumentTemplate currentlyEditingTemplate;
     private final List<Map<String, String>> batchQueue = new ArrayList<>();
@@ -373,5 +375,10 @@ public class TemplateGeneratorController {
         }
 
         return collectedValues;
+    }
+
+    @FXML
+    private void handleBackToDashboard(ActionEvent event) {
+        applicationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }
