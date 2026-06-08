@@ -1,24 +1,36 @@
 package mx.uv.fei.config.annotation.resolver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class ConventionModuleResolver {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConventionModuleResolver.class);
+    private static final String CONFIGURATION_SUFFIX = ".appconfiguration.ApplicationConfiguration";
+
     public static Class<?> resolveByConvention(Class<?> targetEntryPointClass) {
-        Class<?> resolvedConventionClass;
-        String currentPackageName = targetEntryPointClass.getPackageName();
-        String basePackageName = currentPackageName;
-
-        if (currentPackageName.contains(".")) {
-            basePackageName = currentPackageName.substring(0, currentPackageName.lastIndexOf("."));
-        }
-
-        String conventionModulePath = basePackageName + ".appconfiguration.ApplicationConfiguration";
+        String basePackage = resolveBasePackage(targetEntryPointClass.getPackageName());
+        String conventionPath = basePackage + CONFIGURATION_SUFFIX;
+        Class<?> resolvedClass;
 
         try {
-            resolvedConventionClass = Class.forName(conventionModulePath);
-        } catch (ClassNotFoundException classNotFoundException) {
-            throw new IllegalStateException("No se pudo encontrar la clase de configuracion del modulo por convencion en la ruta esperada: " + conventionModulePath, classNotFoundException);
+            resolvedClass = Class.forName(conventionPath);
+        } catch (ClassNotFoundException e) {
+            LOG.error("No se pudo encontrar la clase de configuracion por convencion en: {}", conventionPath, e);
+            throw new IllegalStateException("No se pudo encontrar la clase de configuracion por convencion en: " + conventionPath, e);
         }
 
-        return resolvedConventionClass;
+        return resolvedClass;
+    }
+
+    private static String resolveBasePackage(String currentPackageName) {
+        String basePackage = currentPackageName;
+
+        if (currentPackageName.contains(".")) {
+            basePackage = currentPackageName.substring(0, currentPackageName.lastIndexOf('.'));
+        }
+
+        return basePackage;
     }
 }

@@ -1,5 +1,6 @@
 package mx.uv.fei.domain.enums;
 
+
 public enum UserStatus {
     ACTIVE("Active"),
     INACTIVE("Inactive"),
@@ -16,11 +17,18 @@ public enum UserStatus {
     }
 
     public static UserStatus fromString(String text) {
+        UserStatus matchedStatus = null;
+
         for (UserStatus status : UserStatus.values()) {
-            if (status.databaseValue.equalsIgnoreCase(text)) {
-                return status;
+            if (status.databaseValue.equalsIgnoreCase(text) && matchedStatus == null) {
+                matchedStatus = status;
             }
         }
-        throw new IllegalArgumentException("Estado de usuario no válido: " + text);
+
+        if (matchedStatus == null) {
+            throw new IllegalArgumentException("Estado de usuario no valido: " + text);
+        }
+
+        return matchedStatus;
     }
 }

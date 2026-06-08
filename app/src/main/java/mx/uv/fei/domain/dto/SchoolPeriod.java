@@ -3,7 +3,9 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
+
 public class SchoolPeriod {
+
     private int periodId;
     private String periodName;
     private LocalDate startDate;
@@ -55,19 +57,22 @@ public class SchoolPeriod {
 
     @Override
     public boolean equals(Object object) {
+        boolean isEqual = false;
+
         if (this == object) {
-            return true;
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            SchoolPeriod that = (SchoolPeriod) object;
+            isEqual = Objects.equals(this.periodName, that.periodName)
+                    && Objects.equals(this.startDate, that.startDate)
+                    && Objects.equals(this.endDate, that.endDate);
         }
 
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
+        return isEqual;
+    }
 
-        SchoolPeriod that = (SchoolPeriod) object;
-
-        return Objects.equals(this.periodName, that.periodName) &&
-                Objects.equals(this.startDate, that.startDate) &&
-                Objects.equals(this.endDate, that.endDate) &&
-                Objects.equals(this.status, that.status);
+    @Override
+    public int hashCode() {
+        return Objects.hash(periodName, startDate, endDate);
     }
 }

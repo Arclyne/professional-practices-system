@@ -1,41 +1,66 @@
 package mx.uv.fei.config.annotation.core;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class ComponentScanner {
 
-    private final Map<Class<?>, Class<?>> componentCatalog = new ConcurrentHashMap<>();
+    private static final Logger LOG = LoggerFactory.getLogger(ComponentScanner.class);
 
-    public ComponentScanner(String basePackageToScan) {
-        scanPackages(basePackageToScan);
-    }
+    private final Map<Class<?>, Class<?>> catalog = new ConcurrentHashMap<>();
 
-    private void scanPackages(String basePackageToScan) {
+    public ComponentScanner(String basePackage) {
         try {
-            List<Class<?>> discoveredClassesList = PackageScanner.findClasses(basePackageToScan);
-            for (Class<?> currentDiscoveredClass : discoveredClassesList) {
-                if (currentDiscoveredClass.isAnnotationPresent(Component.class)) {
-                    componentCatalog.put(currentDiscoveredClass, currentDiscoveredClass);
-                    for (Class<?> implementedInterface : currentDiscoveredClass.getInterfaces()) {
-                        componentCatalog.put(implementedInterface, currentDiscoveredClass);
-                    }
+            for (Class<?> clazz : PackageScanner.findClasses(basePackage)) {
+                if (clazz.isAnnotationPresent(Component.class)) {
+                    registerComponent(clazz);
                 }
             }
-        } catch (ClassNotFoundException | IOException scanningException) {
-            throw new IllegalStateException("Ocurrio un error fatal al intentar escanear los paquetes del sistema base.", scanningException);
+        } catch (ClassNotFoundException e) {
+            LOG.error("No se pudo cargar una clase durante el escaneo del paquete: {}", basePackage, e);
+            throw new IllegalStateException("No se pudo cargar una clase durante el escaneo del paquete: " + basePackage, e);
+        } catch (IOException e) {
+            LOG.error("Fallo de entrada/salida al escanear el paquete: {}", basePackage, e);
+            throw new IllegalStateException("Fallo de entrada/salida al escanear el paquete: " + basePackage, e);
         }
     }
 
-    public Class<?> getImplementation(Class<?> targetType) {
-        return componentCatalog.get(targetType);
+    public Class<?> getImpl(Class<?> type) {
+        return catalog.get(type);
     }
 
-    public Iterable<Class<?>> getCatalogValues() {
-        return componentCatalog.values();
+
+    public Map<Class<?>, Class<?>> getCatalog() {
+        return Collections.unmodifiableMap(catalog);
+    }
+
+    private void registerComponent(Class<?> componentClass) {
+        catalog.put(componentClass, componentClass);
+        registerInterfaceHierarchy(componentClass, componentClass);
+        registerSuperclassHierarchy(componentClass, componentClass);
+    }
+
+    private void registerInterfaceHierarchy(Class<?> sourceClass, Class<?> componentClass) {
+        for (Class<?> iface : sourceClass.getInterfaces()) {
+            catalog.putIfAbsent(iface, componentClass);
+            registerInterfaceHierarchy(iface, componentClass);
+        }
+    }
+
+    private void registerSuperclassHierarchy(Class<?> sourceClass, Class<?> componentClass) {
+        Class<?> superclass = sourceClass.getSuperclass();
+
+        if (superclass != null && superclass != Object.class) {
+            catalog.putIfAbsent(superclass, componentClass);
+            registerInterfaceHierarchy(superclass, componentClass);
+            registerSuperclassHierarchy(superclass, componentClass);
+        }
     }
 }

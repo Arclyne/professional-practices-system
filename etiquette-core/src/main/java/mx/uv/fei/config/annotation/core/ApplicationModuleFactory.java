@@ -3,49 +3,60 @@ package mx.uv.fei.config.annotation.core;
 import mx.uv.fei.config.annotation.Interfaces.IApplicationModule;
 import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 import mx.uv.fei.config.annotation.resolver.ConventionModuleResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+
 public class ApplicationModuleFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationModuleFactory.class);
 
     public static IApplicationModule createModuleInstance(Class<?> targetEntryPointClass, String activeExecutionProfile) {
         IApplicationModule instantiatedModule = null;
 
         if (targetEntryPointClass.isAnnotationPresent(StartEtiquette.class)) {
             StartEtiquette startEtiquetteAnnotation = targetEntryPointClass.getAnnotation(StartEtiquette.class);
-            Class<?> targetModuleClass = determineTargetModuleClass(targetEntryPointClass, startEtiquetteAnnotation);
-            instantiatedModule = instantiateTargetModule(targetModuleClass, activeExecutionProfile);
+            Class<?> targetModuleClass = resolveModuleClass(targetEntryPointClass, startEtiquetteAnnotation);
+            instantiatedModule = instantiateModule(targetModuleClass, activeExecutionProfile);
         }
 
         return instantiatedModule;
     }
 
-    private static Class<?> determineTargetModuleClass(Class<?> targetEntryPointClass, StartEtiquette startEtiquetteAnnotation) {
-        Class<?> targetModuleClass = startEtiquetteAnnotation.factory();
+    private static Class<?> resolveModuleClass(Class<?> targetEntryPointClass, StartEtiquette startEtiquette) {
+        boolean usesDefaultFactory = startEtiquette.factory().equals(IApplicationModule.class);
+        Class<?> resolvedModuleClass;
 
-        if (startEtiquetteAnnotation.factory().equals(IApplicationModule.class)) {
-            targetModuleClass = ConventionModuleResolver.resolveByConvention(targetEntryPointClass);
+        if (usesDefaultFactory) {
+            resolvedModuleClass = ConventionModuleResolver.resolveByConvention(targetEntryPointClass);
+        } else {
+            resolvedModuleClass = startEtiquette.factory();
         }
 
-        return targetModuleClass;
+        return resolvedModuleClass;
     }
 
-    private static IApplicationModule instantiateTargetModule(Class<?> targetModuleClass, String activeExecutionProfile) {
+    private static IApplicationModule instantiateModule(Class<?> targetModuleClass, String activeExecutionProfile) {
         IApplicationModule instantiatedModule;
 
         try {
             Constructor<?> profileConstructor = targetModuleClass.getDeclaredConstructor(String.class);
             profileConstructor.setAccessible(true);
             instantiatedModule = (IApplicationModule) profileConstructor.newInstance(activeExecutionProfile);
-        } catch (NoSuchMethodException noSuchMethodException) {
+        } catch (NoSuchMethodException e) {
             instantiatedModule = instantiateWithDefaultConstructor(targetModuleClass);
-        } catch (InstantiationException instantiationException) {
-            throw new IllegalStateException("No se puede instanciar la clase del modulo porque es abstracta o una interfaz: " + targetModuleClass.getName(), instantiationException);
-        } catch (IllegalAccessException illegalAccessException) {
-            throw new IllegalStateException("El constructor del modulo de configuracion no es accesible publicamente: " + targetModuleClass.getName(), illegalAccessException);
-        } catch (InvocationTargetException invocationTargetException) {
-            throw new IllegalStateException("El constructor del modulo de configuracion arrojo una excepcion interna durante la instanciacion: " + targetModuleClass.getName(), invocationTargetException.getCause());
+        } catch (InstantiationException e) {
+            LOG.error("No se puede instanciar el modulo porque es abstracto o una interfaz: {}", targetModuleClass.getName(), e);
+            throw new IllegalStateException("No se puede instanciar el modulo porque es abstracto o una interfaz: " + targetModuleClass.getName(), e);
+        } catch (IllegalAccessException e) {
+            LOG.error("El constructor del modulo no es accesible: {}", targetModuleClass.getName(), e);
+            throw new IllegalStateException("El constructor del modulo no es accesible: " + targetModuleClass.getName(), e);
+        } catch (InvocationTargetException e) {
+            LOG.error("El constructor del modulo lanzo una excepcion interna durante la instanciacion: {}", targetModuleClass.getName(), e.getCause());
+            throw new IllegalStateException("El constructor del modulo lanzo una excepcion interna durante la instanciacion: " + targetModuleClass.getName(), e.getCause());
         }
 
         return instantiatedModule;
@@ -58,14 +69,18 @@ public class ApplicationModuleFactory {
             Constructor<?> defaultConstructor = targetModuleClass.getDeclaredConstructor();
             defaultConstructor.setAccessible(true);
             instantiatedModule = (IApplicationModule) defaultConstructor.newInstance();
-        } catch (NoSuchMethodException noSuchMethodException) {
-            throw new IllegalStateException("No se encontro un constructor por defecto sin parametros para la clase del modulo: " + targetModuleClass.getName(), noSuchMethodException);
-        } catch (InstantiationException instantiationException) {
-            throw new IllegalStateException("No se puede instanciar la clase del modulo con el constructor por defecto porque es abstracta: " + targetModuleClass.getName(), instantiationException);
-        } catch (IllegalAccessException illegalAccessException) {
-            throw new IllegalStateException("El constructor por defecto del modulo no es accesible publicamente: " + targetModuleClass.getName(), illegalAccessException);
-        } catch (InvocationTargetException invocationTargetException) {
-            throw new IllegalStateException("El constructor por defecto del modulo arrojo una excepcion interna durante la instanciacion: " + targetModuleClass.getName(), invocationTargetException.getCause());
+        } catch (NoSuchMethodException e) {
+            LOG.error("No se encontro un constructor sin parametros para: {}", targetModuleClass.getName(), e);
+            throw new IllegalStateException("No se encontro un constructor sin parametros para: " + targetModuleClass.getName(), e);
+        } catch (InstantiationException e) {
+            LOG.error("No se puede instanciar con el constructor por defecto porque es abstracta: {}", targetModuleClass.getName(), e);
+            throw new IllegalStateException("No se puede instanciar con el constructor por defecto porque es abstracta: " + targetModuleClass.getName(), e);
+        } catch (IllegalAccessException e) {
+            LOG.error("El constructor por defecto no es accesible en: {}", targetModuleClass.getName(), e);
+            throw new IllegalStateException("El constructor por defecto no es accesible en: " + targetModuleClass.getName(), e);
+        } catch (InvocationTargetException e) {
+            LOG.error("El constructor por defecto lanzo una excepcion interna en: {}", targetModuleClass.getName(), e.getCause());
+            throw new IllegalStateException("El constructor por defecto lanzo una excepcion interna en: " + targetModuleClass.getName(), e.getCause());
         }
 
         return instantiatedModule;

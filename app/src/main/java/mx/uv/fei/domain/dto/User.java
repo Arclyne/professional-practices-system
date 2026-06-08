@@ -12,13 +12,11 @@ public class User {
     private String userName;
     private String password;
     private String role;
-
     private String name;
     private String lastName;
     private String email;
     private UserStatus status;
     private Gender gender;
-
     private LocalDateTime registrationDate;
     private LocalDateTime dischargeDate;
 
@@ -114,14 +112,18 @@ public class User {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
 
-        User that = (User) object;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            User other = (User) obj;
+            isEqual = Objects.equals(this.userName, other.userName)
+                    && Objects.equals(this.email, other.email);
+        }
 
-        return Objects.equals(this.userName, that.userName) &&
-                Objects.equals(this.email, that.email);
+        return isEqual;
     }
 
     @Override

@@ -6,33 +6,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class ProviderMethodRegistry {
 
-    private final Map<Class<?>, IProvider> registeredProvidersMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, IProvider> registeredProviders = new ConcurrentHashMap<>();
 
     public ProviderMethodRegistry(Object applicationModuleInstance) {
-        registerDynamicProviders(applicationModuleInstance);
+        registerProvidersFrom(applicationModuleInstance);
     }
 
-    public boolean contains(Class<?> targetClassType) {
-        return registeredProvidersMap.containsKey(targetClassType);
+    public boolean contains(Class<?> targetType) {
+        return registeredProviders.containsKey(targetType);
     }
 
-    public Object provide(Class<?> targetClassType) {
-        IProvider targetProviderToExecute = registeredProvidersMap.get(targetClassType);
+    public Object provide(Class<?> targetType) {
+        IProvider targetProvider = registeredProviders.get(targetType);
 
-        if (targetProviderToExecute == null) {
-            throw new IllegalStateException("No se encontro un proveedor valido registrado en el sistema para la clase solicitada: " + targetClassType.getName());
+        if (targetProvider == null) {
+            throw new IllegalStateException("No se encontro un proveedor registrado para: " + targetType.getName());
         }
 
-        return targetProviderToExecute.provide();
+        return targetProvider.provide();
     }
 
-    public void registerDynamicProviders(Object targetInstanceToScan) {
-        List<IProvider> scannedProvidersList = ProviderScanner.scanForProviders(targetInstanceToScan);
+    public void registerProvidersFrom(Object targetInstance) {
+        List<IProvider> scannedProviders = ProviderScanner.scanForProviders(targetInstance);
 
-        for (IProvider currentScannedProvider : scannedProvidersList) {
-            registeredProvidersMap.put(currentScannedProvider.getReturnType(), currentScannedProvider);
+        for (IProvider provider : scannedProviders) {
+            registeredProviders.put(provider.getReturnType(), provider);
         }
     }
 }

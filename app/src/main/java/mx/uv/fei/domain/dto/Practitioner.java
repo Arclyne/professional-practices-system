@@ -30,12 +30,12 @@ public class Practitioner extends User {
         this.grade = grade;
     }
 
-    public void setEnrollment(String enrollment) {
-        this.enrollment = enrollment;
+    public String getEnrollment() {
+        return enrollment;
     }
 
-    public String getEnrollment() {
-        return this.enrollment;
+    public void setEnrollment(String enrollment) {
+        this.enrollment = enrollment;
     }
 
     public Integer getGroupId() {
@@ -47,15 +47,13 @@ public class Practitioner extends User {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass() && super.equals(object)) {
-            Practitioner that = (Practitioner) object;
-            isEqual = Objects.equals(this.enrollment, that.getEnrollment()) &&
-                    Objects.equals(this.groupId, that.getGroupId());
+        } else if (obj != null && getClass() == obj.getClass()) {
+            isEqual = super.equals(obj);
         }
 
         return isEqual;
@@ -63,6 +61,6 @@ public class Practitioner extends User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), enrollment, groupId);
+        return Objects.hash(super.hashCode());
     }
 }
