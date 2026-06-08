@@ -112,6 +112,8 @@ public class MainController {
                     case PROGRESS_REPORT_GENERATOR -> loadView("/mx/uv/fei/presentation/progressReportGenerator.fxml");
                     case GRADE_PRACTITIONER -> loadView("/mx/uv/fei/presentation/gradePractitioner.fxml");
                     case PRACTITIONER_GRADE_VIEW -> loadView("/mx/uv/fei/presentation/practitionerGradeView.fxml");
+                    case PROFESSOR_REVIEW_SELF_EVALUATION -> loadView("/mx/uv/fei/presentation/ReviewSelfEvaluation.fxml");
+                    case PRACTITIONER_SELF_EVALUATION -> loadView("/mx/uv/fei/presentation/PractitionerSelfEvaluation.fxml");
 
                     default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
                 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-padding: 30;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.ReviewSelfEvaluationController">
+
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Button mnemonicParsing="false" onAction="#handleReturnToMenu" text="← Regresar" style="-fx-background-color: #E0E0E0; -fx-cursor: hand;" />
+        <Label text="Revisión de PRAIS-03">
+            <font><Font name="System Bold" size="24.0" /></font>
+        </Label>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #F5F5F5; -fx-padding: 15; -fx-background-radius: 5;">
+        <Label text="ID del Reporte Final:" />
+        <TextField fx:id="reportIdField" prefWidth="150.0" promptText="Ej: 1" />
+        <Button onAction="#handleSearchEvaluation" text="Buscar" style="-fx-background-color: #607D8B; -fx-text-fill: white; -fx-cursor: hand;" />
+    </HBox>
+
+    <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 20; -fx-background-color: #E3F2FD; -fx-background-radius: 10;">
+        <Label fx:id="scoreLabel" text="Puntuación Final obtenida: -">
+            <font><Font name="System Bold" size="18.0" /></font>
+        </Label>
+        <Label fx:id="currentStatusLabel" text="Estado actual: -" textFill="#5b5b5b">
+            <font><Font name="System Bold" size="14.0" /></font>
+        </Label>
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="15.0">
+        <Button fx:id="viewPdfButton" onAction="#handleViewPdf" text="Ver Evidencia (PDF)" prefHeight="35.0" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;" />
+        <Button fx:id="markAsReviewedButton" onAction="#handleMarkAsReviewed" text="Marcar como Revisada" prefHeight="35.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;" />
+    </HBox>
+</VBox>

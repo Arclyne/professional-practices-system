@@ -137,6 +137,14 @@
                     <Button fx:id="navigateToGradeViewButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToGradeViewAction" styleClass="secondary-button" text="Mi Calificación"
                             visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToSelfEvaluationButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToSelfEvaluationAction" styleClass="secondary-button" text="Autoevaluación Final"
+                            visible="false" managed="false"/>
+
+                    <Button fx:id="navigateToReviewSelfEvaluationButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
+                            mnemonicParsing="false" onAction="#handleNavigateToReviewSelfEvaluationAction" styleClass="secondary-button" text="Revisar Autoevaluaciones"
+                            visible="false" managed="false"/>
                 </VBox>
             </VBox>
         </StackPane>
