@@ -8,7 +8,7 @@ public class Message {
     private String body;
     private LocalDateTime sendDate;
     private int senderId;
-    private String senderName; // Para mostrar en la UI
+    private String senderName;
     private int receiverId;
 
     public Message() {}
