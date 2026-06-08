@@ -93,7 +93,6 @@ public class RegisterCoordinatorController implements Initializable {
         String selectedSex = (String) genderFormComboBox.getValue();
         mappedCoordinator.setGender(Gender.fromDisplayValue(selectedSex));
 
-        mappedCoordinator.setRole("Coordinator");
         mappedCoordinator.setStatus(UserStatus.PENDING);
 
         return mappedCoordinator;

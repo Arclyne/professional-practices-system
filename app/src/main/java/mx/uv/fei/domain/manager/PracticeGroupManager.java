@@ -7,7 +7,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
-// import mx.uv.fei.domain.common.Validator;
+// import mx.uv.fei.domain.common.validators.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component

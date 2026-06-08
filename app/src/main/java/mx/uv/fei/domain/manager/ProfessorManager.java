@@ -4,7 +4,7 @@ import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.dataaccess.repositories.ProfessorDAO;
 import mx.uv.fei.dataaccess.repositories.UserDAO;
@@ -32,7 +32,7 @@ public class ProfessorManager {
         professor.setPassword(tempPassword);
         professor.setRole("Professor");
         professor.setStatus(UserStatus.PENDING);
-        Validator.validateProfessorData(professor);
+        UserValidator.validateProfessorData(professor);
 
         try {
             int resultId = this.professorDAO.insertProfessor(professor);
