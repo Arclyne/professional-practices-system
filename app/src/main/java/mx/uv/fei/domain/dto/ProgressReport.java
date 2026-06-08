@@ -3,14 +3,7 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
-/**
- * Representa un reporte de avance de prácticas profesionales.
- * Puede ser de tipo Intermedio (disponible desde 210 horas acumuladas)
- * o Final (disponible desde 420 horas acumuladas). Incluye las actividades
- * registradas en los reportes mensuales dentro del periodo cubierto.
- *
- * @author Sistema de Prácticas Profesionales UV-FEI
- */
+
 public class ProgressReport {
 
     private int reportId;
@@ -116,9 +109,6 @@ public class ProgressReport {
         this.professorFeedback = professorFeedback;
     }
 
-    /**
-     * Business Key: un practicante tiene como máximo un reporte por tipo.
-     */
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
