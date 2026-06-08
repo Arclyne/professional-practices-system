@@ -59,5 +59,5 @@ INSERT INTO progress_report (report_id, practitioner_id, report_type, generation
 VALUES (2, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');
 
 -- EVALUACIÓN LIGADA AL REPORTE 1 (Para markAsReviewed y submitEvidence)
-INSERT INTO self_evaluation (self_eval_id, description, evidence, practitioner_id, report_id, status)
-VALUES (1, 'Cumplimiento excelente', 'http://pdf.url', 123, 1, 'Pendiente');
+INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status)
+VALUES (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'http://pdf.url', 123, 1, 'Pendiente');

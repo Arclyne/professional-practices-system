@@ -29,20 +29,22 @@ class SelfEvaluationManagerTest {
     @Test
     void registerSelfEvaluation_ValidData_Success() {
         SelfEvaluation eval = new SelfEvaluation();
-        eval.setDescription("Cumplimiento excelente de los objetivos");
-        eval.setEvidence("http://pdf.url/documento.pdf");
         eval.setPractitionerId(123);
         eval.setReportId(2);
+        eval.setQ1(5); eval.setQ2(5); eval.setQ3(5); eval.setQ4(5); eval.setQ5(5);
+        eval.setQ6(5); eval.setQ7(5); eval.setQ8(5); eval.setQ9(5); eval.setQ10(5);
+        eval.setEvidence("http://pdf.url/documento.pdf");
 
         assertDoesNotThrow(() -> manager.registerSelfEvaluation(eval));
     }
 
     @Test
-    void registerSelfEvaluation_MissingDescription_ThrowsManagerException() {
+    void registerSelfEvaluation_InvalidScore_ThrowsManagerException() {
         SelfEvaluation eval = new SelfEvaluation();
-        eval.setDescription("");
         eval.setPractitionerId(123);
         eval.setReportId(2);
+        eval.setQ1(6);
+        eval.setEvidence("http://pdf.url/documento.pdf");
 
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(eval));
     }

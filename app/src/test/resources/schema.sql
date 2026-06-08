@@ -50,7 +50,27 @@ CREATE TABLE message (message_id INT NOT NULL AUTO_INCREMENT, send_date DATETIME
 CREATE TABLE message_participant (message_id INT NOT NULL, sender_id INT NOT NULL, receiver_id INT NOT NULL, PRIMARY KEY (message_id), CONSTRAINT fk_participant_message FOREIGN KEY (message_id) REFERENCES message (message_id) ON DELETE CASCADE, CONSTRAINT fk_participant_sender FOREIGN KEY (sender_id) REFERENCES user (user_id) ON DELETE CASCADE, CONSTRAINT fk_participant_receiver FOREIGN KEY (receiver_id) REFERENCES user (user_id) ON DELETE CASCADE);
 
 CREATE TABLE progress_report (report_id INT NOT NULL AUTO_INCREMENT, practitioner_id INT NOT NULL, report_type VARCHAR(20) NOT NULL, generation_date DATE NOT NULL, period_covered_start DATE NOT NULL, period_covered_end DATE NOT NULL, total_hours_at_submission DECIMAL(6,2) NOT NULL, status VARCHAR(50) DEFAULT 'Pendiente de Firma', signed_file_url VARCHAR(500) DEFAULT NULL, grade DECIMAL(5,2) DEFAULT NULL, professor_feedback TEXT, PRIMARY KEY (report_id), CONSTRAINT fk_progress_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE);
-CREATE TABLE self_evaluation (self_eval_id INT NOT NULL AUTO_INCREMENT, description TEXT, evidence TEXT, practitioner_id INT NOT NULL, report_id INT NOT NULL, status VARCHAR(50) DEFAULT 'Pendiente', PRIMARY KEY (self_eval_id), CONSTRAINT uq_selfeval_report UNIQUE (report_id), CONSTRAINT fk_selfeval_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE, CONSTRAINT fk_selfeval_report FOREIGN KEY (report_id) REFERENCES progress_report (report_id) ON DELETE CASCADE);
+CREATE TABLE self_evaluation (
+                                 self_eval_id    INT           NOT NULL AUTO_INCREMENT,
+                                 q1              INT           NOT NULL,
+                                 q2              INT           NOT NULL,
+                                 q3              INT           NOT NULL,
+                                 q4              INT           NOT NULL,
+                                 q5              INT           NOT NULL,
+                                 q6              INT           NOT NULL,
+                                 q7              INT           NOT NULL,
+                                 q8              INT           NOT NULL,
+                                 q9              INT           NOT NULL,
+                                 q10             INT           NOT NULL,
+                                 evidence        TEXT,
+                                 practitioner_id INT           NOT NULL,
+                                 report_id       INT           NOT NULL,
+                                 status          VARCHAR(50)   DEFAULT 'Pendiente',
+                                 PRIMARY KEY (self_eval_id),
+                                 CONSTRAINT uq_selfeval_report UNIQUE (report_id),
+                                 CONSTRAINT fk_selfeval_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE,
+                                 CONSTRAINT fk_selfeval_report       FOREIGN KEY (report_id)       REFERENCES progress_report (report_id)    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE organization_evaluation (org_eval_id INT NOT NULL AUTO_INCREMENT, period VARCHAR(50) NOT NULL, grade DECIMAL(5, 2) NOT NULL, description TEXT, practitioner_id INT NOT NULL, organization_id INT DEFAULT NULL, PRIMARY KEY (org_eval_id), CONSTRAINT fk_orgeval_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE, CONSTRAINT fk_orgeval_organization FOREIGN KEY (organization_id) REFERENCES linked_organization (organization_id) ON DELETE SET NULL);
 CREATE TABLE professor_evaluation (prof_eval_id INT NOT NULL AUTO_INCREMENT, period VARCHAR(50) NOT NULL, grade DECIMAL(5, 2) NOT NULL, description TEXT, practitioner_id INT NOT NULL, professor_id INT DEFAULT NULL, PRIMARY KEY (prof_eval_id), CONSTRAINT fk_profeval_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE, CONSTRAINT fk_profeval_professor FOREIGN KEY (professor_id) REFERENCES professor (professor_id) ON DELETE SET NULL);
 CREATE TABLE practitioner_grade (grade_id INT NOT NULL AUTO_INCREMENT, practitioner_id INT NOT NULL, professor_id INT DEFAULT NULL, tentative_grade DECIMAL(5,2) NOT NULL, final_grade DECIMAL(5,2) DEFAULT NULL, period VARCHAR(100) NOT NULL, graded_at DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (grade_id), CONSTRAINT uq_grade_period UNIQUE (practitioner_id, period), CONSTRAINT fk_grade_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE, CONSTRAINT fk_grade_professor FOREIGN KEY (professor_id) REFERENCES professor (professor_id) ON DELETE SET NULL);
