@@ -5,7 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.dataaccess.interfaces.IProjectDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.ProjectValidator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class ProjectManager {
     }
 
     public void registerNewProject(Project projectToRegister) throws ManagerException {
-        Validator.validateProjectData(projectToRegister);
+        ProjectValidator.validateProjectData(projectToRegister);
 
         try {
             boolean isRegistered = projectDAO.insertProject(projectToRegister);

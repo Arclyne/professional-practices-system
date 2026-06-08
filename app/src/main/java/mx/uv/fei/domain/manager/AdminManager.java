@@ -4,7 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Administrator;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -35,7 +35,7 @@ public class AdminManager {
         administrator.setStatus(UserStatus.ACTIVE);
         administrator.setRole("Administrator");
 
-        Validator.validateAdministratorData(administrator);
+        UserValidator.validateAdministratorData(administrator);
 
         try {
             int resultId = this.adminDAO.insertAdministrator(administrator);

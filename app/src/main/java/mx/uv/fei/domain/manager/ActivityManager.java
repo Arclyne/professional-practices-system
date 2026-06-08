@@ -6,9 +6,10 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.common.Validator;
 
 @Component
 public class ActivityManager {
@@ -26,7 +27,7 @@ public class ActivityManager {
     }
 
     public void registerActivity(Activity activity) throws ManagerException {
-        Validator.validateLogbookActivity(activity);
+        ReportValidator.validateLogbookActivity(activity);
 
         try {
             int resultId = activityDAO.insertActivity(activity);
@@ -39,7 +40,7 @@ public class ActivityManager {
     }
 
     public void modifyActivity(Activity activity, int activityId) throws ManagerException {
-        Validator.validateLogbookActivity(activity);
+        ReportValidator.validateLogbookActivity(activity);
 
         try {
             boolean isUpdated = activityDAO.updateActivity(activity, activityId);
