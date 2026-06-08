@@ -27,4 +27,5 @@ module mx.uv.fei {
 
     exports mx.uv.fei.app;
     opens mx.uv.fei.domain.common;
+    opens mx.uv.fei.domain.common.validators;
 }

@@ -1,12 +1,10 @@
 package mx.uv.fei.domain.manager;
 
-import java.util.UUID;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.interfaces.ICoordinatorDAO;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -31,8 +29,9 @@ public class CoordinatorManager {
         String temporaryPassword = PasswordManager.generatePassword();
         coordinatorInformation.setPassword(temporaryPassword);
         coordinatorInformation.setStatus(UserStatus.PENDING);
+        coordinatorInformation.setRole("Coordinator");
 
-        Validator.validateCoordinatorData(coordinatorInformation);
+        UserValidator.validateCoordinatorData(coordinatorInformation);
 
         try {
             int insertedCoordinatorId = this.coordinatorDAO.insertCoordinator(coordinatorInformation);

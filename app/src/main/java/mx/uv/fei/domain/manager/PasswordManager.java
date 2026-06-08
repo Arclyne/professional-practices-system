@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.validators.PasswordValidator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -40,6 +41,8 @@ public class PasswordManager {
         if (userInSession == null) {
             throw new ManagerException("Error: No se encontró una sesión activa para actualizar.");
         }
+
+        PasswordValidator.validatePassword(confirmPassword);
 
         userInSession.setStatus(UserStatus.ACTIVE);
         userInSession.setPassword(newPassword);

@@ -7,7 +7,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -54,7 +54,7 @@ public class ManagerManager {
     }
 
     public void registerManager(Manager managerToRegister) throws ManagerException {
-        Validator.validateManagerData(managerToRegister);
+        UserValidator.validateManagerData(managerToRegister);
 
         try {
             boolean isRegistered = managerDAO.insertManager(managerToRegister);
