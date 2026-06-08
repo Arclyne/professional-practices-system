@@ -5,7 +5,7 @@ import java.util.List;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.common.IFileBackup;
@@ -44,7 +44,7 @@ public class PractitionerManager {
         practitioner.setStatus(UserStatus.PENDING);
         practitioner.setGrade(0.0);
 
-        Validator.validatePractitioner(practitioner);
+        UserValidator.validatePractitioner(practitioner);
 
         try {
             int resultId = practitionerDAO.insertPractitioner(practitioner);

@@ -7,7 +7,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
-import mx.uv.fei.domain.common.Validator;
+import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.enums.ReportStatus;
@@ -30,7 +30,7 @@ public class MonthlyReportManager {
     }
 
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
-        Validator.validateMonthlyReportCreation(report, selectedActivities);
+        ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
 
         try {
             int reportId = reportDAO.insertReport(report);
@@ -62,7 +62,7 @@ public class MonthlyReportManager {
     }
 
     public void submitSignedReport(MonthlyReport report, String signedFileUrl) throws ManagerException {
-        Validator.validateSignedReport(signedFileUrl);
+        ReportValidator.validateSignedReport(signedFileUrl);
 
         report.setSignedFileUrl(signedFileUrl);
         report.setStatus(ReportStatus.SUBMITTED.getDatabaseValue());
@@ -86,7 +86,7 @@ public class MonthlyReportManager {
     }
 
     public void evaluateReport(int reportId, Double grade, String feedback) throws ManagerException {
-        Validator.validateReportEvaluation(grade, feedback);
+        ReportValidator.validateReportEvaluation(grade, feedback);
 
         try {
             MonthlyReport report = reportDAO.getReportById(reportId);

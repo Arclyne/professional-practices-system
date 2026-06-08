@@ -77,3 +77,6 @@ INSERT INTO activity (activity_id, practitioner_id, title, description, activity
 
 INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status)
 VALUES (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
+
+INSERT INTO activity (activity_id, practitioner_id, title, description, activity_date, duration_hours) VALUES
+    (4, 123, 'Actividad Junio Valida', 'Descripcion Junio', '2026-06-15', 5);
