@@ -1,9 +1,7 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.sql.SQLException;
-
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -14,13 +12,10 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-public class MessageManagerTest {
+public class TokenManagerTest {
 
-    @Inject
-    private IDatabaseConnection dbConnection;
-
-    @Inject
-    private MessageManager messageManager;
+    @Inject private IDatabaseConnection dbConnection;
+    @Inject private TokenManager tokenManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -28,17 +23,7 @@ public class MessageManagerTest {
     }
 
     @Test
-    void sendMessage_ValidData_DoesNotThrow() {
-        assertDoesNotThrow(() -> messageManager.sendMessage(13, "angel24@gmail.com", "Asunto", "Cuerpo"));
-    }
-
-    @Test
-    void getInboxMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getInboxMessages(123, 10, 0));
-    }
-
-    @Test
-    void getSentMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getSentMessages(13, 10, 0));
+    void verifyToken_EmptyInput_ThrowsManagerException() {
+        assertThrows(Exception.class, () -> tokenManager.verifyToken(""));
     }
 }

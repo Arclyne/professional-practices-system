@@ -1,9 +1,8 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import java.sql.SQLException;
-
+import java.util.Map;
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -14,13 +13,10 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-public class MessageManagerTest {
+public class StartSessionManagerTest {
 
-    @Inject
-    private IDatabaseConnection dbConnection;
-
-    @Inject
-    private MessageManager messageManager;
+    @Inject private IDatabaseConnection dbConnection;
+    @Inject private StartSessionManager sessionManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -28,17 +24,8 @@ public class MessageManagerTest {
     }
 
     @Test
-    void sendMessage_ValidData_DoesNotThrow() {
-        assertDoesNotThrow(() -> messageManager.sendMessage(13, "angel24@gmail.com", "Asunto", "Cuerpo"));
-    }
-
-    @Test
-    void getInboxMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getInboxMessages(123, 10, 0));
-    }
-
-    @Test
-    void getSentMessages_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> messageManager.getSentMessages(13, 10, 0));
+    void handleActionConnectButton_InvalidCredentials_ThrowsManagerException() {
+        Map<String, String> creds = Map.of("Identifier", "bad@uv.mx", "Password", "wrong");
+        assertThrows(Exception.class, () -> sessionManager.handleActionConnectButton(creds));
     }
 }
