@@ -9,6 +9,7 @@ import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +34,15 @@ public class ProfessorManagerTest {
         p.setEmail("prof@uv.mx");
         p.setGender(Gender.MALE);
         assertNotNull(assertDoesNotThrow(() -> professorManager.registerNewProfessor(p)));
+    }
+
+    @Test
+    void getAllProfessors_ReturnsList() throws ManagerException {
+        assertNotNull(professorManager.getAllProfessors());
+    }
+
+    @Test
+    void inactivateMultipleProfessors_ValidList_DoesNotThrow() {
+        assertDoesNotThrow(() -> professorManager.inactivateMultipleProfessors(java.util.List.of(68)));
     }
 }
