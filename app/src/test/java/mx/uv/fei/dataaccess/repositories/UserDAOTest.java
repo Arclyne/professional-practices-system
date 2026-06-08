@@ -1,11 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -22,6 +16,8 @@ import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @StartEtiquetteTest
 @Profile("test")
@@ -147,7 +143,7 @@ public class UserDAOTest {
     @Test
     void verifyCredentialsByUserName_InvalidPassword_ReturnsFalse() throws DAOException {
         boolean result = userDAO.verifyCredentialsByUserName("12345", "wrongpass");
-        assertTrue(!result);
+        assertFalse(result);
     }
 
     @Test

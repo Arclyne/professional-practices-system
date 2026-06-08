@@ -4,13 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Representa una plantilla de documento oficial del sistema de prácticas profesionales.
- * Puede ser una Bitácora de Reporte Mensual o un Oficio oficial.
- * El cuerpo contiene tokens sustituibles como %NOMBRE_PRACTICANTE%.
- *
- * @author Sistema de Prácticas Profesionales UV-FEI
- */
+
 public class DocumentTemplate {
 
     private String templateId;
@@ -73,9 +67,6 @@ public class DocumentTemplate {
         this.createdAt = createdAt;
     }
 
-    /**
-     * Determina igualdad por Business Key: nombre de la plantilla y tipo de documento.
-     */
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;

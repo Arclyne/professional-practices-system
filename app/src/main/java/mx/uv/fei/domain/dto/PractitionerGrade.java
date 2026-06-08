@@ -3,14 +3,7 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Representa la calificación final que un profesor asigna a un practicante.
- * Contiene tanto la calificación tentativa calculada por el sistema (promedio
- * de reportes mensuales evaluados) como la calificación definitiva que el
- * profesor puede modificar antes de confirmar.
- *
- * @author Sistema de Prácticas Profesionales UV-FEI
- */
+
 public class PractitionerGrade {
 
     private int gradeId;
@@ -80,9 +73,6 @@ public class PractitionerGrade {
         this.gradedAt = gradedAt;
     }
 
-    /**
-     * Business Key: un practicante tiene una calificación por periodo.
-     */
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
