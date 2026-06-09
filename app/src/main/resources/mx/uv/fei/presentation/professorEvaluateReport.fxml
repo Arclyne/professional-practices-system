@@ -12,47 +12,84 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.ProfessorEvaluateReportController">
-    <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <padding>
-            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
-        </padding>
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" stylesheets="@../styles.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.ProfessorEvaluateReportController">
 
-        <VBox spacing="10.0" prefWidth="350.0">
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Button mnemonicParsing="false" onAction="#handleReturnAction" styleClass="secondary-button" text="← Volver al Menú" />
+    <HBox spacing="0.0"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+        <!-- ── Panel izquierdo: lista de reportes ── -->
+        <VBox spacing="10.0" prefWidth="380.0"
+              style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
+            <padding><Insets bottom="24.0" left="20.0" right="20.0" top="24.0"/></padding>
+
+            <HBox alignment="CENTER_LEFT">
+                <Button mnemonicParsing="false" onAction="#handleReturnAction"
+                        styleClass="secondary-button" text="← Volver al Menú"/>
             </HBox>
-            <Label styleClass="form-title" text="Reportes Recibidos" />
-            <Label text="Selecciona un reporte entregado por los alumnos para evaluarlo." textFill="#6b7280" wrapText="true" />
 
-            <ListView fx:id="reportsListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-background-radius: 5px; -fx-border-radius: 5px;" />
+            <Label styleClass="form-title" text="Reportes Entregados"/>
+            <Label textFill="#6b7280" wrapText="true"
+                   text="Todos los reportes enviados por los practicantes: Mensuales, Intermedios (210h) y Finales (420h)."/>
+
+            <!-- Leyenda -->
+            <HBox spacing="16.0">
+                <Label text="✓ Evaluado" style="-fx-text-fill: #10B981; -fx-font-size: 11px;"/>
+                <Label text="⏳ Pendiente" style="-fx-text-fill: #F59E0B; -fx-font-size: 11px;"/>
+            </HBox>
+
+            <ListView fx:id="reportsListView" VBox.vgrow="ALWAYS"
+                      style="-fx-border-color: #E5E7EB; -fx-background-radius: 5px; -fx-border-radius: 5px;"/>
         </VBox>
 
-        <Separator orientation="VERTICAL" />
+        <Separator orientation="VERTICAL"/>
 
-        <VBox fx:id="evaluationContainer" spacing="15.0" HBox.hgrow="ALWAYS" style="-fx-background-color: #F9FAFB; -fx-padding: 25px; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-background-radius: 8px;">
-            <Label styleClass="form-title" text="Panel de Evaluación" />
+        <!-- ── Panel derecho: evaluación ── -->
+        <VBox fx:id="evaluationContainer" spacing="14.0" HBox.hgrow="ALWAYS"
+              visible="false" managed="false">
+            <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/></padding>
 
-            <Label fx:id="labelReportInfo" text="Info del reporte..." style="-fx-font-size: 14px; -fx-text-fill: #374151; -fx-background-color: #FFFFFF; -fx-padding: 10px; -fx-border-color: #D1D5DB; -fx-border-radius: 5px;" maxWidth="1.7976931348623157E308" />
+            <Label styleClass="form-title" text="Panel de Evaluación"/>
 
-            <Button fx:id="btnViewPdf" mnemonicParsing="false" onAction="#handleViewPdfAction" text="📄 Abrir PDF Firmado (Evidencia)" style="-fx-background-color: transparent; -fx-border-color: #3B82F6; -fx-text-fill: #3B82F6; -fx-border-radius: 5px; -fx-cursor: hand;" />
+            <!-- Tipo de reporte (badge) -->
+            <Label fx:id="labelReportKind"
+                   text="Tipo de reporte: —"
+                   style="-fx-background-color: #DBEAFE; -fx-text-fill: #1D4ED8; -fx-font-weight: bold; -fx-background-radius: 20px; -fx-padding: 4 12 4 12; -fx-font-size: 12px;"/>
 
-            <Separator />
+            <!-- Info del reporte -->
+            <Label fx:id="labelReportInfo" text="..."
+                   style="-fx-font-size: 13px; -fx-text-fill: #374151; -fx-background-color: #FFFFFF; -fx-padding: 10px; -fx-border-color: #D1D5DB; -fx-border-radius: 5px;"
+                   maxWidth="1.7976931348623157E308" wrapText="true"/>
 
+            <!-- Botón ver PDF -->
+            <Button fx:id="btnViewPdf" mnemonicParsing="false" onAction="#handleViewPdfAction"
+                    text="📄 Abrir PDF Firmado (Evidencia)"
+                    style="-fx-background-color: transparent; -fx-border-color: #3B82F6; -fx-text-fill: #3B82F6; -fx-border-radius: 5px; -fx-cursor: hand;"/>
+
+            <Separator/>
+
+            <!-- Calificación -->
             <VBox spacing="5.0">
-                <Label text="Calificación (0 a 10) (*)" styleClass="field-label" />
-                <TextField fx:id="fieldGrade" promptText="Ej. 9.5" maxWidth="150.0" />
+                <Label text="Calificación (0.0 – 10.0) *" styleClass="field-label"/>
+                <TextField fx:id="fieldGrade" promptText="Ej. 9.5" maxWidth="150.0"/>
             </VBox>
 
+            <!-- Retroalimentación -->
             <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-                <Label text="Retroalimentación al Practicante (*)" styleClass="field-label" />
-                <TextArea fx:id="areaFeedback" promptText="Escribe tus comentarios, correcciones o felicitaciones aquí..." wrapText="true" VBox.vgrow="ALWAYS" />
+                <Label text="Retroalimentación al Practicante *" styleClass="field-label"/>
+                <TextArea fx:id="areaFeedback"
+                          promptText="Escribe tus comentarios, correcciones o felicitaciones aquí..."
+                          wrapText="true" VBox.vgrow="ALWAYS"/>
             </VBox>
 
-            <Region VBox.vgrow="ALWAYS" />
+            <Region VBox.vgrow="ALWAYS"/>
 
-            <Button fx:id="btnSaveEvaluation" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveEvaluationAction" styleClass="primary-button" text="Guardar Evaluación" style="-fx-background-color: #10B981;" />
+            <Button fx:id="btnSaveEvaluation" maxWidth="1.7976931348623157E308"
+                    mnemonicParsing="false" onAction="#handleSaveEvaluationAction"
+                    text="💾  Guardar Evaluación"
+                    style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 10 20 10 20;"/>
         </VBox>
-
     </HBox>
 </AnchorPane>

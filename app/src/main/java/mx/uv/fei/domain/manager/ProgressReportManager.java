@@ -8,6 +8,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
+import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
@@ -19,10 +20,10 @@ public class ProgressReportManager {
 
     private static final String MSG_INSUFFICIENT_HOURS_INTERMEDIATE =
             "El reporte intermedio requiere al menos 210 horas acumuladas. " +
-            "Horas actuales: %.1f";
+                    "Horas actuales: %.1f";
     private static final String MSG_INSUFFICIENT_HOURS_FINAL =
             "El reporte final requiere al menos 420 horas acumuladas. " +
-            "Horas actuales: %.1f";
+                    "Horas actuales: %.1f";
     private static final String MSG_ALREADY_EXISTS =
             "Ya existe un reporte de tipo '%s' para este practicante.";
     private static final String MSG_INSERT_ERROR =
@@ -33,22 +34,29 @@ public class ProgressReportManager {
             "No se pudo actualizar el reporte de avance.";
     private static final String MSG_NOT_FOUND =
             "No se encontró un reporte de tipo '%s' para este practicante.";
+    private static final String MSG_NO_PROJECT =
+            "No puedes generar reportes de avance sin tener un proyecto asignado.";
+    private static final String MSG_PROJECT_CHECK_ERROR =
+            "No se pudo verificar el estado de tu proyecto asignado.";
     private static final String MSG_INVALID_FILE =
             "El archivo firmado es obligatorio para enviar el reporte.";
 
     private final IProgressReportDAO progressReportDAO;
+    private final IPostulationDAO postulationDAO;
 
     @Inject
-    public ProgressReportManager(IProgressReportDAO progressReportDAO) {
+    public ProgressReportManager(IProgressReportDAO progressReportDAO, IPostulationDAO postulationDAO) {
         this.progressReportDAO = progressReportDAO;
+        this.postulationDAO = postulationDAO;
     }
-
 
     public ProgressReport generateProgressReport(
             int practitionerId,
             ProgressReportType reportType,
             Date periodStart,
             Date periodEnd) throws ManagerException {
+
+        validateHasAssignedProject(practitionerId);
 
         double accumulatedHours = getAccumulatedHours(practitionerId);
 
@@ -172,6 +180,7 @@ public class ProgressReportManager {
         }
     }
 
+
     public void evaluateProgressReport(
             int practitionerId,
             ProgressReportType reportType,
@@ -228,5 +237,16 @@ public class ProgressReportManager {
         }
 
         return reports;
+    }
+
+    private void validateHasAssignedProject(int practitionerId) throws ManagerException {
+        try {
+            boolean hasProject = postulationDAO.hasAssignedProject(practitionerId);
+            if (!hasProject) {
+                throw new ManagerException(MSG_NO_PROJECT);
+            }
+        } catch (DAOException exception) {
+            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, exception);
+        }
     }
 }
