@@ -14,7 +14,6 @@ import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-
 @Component
 public class MonthlyReportManager {
 
@@ -35,7 +34,6 @@ public class MonthlyReportManager {
         this.postulationDAO = postulationDAO;
     }
 
-
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
         validateHasAssignedProject(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
@@ -54,24 +52,22 @@ public class MonthlyReportManager {
                     }
                 }
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
-
 
     public List<MonthlyReport> getPractitionerReports(int practitionerId) throws ManagerException {
         List<MonthlyReport> reports;
 
         try {
             reports = reportDAO.getReportsByPractitioner(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return reports;
     }
-
 
     public void submitSignedReport(MonthlyReport report, String signedFileUrl) throws ManagerException {
         validateHasAssignedProject(report.getPractitionerId());
@@ -85,24 +81,22 @@ public class MonthlyReportManager {
             if (!isUpdated) {
                 throw new ManagerException("No se pudo actualizar el estado del reporte en la base de datos.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException("Error al enviar el reporte firmado. Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al enviar el reporte firmado. Causa: " + e.getMessage(), e);
         }
     }
-
 
     public List<MonthlyReport> getReportsForEvaluation() throws ManagerException {
         List<MonthlyReport> reports;
 
         try {
             reports = reportDAO.getSubmittedReports();
-        } catch (DAOException exception) {
-            throw new ManagerException("Error al cargar los reportes para evaluar.", exception);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al cargar los reportes para evaluar.", e);
         }
 
         return reports;
     }
-
 
     public void evaluateReport(int reportId, Double grade, String feedback) throws ManagerException {
         ReportValidator.validateReportEvaluation(grade, feedback);
@@ -121,17 +115,16 @@ public class MonthlyReportManager {
             if (!isUpdated) {
                 throw new ManagerException("No se pudo guardar la evaluación en la base de datos.");
             }
-        } catch (DAOException exception) {
-            throw new ManagerException("Ocurrió un error al intentar guardar la evaluación. Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al intentar guardar la evaluación. Causa: " + e.getMessage(), e);
         }
     }
-
 
     public boolean verifyHasAssignedProject(int practitionerId) throws ManagerException {
         try {
             return postulationDAO.hasAssignedProject(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, e);
         }
     }
 
@@ -141,8 +134,8 @@ public class MonthlyReportManager {
             if (!hasProject) {
                 throw new ManagerException(MSG_NO_PROJECT);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, e);
         }
     }
 }

@@ -27,7 +27,6 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-
 @Component
 public class GradePractitionerController implements Initializable {
 
@@ -113,8 +112,8 @@ public class GradePractitionerController implements Initializable {
             } else {
                 practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -140,7 +139,7 @@ public class GradePractitionerController implements Initializable {
             double tentativeGrade = gradingManager.previewTentativeGrade(practitionerId);
             labelTentativeGrade.setText(
                     String.format("Calificación tentativa del sistema: %.2f / 10.0", tentativeGrade));
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             labelTentativeGrade.setText("No se pudo calcular la calificación tentativa.");
         }
     }
@@ -155,8 +154,8 @@ public class GradePractitionerController implements Initializable {
                 labelAlreadyGraded.setManaged(true);
                 fieldFinalGrade.setDisable(true);
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -186,10 +185,10 @@ public class GradePractitionerController implements Initializable {
                     AlertType.INFORMATION);
 
             loadGradePanelForPractitioner(selectedPractitioner);
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException e) {
             Controller.showAlert(MSG_INVALID_FORMAT, MSG_NUMBER_FORMAT, AlertType.WARNING);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error al Guardar", exception.getMessage(), AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Guardar", e.getMessage(), AlertType.WARNING);
         }
     }
 
@@ -219,10 +218,10 @@ public class GradePractitionerController implements Initializable {
                     AlertType.INFORMATION);
 
             loadGradePanelForPractitioner(selectedPractitioner);
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException e) {
             Controller.showAlert(MSG_INVALID_FORMAT, MSG_NUMBER_FORMAT, AlertType.WARNING);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error al Actualizar", exception.getMessage(), AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.WARNING);
         }
     }
 

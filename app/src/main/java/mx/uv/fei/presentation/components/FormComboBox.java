@@ -1,6 +1,6 @@
 package mx.uv.fei.presentation.components;
 
-import javafx.beans.property.ObjectProperty; // Importación necesaria
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,8 +23,8 @@ public class FormComboBox extends VBox {
 
         try {
             fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

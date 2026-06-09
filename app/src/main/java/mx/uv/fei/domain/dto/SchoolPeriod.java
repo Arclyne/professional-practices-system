@@ -3,7 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
-
 public class SchoolPeriod {
 
     private int periodId;

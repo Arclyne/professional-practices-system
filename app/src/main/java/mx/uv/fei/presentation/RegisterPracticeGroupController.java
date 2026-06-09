@@ -87,8 +87,8 @@ public class RegisterPracticeGroupController implements Initializable {
                 professorMap.put(displayName, prof.getId());
             }
             comboBoxProfessor.setItems(options);
-        } catch (ManagerException exception) {
-            log.error("Failed to load professors", exception);
+        } catch (ManagerException e) {
+            log.error("Failed to load professors", e);
             Controller.showAlert(TITLE_LOAD_ERROR, MSG_LOAD_ERROR, AlertType.ERROR);
         }
     }
@@ -103,8 +103,8 @@ public class RegisterPracticeGroupController implements Initializable {
                 periodMap.put(period.getPeriodName(), period.getPeriodId());
             }
             comboBoxPeriod.setItems(options);
-        } catch (ManagerException exception) {
-            log.error("Failed to load periods", exception);
+        } catch (ManagerException e) {
+            log.error("Failed to load periods", e);
             Controller.showAlert(TITLE_LOAD_ERROR, MSG_LOAD_ERROR, AlertType.ERROR);
         }
     }
@@ -120,8 +120,8 @@ public class RegisterPracticeGroupController implements Initializable {
                 Controller.showAlert(TITLE_SUCCESS, MSG_SUCCESS, AlertType.INFORMATION);
                 store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
-            } catch (ManagerException exception) {
-                Controller.showAlert(TITLE_SAVE_ERROR, exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert(TITLE_SAVE_ERROR, e.getMessage(), AlertType.ERROR);
             }
         }
     }

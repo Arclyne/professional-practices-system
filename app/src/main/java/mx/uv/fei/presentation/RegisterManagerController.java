@@ -83,7 +83,6 @@ public class RegisterManagerController implements Initializable {
             managerToRegister.setEmail(fieldEmail.getText());
             managerToRegister.setStatus(UserStatus.ACTIVE);
 
-
             String selectedOrg = comboBoxOrganization.getValue();
 
             int orgId = (selectedOrg != null && organizationMap.containsKey(selectedOrg))

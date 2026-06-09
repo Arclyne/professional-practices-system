@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -24,7 +23,6 @@ import mx.uv.fei.domain.manager.ProfessorManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
-
 
 @Component
 public class ProfessorManagementController {
@@ -79,8 +77,8 @@ public class ProfessorManagementController {
                     displayItemsList.add(formattedDisplayString);
                 }
             }
-        } catch (ManagerException exception) {
-            Controller.showErrorAlert(LOAD_ERROR_TITLE, exception.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert(LOAD_ERROR_TITLE, e.getMessage());
         }
 
         professorsListView.setItems(displayItemsList);
@@ -103,8 +101,8 @@ public class ProfessorManagementController {
                 professorManager.inactivateMultipleProfessors(identifiersToInactivateList);
                 Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
                 loadActiveProfessors();
-            } catch (ManagerException exception) {
-                Controller.showErrorAlert(OPERATION_ERROR_TITLE, exception.getMessage());
+            } catch (ManagerException e) {
+                Controller.showErrorAlert(OPERATION_ERROR_TITLE, e.getMessage());
             }
         }
     }

@@ -5,7 +5,12 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -121,8 +126,8 @@ public class PractitionerReportGeneratorController implements Initializable {
             ObservableList<Activity> observableActivities = FXCollections.observableArrayList(freeActivities);
             freeActivitiesListView.setItems(observableActivities);
 
-        } catch (ManagerException exception) {
-            Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -170,10 +175,10 @@ public class PractitionerReportGeneratorController implements Initializable {
 
                 loadAvailableActivities();
 
-            } catch (NumberFormatException exception) {
+            } catch (NumberFormatException e) {
                 Controller.showAlert("Error de Formato", "Las horas deben ser un número.", AlertType.WARNING);
-            } catch (ManagerException exception) {
-                Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
             }
         }
     }
@@ -210,10 +215,10 @@ public class PractitionerReportGeneratorController implements Initializable {
             clearForm();
             loadAvailableActivities();
 
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException e) {
             Controller.showAlert("Formato Inválido", "El año debe ser un número.", AlertType.WARNING);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Datos Inválidos", exception.getMessage(), AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Datos Inválidos", e.getMessage(), AlertType.WARNING);
         }
     }
 

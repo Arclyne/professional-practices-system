@@ -1,12 +1,20 @@
 package mx.uv.fei.presentation;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -22,17 +30,32 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 @Component
 public class PractitionerSelfEvaluationController {
 
+    private static final String REPORT_TYPE_FINAL = "Final";
+    private static final String STATUS_REVIEWED   = "Revisada";
+    private static final String EVIDENCE_PENDING  = "pendiente";
+    private static final String PDF_INITIAL_NAME  = "PRAIS-03_Autoevaluacion.pdf";
+    private static final String MSG_SAVE_FIRST    = "Primero debe guardar su evaluación.";
+    private static final String MSG_ALREADY_SAVED = "La autoevaluación ya estaba registrada.";
+    private static final String MSG_SAVE_SUCCESS  = "Autoevaluación guardada. Ahora puede descargar el PDF para firmarlo.";
+
     @FXML private Label statusLabel;
-
-    @FXML private ComboBox<Integer> cbQ1, cbQ2, cbQ3, cbQ4, cbQ5, cbQ6, cbQ7, cbQ8, cbQ9, cbQ10;
-
+    @FXML private Label requirementLabel;
+    @FXML private VBox formContainer;
+    @FXML private VBox requirementContainer;
+    @FXML private Button goToReportButton;
+    @FXML private ComboBox<Integer> q1ComboBox;
+    @FXML private ComboBox<Integer> q2ComboBox;
+    @FXML private ComboBox<Integer> q3ComboBox;
+    @FXML private ComboBox<Integer> q4ComboBox;
+    @FXML private ComboBox<Integer> q5ComboBox;
+    @FXML private ComboBox<Integer> q6ComboBox;
+    @FXML private ComboBox<Integer> q7ComboBox;
+    @FXML private ComboBox<Integer> q8ComboBox;
+    @FXML private ComboBox<Integer> q9ComboBox;
+    @FXML private ComboBox<Integer> q10ComboBox;
     @FXML private Button saveButton;
     @FXML private Button downloadPdfButton;
     @FXML private Button uploadSignedButton;
@@ -45,7 +68,10 @@ public class PractitionerSelfEvaluationController {
     private ProgressReport finalReport;
 
     @Inject
-    public PractitionerSelfEvaluationController(SelfEvaluationManager selfEvaluationManager, ProgressReportManager progressReportManager, AppStore appStore) {
+    public PractitionerSelfEvaluationController(
+            SelfEvaluationManager selfEvaluationManager,
+            ProgressReportManager progressReportManager,
+            AppStore appStore) {
         this.selfEvaluationManager = selfEvaluationManager;
         this.progressReportManager = progressReportManager;
         this.appStore = appStore;
@@ -53,114 +79,181 @@ public class PractitionerSelfEvaluationController {
 
     @FXML
     public void initialize() {
-        ObservableList<Integer> options = FXCollections.observableArrayList(1, 2, 3, 4, 5);
-        ComboBox[] combos = {cbQ1, cbQ2, cbQ3, cbQ4, cbQ5, cbQ6, cbQ7, cbQ8, cbQ9, cbQ10};
-        for (ComboBox<Integer> cb : combos) {
-            cb.setItems(options);
-            cb.setValue(1);
-        }
+        ObservableList<Integer> scoreOptions = FXCollections.observableArrayList(1, 2, 3, 4, 5);
 
-        checkStatusAndLoad();
+        initializeComboBox(q1ComboBox, scoreOptions);
+        initializeComboBox(q2ComboBox, scoreOptions);
+        initializeComboBox(q3ComboBox, scoreOptions);
+        initializeComboBox(q4ComboBox, scoreOptions);
+        initializeComboBox(q5ComboBox, scoreOptions);
+        initializeComboBox(q6ComboBox, scoreOptions);
+        initializeComboBox(q7ComboBox, scoreOptions);
+        initializeComboBox(q8ComboBox, scoreOptions);
+        initializeComboBox(q9ComboBox, scoreOptions);
+        initializeComboBox(q10ComboBox, scoreOptions);
+
+        showFormContainer(false);
+        showRequirementContainer(false);
+
+        loadEvaluationState();
     }
 
-    private void checkStatusAndLoad() {
+    private void initializeComboBox(ComboBox<Integer> comboBox, ObservableList<Integer> options) {
+        comboBox.setItems(options);
+        comboBox.setValue(1);
+    }
+
+    private void showFormContainer(boolean visible) {
+        formContainer.setVisible(visible);
+        formContainer.setManaged(visible);
+    }
+
+    private void showRequirementContainer(boolean visible) {
+        requirementContainer.setVisible(visible);
+        requirementContainer.setManaged(visible);
+    }
+
+    private void loadEvaluationState() {
         try {
             User currentUser = appStore.getState().sessionState().currentUserInSession();
-            List<ProgressReport> reports = progressReportManager.getProgressReportsByPractitioner(currentUser.getId());
+            List<ProgressReport> reports = progressReportManager
+                    .getProgressReportsByPractitioner(currentUser.getId());
 
             finalReport = reports.stream()
-                    .filter(r -> "Final".equals(r.getReportType()))
+                    .filter(r -> REPORT_TYPE_FINAL.equals(r.getReportType()))
                     .findFirst()
                     .orElse(null);
 
-            if (finalReport == null) {
-                statusLabel.setText("Estado: Reporte Final no generado");
-                disableAllInteractions("Debes generar tu Reporte Final antes de realizar la autoevaluación.");
-                return;
-            }
-
-            String reportStatus = finalReport.getStatus();
-            if (!ReportStatus.SUBMITTED.getDatabaseValue().equals(reportStatus) &&
-                    !ReportStatus.EVALUATED.getDatabaseValue().equals(reportStatus)) {
-                statusLabel.setText("Estado: Reporte Final pendiente de firma/entrega");
-                disableAllInteractions("Debes entregar (subir firmado) tu Reporte Final antes de realizar la autoevaluación.");
-                return;
-            }
-
-            currentEvaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
-
-            if (currentEvaluation != null) {
-                cbQ1.setValue(currentEvaluation.getQ1()); cbQ2.setValue(currentEvaluation.getQ2());
-                cbQ3.setValue(currentEvaluation.getQ3()); cbQ4.setValue(currentEvaluation.getQ4());
-                cbQ5.setValue(currentEvaluation.getQ5()); cbQ6.setValue(currentEvaluation.getQ6());
-                cbQ7.setValue(currentEvaluation.getQ7()); cbQ8.setValue(currentEvaluation.getQ8());
-                cbQ9.setValue(currentEvaluation.getQ9()); cbQ10.setValue(currentEvaluation.getQ10());
-
-                statusLabel.setText("Estado de Autoevaluación: " + currentEvaluation.getStatus());
-
-                if ("Revisada".equals(currentEvaluation.getStatus())) {
-                    disableComboBoxes(true);
-                    saveButton.setDisable(true);
-                    uploadSignedButton.setDisable(true);
-                    downloadPdfButton.setDisable(false);
-                } else {
-                    disableComboBoxes(false);
-                    saveButton.setDisable(false);
-                    uploadSignedButton.setDisable(false);
-                    downloadPdfButton.setDisable(false);
-                }
-            } else {
-                statusLabel.setText("Estado: Nueva Autoevaluación habilitada");
-                disableComboBoxes(false);
-                saveButton.setDisable(false);
-                uploadSignedButton.setDisable(true);
-                downloadPdfButton.setDisable(true);
-            }
-
+            applyStateForFinalReport();
         } catch (ManagerException e) {
-            Controller.showAlert("Error", "No se pudo verificar el estado de la autoevaluación: " + e.getMessage(), AlertType.ERROR);
-            disableAllInteractions("Ocurrió un error al cargar la información.");
+            showBlockedState("Ocurrió un error al verificar los requisitos: " + e.getMessage(), false);
         }
     }
 
-    private void disableAllInteractions(String message) {
-        disableComboBoxes(true);
-        saveButton.setDisable(true);
-        downloadPdfButton.setDisable(true);
+    private void applyStateForFinalReport() throws ManagerException {
+        if (finalReport == null) {
+            showBlockedState(
+                    "Para realizar tu autoevaluación primero debes generar y entregar tu Reporte Final de Prácticas.",
+                    true);
+            statusLabel.setText("Requisito: Reporte Final no generado");
+        } else {
+            applyStateForReportStatus();
+        }
+    }
+
+    private void applyStateForReportStatus() throws ManagerException {
+        String reportStatus = finalReport.getStatus();
+        boolean isFinalDelivered = ReportStatus.SUBMITTED.getDatabaseValue().equals(reportStatus)
+                || ReportStatus.EVALUATED.getDatabaseValue().equals(reportStatus);
+
+        if (!isFinalDelivered) {
+            showBlockedState(
+                    "Tu Reporte Final está generado pero aún no ha sido entregado con firma. "
+                            + "Debes descargarlo, firmarlo y subirlo antes de continuar.",
+                    true);
+            statusLabel.setText("Requisito pendiente: entregar Reporte Final firmado");
+        } else {
+            currentEvaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
+            showFormContainer(true);
+            showRequirementContainer(false);
+            applyStateForEvaluation();
+        }
+    }
+
+    private void showBlockedState(String message, boolean showNavigationButton) {
+        showFormContainer(false);
+        showRequirementContainer(true);
+        requirementLabel.setText(message);
+        goToReportButton.setVisible(showNavigationButton);
+        goToReportButton.setManaged(showNavigationButton);
+    }
+
+    private void applyStateForEvaluation() {
+        if (currentEvaluation != null) {
+            populateComboBoxes();
+            statusLabel.setText("Estado de Autoevaluación: " + currentEvaluation.getStatus());
+            boolean isReviewed = STATUS_REVIEWED.equals(currentEvaluation.getStatus());
+            setControlsForExistingEvaluation(isReviewed);
+        } else {
+            statusLabel.setText("Autoevaluación habilitada — completa el formulario");
+            setControlsForNewEvaluation();
+        }
+    }
+
+    private void populateComboBoxes() {
+        q1ComboBox.setValue(currentEvaluation.getQ1());
+        q2ComboBox.setValue(currentEvaluation.getQ2());
+        q3ComboBox.setValue(currentEvaluation.getQ3());
+        q4ComboBox.setValue(currentEvaluation.getQ4());
+        q5ComboBox.setValue(currentEvaluation.getQ5());
+        q6ComboBox.setValue(currentEvaluation.getQ6());
+        q7ComboBox.setValue(currentEvaluation.getQ7());
+        q8ComboBox.setValue(currentEvaluation.getQ8());
+        q9ComboBox.setValue(currentEvaluation.getQ9());
+        q10ComboBox.setValue(currentEvaluation.getQ10());
+    }
+
+    private void setControlsForExistingEvaluation(boolean isReviewed) {
+        setComboBoxesDisabled(isReviewed);
+        saveButton.setDisable(isReviewed);
+        uploadSignedButton.setDisable(isReviewed);
+        downloadPdfButton.setDisable(false);
+    }
+
+    private void setControlsForNewEvaluation() {
+        setComboBoxesDisabled(false);
+        saveButton.setDisable(false);
         uploadSignedButton.setDisable(true);
-        if (message != null && !message.isEmpty()) {
-            Controller.showAlert("Acceso Restringido", message, AlertType.INFORMATION);
-        }
+        downloadPdfButton.setDisable(true);
     }
 
-    private void disableComboBoxes(boolean disable) {
-        ComboBox[] combos = {cbQ1, cbQ2, cbQ3, cbQ4, cbQ5, cbQ6, cbQ7, cbQ8, cbQ9, cbQ10};
-        for (ComboBox<Integer> cb : combos) cb.setDisable(disable);
+    private void setComboBoxesDisabled(boolean disabled) {
+        q1ComboBox.setDisable(disabled);
+        q2ComboBox.setDisable(disabled);
+        q3ComboBox.setDisable(disabled);
+        q4ComboBox.setDisable(disabled);
+        q5ComboBox.setDisable(disabled);
+        q6ComboBox.setDisable(disabled);
+        q7ComboBox.setDisable(disabled);
+        q8ComboBox.setDisable(disabled);
+        q9ComboBox.setDisable(disabled);
+        q10ComboBox.setDisable(disabled);
+    }
+
+    private SelfEvaluation buildEvaluationFromForm() {
+        SelfEvaluation evaluation = new SelfEvaluation();
+        evaluation.setPractitionerId(
+                appStore.getState().sessionState().currentUserInSession().getId());
+        evaluation.setReportId(finalReport.getReportId());
+        evaluation.setEvidence(EVIDENCE_PENDING);
+        evaluation.setQ1(q1ComboBox.getValue());
+        evaluation.setQ2(q2ComboBox.getValue());
+        evaluation.setQ3(q3ComboBox.getValue());
+        evaluation.setQ4(q4ComboBox.getValue());
+        evaluation.setQ5(q5ComboBox.getValue());
+        evaluation.setQ6(q6ComboBox.getValue());
+        evaluation.setQ7(q7ComboBox.getValue());
+        evaluation.setQ8(q8ComboBox.getValue());
+        evaluation.setQ9(q9ComboBox.getValue());
+        evaluation.setQ10(q10ComboBox.getValue());
+        return evaluation;
     }
 
     @FXML
     private void handleSaveEvaluation() {
-        if (finalReport == null) return;
+        if (finalReport == null) {
+            return;
+        }
 
         try {
             if (currentEvaluation == null) {
-                currentEvaluation = new SelfEvaluation();
-                currentEvaluation.setPractitionerId(appStore.getState().sessionState().currentUserInSession().getId());
-                currentEvaluation.setReportId(finalReport.getReportId());
-                currentEvaluation.setEvidence("pendiente");
-
-                currentEvaluation.setQ1(cbQ1.getValue()); currentEvaluation.setQ2(cbQ2.getValue());
-                currentEvaluation.setQ3(cbQ3.getValue()); currentEvaluation.setQ4(cbQ4.getValue());
-                currentEvaluation.setQ5(cbQ5.getValue()); currentEvaluation.setQ6(cbQ6.getValue());
-                currentEvaluation.setQ7(cbQ7.getValue()); currentEvaluation.setQ8(cbQ8.getValue());
-                currentEvaluation.setQ9(cbQ9.getValue()); currentEvaluation.setQ10(cbQ10.getValue());
-
+                currentEvaluation = buildEvaluationFromForm();
                 selfEvaluationManager.registerSelfEvaluation(currentEvaluation);
-                Controller.showAlert("Éxito", "Autoevaluación guardada correctamente. Ahora puede descargar el PDF para firmarlo.", AlertType.INFORMATION);
+                Controller.showAlert("Éxito", MSG_SAVE_SUCCESS, AlertType.INFORMATION);
             } else {
-                Controller.showAlert("Aviso", "La autoevaluación ya estaba registrada.", AlertType.INFORMATION);
+                Controller.showAlert("Aviso", MSG_ALREADY_SAVED, AlertType.INFORMATION);
             }
-            checkStatusAndLoad();
+            loadEvaluationState();
         } catch (ManagerException e) {
             Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
@@ -169,53 +262,67 @@ public class PractitionerSelfEvaluationController {
     @FXML
     private void handleDownloadPdf() {
         if (currentEvaluation == null || currentEvaluation.getSelfEvalId() == 0) {
-            Controller.showAlert("Aviso", "Primero debe Guardar su evaluación.", AlertType.WARNING);
+            Controller.showAlert("Aviso", MSG_SAVE_FIRST, AlertType.WARNING);
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Guardar PRAIS-03 Autoevaluación");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
-        fileChooser.setInitialFileName("PRAIS-03_Autoevaluacion.pdf");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+        fileChooser.setInitialFileName(PDF_INITIAL_NAME);
 
         Stage stage = (Stage) saveButton.getScene().getWindow();
         File file = fileChooser.showSaveDialog(stage);
 
         if (file != null) {
-            try {
-                User me = appStore.getState().sessionState().currentUserInSession();
-                SelfEvaluationPdfGenerator.generateSelfEvaluationPdf(currentEvaluation, me, file);
-                Controller.showAlert("Éxito", "PDF generado correctamente. Fírmelo y súbalo.", AlertType.INFORMATION);
-            } catch (IOException e) {
-                Controller.showAlert("Error", "No se pudo generar el archivo PDF.", AlertType.ERROR);
-            }
+            generateAndSavePdf(file);
+        }
+    }
+
+    private void generateAndSavePdf(File targetFile) {
+        try {
+            User currentUser = appStore.getState().sessionState().currentUserInSession();
+            SelfEvaluationPdfGenerator.generateSelfEvaluationPdf(currentEvaluation, currentUser, targetFile);
+            Controller.showAlert("Éxito", "PDF generado. Fírmelo y súbalo.", AlertType.INFORMATION);
+        } catch (IOException e) {
+            Controller.showAlert("Error", "No se pudo generar el archivo PDF.", AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleUploadSignedPdf() {
         if (currentEvaluation == null || currentEvaluation.getSelfEvalId() == 0) {
-            Controller.showAlert("Aviso", "Primero debe Guardar su evaluación.", AlertType.WARNING);
+            Controller.showAlert("Aviso", MSG_SAVE_FIRST, AlertType.WARNING);
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Subir PRAIS-03 Firmado");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
 
         Stage stage = (Stage) uploadSignedButton.getScene().getWindow();
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) {
-            try {
-                String fileUrl = file.getAbsolutePath();
-                selfEvaluationManager.submitEvidence(currentEvaluation.getSelfEvalId(), fileUrl);
-                Controller.showAlert("Éxito", "Evidencia subida correctamente.", AlertType.INFORMATION);
-                checkStatusAndLoad();
-            } catch (ManagerException e) {
-                Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
-            }
+            uploadEvidence(file.getAbsolutePath());
         }
+    }
+
+    private void uploadEvidence(String filePath) {
+        try {
+            selfEvaluationManager.submitEvidence(currentEvaluation.getSelfEvalId(), filePath);
+            Controller.showAlert("Éxito", "Evidencia subida correctamente.", AlertType.INFORMATION);
+            loadEvaluationState();
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleGoToReport() {
+        appStore.dispatch(new NavigationAction.GoToSection(AppSection.PROGRESS_REPORT_GENERATOR));
     }
 
     @FXML

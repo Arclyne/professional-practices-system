@@ -14,7 +14,8 @@ import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 import java.io.IOException;
 
 @StartEtiquette
-@Profile("local")
+@Profile("local2")
+
 public class MainApplication extends Application {
 
     private DependencyInjector systemDependencyInjector;
@@ -36,8 +37,8 @@ public class MainApplication extends Application {
             primaryApplicationStage.setTitle("Sistema de Gestion de Practicas Profesionales - FEI");
             primaryApplicationStage.show();
 
-        } catch (IOException inputOutputException) {
-            throw new IllegalStateException("Ocurrio un problema inesperado al iniciar el sistema. Por favor, intente mas tarde.", inputOutputException);
+        } catch (IOException e) {
+            throw new IllegalStateException("Ocurrio un problema inesperado al iniciar el sistema. Por favor, intente mas tarde.", e);
         }
     }
 }

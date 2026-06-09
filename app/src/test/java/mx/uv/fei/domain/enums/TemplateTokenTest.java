@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TemplateTokenTest {
 
-
     @Test
     void getPlaceholder_NombrePracticante_StartsWithPercent() {
         String placeholder = TemplateToken.NOMBRE_PRACTICANTE.getPlaceholder();
@@ -41,7 +40,6 @@ public class TemplateTokenTest {
         assertEquals("%MATRICULA%", placeholder);
     }
 
-
     @Test
     void getDescription_NombrePracticante_IsNotNull() {
         String description = TemplateToken.NOMBRE_PRACTICANTE.getDescription();
@@ -69,7 +67,6 @@ public class TemplateTokenTest {
 
         assertTrue(displayText.contains(TemplateToken.NOMBRE_PRACTICANTE.getDescription()));
     }
-
 
     @Test
     void allTokens_HaveNonBlankPlaceholder() {
@@ -103,8 +100,6 @@ public class TemplateTokenTest {
         assertTrue(allEnd);
     }
 
-
-
     @Test
     void allTokens_PlaceholdersAreUnique() {
         List<String> placeholders = Arrays.stream(TemplateToken.values())
@@ -114,7 +109,6 @@ public class TemplateTokenTest {
 
         assertEquals(TemplateToken.values().length, distinctCount);
     }
-
 
     @Test
     void allTokens_CountIsTen() {

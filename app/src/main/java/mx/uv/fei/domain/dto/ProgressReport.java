@@ -3,7 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
-
 public class ProgressReport {
 
     private int reportId;

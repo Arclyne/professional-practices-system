@@ -36,12 +36,10 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class TemplateGeneratorController {
 
-
     private static final String TYPE_BITACORA = "Bitácora de Reporte Mensual";
     private static final String TYPE_OFICIO   = "Oficio Oficial";
     private static final String TOKEN_FECHA   = "%FECHA_ACTUAL%";
     private static final String DATE_PATTERN  = "dd/MM/yyyy";
-
 
     private static final String MSG_SELECCION_REQUERIDA = "Selección requerida";
     private static final String MSG_CARGA_PRIMERO       = "Carga una plantilla primero.";
@@ -71,7 +69,6 @@ public class TemplateGeneratorController {
     private final TemplateManager templateManager;
     private final AppStore applicationStore;
 
-
     private DocumentTemplate currentlyEditingTemplate;
     private final List<Map<String, String>> batchQueue = new ArrayList<>();
     private final Map<String, TextField> tokenInputFields = new HashMap<>();
@@ -88,8 +85,6 @@ public class TemplateGeneratorController {
         setupUsageTab();
         refreshSavedTemplatesList();
     }
-
-
 
     private void setupEditorTab() {
         documentTypeComboBox.setItems(FXCollections.observableArrayList(TYPE_BITACORA, TYPE_OFICIO));
@@ -149,9 +144,9 @@ public class TemplateGeneratorController {
                     AlertType.INFORMATION);
             handleClearEditor(null);
             refreshSavedTemplatesList();
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             Controller.showAlert("Error al guardar",
-                    "No se pudo guardar la plantilla. " + exception.getMessage(),
+                    "No se pudo guardar la plantilla. " + e.getMessage(),
                     AlertType.ERROR);
         }
     }
@@ -198,9 +193,9 @@ public class TemplateGeneratorController {
         try {
             List<DocumentTemplate> allTemplates = templateManager.loadAllTemplates();
             savedTemplatesListView.setItems(FXCollections.observableArrayList(allTemplates));
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             Controller.showAlert("Error al cargar",
-                    "No se pudieron cargar las plantillas. " + exception.getMessage(),
+                    "No se pudieron cargar las plantillas. " + e.getMessage(),
                     AlertType.ERROR);
         }
     }
@@ -321,8 +316,8 @@ public class TemplateGeneratorController {
                     ? "El documento se guardó en:\n" + generatedPaths.getFirst()
                     : "Se generaron " + generatedPaths.size() + " documento(s) en app/documents/generated/";
             Controller.showAlert("Documento(s) generado(s)", message, AlertType.INFORMATION);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error al generar", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al generar", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -347,8 +342,8 @@ public class TemplateGeneratorController {
             refreshSavedTemplatesList();
             tokenValuesContainer.getChildren().clear();
             documentPreviewTextArea.clear();
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error al eliminar", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al eliminar", e.getMessage(), AlertType.ERROR);
         }
     }
 

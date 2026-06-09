@@ -1,6 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-
 public enum ProgressReportType {
 
     INTERMEDIO("Intermedio", 210),

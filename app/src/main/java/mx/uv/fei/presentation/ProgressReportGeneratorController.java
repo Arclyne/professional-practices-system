@@ -87,8 +87,8 @@ public class ProgressReportGeneratorController {
             if (!existing.isEmpty()) {
                 showExistingReport(existing.getFirst());
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -131,8 +131,8 @@ public class ProgressReportGeneratorController {
                     AlertType.INFORMATION);
 
             showExistingReport(generated);
-        } catch (ManagerException exception) {
-            Controller.showAlert("No se pudo generar", exception.getMessage(), AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("No se pudo generar", e.getMessage(), AlertType.WARNING);
         }
     }
 
@@ -183,8 +183,8 @@ public class ProgressReportGeneratorController {
 
                 Controller.showAlert("Reporte Enviado", "El reporte firmado fue subido correctamente.", AlertType.INFORMATION);
                 loadExistingReports();
-            } catch (ManagerException exception) {
-                Controller.showAlert("Error al Subir", exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
             }
         }
     }

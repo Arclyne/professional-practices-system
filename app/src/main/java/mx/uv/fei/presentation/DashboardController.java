@@ -92,7 +92,7 @@ public class DashboardController {
                 } else {
                     navigateToRegisterCoordinatorButton.setText("Registrar Coordinador");
                 }
-            } catch (ManagerException databaseQueryException) {
+            } catch (ManagerException e) {
                 navigateToRegisterCoordinatorButton.setText("Gestionar Coordinador");
             }
 
@@ -290,8 +290,8 @@ public class DashboardController {
         try {
             AppSection resolvedTargetNavigationSection = applicationDashboardManager.resolvePractitionerProjectsNavigation(currentAuthenticatedPractitioner.getId());
             applicationNavigationStore.dispatch(new NavigationAction.GoToSection(resolvedTargetNavigationSection));
-        } catch (ManagerException verificationException) {
-            Controller.showAlert("Acceso denegado", verificationException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Acceso denegado", e.getMessage(), AlertType.ERROR);
         }
     }
 

@@ -2,7 +2,6 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-
 public class Organization {
 
     private int idOrganization;

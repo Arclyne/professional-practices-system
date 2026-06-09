@@ -2,7 +2,9 @@ package mx.uv.fei.domain.common.validators;
 
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BaseValidatorTest {
 

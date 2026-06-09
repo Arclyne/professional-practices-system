@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.sql.SQLException;
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -36,7 +37,7 @@ public class PractitionerManagerTest {
         p.setIndigenousLanguage("Ninguna");
         p.setGrade(9.0);
 
-        assertNotNull(assertDoesNotThrow(() -> practitionerManager.registerNewPractitioner(p)));
+        assertDoesNotThrow(() -> practitionerManager.registerNewPractitioner(p));
     }
 
     @Test

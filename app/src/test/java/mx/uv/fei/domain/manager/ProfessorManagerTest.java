@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.sql.SQLException;
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
@@ -33,7 +34,7 @@ public class ProfessorManagerTest {
         p.setUserName("111222");
         p.setEmail("prof@uv.mx");
         p.setGender(Gender.MALE);
-        assertNotNull(assertDoesNotThrow(() -> professorManager.registerNewProfessor(p)));
+        assertDoesNotThrow(() -> professorManager.registerNewProfessor(p));
     }
 
     @Test

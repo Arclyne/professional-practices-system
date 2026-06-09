@@ -145,14 +145,14 @@ public class MainController {
 
             contentArea.getChildren().setAll(view);
 
-        } catch (IOException exception) {
-            logger.error("Error de E/S al cargar la vista FXML: " + fxmlPath, exception);
+        } catch (IOException e) {
+            logger.error("Error de E/S al cargar la vista FXML: " + fxmlPath, e);
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar el archivo visual. Detalle: " + exception.getMessage(),
+                    "No se pudo cargar el archivo visual. Detalle: " + e.getMessage(),
                     AlertType.ERROR);
 
-        } catch (IllegalArgumentException exception) {
-            logger.error("Ruta de vista inválida", exception);
+        } catch (IllegalArgumentException e) {
+            logger.error("Ruta de vista inválida", e);
             Controller.showAlert("Error de Interfaz",
                     "La ruta solicitada no existe en el sistema.",
                     AlertType.ERROR);

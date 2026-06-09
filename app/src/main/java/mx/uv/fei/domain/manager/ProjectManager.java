@@ -39,16 +39,16 @@ public class ProjectManager {
             if (!isProcessSuccessful) {
                 throw new ManagerException("No se pudieron inactivar los proyectos seleccionados.");
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar proyectos.", dataAccessException);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al inactivar proyectos.", e);
         }
     }
 
     public List<Project> getAllProjects() throws ManagerException {
         try {
             return projectDAO.getAllProjects();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de proyectos.", dataAccessException);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al obtener la lista de proyectos.", e);
         }
     }
 

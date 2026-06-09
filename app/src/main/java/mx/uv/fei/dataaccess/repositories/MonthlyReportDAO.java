@@ -69,7 +69,6 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
                 statement.setNull(5, java.sql.Types.DECIMAL);
             }
 
-            // ...
             statement.setString(6, report.getProfessorFeedback());
             statement.setString(7, report.getStatus());
             statement.setString(8, report.getSignedFileUrl());

@@ -14,7 +14,6 @@ import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-
 @Component
 public class ProgressReportManager {
 
@@ -72,8 +71,8 @@ public class ProgressReportManager {
                 throw new ManagerException(MSG_INSERT_ERROR);
             }
             report.setReportId(generatedId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_INSERT_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_INSERT_ERROR + " Causa: " + e.getMessage(), e);
         }
 
         return report;
@@ -84,8 +83,8 @@ public class ProgressReportManager {
 
         try {
             accumulatedHours = progressReportDAO.getTotalAccumulatedHours(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return accumulatedHours;
@@ -110,8 +109,8 @@ public class ProgressReportManager {
             if (existing != null) {
                 throw new ManagerException(String.format(MSG_ALREADY_EXISTS, reportType.getDatabaseValue()));
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
     }
 
@@ -133,7 +132,6 @@ public class ProgressReportManager {
 
         return report;
     }
-
 
     public void submitSignedProgressReport(
             int practitionerId,
@@ -158,8 +156,8 @@ public class ProgressReportManager {
         try {
             report = progressReportDAO
                     .getProgressReportByPractitionerAndType(practitionerId, reportType.getDatabaseValue());
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         if (report == null) {
@@ -175,11 +173,10 @@ public class ProgressReportManager {
             if (!isUpdated) {
                 throw new ManagerException(MSG_UPDATE_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
-
 
     public void evaluateProgressReport(
             int practitionerId,
@@ -220,8 +217,8 @@ public class ProgressReportManager {
 
         try {
             reports = progressReportDAO.getProgressReportsByPractitioner(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return reports;
@@ -232,8 +229,8 @@ public class ProgressReportManager {
 
         try {
             reports = progressReportDAO.getSubmittedProgressReports();
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return reports;
@@ -245,8 +242,8 @@ public class ProgressReportManager {
             if (!hasProject) {
                 throw new ManagerException(MSG_NO_PROJECT);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_PROJECT_CHECK_ERROR, e);
         }
     }
 }
