@@ -7,7 +7,6 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
-// import mx.uv.fei.domain.common.validators.Validator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 @Component
@@ -25,7 +24,6 @@ public class PracticeGroupManager {
     }
 
     public void registerNewPracticeGroup(PracticeGroup groupToRegister) throws ManagerException {
-        // Validator.validatePracticeGroupData(groupToRegister);
 
         try {
             int resultId = practiceGroupDAO.insertPracticeGroup(groupToRegister);
@@ -33,8 +31,8 @@ public class PracticeGroupManager {
             if (resultId <= 0) {
                 throw new ManagerException(MSG_REGISTER_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_CONNECTION_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_CONNECTION_ERROR, e);
         }
     }
 
@@ -42,8 +40,8 @@ public class PracticeGroupManager {
         List<PracticeGroup> groups;
         try {
             groups = practiceGroupDAO.getAllPracticeGroups();
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
         return groups;
     }

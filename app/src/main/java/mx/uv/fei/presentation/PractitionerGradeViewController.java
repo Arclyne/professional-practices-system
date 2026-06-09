@@ -53,9 +53,9 @@ public class PractitionerGradeViewController {
         try {
             double tentative = gradingManager.previewTentativeGrade(practitionerId);
             labelTentativeGrade.setText(String.format(GRADE_FORMAT, tentative));
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             labelTentativeGrade.setText("No disponible");
-            Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -75,8 +75,8 @@ public class PractitionerGradeViewController {
             if (hasFinalGrade) {
                 labelFinalGrade.setText(String.format(GRADE_FORMAT, grade.getFinalGrade()));
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
     }
 

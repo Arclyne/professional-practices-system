@@ -33,7 +33,6 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-
 @Component
 public class ProfessorEvaluateReportController implements Initializable {
 
@@ -119,9 +118,9 @@ public class ProfessorEvaluateReportController implements Initializable {
             for (MonthlyReport report : monthly) {
                 target.add(EvaluableReport.fromMonthlyReport(report));
             }
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             Controller.showAlert(MSG_LOAD_ERROR,
-                    "Reportes mensuales: " + exception.getMessage(), AlertType.WARNING);
+                    "Reportes mensuales: " + e.getMessage(), AlertType.WARNING);
         }
     }
 
@@ -131,9 +130,9 @@ public class ProfessorEvaluateReportController implements Initializable {
             for (ProgressReport report : progress) {
                 target.add(EvaluableReport.fromProgressReport(report));
             }
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             Controller.showAlert(MSG_LOAD_ERROR,
-                    "Reportes de avance: " + exception.getMessage(), AlertType.WARNING);
+                    "Reportes de avance: " + e.getMessage(), AlertType.WARNING);
         }
     }
 
@@ -195,10 +194,10 @@ public class ProfessorEvaluateReportController implements Initializable {
         try {
             double grade = Double.parseDouble(rawGrade);
             saveEvaluation(selectedReport, grade, feedback);
-        } catch (NumberFormatException exception) {
+        } catch (NumberFormatException e) {
             Controller.showAlert(MSG_INVALID_FORMAT, MSG_NUMBER_FORMAT, AlertType.WARNING);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Datos inválidos", exception.getMessage(), AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Datos inválidos", e.getMessage(), AlertType.WARNING);
         }
     }
 

@@ -29,8 +29,6 @@ public class DocumentTemplateTest {
         templateB.setCreatedByUserName("otro_usuario");
     }
 
-
-
     @Test
     void constructor_Default_GeneratesNonNullId() {
         DocumentTemplate template = new DocumentTemplate();
@@ -52,8 +50,6 @@ public class DocumentTemplateTest {
 
         assertNotEquals(first.getTemplateId(), second.getTemplateId());
     }
-
-
 
     @Test
     void equals_SameNameAndType_ReturnsTrue() {
@@ -86,7 +82,6 @@ public class DocumentTemplateTest {
 
         assertTrue(result);
     }
-
 
     @Test
     void equals_DifferentName_ReturnsFalse() {

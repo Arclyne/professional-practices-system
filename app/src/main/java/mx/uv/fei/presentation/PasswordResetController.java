@@ -49,8 +49,8 @@ public class PasswordResetController implements Initializable {
             Controller.showSuccessAlert("Activación Exitosa",
                     "Su contraseña ha sido guardada y su cuenta ahora está Activa.");
 
-        } catch (ManagerException managerException) {
-            Controller.showErrorAlert("Error de Validación", managerException.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("Error de Validación", e.getMessage());
         }
     }
 

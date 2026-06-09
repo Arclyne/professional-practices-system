@@ -1767,3 +1767,125 @@ Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'status' in 'field l
 2026-06-09 05:02:59 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
 2026-06-09 05:02:59 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
 2026-06-09 05:02:59 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 08:31:56 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 08:31:56 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 08:31:56 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 08:31:56 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 08:31:56 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 08:31:58 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:33)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:170)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:31)
+	... 19 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Access denied for user 'spp_app_user'@'localhost' to database 'professional-practices-system'
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:833)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:416)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:238)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:199)
+	at mx.uv.fei/mx.uv.fei.dataaccess.database.DatabaseConnection.getConnection(DatabaseConnection.java:22)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:43)
+	... 20 common frames omitted
+2026-06-09 08:32:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 08:32:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 08:32:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 08:32:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 08:32:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 08:33:19 [JavaFX Application Thread] ERROR m.u.f.d.manager.StartSessionManager - Error al insertar el administrador. Se ha hecho un rollback.
+mx.uv.fei.dataaccess.exceptions.DAOException: Error al insertar el administrador. Se ha hecho un rollback.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.insertAdministrator(AdministratorDAO.java:74)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.registerInitialAdmin(AdminManager.java:44)
+	at mx.uv.fei/mx.uv.fei.presentation.RegisterAdminController.handleRegisterButtonAction(RegisterAdminController.java:76)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:72)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at javafx.base@23.0.1/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:270)
+	at javafx.fxml@23.0.1/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:84)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$MethodHandler.invoke(FXMLLoader.java:1858)
+	at javafx.fxml@23.0.1/javafx.fxml.FXMLLoader$ControllerMethodEventHandler.handle(FXMLLoader.java:1731)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:49)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Node.fireEvent(Node.java:8963)
+	at javafx.controls@23.0.1/javafx.scene.control.Button.fire(Button.java:203)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.behavior.ButtonBehavior.mouseReleased(ButtonBehavior.java:207)
+	at javafx.controls@23.0.1/com.sun.javafx.scene.control.inputmap.InputMap.handle(InputMap.java:274)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler$NormalEventHandlerRecord.handleBubblingEvent(CompositeEventHandler.java:247)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:80)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@23.0.1/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base@23.0.1/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base@23.0.1/javafx.event.Event.fireEvent(Event.java:199)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$MouseHandler.process(Scene.java:3987)
+	at javafx.graphics@23.0.1/javafx.scene.Scene.processMouseEvent(Scene.java:1893)
+	at javafx.graphics@23.0.1/javafx.scene.Scene$ScenePeerListener.mouseEvent(Scene.java:2711)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:411)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:301)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleMouseEvent$2(GlassViewEventHandler.java:450)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:430)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleMouseEvent(GlassViewEventHandler.java:449)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.handleMouseEvent(View.java:560)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.View.notifyMouse(View.java:946)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al insertar el usuario en la transacción.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.UserDAO.insertUser(UserDAO.java:61)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.executeAdministratorTransaction(AdministratorDAO.java:88)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.insertAdministrator(AdministratorDAO.java:65)
+	... 56 common frames omitted
+Caused by: java.sql.SQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:109)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdateInternal(ClientPreparedStatement.java:1168)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdateInternal(ClientPreparedStatement.java:1103)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeLargeUpdate(ClientPreparedStatement.java:1450)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeUpdate(ClientPreparedStatement.java:1086)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.UserDAO.insertUser(UserDAO.java:53)
+	... 58 common frames omitted

@@ -90,7 +90,7 @@ public class CsvPractitionerParser implements IPractitionerParser {
 
         try {
             practitioner.setGender(Gender.fromDisplayValue(parsedGender));
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException e) {
             practitioner.setGender(Gender.OTHER);
         }
     }
@@ -113,7 +113,7 @@ public class CsvPractitionerParser implements IPractitionerParser {
 
             try {
                 groupId = Integer.parseInt(groupString);
-            } catch (NumberFormatException exception) {
+            } catch (NumberFormatException e) {
                 groupId = null;
             }
         }

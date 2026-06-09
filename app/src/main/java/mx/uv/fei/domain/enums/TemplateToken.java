@@ -1,6 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-
 public enum TemplateToken {
 
     NOMBRE_PRACTICANTE("%NOMBRE_PRACTICANTE%", "Nombre completo del practicante"),

@@ -11,7 +11,11 @@ import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GradingManagerTest {
 
@@ -29,8 +33,6 @@ public class GradingManagerTest {
         stubDAO = new StubPractitionerGradeDAO();
         gradingManager = new GradingManager(stubDAO);
     }
-
-
 
     @Test
     void registerGrade_ValidData_ReturnsGradeRecord() throws ManagerException {
@@ -92,8 +94,6 @@ public class GradingManagerTest {
         assertNotNull(result);
     }
 
-
-
     @Test
     void registerGrade_GradeAbove10_ThrowsManagerException() {
         assertThrows(ManagerException.class,
@@ -129,8 +129,6 @@ public class GradingManagerTest {
                 () -> gradingManager.registerGrade(PRACTITIONER_ID, PROFESSOR_ID, PERIOD, VALID_GRADE));
     }
 
-
-
     @Test
     void updateFinalGrade_ValidGrade_ExecutesWithoutException() throws ManagerException {
         stubDAO.setExistingGrade(true);
@@ -149,8 +147,6 @@ public class GradingManagerTest {
         assertEquals(0.0, stubDAO.getLastUpdatedFinalGrade());
     }
 
-
-
     @Test
     void updateFinalGrade_GradeAbove10_ThrowsManagerException() {
         stubDAO.setExistingGrade(true);
@@ -167,7 +163,6 @@ public class GradingManagerTest {
         assertThrows(ManagerException.class,
                 () -> gradingManager.updateFinalGrade(PRACTITIONER_ID, PERIOD, 8.0));
     }
-
 
     @Test
     void previewTentativeGrade_WithEvaluatedReports_ReturnsTentativeAverage() throws ManagerException {
@@ -186,7 +181,6 @@ public class GradingManagerTest {
 
         assertEquals(0.0, result);
     }
-
 
     @Test
     void getGradesByProfessor_WithGrades_ReturnsList() throws ManagerException {

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
+
 public class MessageDAOTest {
 
     private static final int SENDER_ID = 13;

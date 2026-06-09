@@ -94,7 +94,6 @@ public class PractitionerGradeTest {
         assertFalse(result);
     }
 
-
     @Test
     void hashCode_SamePractitionerAndPeriod_ProduceSameHash() {
         int hashA = gradeA.hashCode();

@@ -1,6 +1,8 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.sql.SQLException;
 import java.util.List;
 import mx.uv.fei.TestDatabaseSetup;

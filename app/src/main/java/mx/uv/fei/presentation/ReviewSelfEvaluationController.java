@@ -4,7 +4,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -36,7 +41,7 @@ public class ReviewSelfEvaluationController {
 
     @FXML private TableView<SelfEvaluationRow> tvEvaluations;
     @FXML private TableColumn<SelfEvaluationRow, String> tcStudent;
-    @FXML private TableColumn<SelfEvaluationRow, String> tcGroup; // Ahora mostrará la matrícula
+    @FXML private TableColumn<SelfEvaluationRow, String> tcGroup;
     @FXML private TableColumn<SelfEvaluationRow, String> tcStatus;
 
     @FXML private Label lblStudentName;
@@ -82,7 +87,6 @@ public class ReviewSelfEvaluationController {
             User currentUser = appStore.getState().sessionState().currentUserInSession();
             int academicId = currentUser.getId();
 
-            // Obtenemos los practicantes asignados al profesor activo
             List<Practitioner> students = practitionerManager.retrievePractitionersByProfessor(academicId);
             List<SelfEvaluationRow> rows = new ArrayList<>();
 
@@ -105,7 +109,6 @@ public class ReviewSelfEvaluationController {
 
                 String fullName = student.getName() + " " + student.getLastName();
 
-                // Pasamos la Matrícula (Enrollment) en el espacio del "GroupCode"
                 rows.add(new SelfEvaluationRow(fullName, student.getEnrollment(), status, student, evaluation));
             }
 

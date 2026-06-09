@@ -34,8 +34,8 @@ public class ActivityManager {
             if (resultId <= 0) {
                 throw new ManagerException(MSG_REGISTER_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
@@ -47,8 +47,8 @@ public class ActivityManager {
             if (!isUpdated) {
                 throw new ManagerException(MSG_UPDATE_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
@@ -56,8 +56,8 @@ public class ActivityManager {
         List<Activity> activities;
         try {
             activities = activityDAO.getActivitiesByPractitioner(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
         return activities;
     }
@@ -66,8 +66,8 @@ public class ActivityManager {
         List<Activity> activities;
         try {
             activities = activityDAO.getActivitiesByReport(reportId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_REPORT_ACT_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_REPORT_ACT_ERROR, e);
         }
         return activities;
     }

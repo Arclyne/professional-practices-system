@@ -84,8 +84,8 @@ public class CoordinatorPractitionerMenuController {
             List<Practitioner> practitioners = practitionerManager.retrieveAssignedPractitioners();
             ObservableList<Practitioner> observableList = FXCollections.observableArrayList(practitioners);
             practitionersListView.setItems(observableList);
-        } catch (ManagerException exception) {
-            Controller.showErrorAlert(ERROR_LOAD_TITLE, exception.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert(ERROR_LOAD_TITLE, e.getMessage());
         }
     }
 
@@ -124,8 +124,8 @@ public class CoordinatorPractitionerMenuController {
 
             Controller.showInfoAlert(SUCCESS_TITLE, String.format(SUCCESS_MESSAGE_FORMAT, finalOutputPath.toAbsolutePath()));
 
-        } catch (IOException exception) {
-            Controller.showErrorAlert(ERROR_GENERATE_TITLE, String.format(ERROR_GENERATE_MESSAGE_FORMAT, exception.getMessage()));
+        } catch (IOException e) {
+            Controller.showErrorAlert(ERROR_GENERATE_TITLE, String.format(ERROR_GENERATE_MESSAGE_FORMAT, e.getMessage()));
         }
     }
 

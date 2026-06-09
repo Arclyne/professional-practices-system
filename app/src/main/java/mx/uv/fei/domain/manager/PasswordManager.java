@@ -9,7 +9,7 @@ import mx.uv.fei.domain.common.validators.PasswordValidator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.SessionFacade; // <-- Tu nuevo Facade
+import mx.uv.fei.domain.statemachine.SessionFacade;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;

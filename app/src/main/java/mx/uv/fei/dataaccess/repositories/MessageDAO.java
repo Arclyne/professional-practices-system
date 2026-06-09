@@ -78,8 +78,8 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
 
             isInserted = statement.executeUpdate() > 0;
 
-        } catch (SQLException exception) {
-            throw new DAOException("Error al registrar a los participantes del mensaje.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al registrar a los participantes del mensaje.", e);
         }
 
         return isInserted;
@@ -87,7 +87,7 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
 
     @Override
     public List<Message> getMessagesByReceiver(int receiverId, int limit, int offset) throws DAOException {
-        List<Message> messagesList = new ArrayList<>(); // Nombres en plural para colecciones
+        List<Message> messagesList = new ArrayList<>();
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_RECEIVER)) {
@@ -98,7 +98,7 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Message message = mapResultSetToMessage(resultSet); // Centralización de mapeo (DRY)
+                    Message message = mapResultSetToMessage(resultSet);
                     messagesList.add(message);
                 }
             }
@@ -136,8 +136,8 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
                     userId = resultSet.getInt("user_id");
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al buscar al destinatario por correo electrónico.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al buscar al destinatario por correo electrónico.", e);
         }
 
         return userId;
@@ -160,8 +160,8 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
                     messagesList.add(message);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al consultar los mensajes enviados en la base de datos.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al consultar los mensajes enviados en la base de datos.", e);
         }
         return messagesList;
     }

@@ -47,8 +47,8 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
                     }
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_INSERT_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_INSERT_ERROR, e);
         }
 
         return generatedId;
@@ -66,8 +66,8 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
                 recoveredPeriod.setPeriodStatus(resultSet.getString("period_status"));
                 return recoveredPeriod;
             });
-        } catch (DAOException exception) {
-            throw new DAOException(MSG_RECOVER_ERROR, exception);
+        } catch (DAOException e) {
+            throw new DAOException(MSG_RECOVER_ERROR, e);
         }
     }
 }

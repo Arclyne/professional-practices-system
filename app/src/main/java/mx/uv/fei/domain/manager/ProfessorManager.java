@@ -55,16 +55,16 @@ public class ProfessorManager {
             if (!isProcessSuccessful) {
                 throw new ManagerException("No se pudieron inactivar los profesores seleccionados.");
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar profesores.", dataAccessException);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al inactivar profesores.", e);
         }
     }
 
     public List<Professor> getAllProfessors() throws ManagerException {
         try {
             return professorDAO.getAllProfessors();
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error al obtener la lista de profesores.", dataAccessException);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al obtener la lista de profesores.", e);
         }
     }
 }
