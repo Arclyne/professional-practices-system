@@ -11,115 +11,146 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-padding: 30;"
+<VBox spacing="0.0" style="-fx-background-color: #FFFFFF;"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="mx.uv.fei.presentation.PractitionerSelfEvaluationController">
 
-    <HBox alignment="CENTER_LEFT" spacing="20.0">
+    <HBox alignment="CENTER_LEFT" spacing="20.0"
+          style="-fx-padding: 20 30 15 30; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
         <Button mnemonicParsing="false" onAction="#handleReturnToMenu"
                 text="← Regresar"
-                style="-fx-background-color: #E0E0E0; -fx-cursor: hand;"/>
+                style="-fx-background-color: #E0E0E0; -fx-cursor: hand; -fx-background-radius: 6px;"/>
         <Label text="PRAIS-03: Autoevaluación Final">
             <font><Font name="System Bold" size="20.0"/></font>
         </Label>
     </HBox>
 
     <HBox alignment="CENTER_LEFT" spacing="10.0"
-          style="-fx-background-color: #F5F5F5; -fx-padding: 10;">
-        <Label fx:id="statusLabel" text="Estado: Verificando requisitos..."
-               textFill="#d32f2f"
-               style="-fx-padding: 0 0 0 10;">
-            <font><Font name="System Bold" size="13.0"/></font>
-        </Label>
+          style="-fx-background-color: #F5F5F5; -fx-padding: 12 30 12 30;">
+        <Label fx:id="statusLabel" text="Verificando requisitos..."
+               textFill="#374151"
+               style="-fx-font-size: 13px;"/>
     </HBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent;">
-        <VBox spacing="12.0" style="-fx-padding: 10;">
+    <VBox fx:id="requirementContainer" spacing="16.0"
+          style="-fx-background-color: #FEF3C7; -fx-border-color: #FCD34D; -fx-border-radius: 10px; -fx-padding: 24px; -fx-margin: 20px;"
+          visible="false" managed="false">
+        <padding><Insets top="20.0" right="30.0" bottom="20.0" left="30.0"/></padding>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="1. Mi participación en la Organización Vinculada fue productiva."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q1ComboBox" prefWidth="70"/>
-            </HBox>
+        <HBox spacing="12.0" alignment="CENTER_LEFT">
+            <Label text="⚠" style="-fx-font-size: 24px;"/>
+            <Label text="Requisito pendiente" style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #92400E;"/>
+        </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="2. Logré la aplicación de los conocimientos teórico-prácticos."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q2ComboBox" prefWidth="70"/>
-            </HBox>
+        <Label fx:id="requirementLabel"
+               text=""
+               textFill="#78350F"
+               wrapText="true"
+               style="-fx-font-size: 13px;"/>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="3. Me sentí seguro al realizar las actividades encomendadas."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q3ComboBox" prefWidth="70"/>
-            </HBox>
+        <Button fx:id="goToReportButton"
+                onAction="#handleGoToReport"
+                text="→ Ir a Reporte de Avance"
+                style="-fx-background-color: #D97706; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
+                visible="false" managed="false"/>
+    </VBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="4. Las actividades encomendadas despertaron mi interés."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q4ComboBox" prefWidth="70"/>
-            </HBox>
+    <VBox fx:id="formContainer" spacing="0.0" VBox.vgrow="ALWAYS"
+          visible="false" managed="false">
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="5. La Organización Vinculada me proporcionó información y facilidades."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q5ComboBox" prefWidth="70"/>
-            </HBox>
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                    style="-fx-background-color: transparent;">
+            <VBox spacing="12.0" style="-fx-padding: 20 30 10 30;">
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="6. La Organización Vinculada me dio a conocer las reglas internas."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q6ComboBox" prefWidth="70"/>
-            </HBox>
+                <Label text="Responde cada pregunta del 1 (Muy en desacuerdo) al 5 (Muy de acuerdo):"
+                       textFill="#6b7280" style="-fx-font-size: 12px; -fx-padding: 0 0 8 0;"/>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="7. El Responsable del Proyecto me orientó correctamente."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q7ComboBox" prefWidth="70"/>
-            </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="1. Mi participación en la Organización Vinculada fue productiva."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q1ComboBox" prefWidth="70"/>
+                </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="8. El Responsable del Proyecto realizó un seguimiento efectivo."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q8ComboBox" prefWidth="70"/>
-            </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="2. Logré la aplicación de los conocimientos teórico-prácticos."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q2ComboBox" prefWidth="70"/>
+                </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="9. El proyecto es congruente con la formación de mi carrera."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q9ComboBox" prefWidth="70"/>
-            </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="3. Me sentí seguro al realizar las actividades encomendadas."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q3ComboBox" prefWidth="70"/>
+                </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="15">
-                <Label prefWidth="550" wrapText="true"
-                       text="10. Considero que las prácticas son importantes para mi formación."/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox fx:id="q10ComboBox" prefWidth="70"/>
-            </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="4. Las actividades encomendadas despertaron mi interés."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q4ComboBox" prefWidth="70"/>
+                </HBox>
 
-        </VBox>
-    </ScrollPane>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="5. La Organización Vinculada me proporcionó información y facilidades."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q5ComboBox" prefWidth="70"/>
+                </HBox>
 
-    <HBox alignment="CENTER_RIGHT" spacing="15.0">
-        <Button fx:id="saveButton" onAction="#handleSaveEvaluation"
-                text="Guardar Respuestas"
-                style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;"/>
-        <Button fx:id="downloadPdfButton" onAction="#handleDownloadPdf"
-                text="Descargar PRAIS-03"
-                style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand;"/>
-        <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedPdf"
-                text="Subir PDF Firmado"
-                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;"/>
-    </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="6. La Organización Vinculada me dio a conocer las reglas internas."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q6ComboBox" prefWidth="70"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="7. El Responsable del Proyecto me orientó correctamente."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q7ComboBox" prefWidth="70"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="8. El Responsable del Proyecto realizó un seguimiento efectivo."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q8ComboBox" prefWidth="70"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="9. El proyecto es congruente con la formación de mi carrera."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q9ComboBox" prefWidth="70"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label prefWidth="550" wrapText="true"
+                           text="10. Considero que las prácticas son importantes para mi formación."/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="q10ComboBox" prefWidth="70"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0"
+              style="-fx-padding: 16 30 20 30; -fx-border-color: #E5E7EB; -fx-border-width: 1 0 0 0;">
+            <Button fx:id="saveButton" onAction="#handleSaveEvaluation"
+                    text="Guardar Respuestas"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8px; -fx-padding: 8 16 8 16;"/>
+            <Button fx:id="downloadPdfButton" onAction="#handleDownloadPdf"
+                    text="Descargar PRAIS-03"
+                    style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8px; -fx-padding: 8 16 8 16;"/>
+            <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedPdf"
+                    text="Subir PDF Firmado"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8px; -fx-padding: 8 16 8 16;"/>
+        </HBox>
+    </VBox>
+
 </VBox>
