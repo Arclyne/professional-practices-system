@@ -2,7 +2,6 @@ package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
@@ -50,7 +49,6 @@ class SelfEvaluationManagerTest {
     @Test
     void registerSelfEvaluation_ValidData_DoesNotThrow() {
         SelfEvaluation evaluation = buildValidEvaluation();
-
         assertDoesNotThrow(() -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -58,7 +56,6 @@ class SelfEvaluationManagerTest {
     void registerSelfEvaluation_ScoreAboveMaximum_ThrowsManagerException() {
         SelfEvaluation evaluation = buildValidEvaluation();
         evaluation.setQ1(6);
-
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -66,7 +63,6 @@ class SelfEvaluationManagerTest {
     void registerSelfEvaluation_ScoreBelowMinimum_ThrowsManagerException() {
         SelfEvaluation evaluation = buildValidEvaluation();
         evaluation.setQ3(0);
-
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -74,7 +70,6 @@ class SelfEvaluationManagerTest {
     void registerSelfEvaluation_NullEvidence_ThrowsManagerException() {
         SelfEvaluation evaluation = buildValidEvaluation();
         evaluation.setEvidence(null);
-
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -82,7 +77,6 @@ class SelfEvaluationManagerTest {
     void registerSelfEvaluation_InvalidPractitionerId_ThrowsManagerException() {
         SelfEvaluation evaluation = buildValidEvaluation();
         evaluation.setPractitionerId(0);
-
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -90,7 +84,6 @@ class SelfEvaluationManagerTest {
     void registerSelfEvaluation_BlankEvidence_ThrowsManagerException() {
         SelfEvaluation evaluation = buildValidEvaluation();
         evaluation.setEvidence("   ");
-
         assertThrows(ManagerException.class, () -> manager.registerSelfEvaluation(evaluation));
     }
 
@@ -120,16 +113,31 @@ class SelfEvaluationManagerTest {
     }
 
     @Test
-    void recoverSelfEvaluation_ExistingReportId_ReturnsEvaluation() throws ManagerException {
-        SelfEvaluation result = manager.recoverSelfEvaluation(1);
+    void recoverSelfEvaluation_ExistingReportId_ReturnsExpectedEvaluation() throws ManagerException {
+        SelfEvaluation expectedEvaluation = new SelfEvaluation();
+        expectedEvaluation.setSelfEvalId(1);
+        expectedEvaluation.setQ1(5);
+        expectedEvaluation.setQ2(5);
+        expectedEvaluation.setQ3(5);
+        expectedEvaluation.setQ4(5);
+        expectedEvaluation.setQ5(5);
+        expectedEvaluation.setQ6(5);
+        expectedEvaluation.setQ7(5);
+        expectedEvaluation.setQ8(5);
+        expectedEvaluation.setQ9(5);
+        expectedEvaluation.setQ10(5);
+        expectedEvaluation.setEvidence("http://pdf.url");
+        expectedEvaluation.setPractitionerId(123);
+        expectedEvaluation.setReportId(1);
+        expectedEvaluation.setStatus("Pendiente");
 
-        assertNotNull(result);
+        SelfEvaluation result = manager.recoverSelfEvaluation(1);
+        assertEquals(expectedEvaluation, result);
     }
 
     @Test
     void recoverSelfEvaluation_NonExistentReportId_ReturnsEmptyObject() throws ManagerException {
         SelfEvaluation result = manager.recoverSelfEvaluation(999);
-
         assertEquals(new SelfEvaluation(), result);
     }
 }
