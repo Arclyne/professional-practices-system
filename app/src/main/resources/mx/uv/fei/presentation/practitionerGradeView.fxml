@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" stylesheets="@../styles.css"
+<AnchorPane prefHeight="400.0" prefWidth="700.0" stylesheets="@../styles.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="mx.uv.fei.presentation.PractitionerGradeViewController">
 
@@ -22,35 +22,22 @@
                     styleClass="secondary-button" text="← Volver al Menú"/>
         </HBox>
 
-        <Label styleClass="form-title" text="Mi Calificación Final"/>
+        <Label styleClass="form-title" text="Mi Calificación"/>
         <Label fx:id="labelPeriod" textFill="#6b7280" style="-fx-font-size: 13px;"/>
 
         <Separator/>
 
-        <!-- Calificación tentativa del sistema -->
-        <VBox spacing="8.0" alignment="CENTER"
-              style="-fx-background-color: #F3F4F6; -fx-border-color: #D1D5DB; -fx-border-radius: 12px; -fx-padding: 24px;">
-            <Label text="Calificación tentativa del sistema"
-                   style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
-            <Label text="(promedio de tus reportes mensuales evaluados)"
-                   style="-fx-font-size: 11px; -fx-text-fill: #9CA3AF;"/>
-            <Label fx:id="labelTentativeGrade" text="—"
-                   style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
-        </VBox>
-
-        <!-- Calificación final del profesor (solo si ya existe) -->
         <VBox fx:id="finalGradeContainer" spacing="8.0" alignment="CENTER"
               style="-fx-background-color: #ECFDF5; -fx-border-color: #6EE7B7; -fx-border-radius: 12px; -fx-padding: 24px;">
-            <Label text="✅  Calificación definitiva del profesor"
+            <Label text="Tu calificación"
                    style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #065F46;"/>
             <Label fx:id="labelFinalGrade" text="—"
                    style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-text-fill: #059669;"/>
         </VBox>
 
-        <!-- Mensaje cuando aún no hay calificación definitiva -->
         <VBox fx:id="noGradeYetContainer" alignment="CENTER"
               style="-fx-background-color: #FFFBEB; -fx-border-color: #FCD34D; -fx-border-radius: 12px; -fx-padding: 24px;">
-            <Label text="⏳  El profesor aún no ha registrado tu calificación definitiva."
+            <Label text="⏳  El profesor aún no ha registrado tu calificación."
                    textFill="#92400E" wrapText="true" style="-fx-font-size: 14px;"/>
         </VBox>
 
