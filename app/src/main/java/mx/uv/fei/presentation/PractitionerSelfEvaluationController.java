@@ -11,6 +11,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -32,16 +33,19 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class PractitionerSelfEvaluationController {
 
-    private static final String REPORT_TYPE_FINAL  = "Final";
-    private static final String STATUS_REVIEWED    = "Revisada";
-    private static final String EVIDENCE_PENDING   = "pendiente";
-    private static final String PDF_INITIAL_NAME   = "PRAIS-03_Autoevaluacion.pdf";
-    private static final String MSG_SAVE_FIRST     = "Primero debe Guardar su evaluación.";
-    private static final String MSG_RESTRICTED     = "Acceso Restringido";
-    private static final String MSG_ALREADY_SAVED  = "La autoevaluación ya estaba registrada.";
-    private static final String MSG_SAVE_SUCCESS   = "Autoevaluación guardada correctamente. Ahora puede descargar el PDF para firmarlo.";
+    private static final String REPORT_TYPE_FINAL = "Final";
+    private static final String STATUS_REVIEWED   = "Revisada";
+    private static final String EVIDENCE_PENDING  = "pendiente";
+    private static final String PDF_INITIAL_NAME  = "PRAIS-03_Autoevaluacion.pdf";
+    private static final String MSG_SAVE_FIRST    = "Primero debe guardar su evaluación.";
+    private static final String MSG_ALREADY_SAVED = "La autoevaluación ya estaba registrada.";
+    private static final String MSG_SAVE_SUCCESS  = "Autoevaluación guardada. Ahora puede descargar el PDF para firmarlo.";
 
     @FXML private Label statusLabel;
+    @FXML private Label requirementLabel;
+    @FXML private VBox formContainer;
+    @FXML private VBox requirementContainer;
+    @FXML private Button goToReportButton;
     @FXML private ComboBox<Integer> q1ComboBox;
     @FXML private ComboBox<Integer> q2ComboBox;
     @FXML private ComboBox<Integer> q3ComboBox;
@@ -88,12 +92,25 @@ public class PractitionerSelfEvaluationController {
         initializeComboBox(q9ComboBox, scoreOptions);
         initializeComboBox(q10ComboBox, scoreOptions);
 
+        showFormContainer(false);
+        showRequirementContainer(false);
+
         loadEvaluationState();
     }
 
     private void initializeComboBox(ComboBox<Integer> comboBox, ObservableList<Integer> options) {
         comboBox.setItems(options);
         comboBox.setValue(1);
+    }
+
+    private void showFormContainer(boolean visible) {
+        formContainer.setVisible(visible);
+        formContainer.setManaged(visible);
+    }
+
+    private void showRequirementContainer(boolean visible) {
+        requirementContainer.setVisible(visible);
+        requirementContainer.setManaged(visible);
     }
 
     private void loadEvaluationState() {
@@ -109,16 +126,16 @@ public class PractitionerSelfEvaluationController {
 
             applyStateForFinalReport();
         } catch (ManagerException e) {
-            disableAllControls("Ocurrió un error al cargar la información.");
-            Controller.showAlert("Error", "No se pudo verificar el estado de la autoevaluación: "
-                    + e.getMessage(), AlertType.ERROR);
+            showBlockedState("Ocurrió un error al verificar los requisitos: " + e.getMessage(), false);
         }
     }
 
     private void applyStateForFinalReport() throws ManagerException {
         if (finalReport == null) {
-            statusLabel.setText("Estado: Reporte Final no generado");
-            disableAllControls("Debes generar tu Reporte Final antes de realizar la autoevaluación.");
+            showBlockedState(
+                    "Para realizar tu autoevaluación primero debes generar y entregar tu Reporte Final de Prácticas.",
+                    true);
+            statusLabel.setText("Requisito: Reporte Final no generado");
         } else {
             applyStateForReportStatus();
         }
@@ -126,16 +143,29 @@ public class PractitionerSelfEvaluationController {
 
     private void applyStateForReportStatus() throws ManagerException {
         String reportStatus = finalReport.getStatus();
-        boolean isDelivered = ReportStatus.SUBMITTED.getDatabaseValue().equals(reportStatus)
+        boolean isFinalDelivered = ReportStatus.SUBMITTED.getDatabaseValue().equals(reportStatus)
                 || ReportStatus.EVALUATED.getDatabaseValue().equals(reportStatus);
 
-        if (!isDelivered) {
-            statusLabel.setText("Estado: Reporte Final pendiente de firma/entrega");
-            disableAllControls("Debes entregar (subir firmado) tu Reporte Final antes de realizar la autoevaluación.");
+        if (!isFinalDelivered) {
+            showBlockedState(
+                    "Tu Reporte Final está generado pero aún no ha sido entregado con firma. "
+                            + "Debes descargarlo, firmarlo y subirlo antes de continuar.",
+                    true);
+            statusLabel.setText("Requisito pendiente: entregar Reporte Final firmado");
         } else {
             currentEvaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
+            showFormContainer(true);
+            showRequirementContainer(false);
             applyStateForEvaluation();
         }
+    }
+
+    private void showBlockedState(String message, boolean showNavigationButton) {
+        showFormContainer(false);
+        showRequirementContainer(true);
+        requirementLabel.setText(message);
+        goToReportButton.setVisible(showNavigationButton);
+        goToReportButton.setManaged(showNavigationButton);
     }
 
     private void applyStateForEvaluation() {
@@ -145,7 +175,7 @@ public class PractitionerSelfEvaluationController {
             boolean isReviewed = STATUS_REVIEWED.equals(currentEvaluation.getStatus());
             setControlsForExistingEvaluation(isReviewed);
         } else {
-            statusLabel.setText("Estado: Nueva Autoevaluación habilitada");
+            statusLabel.setText("Autoevaluación habilitada — completa el formulario");
             setControlsForNewEvaluation();
         }
     }
@@ -175,14 +205,6 @@ public class PractitionerSelfEvaluationController {
         saveButton.setDisable(false);
         uploadSignedButton.setDisable(true);
         downloadPdfButton.setDisable(true);
-    }
-
-    private void disableAllControls(String alertMessage) {
-        setComboBoxesDisabled(true);
-        saveButton.setDisable(true);
-        downloadPdfButton.setDisable(true);
-        uploadSignedButton.setDisable(true);
-        Controller.showAlert(MSG_RESTRICTED, alertMessage, AlertType.INFORMATION);
     }
 
     private void setComboBoxesDisabled(boolean disabled) {
@@ -262,7 +284,7 @@ public class PractitionerSelfEvaluationController {
         try {
             User currentUser = appStore.getState().sessionState().currentUserInSession();
             SelfEvaluationPdfGenerator.generateSelfEvaluationPdf(currentEvaluation, currentUser, targetFile);
-            Controller.showAlert("Éxito", "PDF generado correctamente. Fírmelo y súbalo.", AlertType.INFORMATION);
+            Controller.showAlert("Éxito", "PDF generado. Fírmelo y súbalo.", AlertType.INFORMATION);
         } catch (IOException e) {
             Controller.showAlert("Error", "No se pudo generar el archivo PDF.", AlertType.ERROR);
         }
@@ -296,6 +318,11 @@ public class PractitionerSelfEvaluationController {
         } catch (ManagerException e) {
             Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    @FXML
+    private void handleGoToReport() {
+        appStore.dispatch(new NavigationAction.GoToSection(AppSection.PROGRESS_REPORT_GENERATOR));
     }
 
     @FXML
