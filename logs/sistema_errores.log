@@ -1899,3 +1899,8 @@ Caused by: java.sql.SQLIntegrityConstraintViolationException: Cannot add or upda
 2026-06-09 08:52:18 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
 2026-06-09 08:52:18 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
 2026-06-09 08:52:18 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 09:06:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 09:06:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 09:06:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 09:06:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 09:06:52 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig

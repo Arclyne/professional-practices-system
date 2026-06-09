@@ -20,10 +20,9 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 @Component
 public class PractitionerGradeViewController {
 
-    private static final String PERIOD_ACTIVE  = "Junio-Diciembre 2026";
-    private static final String GRADE_FORMAT   = "%.2f / 10.0";
+    private static final String PERIOD_ACTIVE = "Junio-Diciembre 2026";
+    private static final String GRADE_FORMAT  = "%.2f / 10.0";
 
-    @FXML private Label labelTentativeGrade;
     @FXML private Label labelFinalGrade;
     @FXML private Label labelPeriod;
     @FXML private VBox finalGradeContainer;
@@ -45,34 +44,22 @@ public class PractitionerGradeViewController {
 
         labelPeriod.setText("Periodo: " + PERIOD_ACTIVE);
 
-        loadTentativeGrade(practitionerId);
-        loadFinalGrade(practitionerId);
+        loadGrade(practitionerId);
     }
 
-    private void loadTentativeGrade(int practitionerId) {
-        try {
-            double tentative = gradingManager.previewTentativeGrade(practitionerId);
-            labelTentativeGrade.setText(String.format(GRADE_FORMAT, tentative));
-        } catch (ManagerException e) {
-            labelTentativeGrade.setText("No disponible");
-            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
-        }
-    }
-
-    private void loadFinalGrade(int practitionerId) {
+    private void loadGrade(int practitionerId) {
         try {
             PractitionerGrade grade = gradingManager
                     .getGradeByPractitionerAndPeriod(practitionerId, PERIOD_ACTIVE);
 
-            boolean hasFinalGrade = grade != null && grade.getFinalGrade() != null;
+            boolean hasGrade = grade != null && grade.getFinalGrade() != null;
 
-            finalGradeContainer.setVisible(hasFinalGrade);
-            finalGradeContainer.setManaged(hasFinalGrade);
+            finalGradeContainer.setVisible(hasGrade);
+            finalGradeContainer.setManaged(hasGrade);
+            noGradeYetContainer.setVisible(!hasGrade);
+            noGradeYetContainer.setManaged(!hasGrade);
 
-            noGradeYetContainer.setVisible(!hasFinalGrade);
-            noGradeYetContainer.setManaged(!hasFinalGrade);
-
-            if (hasFinalGrade) {
+            if (hasGrade) {
                 labelFinalGrade.setText(String.format(GRADE_FORMAT, grade.getFinalGrade()));
             }
         } catch (ManagerException e) {
