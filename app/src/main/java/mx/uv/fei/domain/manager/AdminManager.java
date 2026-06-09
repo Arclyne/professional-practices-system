@@ -10,12 +10,15 @@ import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class AdminManager {
 
     private final IAdministratorDAO adminDAO;
     private final AppStore store;
+    private static final Logger logger = LoggerFactory.getLogger(StartSessionManager.class);
 
     @Inject
     public AdminManager(IAdministratorDAO adminDAO, AppStore store) {
@@ -45,8 +48,9 @@ public class AdminManager {
             }
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
 
-        } catch (DAOException exception) {
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", exception);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", e);
         }
     }
 }

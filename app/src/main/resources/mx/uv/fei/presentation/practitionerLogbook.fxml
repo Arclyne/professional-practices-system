@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -12,55 +12,55 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.ListView?>
-<AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerLogbookController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerLogbookController">
     <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
         </padding>
 
-        <VBox spacing="15.0" prefWidth="400.0" style="-fx-background-color: #F9FAFB; -fx-padding: 25px; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-background-radius: 8px;">
+        <VBox spacing="15.0" prefWidth="450.0" HBox.hgrow="ALWAYS">
 
             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Button mnemonicParsing="false" onAction="#handleReturnAction" styleClass="secondary-button" text="← Volver" />
+                <Button mnemonicParsing="false" onAction="#handleReturnAction" style="-fx-background-color: #E0E0E0; -fx-cursor: hand;" text="← Volver al Menú" />
             </HBox>
-
-            <Label styleClass="form-title" text="Nueva Actividad" />
-            <Label text="Registra tu avance diario." textFill="#6b7280" />
 
             <VBox spacing="5.0">
-                <Label text="Título de la Actividad (*)" styleClass="field-label" />
-                <TextField fx:id="fieldTitle" promptText="Ej. Desarrollo de DAO" />
+                <Label styleClass="form-title" text="Mi Bitácora de Actividades" style="-fx-font-weight: bold; -fx-font-size: 20px;"/>
+                <Label text="Registra y administra tus actividades diarias." textFill="#6b7280" />
             </VBox>
 
-            <HBox spacing="10.0">
-                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <Label text="Fecha (*)" styleClass="field-label" />
-                    <DatePicker fx:id="datePickerActivity" maxWidth="1.7976931348623157E308" promptText="Selecciona la fecha" />
-                </VBox>
-                <VBox spacing="5.0" prefWidth="100.0">
-                    <Label text="Horas" styleClass="field-label" />
-                    <TextField fx:id="fieldDuration" promptText="Ej. 4" />
-                </VBox>
-            </HBox>
+            <ListView fx:id="activitiesListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
 
-            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-                <Label text="Descripción (*)" styleClass="field-label" />
-                <TextArea fx:id="textAreaDescription" wrapText="true" promptText="Describe qué hiciste, qué problemas encontraste..." VBox.vgrow="ALWAYS" />
-            </VBox>
-
-            <Button fx:id="btnSaveActivity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveActivity" styleClass="primary-button" text="Guardar en Bitácora" />
+            <Button fx:id="btnEditSelected" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleEditSelectedAction" style="-fx-background-color: white; -fx-text-fill: #374151; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand; -fx-padding: 10;" text="✎ Editar Actividad Seleccionada" />
         </VBox>
 
         <Separator orientation="VERTICAL" />
 
-        <VBox spacing="15.0" HBox.hgrow="ALWAYS">
-            <Label styleClass="form-title" text="Mi Historial de Bitácora" />
-            <Label text="Aquí aparecen todas las actividades que has registrado. Las actividades libres pueden ser editadas." textFill="#6b7280" wrapText="true"/>
+        <VBox spacing="15.0" prefWidth="450.0" HBox.hgrow="ALWAYS" style="-fx-background-color: #F9FAFB; -fx-padding: 25px; -fx-border-color: #E5E7EB; -fx-border-radius: 8px;">
+            <Label styleClass="form-title" text="Detalles de la Actividad" style="-fx-font-weight: bold; -fx-font-size: 18px;" />
 
-            <ListView fx:id="activitiesListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
+            <VBox spacing="5.0">
+                <Label text="Título de la Actividad" styleClass="field-label" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="fieldTitle" promptText="Ej: Diseño de base de datos" style="-fx-padding: 8; -fx-background-radius: 4; -fx-border-radius: 4; -fx-border-color: #D1D5DB;" />
+            </VBox>
 
-            <Button fx:id="btnEditSelected" disable="true" mnemonicParsing="false" onAction="#handleEditSelectedAction" text="✏️ Editar Actividad Seleccionada" style="-fx-background-color: white; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
+            <HBox spacing="15.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="Fecha" styleClass="field-label" style="-fx-font-weight: bold;" />
+                    <DatePicker fx:id="datePickerActivity" maxWidth="1.7976931348623157E308" style="-fx-padding: 3; -fx-background-radius: 4; -fx-border-radius: 4; -fx-border-color: #D1D5DB;" />
+                </VBox>
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label text="Horas de duración" styleClass="field-label" style="-fx-font-weight: bold;" />
+                    <TextField fx:id="fieldDuration" promptText="Ej: 4" style="-fx-padding: 8; -fx-background-radius: 4; -fx-border-radius: 4; -fx-border-color: #D1D5DB;" />
+                </VBox>
+            </HBox>
+
+            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                <Label text="Descripción" styleClass="field-label" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="textAreaDescription" promptText="Describe lo que realizaste..." wrapText="true" VBox.vgrow="ALWAYS" style="-fx-background-radius: 4; -fx-border-radius: 4; -fx-border-color: #D1D5DB;" />
+            </VBox>
+
+            <Button fx:id="btnSaveActivity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSaveActivity" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 10;" text="Guardar en Bitácora" />
         </VBox>
 
     </HBox>
