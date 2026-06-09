@@ -49,6 +49,7 @@ public class ReviewSelfEvaluationController {
 
     @FXML private TextField tfQ1, tfQ2, tfQ3, tfQ4, tfQ5, tfQ6, tfQ7, tfQ8, tfQ9, tfQ10;
 
+    @FXML private Button btnViewEvidence;
     @FXML private Button btnDownloadEvidence;
     @FXML private Button btnApprove;
 
@@ -141,7 +142,12 @@ public class ReviewSelfEvaluationController {
         tfQ7.setText(String.valueOf(eval.getQ7())); tfQ8.setText(String.valueOf(eval.getQ8()));
         tfQ9.setText(String.valueOf(eval.getQ9())); tfQ10.setText(String.valueOf(eval.getQ10()));
 
-        btnDownloadEvidence.setDisable(eval.getEvidence() == null || eval.getEvidence().isEmpty() || "pendiente".equals(eval.getEvidence()));
+        boolean hasEvidence = eval.getEvidence() != null
+                && !eval.getEvidence().isEmpty()
+                && !"pendiente".equals(eval.getEvidence());
+
+        btnViewEvidence.setDisable(!hasEvidence);
+        btnDownloadEvidence.setDisable(!hasEvidence);
         btnApprove.setDisable("Revisada".equals(eval.getStatus()));
     }
 
@@ -153,8 +159,26 @@ public class ReviewSelfEvaluationController {
             tf.clear();
             tf.setEditable(false);
         }
+        btnViewEvidence.setDisable(true);
         btnDownloadEvidence.setDisable(true);
         btnApprove.setDisable(true);
+    }
+
+    @FXML
+    private void handleViewEvidence() {
+        if (selectedRow == null || selectedRow.getSelfEvaluation() == null) return;
+
+        String evidencePath = selectedRow.getSelfEvaluation().getEvidence();
+        if (evidencePath == null || evidencePath.isEmpty()) return;
+
+        try {
+            java.net.URI uri = new java.io.File(evidencePath).toURI();
+            java.awt.Desktop.getDesktop().browse(uri);
+        } catch (Exception e) {
+            Controller.showAlert("Error de Archivo",
+                    "No se pudo abrir la evidencia del alumno: " + e.getMessage(),
+                    AlertType.ERROR);
+        }
     }
 
     @FXML
