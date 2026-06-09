@@ -68,15 +68,18 @@ INSERT INTO project (project_id, project_name, description, participant_capacity
                                                                                                                                                  (2, 'Dummy 1',   'First dummy project',        3, 2, 'Active', '2026-01-01', '2026-06-01', 2),
                                                                                                                                                  (3, 'Dummy 2',   'Second dummy project',       1, 3, 'Active', '2026-01-01', '2026-06-01', 3);
 
--- 11. ACTIVIDADES — ActivityDAOTest necesita actividades para practitioner_id=123
+-- 11. ACTIVIDADES Y REPORTES MENSUALES
 INSERT INTO activity (activity_id, practitioner_id, title, description, activity_date, duration_hours) VALUES
                                                                                                            (1, 123, 'toRecover', 'Descripcion toRecover', '2026-05-01', 5),
                                                                                                            (2, 123, 'Dummy 1',   'Descripcion Dummy 1',   '2026-05-02', 4),
                                                                                                            (3, 123, 'Dummy 2',   'Descripcion Dummy 2',   '2026-05-03', 3);
 
-
-INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status)
-VALUES (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
+INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status) VALUES
+    (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
 
 INSERT INTO activity (activity_id, practitioner_id, title, description, activity_date, duration_hours) VALUES
     (4, 123, 'Actividad Junio Valida', 'Descripcion Junio', '2026-06-15', 5);
+
+-- 12. POSTULACIÓN DE PROYECTO — Simula que el practicante ya tiene proyecto
+INSERT INTO project_postulation (practitioner_id, project_id, postulation_status, priority_level)
+VALUES (123, 1, 'Assigned', 1);
