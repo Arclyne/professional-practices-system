@@ -35,8 +35,12 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+
 @Component
 public class PractitionerReportsListController implements Initializable {
+
+    private static final String MSG_PDF_OPEN_ERROR  = "No se pudo abrir el visor de PDF.";
+    private static final String MSG_LINK_OPEN_ERROR = "No se pudo abrir el archivo.";
 
     private final MonthlyReportManager reportManager;
     private final ActivityManager activityManager;
@@ -45,7 +49,6 @@ public class PractitionerReportsListController implements Initializable {
     private final AppStore store;
 
     @FXML private ListView<MonthlyReport> reportsListView;
-
     @FXML private VBox reportDetailsContainer;
     @FXML private Label detailTitle;
     @FXML private Label detailPeriod;
@@ -55,8 +58,10 @@ public class PractitionerReportsListController implements Initializable {
     @FXML private Button btnDownloadPdf;
     @FXML private Button btnUploadPdf;
     @FXML private Button btnViewSignedPdf;
+    @FXML private Button btnCreateNewReport;
+    @FXML private Label labelNoProject;
 
-    private MonthlyReport selectedReport = null;
+    private MonthlyReport selectedReport;
 
     @Inject
     public PractitionerReportsListController(
@@ -64,8 +69,7 @@ public class PractitionerReportsListController implements Initializable {
             ActivityManager activityManager,
             ReportPdfGenerator pdfGenerator,
             CloudStorageManager cloudStorageManager,
-            AppStore store
-    ) {
+            AppStore store) {
         this.reportManager = reportManager;
         this.activityManager = activityManager;
         this.pdfGenerator = pdfGenerator;
@@ -76,8 +80,36 @@ public class PractitionerReportsListController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         reportDetailsContainer.setVisible(false);
-        configureListView();
-        loadReportsList();
+        labelNoProject.setVisible(false);
+        labelNoProject.setManaged(false);
+
+        User currentUser = store.getState().sessionState().currentUserInSession();
+        int practitionerId = currentUser != null ? currentUser.getId() : 0;
+
+        boolean hasProject = checkAndEnforceProjectAssignment(practitionerId);
+
+        if (hasProject) {
+            configureListView();
+            loadReportsList(practitionerId);
+        }
+    }
+
+    private boolean checkAndEnforceProjectAssignment(int practitionerId) {
+        boolean hasProject = false;
+
+        try {
+            hasProject = reportManager.verifyHasAssignedProject(practitionerId);
+        } catch (ManagerException exception) {
+            Controller.showAlert("Error de verificación", exception.getMessage(), AlertType.ERROR);
+        }
+
+        if (!hasProject) {
+            labelNoProject.setVisible(true);
+            labelNoProject.setManaged(true);
+            btnCreateNewReport.setDisable(true);
+        }
+
+        return hasProject;
     }
 
     private void configureListView() {
@@ -88,120 +120,126 @@ public class PractitionerReportsListController implements Initializable {
                 if (empty || report == null) {
                     setText(null);
                 } else {
-                    setText("Reporte de " + report.getMonthName() + " " + report.getYear() + "\nEstado: " + report.getStatus());
+                    setText("Reporte de " + report.getMonthName() + " " + report.getYear()
+                            + "\nEstado: " + report.getStatus());
                 }
             }
         });
 
-        reportsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                showReportDetails(newSelection);
-            }
-        });
+        reportsListView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        showReportDetails(newValue);
+                    }
+                }
+        );
     }
 
-    private void loadReportsList() {
+    private void loadReportsList(int practitionerId) {
         try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-            int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
-
             List<MonthlyReport> reports = reportManager.getPractitionerReports(practitionerId);
             ObservableList<MonthlyReport> observableReports = FXCollections.observableArrayList(reports);
             reportsListView.setItems(observableReports);
-
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        } catch (ManagerException exception) {
+            Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
         }
     }
 
     private void showReportDetails(MonthlyReport report) {
-        this.selectedReport = report;
+        selectedReport = report;
         reportDetailsContainer.setVisible(true);
 
         detailTitle.setText("Reporte de " + report.getMonthName() + " " + report.getYear());
         detailPeriod.setText("Periodo: " + report.getStartDate() + " al " + report.getEndDate());
         detailStatus.setText("Estado: " + report.getStatus());
 
-        if (report.getGrade() != null) {
+        boolean hasGrade = report.getGrade() != null;
+        detailGrade.setVisible(hasGrade);
+        detailGrade.setManaged(hasGrade);
+        if (hasGrade) {
             detailGrade.setText("Calificación: " + report.getGrade());
-            detailGrade.setVisible(true); detailGrade.setManaged(true);
-        } else {
-            detailGrade.setVisible(false); detailGrade.setManaged(false);
         }
 
-        if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().trim().isEmpty()) {
-            detailFeedback.setText(report.getProfessorFeedback());
-        } else {
-            detailFeedback.setText("El profesor aún no ha emitido comentarios para este reporte.");
-        }
+        boolean hasFeedback = report.getProfessorFeedback() != null
+                && !report.getProfessorFeedback().trim().isEmpty();
+        detailFeedback.setText(hasFeedback
+                ? report.getProfessorFeedback()
+                : "El profesor aún no ha emitido comentarios para este reporte.");
 
-        btnDownloadPdf.setVisible(false); btnDownloadPdf.setManaged(false);
-        btnUploadPdf.setVisible(false); btnUploadPdf.setManaged(false);
-        btnViewSignedPdf.setVisible(false); btnViewSignedPdf.setManaged(false);
+        boolean isPending = ReportStatus.PENDING.getDatabaseValue()
+                .equalsIgnoreCase(report.getStatus());
 
-        if (ReportStatus.PENDING.getDatabaseValue().equalsIgnoreCase(report.getStatus())) {
-            btnDownloadPdf.setVisible(true); btnDownloadPdf.setManaged(true);
-            btnUploadPdf.setVisible(true); btnUploadPdf.setManaged(true);
-        } else {
-            btnViewSignedPdf.setVisible(true); btnViewSignedPdf.setManaged(true);
-        }
+        btnDownloadPdf.setVisible(isPending);
+        btnDownloadPdf.setManaged(isPending);
+        btnUploadPdf.setVisible(isPending);
+        btnUploadPdf.setManaged(isPending);
+        btnViewSignedPdf.setVisible(!isPending);
+        btnViewSignedPdf.setManaged(!isPending);
     }
 
     @FXML
     private void handleDownloadPdfAction(ActionEvent event) {
-        if (selectedReport != null) {
-            try {
-                User currentPractitioner = store.getState().sessionState().currentUserInSession();
-                List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
-                String pdfPath = pdfGenerator.generatePdf(selectedReport, currentPractitioner, reportActivities);
+        if (selectedReport == null) {
+            return;
+        }
 
-                File generatedFile = new File(pdfPath);
-                if (generatedFile.exists()) {
-                    java.awt.Desktop.getDesktop().open(generatedFile);
-                    Controller.showAlert("PDF Generado", "El reporte se ha guardado en Descargas.", AlertType.INFORMATION);
-                }
-            } catch (ManagerException e) {
-                Controller.showAlert("Error de Generación", e.getMessage(), AlertType.ERROR);
-            } catch (Exception e) {
-                Controller.showAlert("Error de Sistema", "No se pudo abrir el visor de PDF.", AlertType.ERROR);
+        try {
+            User currentPractitioner = store.getState().sessionState().currentUserInSession();
+            List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
+            String pdfPath = pdfGenerator.generatePdf(selectedReport, currentPractitioner, reportActivities);
+
+            File generatedFile = new File(pdfPath);
+            if (generatedFile.exists()) {
+                java.awt.Desktop.getDesktop().open(generatedFile);
+                Controller.showAlert("PDF Generado", "El reporte se ha guardado en Descargas.", AlertType.INFORMATION);
             }
+        } catch (ManagerException exception) {
+            Controller.showAlert("Error de Generación", exception.getMessage(), AlertType.ERROR);
+        } catch (Exception exception) {
+            Controller.showAlert("Error de Sistema", MSG_PDF_OPEN_ERROR, AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleUploadSignedPdfAction(ActionEvent event) {
-        if (selectedReport != null) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Seleccionar Reporte Firmado");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
+        if (selectedReport == null) {
+            return;
+        }
 
-            File selectedFile = fileChooser.showOpenDialog(reportsListView.getScene().getWindow());
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar Reporte Firmado");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
 
-            if (selectedFile != null) {
-                try {
-                    String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
-                    reportManager.submitSignedReport(selectedReport, fileUrl);
+        File selectedFile = fileChooser.showOpenDialog(reportsListView.getScene().getWindow());
 
-                    Controller.showAlert("Reporte Enviado", "Documento subido exitosamente.", AlertType.INFORMATION);
+        if (selectedFile != null) {
+            try {
+                String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
+                reportManager.submitSignedReport(selectedReport, fileUrl);
 
-                    loadReportsList();
-                    showReportDetails(selectedReport);
+                Controller.showAlert("Reporte Enviado", "Documento subido exitosamente.", AlertType.INFORMATION);
 
-                } catch (ManagerException e) {
-                    Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
-                }
+                User currentUser = store.getState().sessionState().currentUserInSession();
+                int practitionerId = currentUser != null ? currentUser.getId() : 0;
+                loadReportsList(practitionerId);
+                showReportDetails(selectedReport);
+            } catch (ManagerException exception) {
+                Controller.showAlert("Error al Subir", exception.getMessage(), AlertType.ERROR);
             }
         }
     }
 
     @FXML
     private void handleViewSignedPdfAction(ActionEvent event) {
-        if (selectedReport != null && selectedReport.getSignedFileUrl() != null) {
-            try {
-                java.awt.Desktop.getDesktop().browse(new java.net.URI(selectedReport.getSignedFileUrl()));
-            } catch (Exception e) {
-                Controller.showAlert("Error de Enlace", "No se pudo abrir el archivo.", AlertType.ERROR);
-            }
+        if (selectedReport == null || selectedReport.getSignedFileUrl() == null) {
+            return;
+        }
+
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(selectedReport.getSignedFileUrl()));
+        } catch (Exception exception) {
+            Controller.showAlert("Error de Enlace", MSG_LINK_OPEN_ERROR, AlertType.ERROR);
         }
     }
 

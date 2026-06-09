@@ -19,7 +19,6 @@
           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-        <!-- Lista de practicantes -->
         <VBox spacing="12.0" prefWidth="320.0"
               style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
             <padding><Insets bottom="24.0" left="20.0" right="20.0" top="24.0"/></padding>
@@ -31,16 +30,23 @@
 
             <Label styleClass="form-title" text="Calificar Practicantes"/>
             <Label textFill="#6b7280" wrapText="true"
-                   text="Selecciona un practicante para ver su calificación tentativa y asignar la definitiva."/>
+                   text="Practicantes asignados a tu grupo. Selecciona uno para ver su calificación tentativa y asignar la definitiva."/>
 
             <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                       style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
+
+            <Label fx:id="labelNoPractitioners"
+                   text="No tienes practicantes asignados en este periodo."
+                   textFill="#6b7280"
+                   style="-fx-font-style: italic; -fx-font-size: 12px;"
+                   wrapText="true"
+                   visible="false" managed="false"/>
         </VBox>
 
         <Separator orientation="VERTICAL"/>
 
-        <!-- Panel de calificación -->
-        <VBox fx:id="gradeContainer" spacing="16.0" HBox.hgrow="ALWAYS">
+        <VBox fx:id="gradeContainer" spacing="16.0" HBox.hgrow="ALWAYS"
+              visible="false" managed="false">
             <padding><Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/></padding>
 
             <Label styleClass="form-title" text="Asignar Calificación"/>
@@ -49,11 +55,12 @@
                   style="-fx-background-color: #F3F4F6; -fx-border-radius: 8px; -fx-padding: 16px;">
                 <Label fx:id="labelPractitionerName"
                        style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                <Label fx:id="labelTentativeGrade" textFill="#6b7280"/>
+                <Label fx:id="labelTentativeGrade" textFill="#6b7280"
+                       style="-fx-font-size: 13px;"/>
             </VBox>
 
             <Label fx:id="labelAlreadyGraded"
-                   text="✓ Este practicante ya tiene una calificación registrada para este periodo."
+                   text="✓ Este practicante ya tiene una calificación registrada para este periodo. Usa el botón Actualizar para modificarla."
                    style="-fx-text-fill: #10B981; -fx-font-weight: bold;"
                    visible="false" managed="false" wrapText="true"/>
 
@@ -61,7 +68,9 @@
 
             <VBox spacing="6.0">
                 <Label text="Calificación final (0.0 – 10.0):" styleClass="field-label"/>
-                <TextField fx:id="fieldFinalGrade" promptText="Ej. 9.5" maxWidth="160.0"/>
+                <TextField fx:id="fieldFinalGrade"
+                           promptText="Ej. 9.5"
+                           maxWidth="160.0"/>
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
