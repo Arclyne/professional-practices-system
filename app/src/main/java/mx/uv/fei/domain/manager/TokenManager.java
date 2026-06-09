@@ -16,6 +16,9 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class TokenManager {
 
+    private static final int SIZE_TOKEN = 100000;
+    private static final int BOUND = 900000;
+    private static final int WAIT_TIME = 60;
     private final IAuthenticationToken tokenDAO;
     private final SessionFacade session;
 
@@ -33,7 +36,7 @@ public class TokenManager {
         }
 
         SecureRandom secureRandom = new SecureRandom();
-        int newToken = 100000 + secureRandom.nextInt(900000);
+        int newToken = SIZE_TOKEN + secureRandom.nextInt(BOUND);
 
         AuthenticationToken token = new AuthenticationToken();
         token.setUserName(currentUser.getUserName());
@@ -73,7 +76,7 @@ public class TokenManager {
 
             long secondsElapsed = ChronoUnit.SECONDS.between(tokenCreationTime, LocalDateTime.now());
 
-            if (secondsElapsed > 60) {
+            if (secondsElapsed > WAIT_TIME) {
                 throw new ManagerException(String.format("Token expirado: El token [%d] del usuario '%s' expiró tras %d segundos de vida útil.", parsedToken, currentUser.getUserName(), secondsElapsed));
             }
 
