@@ -1,6 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-
 public enum UserStatus {
     ACTIVE("Active"),
     INACTIVE("Inactive"),

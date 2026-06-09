@@ -17,7 +17,9 @@ public class SelfEvaluationManager {
     private static final Logger logger = LoggerFactory.getLogger(SelfEvaluationManager.class);
 
     private static final String MSG_REGISTER_ERROR = "No se pudo registrar la autoevaluación.";
-    private static final String MSG_UPDATE_ERROR = "Error al actualizar la autoevaluación.";
+    private static final String MSG_UPDATE_ERROR   = "Error al actualizar la autoevaluación.";
+    private static final String MSG_RECOVER_ERROR  = "Ocurrió un error al recuperar la autoevaluación.";
+    private static final String STATUS_REVIEWED    = "Revisada";
 
     private final ISelfEvaluationDAO selfEvaluationDAO;
 
@@ -45,7 +47,9 @@ public class SelfEvaluationManager {
 
         try {
             boolean isUpdated = selfEvaluationDAO.updateEvidence(evalId, fileUrl);
-            if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
+            if (!isUpdated) {
+                throw new ManagerException(MSG_UPDATE_ERROR);
+            }
         } catch (DAOException e) {
             throw new ManagerException("Error al adjuntar evidencia. Causa: " + e.getMessage(), e);
         }
@@ -54,7 +58,9 @@ public class SelfEvaluationManager {
     public void updateSelfEvaluation(SelfEvaluation evaluation, int evalId) throws ManagerException {
         try {
             boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(evaluation, evalId);
-            if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
+            if (!isUpdated) {
+                throw new ManagerException(MSG_UPDATE_ERROR);
+            }
         } catch (DAOException e) {
             throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
         }
@@ -63,17 +69,27 @@ public class SelfEvaluationManager {
     public void updateStatus(int evalId, String status) throws ManagerException {
         try {
             boolean isUpdated = selfEvaluationDAO.updateStatus(evalId, status);
-            if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
+            if (!isUpdated) {
+                throw new ManagerException(MSG_UPDATE_ERROR);
+            }
         } catch (DAOException e) {
             throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
-    public SelfEvaluation recoverSelfEvaluation(int currentReportId) throws ManagerException {
+    public void markAsReviewed(int evalId) throws ManagerException {
+        updateStatus(evalId, STATUS_REVIEWED);
+    }
+
+    public SelfEvaluation recoverSelfEvaluation(int reportId) throws ManagerException {
+        SelfEvaluation evaluation;
+
         try {
-            return selfEvaluationDAO.getSelfEvaluationByReportId(currentReportId);
+            evaluation = selfEvaluationDAO.getSelfEvaluationByReportId(reportId);
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un error al recuperar la autoevaluación: " + e.getMessage(), e);
+            throw new ManagerException(MSG_RECOVER_ERROR + " Causa: " + e.getMessage(), e);
         }
+
+        return evaluation;
     }
 }

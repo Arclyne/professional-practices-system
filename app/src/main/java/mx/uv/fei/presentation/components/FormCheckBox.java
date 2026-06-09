@@ -16,8 +16,8 @@ public class FormCheckBox extends VBox {
 
         try {
             fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

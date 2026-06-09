@@ -6,7 +6,6 @@ import mx.uv.fei.domain.statemachine.state.RootState;
 import mx.uv.fei.statemachine.core.Action;
 import mx.uv.fei.statemachine.core.SliceReducer;
 
-
 public class MessageSlice implements SliceReducer<RootState> {
 
     @Override

@@ -46,8 +46,8 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                     hasSubmittedPriorities = resultSet.getInt(1) > 0;
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Ocurrió un error al verificar el estado de las postulaciones del practicante.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error al verificar el estado de las postulaciones del practicante.", e);
         }
 
         return hasSubmittedPriorities;
@@ -68,15 +68,15 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException exception) {
+            } catch (SQLException e) {
                 connection.rollback();
-                throw new DAOException("Ocurrió un error SQL durante la inserción en lote de las prioridades.", exception);
+                throw new DAOException("Ocurrió un error SQL durante la inserción en lote de las prioridades.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
 
-        } catch (SQLException exception) {
-            throw new DAOException("Fallo crítico de conexión con la base de datos al intentar guardar la postulación.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Fallo crítico de conexión con la base de datos al intentar guardar la postulación.", e);
         }
 
         return isBatchExecutionSuccessful;
@@ -113,8 +113,8 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                     retrievedPostulationsList.add(mapResultSetToPostulation(resultSet));
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Ocurrió un error al intentar recuperar las postulaciones del practicante.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error al intentar recuperar las postulaciones del practicante.", e);
         }
 
         return retrievedPostulationsList;
@@ -145,8 +145,8 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
 
             isProcedureExecutionSuccessful = true;
 
-        } catch (SQLException exception) {
-            throw new DAOException("Ocurrió un error en el servidor al intentar ejecutar la asignación automática.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Ocurrió un error en el servidor al intentar ejecutar la asignación automática.", e);
         }
 
         return isProcedureExecutionSuccessful;
@@ -166,8 +166,8 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                     hasAssigned = resultSet.getInt(1) > 0;
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al verificar el proyecto asignado del practicante.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al verificar el proyecto asignado del practicante.", e);
         }
 
         return hasAssigned;

@@ -69,8 +69,8 @@ public class RegisterPeriodController implements Initializable {
 
             } catch (IllegalArgumentException | DateTimeParseException dateException) {
                 Controller.showAlert(TITLE_DATE_ERROR, MSG_DATE_ERROR, AlertType.WARNING);
-            } catch (ManagerException exception) {
-                Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
             }
         }
     }

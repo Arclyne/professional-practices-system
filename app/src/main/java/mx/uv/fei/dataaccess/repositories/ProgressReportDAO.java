@@ -14,7 +14,6 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
 import mx.uv.fei.domain.dto.ProgressReport;
 
-
 @Component
 public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
 
@@ -76,8 +75,8 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                     }
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_INSERT_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_INSERT_ERROR, e);
         }
 
         return generatedId;
@@ -115,8 +114,8 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                     recoveredReport = mapResultSetToProgressReport(resultSet);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_SELECT_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_SELECT_ERROR, e);
         }
 
         return recoveredReport;
@@ -146,8 +145,8 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                     accumulatedHours = resultSet.getDouble(1);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_HOURS_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_HOURS_ERROR, e);
         }
 
         return accumulatedHours;

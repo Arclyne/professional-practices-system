@@ -3,7 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 public class PractitionerGrade {
 
     private int gradeId;

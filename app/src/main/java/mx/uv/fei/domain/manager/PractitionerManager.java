@@ -52,8 +52,8 @@ public class PractitionerManager {
                 throw new ManagerException(MSG_REGISTRATION_FAILED);
             }
 
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_CONNECTION_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_CONNECTION_ERROR, e);
         }
 
         return temporalPassword;
@@ -69,7 +69,7 @@ public class PractitionerManager {
             try {
                 registerNewPractitioner(practitioner);
                 registrationSummary.incrementSuccess();
-            } catch (ManagerException exception) {
+            } catch (ManagerException e) {
                 registrationSummary.incrementFailure();
             }
         }
@@ -82,8 +82,8 @@ public class PractitionerManager {
 
         try {
             retrievedPendingList = practitionerDAO.retrievePractitionersPendingAssignment();
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return retrievedPendingList;
@@ -94,8 +94,8 @@ public class PractitionerManager {
 
         try {
             retrievedAssignedList = practitionerDAO.retrieveAssignedPractitioners();
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_ASSIGNED_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_ASSIGNED_ERROR, e);
         }
 
         return retrievedAssignedList;
@@ -106,8 +106,8 @@ public class PractitionerManager {
 
         try {
             retrievedList = practitionerDAO.retrievePractitionersByProfessor(professorId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_BY_PROFESSOR_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_BY_PROFESSOR_ERROR, e);
         }
 
         return retrievedList;

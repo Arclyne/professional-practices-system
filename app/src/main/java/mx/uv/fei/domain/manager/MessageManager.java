@@ -62,27 +62,27 @@ public class MessageManager {
                 throw new ManagerException(MSG_PARTICIPANT_ERROR);
             }
 
-        } catch (DAOException exception) {
-            log.error("Fallo al registrar el mensaje en la base de datos", exception);
-            throw new ManagerException(MSG_DB_PROCESS_ERROR + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            log.error("Fallo al registrar el mensaje en la base de datos", e);
+            throw new ManagerException(MSG_DB_PROCESS_ERROR + e.getMessage(), e);
         }
     }
 
     public List<Message> getInboxMessages(int receiverId, int limit, int offset) throws ManagerException {
         try {
             return messageDAO.getMessagesByReceiver(receiverId, limit, offset);
-        } catch (DAOException exception) {
-            log.error("Fallo al consultar la bandeja de entrada en la base de datos", exception);
-            throw new ManagerException("No fue posible cargar los mensajes de la bandeja de entrada.", exception);
+        } catch (DAOException e) {
+            log.error("Fallo al consultar la bandeja de entrada en la base de datos", e);
+            throw new ManagerException("No fue posible cargar los mensajes de la bandeja de entrada.", e);
         }
     }
 
     public List<Message> getSentMessages(int senderId, int limit, int offset) throws ManagerException {
         try {
             return messageDAO.getMessagesBySender(senderId, limit, offset);
-        } catch (DAOException exception) {
-            log.error("Fallo al consultar los mensajes enviados en la base de datos", exception);
-            throw new ManagerException("No fue posible cargar los mensajes enviados.", exception);
+        } catch (DAOException e) {
+            log.error("Fallo al consultar los mensajes enviados en la base de datos", e);
+            throw new ManagerException("No fue posible cargar los mensajes enviados.", e);
         }
     }
 }

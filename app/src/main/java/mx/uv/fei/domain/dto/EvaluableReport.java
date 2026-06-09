@@ -2,7 +2,6 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-
 public class EvaluableReport {
 
     public static final String KIND_MONTHLY      = "Mensual";
@@ -50,8 +49,6 @@ public class EvaluableReport {
         item.setProfessorFeedback(source.getProfessorFeedback());
         return item;
     }
-
-    // ── Getters y setters ──────────────────────────────────────────────────────
 
     public int getReportId() {
         return reportId;
@@ -117,18 +114,12 @@ public class EvaluableReport {
         this.professorFeedback = professorFeedback;
     }
 
-    /**
-     * Indica si este reporte es de tipo progreso (Intermedio o Final).
-     *
-     * @return true si el kind es "Intermedio" o "Final"
-     */
+    
     public boolean isProgressReport() {
         return KIND_INTERMEDIATE.equals(reportKind) || KIND_FINAL.equals(reportKind);
     }
 
-    /**
-     * Business Key: un reporte es único por ID y tipo.
-     */
+    
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;

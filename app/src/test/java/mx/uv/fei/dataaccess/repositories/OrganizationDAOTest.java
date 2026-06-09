@@ -23,6 +23,7 @@ import mx.uv.fei.domain.dto.Organization;
 
 @StartEtiquetteTest
 @Profile("test")
+
 public class OrganizationDAOTest {
 
     @Inject

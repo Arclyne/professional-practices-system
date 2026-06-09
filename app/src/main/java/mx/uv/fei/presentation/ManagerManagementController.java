@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -24,7 +23,6 @@ import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
-
 
 @Component
 public class ManagerManagementController {
@@ -74,8 +72,8 @@ public class ManagerManagementController {
                     displayItemsList.add(formattedDisplayString);
                 }
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert(LOAD_ERROR_TITLE, exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert(LOAD_ERROR_TITLE, e.getMessage(), AlertType.ERROR);
         }
 
         managersListView.setItems(displayItemsList);
@@ -98,8 +96,8 @@ public class ManagerManagementController {
                 managerManager.inactivateMultipleManagers(identifiersToInactivateList);
                 Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
                 loadActiveManagers();
-            } catch (ManagerException exception) {
-                Controller.showErrorAlert(OPERATION_ERROR_TITLE, exception.getMessage());
+            } catch (ManagerException e) {
+                Controller.showErrorAlert(OPERATION_ERROR_TITLE, e.getMessage());
             }
         }
     }

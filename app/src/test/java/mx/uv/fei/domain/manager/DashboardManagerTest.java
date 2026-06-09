@@ -1,6 +1,9 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import mx.uv.fei.TestDatabaseSetup;
@@ -8,6 +11,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,11 +68,15 @@ public class DashboardManagerTest {
         assertFalse(dashboardManager.isPractitionerMenuAvailable("Administrator"));
     }
 
+        @Test
+    void resolvePractitionerProjectsNavigation_ExistingPractitioner_DoesNotThrow() {
+        assertDoesNotThrow(() -> dashboardManager.resolvePractitionerProjectsNavigation(123));
+    }
+
     @Test
-    void resolvePractitionerProjectsNavigation_ExistingPractitioner_ReturnsValidSection() {
-        assertDoesNotThrow(() -> {
-            AppSection section = dashboardManager.resolvePractitionerProjectsNavigation(123);
-            assertNotNull(section);
-        });
+    void resolvePractitionerProjectsNavigation_ExistingPractitioner_ReturnsNotNull() throws ManagerException {
+        AppSection section = dashboardManager.resolvePractitionerProjectsNavigation(123);
+
+        assertNotNull(section);
     }
 }

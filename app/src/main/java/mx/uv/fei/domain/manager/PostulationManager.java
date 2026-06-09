@@ -32,8 +32,8 @@ public class PostulationManager {
 
         try {
             retrievedPostulationsList = postulationProjectDAO.retrievePractitionerPostulations(practitionerIdentifier);
-        } catch (DAOException DAOException) {
-            throw new ManagerException("Ocurrio un problema al recuperar las postulaciones desde el servidor.", DAOException);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrio un problema al recuperar las postulaciones desde el servidor.", e);
         }
 
         return retrievedPostulationsList;
@@ -57,8 +57,8 @@ public class PostulationManager {
 
         try {
             availableProjectsList = projectDAO.getAvailableProjectsWithCapacity();
-        } catch (DAOException DAOException) {
-            throw new ManagerException("Ocurrio un problema al intentar recuperar los proyectos disponibles desde el servidor.", DAOException);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrio un problema al intentar recuperar los proyectos disponibles desde el servidor.", e);
         }
 
         return availableProjectsList;
@@ -73,8 +73,8 @@ public class PostulationManager {
                 if (!arePrioritiesSavedSuccessfully) {
                     throw new ManagerException("No fue posible registrar las prioridades en el sistema. Intente nuevamente.");
                 }
-            } catch (DAOException DAOException) {
-                throw new ManagerException("Ocurrio un problema de conexion al intentar guardar sus prioridades.", DAOException);
+            } catch (DAOException e) {
+                throw new ManagerException("Ocurrio un problema de conexion al intentar guardar sus prioridades.", e);
             }
         }
     }

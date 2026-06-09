@@ -43,7 +43,6 @@ public class TemplateManagerTest {
         testTemplate.setCreatedByUserName(CREATOR);
     }
 
-
     @Test
     void saveTemplate_ValidTemplate_CreatesMetaFile() throws ManagerException {
         templateManager.saveTemplate(testTemplate);
@@ -155,7 +154,6 @@ public class TemplateManagerTest {
         assertEquals(2, result.size());
     }
 
-
     @Test
     void renderTemplate_WithMatchingTokens_ReplacesNombrePracticante() {
         Map<String, String> values = Map.of(
@@ -191,7 +189,6 @@ public class TemplateManagerTest {
 
         assertFalse(result.contains("%NOMBRE_PRACTICANTE%"));
     }
-
 
     @Test
     void renderTemplate_NoMatchingToken_LeavesBodyUnchanged() {

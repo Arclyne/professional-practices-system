@@ -91,15 +91,15 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
                 } else {
                     activeDatabaseConnection.rollback();
                 }
-            } catch (SQLException executionException) {
+            } catch (SQLException e) {
                 activeDatabaseConnection.rollback();
-                throw new DAOException("Error al ejecutar la inactivación masiva de encargados.", executionException);
+                throw new DAOException("Error al ejecutar la inactivación masiva de encargados.", e);
             } finally {
                 activeDatabaseConnection.setAutoCommit(true);
             }
 
-        } catch (SQLException connectionException) {
-            throw new DAOException("Error de conexión al procesar inactivación de encargados.", connectionException);
+        } catch (SQLException e) {
+            throw new DAOException("Error de conexión al procesar inactivación de encargados.", e);
         }
 
         return allUpdatesSuccessful;

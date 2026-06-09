@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
+
 public class MonthlyReportDAOTest {
 
     private static final int PRACTITIONER_ID = 123;

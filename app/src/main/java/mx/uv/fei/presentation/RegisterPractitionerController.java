@@ -101,7 +101,7 @@ public class RegisterPractitionerController implements Initializable {
 
             comboBoxPracticeGroup.setItems(groupOptions);
 
-        } catch (ManagerException exception) {
+        } catch (ManagerException e) {
             Controller.showAlert(TITLE_LOAD_GROUPS_ERROR, MSG_LOAD_GROUPS_ERROR, AlertType.ERROR);
         }
     }
@@ -120,8 +120,8 @@ public class RegisterPractitionerController implements Initializable {
                 Controller.showAlert(TITLE_SUCCESS, MSG_SUCCESS + generatedPassword, AlertType.INFORMATION);
                 clearForm();
 
-            } catch (ManagerException exception) {
-                Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
             } finally {
                 if (registerButton != null) {
                     registerButton.setDisable(false);
@@ -184,8 +184,8 @@ public class RegisterPractitionerController implements Initializable {
                 Controller.showAlert(TITLE_BATCH_SUMMARY, resultMessage, AlertType.INFORMATION);
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
-            } catch (ManagerException exception) {
-                Controller.showAlert(TITLE_ERROR, exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
             }
         }
     }

@@ -53,10 +53,10 @@ public class TokenVerificationController implements Initializable {
             Controller.showSuccessAlert("Éxito", "Autenticación completada correctamente.");
             store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
-        } catch (ManagerException managerException) {
-            Controller.showErrorAlert("Validación fallida", managerException.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("Validación fallida", e.getMessage());
 
-        } catch (RuntimeException runtimeException) {
+        } catch (RuntimeException e) {
             Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en tiempo de ejecución al verificar el token.");
         }
     }
@@ -68,10 +68,10 @@ public class TokenVerificationController implements Initializable {
             Controller.showSuccessAlert("Enviado",
                     "Se ha generado un nuevo código (por ahora no se envía al correo).");
 
-        } catch (ManagerException managerException) {
-            Controller.showErrorAlert("No se pudo generar", managerException.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo generar", e.getMessage());
 
-        } catch (RuntimeException runtimeException) {
+        } catch (RuntimeException e) {
             Controller.showErrorAlert("Error Fatal", "Ocurrió un error inesperado en tiempo de ejecución en el sistema.");
         }
     }
@@ -79,5 +79,6 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
         store.dispatch(new SessionAction.Logout());
+        store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
     }
 }

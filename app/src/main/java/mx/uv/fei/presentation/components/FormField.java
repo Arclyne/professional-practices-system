@@ -1,6 +1,5 @@
 package mx.uv.fei.presentation.components;
 
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -19,8 +18,8 @@ public class FormField extends VBox {
 
         try {
             fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

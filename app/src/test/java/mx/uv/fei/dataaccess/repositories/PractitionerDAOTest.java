@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
+
 public class PractitionerDAOTest {
 
     @Inject

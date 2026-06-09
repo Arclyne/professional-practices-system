@@ -74,8 +74,8 @@ public class ProjectManagementController {
                     displayItemsList.add(formattedDisplayString);
                 }
             }
-        } catch (ManagerException dataRetrievalException) {
-            Controller.showAlert("Error de carga", dataRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de carga", e.getMessage(), AlertType.ERROR);
         }
 
         projectsListView.setItems(displayItemsList);
@@ -100,8 +100,8 @@ public class ProjectManagementController {
             projectManager.inactivateMultipleProjects(identifiersToInactivateList);
             Controller.showAlert("Proceso Exitoso", "Los proyectos seleccionados han sido inactivados.", AlertType.INFORMATION);
             loadActiveProjects();
-        } catch (ManagerException executionException) {
-            Controller.showAlert("Error en la Operación", executionException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error en la Operación", e.getMessage(), AlertType.ERROR);
         }
     }
 

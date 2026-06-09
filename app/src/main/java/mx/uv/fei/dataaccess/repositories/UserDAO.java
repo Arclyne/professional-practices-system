@@ -57,8 +57,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                     }
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al insertar el usuario en la transacción.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al insertar el usuario en la transacción.", e);
         }
 
         return generatedId;
@@ -85,8 +85,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 statement.setString(8, user.getGender() != null ? user.getGender().getDatabaseValue() : null);
                 statement.setInt(9, user.getId());
             });
-        } catch (SQLException exception) {
-            throw new DAOException("Error al actualizar el usuario en la transacción.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al actualizar el usuario en la transacción.", e);
         }
     }
 
@@ -103,8 +103,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                     return resultSet.getInt(1) > 0;
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al verificar las credenciales del usuario por nombre de usuario.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al verificar las credenciales del usuario por nombre de usuario.", e);
         }
         return false;
     }
@@ -122,8 +122,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                     return resultSet.getInt(1) > 0;
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al verificar las credenciales del usuario por correo electrónico.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al verificar las credenciales del usuario por correo electrónico.", e);
         }
         return false;
     }
@@ -142,8 +142,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                     retrievedRole = resultSet.getString("role_name");
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al recuperar el rol del usuario.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al recuperar el rol del usuario.", e);
         }
 
         return retrievedRole;
@@ -193,8 +193,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                     }
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException("Error al recuperar los datos del usuario de la base de datos.", exception);
+        } catch (SQLException e) {
+            throw new DAOException("Error al recuperar los datos del usuario de la base de datos.", e);
         }
 
         return retrievedUser;
@@ -223,14 +223,14 @@ public class UserDAO extends BaseDAO implements IUserDAO {
                 } else {
                     activeDatabaseConnection.rollback();
                 }
-            } catch (SQLException executionException) {
+            } catch (SQLException e) {
                 activeDatabaseConnection.rollback();
-                throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", executionException);
+                throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", e);
             } finally {
                 activeDatabaseConnection.setAutoCommit(true);
             }
-        } catch (SQLException connectionException) {
-            throw new DAOException("Error de conexión al procesar inactivación masiva.", connectionException);
+        } catch (SQLException e) {
+            throw new DAOException("Error de conexión al procesar inactivación masiva.", e);
         }
         return allUpdatesSuccessful;
     }
