@@ -1,5 +1,7 @@
 package mx.uv.fei.domain.dto;
 
+import java.util.Objects;
+
 public class ProjectPostulation {
 
     private int practitionerIdentifier;
@@ -46,5 +48,23 @@ public class ProjectPostulation {
 
     public void setPostulationStatus(String postulationStatus) {
         this.postulationStatus = postulationStatus;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            ProjectPostulation that = (ProjectPostulation) obj;
+            isEqual = this.practitionerIdentifier == that.practitionerIdentifier &&
+                    this.projectIdentifier == that.projectIdentifier;
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(practitionerIdentifier, projectIdentifier);
     }
 }

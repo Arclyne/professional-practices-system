@@ -1,8 +1,8 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
@@ -23,7 +23,6 @@ import mx.uv.fei.domain.dto.Organization;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class OrganizationDAOTest {
 
     @Inject
@@ -59,18 +58,44 @@ public class OrganizationDAOTest {
         Organization expectedOrganization = new Organization();
         expectedOrganization.setIdOrganization(1);
         expectedOrganization.setNameOrganization("toRecover");
-        expectedOrganization.setMail("torecover@uv.mx");
         expectedOrganization.setState("Active");
         expectedOrganization.setBusiness("Technology");
+        expectedOrganization.setMail("torecover@uv.mx");
 
         Organization resultTest = organizationDAO.recoverOrganization("toRecover");
         assertEquals(expectedOrganization, resultTest);
     }
 
     @Test
-    void getAllOrganizations_WithExistingData_ReturnsList() throws DAOException {
+    void getAllOrganizations_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<Organization> expectedList = new ArrayList<>();
+
+        Organization org1 = new Organization();
+        org1.setIdOrganization(1);
+        org1.setNameOrganization("toRecover");
+        org1.setState("Active");
+        org1.setBusiness("Technology");
+        org1.setMail("torecover@uv.mx");
+        expectedList.add(org1);
+
+        Organization org2 = new Organization();
+        org2.setIdOrganization(2);
+        org2.setNameOrganization("Dummy 1");
+        org2.setState("Active");
+        org2.setBusiness("Technology");
+        org2.setMail("dummy1@uv.mx");
+        expectedList.add(org2);
+
+        Organization org3 = new Organization();
+        org3.setIdOrganization(3);
+        org3.setNameOrganization("Dummy 2");
+        org3.setState("Active");
+        org3.setBusiness("Technology");
+        org3.setMail("dummy2@uv.mx");
+        expectedList.add(org3);
+
         List<Organization> resultTest = organizationDAO.getAllOrganizations();
-        assertFalse(resultTest.isEmpty());
+        assertEquals(expectedList, resultTest);
     }
 
     @Test
@@ -89,16 +114,13 @@ public class OrganizationDAOTest {
     @Test
     void insertOrganization_DuplicateEmail_ThrowsDAOException() {
         testOrganization.setMail("torecover@uv.mx");
-        assertThrows(DAOException.class, () -> {
-            organizationDAO.insertOrganization(testOrganization);
-        });
+        assertThrows(DAOException.class, () -> organizationDAO.insertOrganization(testOrganization));
     }
 
     @Test
     void recoverOrganization_NonExistentName_ReturnsEmptyOrganization() throws DAOException {
-        Organization expectedEmpty = new Organization();
         Organization resultTest = organizationDAO.recoverOrganization("Organizacion Fantasma");
-        assertEquals(expectedEmpty, resultTest);
+        assertEquals(new Organization(), resultTest);
     }
 
     @Test

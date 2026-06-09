@@ -65,19 +65,22 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
 
     @Override
     public SelfEvaluation getSelfEvaluationByReportId(int reportId) throws DAOException {
+        SelfEvaluation eval = new SelfEvaluation();
+
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_REPORT)) {
 
             statement.setInt(1, reportId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return mapResultSetToSelfEvaluation(resultSet);
+                    eval = mapResultSetToSelfEvaluation(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al recuperar la autoevaluación por reporte.", e);
         }
-        return null;
+
+        return eval;
     }
 
     @Override

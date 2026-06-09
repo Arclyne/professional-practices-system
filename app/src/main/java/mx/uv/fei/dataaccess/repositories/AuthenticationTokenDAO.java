@@ -46,7 +46,7 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
 
     @Override
     public AuthenticationToken recoverToken(int tokenValue) throws DAOException {
-        AuthenticationToken tokenRecovered = null;
+        AuthenticationToken tokenRecovered = new AuthenticationToken();
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT)) {
@@ -55,7 +55,6 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
             try (ResultSet resultSet = statement.executeQuery()) {
 
                 if (resultSet.next()) {
-                    tokenRecovered = new AuthenticationToken();
                     tokenRecovered.setValueToken(resultSet.getInt("token_value"));
 
                     Timestamp ts = resultSet.getTimestamp("creation_time");

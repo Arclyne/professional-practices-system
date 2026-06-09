@@ -1,11 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -20,9 +14,10 @@ import mx.uv.fei.domain.dto.AuthenticationToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @StartEtiquetteTest
 @Profile("test")
-
 public class AuthenticationTokenDAOTest {
 
     @Inject
@@ -46,7 +41,6 @@ public class AuthenticationTokenDAOTest {
     @Test
     void insertToken_ValidToken_ReturnsTrue() throws DAOException {
         boolean result = authenticationTokenDAO.insertToken(validToken);
-
         assertTrue(result, "La inserción del token debería retornar true");
     }
 
@@ -57,15 +51,14 @@ public class AuthenticationTokenDAOTest {
         expectedToken.setUserName("test");
 
         AuthenticationToken recovered = authenticationTokenDAO.recoverToken(123456);
-
         assertEquals(expectedToken, recovered, "El token recuperado debe coincidir exactamente con el esperado");
     }
 
     @Test
     void getTokenCreationTime_ValidTokenAndUser_ReturnsLocalDateTime() throws DAOException {
-        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(123456, "test");
-
-        assertNotNull(creationTime, "El tiempo de creación no debería ser nulo para un token y usuario válidos");
+        authenticationTokenDAO.insertToken(validToken);
+        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(987654, "zS24242424");
+        assertEquals(validToken.getTimeCreation(), creationTime, "El tiempo de creación debe coincidir exactamente");
     }
 
     @Test
@@ -75,9 +68,7 @@ public class AuthenticationTokenDAOTest {
         duplicateToken.setTimeCreation(LocalDateTime.now().withNano(0));
         duplicateToken.setUserName("zS24242424");
 
-        assertThrows(DAOException.class, () -> {
-            authenticationTokenDAO.insertToken(duplicateToken);
-        }, "Debería lanzar DAOException al intentar insertar un valor de token duplicado (Primary Key)");
+        assertThrows(DAOException.class, () -> authenticationTokenDAO.insertToken(duplicateToken));
     }
 
     @Test
@@ -87,25 +78,18 @@ public class AuthenticationTokenDAOTest {
         orphanToken.setTimeCreation(LocalDateTime.now().withNano(0));
         orphanToken.setUserName("usuarioFantasma");
 
-        assertThrows(DAOException.class, () -> {
-            authenticationTokenDAO.insertToken(orphanToken);
-        }, "Debería lanzar DAOException al intentar insertar un token para un username inexistente (Foreign Key)");
+        assertThrows(DAOException.class, () -> authenticationTokenDAO.insertToken(orphanToken));
     }
 
     @Test
-    void recoverToken_NonExistentToken_ReturnsNull() throws DAOException {
-        int nonExistentTokenValue = 999999;
-
-        AuthenticationToken recovered = authenticationTokenDAO.recoverToken(nonExistentTokenValue);
-        assertNull(recovered, "Debería retornar nulo si el token no existe en la base de datos");
+    void recoverToken_NonExistentToken_ReturnsEmptyObject() throws DAOException {
+        AuthenticationToken recovered = authenticationTokenDAO.recoverToken(999999);
+        assertEquals(new AuthenticationToken(), recovered, "Debería retornar objeto vacío si el token no existe");
     }
 
     @Test
     void getTokenCreationTime_InvalidUserForToken_ReturnsNull() throws DAOException {
-        int validTokenValue = 123456;
-        String invalidUserForThisToken = "zS24242424";
-
-        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(validTokenValue, invalidUserForThisToken);
-        assertNull(creationTime, "Debería retornar nulo si la combinación de token y usuario no es exacta");
+        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(123456, "zS24242424");
+        assertNull(creationTime);
     }
 }

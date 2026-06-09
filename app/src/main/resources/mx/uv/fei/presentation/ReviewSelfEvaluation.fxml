@@ -14,11 +14,11 @@
             </Label>
         </HBox>
 
-        <TableView fx:id="tvEvaluations" VBox.vgrow="ALWAYS" style="-fx-cursor: hand;">
+        <TableView fx:id="evaluationsTableView" VBox.vgrow="ALWAYS" style="-fx-cursor: hand;">
             <columns>
-                <TableColumn fx:id="tcStudent" prefWidth="180.0" text="Alumno" />
-                <TableColumn fx:id="tcGroup" prefWidth="90.0" text="Grupo" />
-                <TableColumn fx:id="tcStatus" prefWidth="110.0" text="Estado" />
+                <TableColumn fx:id="studentTableColumn" prefWidth="180.0" text="Alumno" />
+                <TableColumn fx:id="groupTableColumn" prefWidth="90.0" text="Grupo" />
+                <TableColumn fx:id="statusTableColumn" prefWidth="110.0" text="Estado" />
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -27,10 +27,10 @@
     </VBox>
 
     <VBox spacing="15.0" prefWidth="580.0" style="-fx-background-color: #F9F9F9; -fx-padding: 20; -fx-border-color: #E0E0E0; -fx-border-radius: 5; -fx-background-radius: 5;">
-        <Label fx:id="lblStudentName" text="Alumno: Seleccione un alumno" style="-fx-text-fill: #333333;">
+        <Label fx:id="studentNameLabel" text="Alumno: Seleccione un alumno" style="-fx-text-fill: #333333;">
             <font><Font name="System Bold" size="15.0" /></font>
         </Label>
-        <Label fx:id="lblStatus" text="Estado: -" textFill="#666666">
+        <Label fx:id="statusLabel" text="Estado: -" textFill="#666666">
             <font><Font size="13.0" /></font>
         </Label>
 
@@ -44,42 +44,42 @@
                 </columnConstraints>
                 <children>
                     <Label text="1. Mi participación en la Organización Vinculada fue productiva." wrapText="true" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ1" alignment="CENTER" prefWidth="50" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                    <TextField fx:id="q1TextField" alignment="CENTER" prefWidth="50" GridPane.rowIndex="0" GridPane.columnIndex="1" />
 
                     <Label text="2. Logré la aplicación de los conocimientos teórico-prácticos." wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ2" alignment="CENTER" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                    <TextField fx:id="q2TextField" alignment="CENTER" GridPane.rowIndex="1" GridPane.columnIndex="1" />
 
                     <Label text="3. Me sentí seguro al realizar las actividades encomendadas." wrapText="true" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ3" alignment="CENTER" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                    <TextField fx:id="q3TextField" alignment="CENTER" GridPane.rowIndex="2" GridPane.columnIndex="1" />
 
                     <Label text="4. Las actividades encomendadas despertaron mi interés." wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ4" alignment="CENTER" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                    <TextField fx:id="q4TextField" alignment="CENTER" GridPane.rowIndex="3" GridPane.columnIndex="1" />
 
                     <Label text="5. La Organización Vinculada me proporcionó información y facilidades." wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ5" alignment="CENTER" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+                    <TextField fx:id="q5TextField" alignment="CENTER" GridPane.rowIndex="4" GridPane.columnIndex="1" />
 
                     <Label text="6. La Organización Vinculada me dio a conocer las reglas internas." wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ6" alignment="CENTER" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+                    <TextField fx:id="q6TextField" alignment="CENTER" GridPane.rowIndex="5" GridPane.columnIndex="1" />
 
                     <Label text="7. El Responsable del Proyecto me orientó correctamente." wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ7" alignment="CENTER" GridPane.rowIndex="6" GridPane.columnIndex="1" />
+                    <TextField fx:id="q7TextField" alignment="CENTER" GridPane.rowIndex="6" GridPane.columnIndex="1" />
 
                     <Label text="8. El Responsable del Proyecto realizó un seguimiento efectivo." wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ8" alignment="CENTER" GridPane.rowIndex="7" GridPane.columnIndex="1" />
+                    <TextField fx:id="q8TextField" alignment="CENTER" GridPane.rowIndex="7" GridPane.columnIndex="1" />
 
                     <Label text="9. El proyecto es congruente con la formación de mi carrera." wrapText="true" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ9" alignment="CENTER" GridPane.rowIndex="8" GridPane.columnIndex="1" />
+                    <TextField fx:id="q9TextField" alignment="CENTER" GridPane.rowIndex="8" GridPane.columnIndex="1" />
 
                     <Label text="10. Considero que las prácticas son importantes para mi formación." wrapText="true" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-                    <TextField fx:id="tfQ10" alignment="CENTER" GridPane.rowIndex="9" GridPane.columnIndex="1" />
+                    <TextField fx:id="q10TextField" alignment="CENTER" GridPane.rowIndex="9" GridPane.columnIndex="1" />
                 </children>
             </GridPane>
         </ScrollPane>
 
         <HBox alignment="CENTER_RIGHT" spacing="15.0">
-            <Button fx:id="btnViewEvidence" onAction="#handleViewEvidence" text="Ver Evidencia" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;" />
-            <Button fx:id="btnDownloadEvidence" onAction="#handleDownloadEvidence" text="Descargar Evidencia" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand;" />
-            <Button fx:id="btnApprove" onAction="#handleApproveEvaluation" text="Marcar como Revisada" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;" />
+            <Button fx:id="viewEvidenceButton" onAction="#handleViewEvidence" text="Ver Evidencia" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;" />
+            <Button fx:id="downloadEvidenceButton" onAction="#handleDownloadEvidence" text="Descargar Evidencia" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand;" />
+            <Button fx:id="approveButton" onAction="#handleApproveEvaluation" text="Marcar como Revisada" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;" />
         </HBox>
     </VBox>
 </HBox>
