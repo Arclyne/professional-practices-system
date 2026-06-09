@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @StartEtiquetteTest
@@ -138,9 +137,7 @@ public class UserDAOTest {
     void insertUser_DuplicateUsername_ThrowsDAOException() throws SQLException {
         testUser.setUserName("12345");
         try (Connection conn = dbConnection.getConnection()) {
-            assertThrows(DAOException.class, () -> {
-                userDAO.insertUser(testUser, conn);
-            });
+            assertThrows(DAOException.class, () -> userDAO.insertUser(testUser, conn));
         }
     }
 
@@ -151,8 +148,8 @@ public class UserDAOTest {
     }
 
     @Test
-    void getUserByUserName_NonExistentUser_ReturnsNull() throws DAOException {
+    void getUserByUserName_NonExistentUser_ReturnsEmptyObject() throws DAOException {
         User recovered = userDAO.getUserByUserName("fantasma");
-        assertNull(recovered);
+        assertEquals(new User(), recovered);
     }
 }

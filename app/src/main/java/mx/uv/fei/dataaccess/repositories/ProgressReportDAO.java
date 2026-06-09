@@ -101,7 +101,7 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
 
     @Override
     public ProgressReport getProgressReportByPractitionerAndType(int practitionerId, String reportType) throws DAOException {
-        ProgressReport recoveredReport = null;
+        ProgressReport recoveredReport = new ProgressReport();
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_PRACTITIONER_AND_TYPE)) {

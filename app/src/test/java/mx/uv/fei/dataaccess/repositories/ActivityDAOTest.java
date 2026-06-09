@@ -1,11 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class ActivityDAOTest {
 
     @Inject
@@ -62,22 +62,34 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getActivitiesByPractitioner_ExistingPractitioner_ReturnsList() throws DAOException {
-        List<Activity> resultList = activityDAO.getActivitiesByPractitioner(123);
+    void getActivitiesByPractitioner_ExistingPractitioner_ReturnsExpectedList() throws DAOException {
+        int targetPractitionerId = 123;
+        List<Activity> expectedList = new ArrayList<>();
 
-        assertFalse(resultList.isEmpty(), "La lista no debería estar vacía para un practicante con actividades previas");
+        expectedList.add(buildExpectedActivity(4, 123, null, "Actividad Junio Valida", "Descripcion Junio", "2026-06-15", 5));
+        expectedList.add(buildExpectedActivity(3, 123, null, "Dummy 2", "Descripcion Dummy 2", "2026-05-03", 3));
+        expectedList.add(buildExpectedActivity(2, 123, null, "Dummy 1", "Descripcion Dummy 1", "2026-05-02", 4));
+        expectedList.add(buildExpectedActivity(1, 123, 1, "toRecover", "Descripcion toRecover", "2026-05-01", 5));
+
+        List<Activity> resultList = activityDAO.getActivitiesByPractitioner(targetPractitionerId);
+
+        assertEquals(expectedList, resultList, "La lista de actividades recuperada no coincide con la esperada");
     }
 
     @Test
-    void getActivitiesByReport_ExistingReport_ReturnsList() throws DAOException {
-        List<Activity> resultList = activityDAO.getActivitiesByReport(1);
+    void getActivitiesByReport_ExistingReport_ReturnsExpectedList() throws DAOException {
+        int targetReportId = 1;
+        List<Activity> expectedList = new ArrayList<>();
+        expectedList.add(buildExpectedActivity(1, 123, 1, "toRecover", "Descripcion toRecover", "2026-05-01", 5));
 
-        assertNotNull(resultList, "El método debe retornar una lista inicializada (vacía o con elementos), nunca null");
+        List<Activity> resultList = activityDAO.getActivitiesByReport(targetReportId);
+
+        assertEquals(expectedList, resultList, "La lista de actividades recuperada no coincide con la esperada");
     }
 
     @Test
     void assignActivityToReport_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isAssigned = activityDAO.assignActivityToReport(1, 1);
+        boolean isAssigned = activityDAO.assignActivityToReport(2, 1);
 
         assertTrue(isAssigned, "Debe retornar true al asignar correctamente un reporte a una actividad");
     }
@@ -139,5 +151,17 @@ public class ActivityDAOTest {
         boolean isRemoved = activityDAO.removeActivityFromReport(nonExistentActivityId);
 
         assertFalse(isRemoved, "Debe retornar false al intentar remover un reporte de una actividad que no existe");
+    }
+
+    private Activity buildExpectedActivity(int id, int practitionerId, Integer reportId, String title, String description, String date, int duration) {
+        Activity activity = new Activity();
+        activity.setActivityId(id);
+        activity.setPractitionerId(practitionerId);
+        activity.setReportId(reportId);
+        activity.setTitle(title);
+        activity.setDescription(description);
+        activity.setActivityDate(java.sql.Date.valueOf(date));
+        activity.setDurationHours(duration);
+        return activity;
     }
 }
