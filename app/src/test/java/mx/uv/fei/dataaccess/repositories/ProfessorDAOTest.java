@@ -1,11 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class ProfessorDAOTest {
 
     @Inject
@@ -73,9 +73,22 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void getAllProfessors_WithExistingData_ReturnsList() throws DAOException {
+    void getAllProfessors_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<Professor> expectedList = new ArrayList<>();
+        Professor prof = new Professor();
+        prof.setId(68);
+        prof.setUserName("prof1");
+        prof.setPassword("12345");
+        prof.setName("Prof");
+        prof.setLastName("Test");
+        prof.setEmail("prof1@uv.mx");
+        prof.setRole("Professor");
+        prof.setStatus(UserStatus.ACTIVE);
+        prof.setGender(Gender.MALE);
+        expectedList.add(prof);
+
         List<Professor> resultList = professorDAO.getAllProfessors();
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -90,16 +103,13 @@ public class ProfessorDAOTest {
     @Test
     void insertProfessor_DuplicateUsername_ThrowsDAOException() {
         testProfessor.setUserName("prof1");
-        assertThrows(DAOException.class, () -> {
-            professorDAO.insertProfessor(testProfessor);
-        });
+        assertThrows(DAOException.class, () -> professorDAO.insertProfessor(testProfessor));
     }
 
     @Test
     void recoverProfessor_NonExistentId_ReturnsEmptyProfessor() throws DAOException {
-        Professor expectedEmpty = new Professor();
         Professor recovered = professorDAO.recoverProfessor(9999);
-        assertEquals(expectedEmpty, recovered);
+        assertEquals(new Professor(), recovered);
     }
 
     @Test

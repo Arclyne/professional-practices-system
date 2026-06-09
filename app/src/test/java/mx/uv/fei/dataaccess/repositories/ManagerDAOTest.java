@@ -1,10 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -21,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class ManagerDAOTest {
 
     @Inject
@@ -51,15 +52,46 @@ public class ManagerDAOTest {
     }
 
     @Test
-    void getAllManagers_WithExistingData_ReturnsList() throws DAOException {
+    void getAllManagers_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<Manager> expectedList = new ArrayList<>();
+
+        Manager m1 = new Manager();
+        m1.setId(1);
+        m1.setName("Manager toRecover");
+        m1.setOrganizationId(1);
+        m1.setStatus(UserStatus.ACTIVE);
+        expectedList.add(m1);
+
+        Manager m2 = new Manager();
+        m2.setId(2);
+        m2.setName("Manager Dummy 1");
+        m2.setOrganizationId(2);
+        m2.setStatus(UserStatus.ACTIVE);
+        expectedList.add(m2);
+
+        Manager m3 = new Manager();
+        m3.setId(3);
+        m3.setName("Manager Dummy 2");
+        m3.setOrganizationId(3);
+        m3.setStatus(UserStatus.ACTIVE);
+        expectedList.add(m3);
+
         List<Manager> resultList = managerDAO.getAllManagers();
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
-    void getManagersByOrganization_ExistingOrganization_ReturnsList() throws DAOException {
+    void getManagersByOrganization_ExistingOrganization_ReturnsExpectedList() throws DAOException {
+        List<Manager> expectedList = new ArrayList<>();
+        Manager m1 = new Manager();
+        m1.setId(1);
+        m1.setName("Manager toRecover");
+        m1.setOrganizationId(1);
+        m1.setStatus(UserStatus.ACTIVE);
+        expectedList.add(m1);
+
         List<Manager> resultList = managerDAO.getManagersByOrganization(1);
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -71,14 +103,12 @@ public class ManagerDAOTest {
     @Test
     void insertManager_NonExistentOrganization_ThrowsDAOException() {
         testManager.setOrganizationId(9999);
-        assertThrows(DAOException.class, () -> {
-            managerDAO.insertManager(testManager);
-        });
+        assertThrows(DAOException.class, () -> managerDAO.insertManager(testManager));
     }
 
     @Test
     void getManagersByOrganization_NonExistentOrganization_ReturnsEmptyList() throws DAOException {
         List<Manager> resultList = managerDAO.getManagersByOrganization(9999);
-        assertTrue(resultList.isEmpty());
+        assertEquals(new ArrayList<>(), resultList);
     }
 }

@@ -1,11 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class AdministratorDAOTest {
 
     @Inject
@@ -52,14 +52,12 @@ public class AdministratorDAOTest {
     @Test
     void checkIfAdminExists_WithExistingAdmin_ReturnsTrue() throws DAOException {
         boolean result = administratorDAO.checkIfAdminExists();
-
         assertTrue(result, "Debería retornar true porque el script ya insertó un administrador");
     }
 
     @Test
     void insertAdministrator_ValidAdministrator_ReturnsGeneratedId() throws DAOException {
         int resultId = administratorDAO.insertAdministrator(testAdministrator);
-
         assertTrue(resultId > 0, "El ID generado debería ser mayor a 0");
     }
 
@@ -77,15 +75,26 @@ public class AdministratorDAOTest {
         expected.setGender(Gender.MALE);
 
         Administrator recovered = administratorDAO.recoverAdministrator(13);
-
-        assertEquals(expected, recovered, "El administrador recuperado debe coincidir exactamente con el del script");
+        assertEquals(expected, recovered);
     }
 
     @Test
-    void getAllAdministrators_WithExistingData_ReturnsList() throws DAOException {
-        List<Administrator> resultList = administratorDAO.getAllAdministrators();
+    void getAllAdministrators_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<Administrator> expectedList = new ArrayList<>();
+        Administrator admin = new Administrator();
+        admin.setId(13);
+        admin.setUserName("12345");
+        admin.setPassword("12345");
+        admin.setName("adm");
+        admin.setLastName("adm");
+        admin.setEmail("adm@adm.com");
+        admin.setRole("Administrator");
+        admin.setStatus(UserStatus.ACTIVE);
+        admin.setGender(Gender.MALE);
+        expectedList.add(admin);
 
-        assertFalse(resultList.isEmpty(), "La lista de administradores no debería estar vacía");
+        List<Administrator> resultList = administratorDAO.getAllAdministrators();
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -102,61 +111,49 @@ public class AdministratorDAOTest {
         adminToUpdate.setGender(Gender.MALE);
 
         boolean isUpdated = administratorDAO.updateAdministrator(adminToUpdate, 13);
-
-        assertTrue(isUpdated, "La actualización debería retornar true para un registro existente modificado");
+        assertTrue(isUpdated);
     }
 
     @Test
     void insertAdministrator_DuplicateUsername_ThrowsDAOException() {
         Administrator duplicateUsernameAdmin = new Administrator();
         duplicateUsernameAdmin.setUserName("12345");
-        duplicateUsernameAdmin.setEmail("nuevo.correo@uv.mx");
+        duplicateUsernameAdmin.setPassword("password");
         duplicateUsernameAdmin.setName("Clon");
         duplicateUsernameAdmin.setLastName("Test");
-        duplicateUsernameAdmin.setPassword("password");
+        duplicateUsernameAdmin.setEmail("nuevo.correo@uv.mx");
         duplicateUsernameAdmin.setRole("Administrator");
         duplicateUsernameAdmin.setStatus(UserStatus.ACTIVE);
         duplicateUsernameAdmin.setGender(Gender.MALE);
 
-        assertThrows(DAOException.class, () -> {
-            administratorDAO.insertAdministrator(duplicateUsernameAdmin);
-        }, "Debería lanzar DAOException por violación de restricción UNIQUE en username");
+        assertThrows(DAOException.class, () -> administratorDAO.insertAdministrator(duplicateUsernameAdmin));
     }
 
     @Test
     void insertAdministrator_DuplicateEmail_ThrowsDAOException() {
         Administrator duplicateEmailAdmin = new Administrator();
         duplicateEmailAdmin.setUserName("nuevoUsuario01");
-        duplicateEmailAdmin.setEmail("adm@adm.com");
+        duplicateEmailAdmin.setPassword("password");
         duplicateEmailAdmin.setName("Clon");
         duplicateEmailAdmin.setLastName("Test");
-        duplicateEmailAdmin.setPassword("password");
+        duplicateEmailAdmin.setEmail("adm@adm.com");
         duplicateEmailAdmin.setRole("Administrator");
         duplicateEmailAdmin.setStatus(UserStatus.ACTIVE);
         duplicateEmailAdmin.setGender(Gender.MALE);
 
-        assertThrows(DAOException.class, () -> {
-            administratorDAO.insertAdministrator(duplicateEmailAdmin);
-        }, "Debería lanzar DAOException por violación de restricción UNIQUE en email");
+        assertThrows(DAOException.class, () -> administratorDAO.insertAdministrator(duplicateEmailAdmin));
     }
 
     @Test
     void recoverAdministrator_NonExistentId_ReturnsEmptyAdministrator() throws DAOException {
-        int nonExistentId = 9999;
-        Administrator expectedEmpty = new Administrator();
-
-        Administrator recovered = administratorDAO.recoverAdministrator(nonExistentId);
-
-        assertEquals(expectedEmpty, recovered, "Si el ID no existe, debe retornar un objeto Administrator inicializado vacío");
+        Administrator recovered = administratorDAO.recoverAdministrator(9999);
+        assertEquals(new Administrator(), recovered);
     }
 
     @Test
     void updateAdministrator_NonExistentId_ReturnsFalse() throws DAOException {
-        int nonExistentId = 9999;
         testAdministrator.setName("Ghost Admin");
-
-        boolean result = administratorDAO.updateAdministrator(testAdministrator, nonExistentId);
-
-        assertFalse(result, "La actualización debería retornar false si el ID especificado no existe");
+        boolean result = administratorDAO.updateAdministrator(testAdministrator, 9999);
+        assertFalse(result);
     }
 }

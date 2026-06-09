@@ -41,26 +41,21 @@ INSERT INTO project (project_id, project_name, description, participant_capacity
                                                                                                                                                  (2, 'Dummy 1',   'First dummy project',        3, 2, 'Active', '2026-01-01', '2026-06-01', 2),
                                                                                                                                                  (3, 'Dummy 2',   'Second dummy project',       1, 3, 'Active', '2026-01-01', '2026-06-01', 3);
 
-INSERT INTO activity (activity_id, practitioner_id, title, description, activity_date, duration_hours) VALUES
-                                                                                                           (1, 123, 'toRecover', 'Descripcion toRecover', '2026-05-01', 5),
-                                                                                                           (2, 123, 'Dummy 1',   'Descripcion Dummy 1',   '2026-05-02', 4),
-                                                                                                           (3, 123, 'Dummy 2',   'Descripcion Dummy 2',   '2026-05-03', 3),
-                                                                                                           (4, 123, 'Actividad Junio Valida', 'Descripcion Junio', '2026-06-15', 5);
+INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status) VALUES
+    (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
 
-INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status)
-VALUES (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
+INSERT INTO activity (activity_id, practitioner_id, report_id, title, description, activity_date, duration_hours) VALUES
+                                                                                                                      (1, 123, 1,    'toRecover', 'Descripcion toRecover', '2026-05-01', 5),
+                                                                                                                      (2, 123, NULL, 'Dummy 1',   'Descripcion Dummy 1',   '2026-05-02', 4),
+                                                                                                                      (3, 123, NULL, 'Dummy 2',   'Descripcion Dummy 2',   '2026-05-03', 3),
+                                                                                                                      (4, 123, NULL, 'Actividad Junio Valida', 'Descripcion Junio', '2026-06-15', 5);
 
--- 12. POSTULACIÓN DE PROYECTO — Simula que el practicante ya tiene proyecto
-INSERT INTO project_postulation (practitioner_id, project_id, postulation_status, priority_level)
-VALUES (123, 1, 'Assigned', 1);
--- REPORTE 1: Para pruebas de actualizar/recuperar
-INSERT INTO progress_report (report_id, practitioner_id, report_type, generation_date, period_covered_start, period_covered_end, total_hours_at_submission, status)
-VALUES (1, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');
+INSERT INTO project_postulation (practitioner_id, project_id, postulation_status, priority_level) VALUES
+    (123, 1, 'Assigned', 1);
 
--- REPORTE 2: "Virgen" para la prueba de registrar nueva evaluación
-INSERT INTO progress_report (report_id, practitioner_id, report_type, generation_date, period_covered_start, period_covered_end, total_hours_at_submission, status)
-VALUES (2, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');
+INSERT INTO progress_report (report_id, practitioner_id, report_type, generation_date, period_covered_start, period_covered_end, total_hours_at_submission, status) VALUES
+                                                                                                                                                                        (1, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma'),
+                                                                                                                                                                        (2, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');
 
--- EVALUACIÓN LIGADA AL REPORTE 1 (Para markAsReviewed y submitEvidence)
-INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status)
-VALUES (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'http://pdf.url', 123, 1, 'Pendiente');
+INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES
+    (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'http://pdf.url', 123, 1, 'Pendiente');

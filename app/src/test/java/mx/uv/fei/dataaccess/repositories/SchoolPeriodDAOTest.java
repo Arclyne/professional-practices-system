@@ -1,11 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class SchoolPeriodDAOTest {
 
     @Inject
@@ -63,9 +63,18 @@ public class SchoolPeriodDAOTest {
     }
 
     @Test
-    void getAllSchoolPeriods_WithExistingData_ReturnsList() throws DAOException {
+    void getAllSchoolPeriods_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<SchoolPeriod> expectedList = new ArrayList<>();
+        SchoolPeriod sp = new SchoolPeriod();
+        sp.setPeriodId(5);
+        sp.setPeriodName("Junio-Diciembre 2026");
+        sp.setStartDate(LocalDate.of(2026, 6, 1));
+        sp.setEndDate(LocalDate.of(2026, 12, 12));
+        sp.setStatus("Active");
+        expectedList.add(sp);
+
         List<SchoolPeriod> resultList = periodDAO.getAllSchoolPeriods();
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -80,9 +89,8 @@ public class SchoolPeriodDAOTest {
 
     @Test
     void recoverSchoolPeriod_NonExistentId_ReturnsEmptyPeriod() throws DAOException {
-        SchoolPeriod expectedEmpty = new SchoolPeriod();
         SchoolPeriod recovered = periodDAO.recoverSchoolPeriod(9999);
-        assertEquals(expectedEmpty, recovered);
+        assertEquals(new SchoolPeriod(), recovered);
     }
 
     @Test

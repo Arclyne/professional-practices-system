@@ -39,19 +39,33 @@ import java.util.List;
 @Component
 public class ReviewSelfEvaluationController {
 
-    @FXML private TableView<SelfEvaluationRow> tvEvaluations;
-    @FXML private TableColumn<SelfEvaluationRow, String> tcStudent;
-    @FXML private TableColumn<SelfEvaluationRow, String> tcGroup;
-    @FXML private TableColumn<SelfEvaluationRow, String> tcStatus;
+    private static final String REPORT_TYPE_FINAL = "Final";
+    private static final String STATUS_NOT_DELIVERED = "No entregada";
+    private static final String STATUS_REVIEWED = "Revisada";
+    private static final String STATUS_PENDING_EVIDENCE = "pendiente";
 
-    @FXML private Label lblStudentName;
-    @FXML private Label lblStatus;
+    @FXML private TableView<SelfEvaluationRow> evaluationsTableView;
+    @FXML private TableColumn<SelfEvaluationRow, String> studentTableColumn;
+    @FXML private TableColumn<SelfEvaluationRow, String> groupTableColumn;
+    @FXML private TableColumn<SelfEvaluationRow, String> statusTableColumn;
 
-    @FXML private TextField tfQ1, tfQ2, tfQ3, tfQ4, tfQ5, tfQ6, tfQ7, tfQ8, tfQ9, tfQ10;
+    @FXML private Label studentNameLabel;
+    @FXML private Label statusLabel;
 
-    @FXML private Button btnViewEvidence;
-    @FXML private Button btnDownloadEvidence;
-    @FXML private Button btnApprove;
+    @FXML private TextField q1TextField;
+    @FXML private TextField q2TextField;
+    @FXML private TextField q3TextField;
+    @FXML private TextField q4TextField;
+    @FXML private TextField q5TextField;
+    @FXML private TextField q6TextField;
+    @FXML private TextField q7TextField;
+    @FXML private TextField q8TextField;
+    @FXML private TextField q9TextField;
+    @FXML private TextField q10TextField;
+
+    @FXML private Button viewEvidenceButton;
+    @FXML private Button downloadEvidenceButton;
+    @FXML private Button approveButton;
 
     private final SelfEvaluationManager selfEvaluationManager;
     private final ProgressReportManager progressReportManager;
@@ -73,11 +87,11 @@ public class ReviewSelfEvaluationController {
 
     @FXML
     public void initialize() {
-        tcStudent.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentName()));
-        tcGroup.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGroupCode()));
-        tcStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
+        studentTableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentName()));
+        groupTableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGroupCode()));
+        statusTableColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
 
-        tvEvaluations.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showEvaluationDetails(newValue));
+        evaluationsTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> showEvaluationDetails(newValue));
 
         clearDetails();
         loadStudentsAndEvaluations();
@@ -92,33 +106,37 @@ public class ReviewSelfEvaluationController {
             List<SelfEvaluationRow> rows = new ArrayList<>();
 
             for (Practitioner student : students) {
-                List<ProgressReport> reports = progressReportManager.getProgressReportsByPractitioner(student.getId());
-                ProgressReport finalReport = reports.stream()
-                        .filter(r -> "Final".equals(r.getReportType()))
-                        .findFirst()
-                        .orElse(null);
-
-                String status = "No entregada";
-                SelfEvaluation evaluation = null;
-
-                if (finalReport != null) {
-                    evaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
-                    if (evaluation != null) {
-                        status = evaluation.getStatus();
-                    }
-                }
-
-                String fullName = student.getName() + " " + student.getLastName();
-
-                rows.add(new SelfEvaluationRow(fullName, student.getEnrollment(), status, student, evaluation));
+                SelfEvaluationRow evaluationRow = createSelfEvaluationRow(student);
+                rows.add(evaluationRow);
             }
 
             ObservableList<SelfEvaluationRow> data = FXCollections.observableArrayList(rows);
-            tvEvaluations.setItems(data);
+            evaluationsTableView.setItems(data);
 
         } catch (ManagerException e) {
             Controller.showAlert("Error", "No se pudieron cargar las autoevaluaciones: " + e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private SelfEvaluationRow createSelfEvaluationRow(Practitioner student) throws ManagerException {
+        List<ProgressReport> reports = progressReportManager.getProgressReportsByPractitioner(student.getId());
+        ProgressReport finalReport = reports.stream()
+                .filter(r -> REPORT_TYPE_FINAL.equals(r.getReportType()))
+                .findFirst()
+                .orElse(null);
+
+        String status = STATUS_NOT_DELIVERED;
+        SelfEvaluation evaluation = null;
+
+        if (finalReport != null) {
+            evaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
+            if (evaluation != null) {
+                status = evaluation.getStatus();
+            }
+        }
+
+        String fullName = student.getName() + " " + student.getLastName();
+        return new SelfEvaluationRow(fullName, student.getEnrollment(), status, student, evaluation);
     }
 
     private void showEvaluationDetails(SelfEvaluationRow row) {
@@ -126,98 +144,102 @@ public class ReviewSelfEvaluationController {
         if (row == null || row.getSelfEvaluation() == null) {
             clearDetails();
             if (row != null) {
-                lblStudentName.setText("Alumno: " + row.getStudentName());
-                lblStatus.setText("Estado: " + row.getStatus());
+                studentNameLabel.setText("Alumno: " + row.getStudentName());
+                statusLabel.setText("Estado: " + row.getStatus());
             }
-            return;
+        } else {
+            SelfEvaluation eval = row.getSelfEvaluation();
+            studentNameLabel.setText("Alumno: " + row.getStudentName());
+            statusLabel.setText("Estado: " + eval.getStatus());
+
+            q1TextField.setText(String.valueOf(eval.getQ1()));
+            q2TextField.setText(String.valueOf(eval.getQ2()));
+            q3TextField.setText(String.valueOf(eval.getQ3()));
+            q4TextField.setText(String.valueOf(eval.getQ4()));
+            q5TextField.setText(String.valueOf(eval.getQ5()));
+            q6TextField.setText(String.valueOf(eval.getQ6()));
+            q7TextField.setText(String.valueOf(eval.getQ7()));
+            q8TextField.setText(String.valueOf(eval.getQ8()));
+            q9TextField.setText(String.valueOf(eval.getQ9()));
+            q10TextField.setText(String.valueOf(eval.getQ10()));
+
+            boolean hasEvidence = eval.getEvidence() != null
+                    && !eval.getEvidence().isEmpty()
+                    && !STATUS_PENDING_EVIDENCE.equals(eval.getEvidence());
+
+            viewEvidenceButton.setDisable(!hasEvidence);
+            downloadEvidenceButton.setDisable(!hasEvidence);
+            approveButton.setDisable(STATUS_REVIEWED.equals(eval.getStatus()));
         }
-
-        SelfEvaluation eval = row.getSelfEvaluation();
-        lblStudentName.setText("Alumno: " + row.getStudentName());
-        lblStatus.setText("Estado: " + eval.getStatus());
-
-        tfQ1.setText(String.valueOf(eval.getQ1())); tfQ2.setText(String.valueOf(eval.getQ2()));
-        tfQ3.setText(String.valueOf(eval.getQ3())); tfQ4.setText(String.valueOf(eval.getQ4()));
-        tfQ5.setText(String.valueOf(eval.getQ5())); tfQ6.setText(String.valueOf(eval.getQ6()));
-        tfQ7.setText(String.valueOf(eval.getQ7())); tfQ8.setText(String.valueOf(eval.getQ8()));
-        tfQ9.setText(String.valueOf(eval.getQ9())); tfQ10.setText(String.valueOf(eval.getQ10()));
-
-        boolean hasEvidence = eval.getEvidence() != null
-                && !eval.getEvidence().isEmpty()
-                && !"pendiente".equals(eval.getEvidence());
-
-        btnViewEvidence.setDisable(!hasEvidence);
-        btnDownloadEvidence.setDisable(!hasEvidence);
-        btnApprove.setDisable("Revisada".equals(eval.getStatus()));
     }
 
     private void clearDetails() {
-        lblStudentName.setText("Alumno: Seleccione un alumno");
-        lblStatus.setText("Estado: -");
-        TextField[] fields = {tfQ1, tfQ2, tfQ3, tfQ4, tfQ5, tfQ6, tfQ7, tfQ8, tfQ9, tfQ10};
+        studentNameLabel.setText("Alumno: Seleccione un alumno");
+        statusLabel.setText("Estado: -");
+        TextField[] fields = {q1TextField, q2TextField, q3TextField, q4TextField, q5TextField, q6TextField, q7TextField, q8TextField, q9TextField, q10TextField};
         for (TextField tf : fields) {
             tf.clear();
             tf.setEditable(false);
         }
-        btnViewEvidence.setDisable(true);
-        btnDownloadEvidence.setDisable(true);
-        btnApprove.setDisable(true);
+        viewEvidenceButton.setDisable(true);
+        downloadEvidenceButton.setDisable(true);
+        approveButton.setDisable(true);
     }
 
     @FXML
     private void handleViewEvidence() {
-        if (selectedRow == null || selectedRow.getSelfEvaluation() == null) return;
-
-        String evidencePath = selectedRow.getSelfEvaluation().getEvidence();
-        if (evidencePath == null || evidencePath.isEmpty()) return;
-
-        try {
-            java.net.URI uri = new java.io.File(evidencePath).toURI();
-            java.awt.Desktop.getDesktop().browse(uri);
-        } catch (Exception e) {
-            Controller.showAlert("Error de Archivo",
-                    "No se pudo abrir la evidencia del alumno: " + e.getMessage(),
-                    AlertType.ERROR);
+        if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
+            String evidencePath = selectedRow.getSelfEvaluation().getEvidence();
+            if (evidencePath != null && !evidencePath.isEmpty()) {
+                try {
+                    java.net.URI uri = new java.io.File(evidencePath).toURI();
+                    java.awt.Desktop.getDesktop().browse(uri);
+                } catch (IOException e) {
+                    Controller.showAlert("Error de Archivo",
+                            "No se pudo abrir la evidencia del alumno: " + e.getMessage(),
+                            AlertType.ERROR);
+                }
+            }
         }
     }
 
     @FXML
     private void handleDownloadEvidence() {
-        if (selectedRow == null || selectedRow.getSelfEvaluation() == null) return;
+        if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
+            SelfEvaluation eval = selectedRow.getSelfEvaluation();
+            String remotePath = eval.getEvidence();
 
-        SelfEvaluation eval = selectedRow.getSelfEvaluation();
-        String remotePath = eval.getEvidence();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Guardar Evidencia de Autoevaluación");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+            fileChooser.setInitialFileName("Evidencia_" + selectedRow.getStudentName().replace(" ", "_") + ".pdf");
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Guardar Evidencia de Autoevaluación");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
-        fileChooser.setInitialFileName("Evidencia_" + selectedRow.getStudentName().replace(" ", "_") + ".pdf");
+            Stage stage = (Stage) downloadEvidenceButton.getScene().getWindow();
+            File destination = fileChooser.showSaveDialog(stage);
 
-        Stage stage = (Stage) btnDownloadEvidence.getScene().getWindow();
-        File destination = fileChooser.showSaveDialog(stage);
-
-        if (destination != null) {
-            try {
-                Files.copy(Paths.get(remotePath), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                Controller.showAlert("Éxito", "Archivo de evidencia descargado correctamente.", AlertType.INFORMATION);
-            } catch (IOException e) {
-                Controller.showAlert("Error", "No se pudo descargar el archivo de evidencia: " + e.getMessage(), AlertType.ERROR);
+            if (destination != null) {
+                try {
+                    Files.copy(Paths.get(remotePath), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Controller.showAlert("Éxito", "Archivo de evidencia descargado correctamente.", AlertType.INFORMATION);
+                } catch (IOException e) {
+                    Controller.showAlert("Error", "No se pudo descargar el archivo de evidencia: " + e.getMessage(), AlertType.ERROR);
+                }
             }
         }
     }
 
     @FXML
     private void handleApproveEvaluation() {
-        if (selectedRow == null || selectedRow.getSelfEvaluation() == null) return;
-
-        try {
-            selfEvaluationManager.updateSelfEvaluation(selectedRow.getSelfEvaluation(), selectedRow.getSelfEvaluation().getSelfEvalId());
-            selfEvaluationManager.updateStatus(selectedRow.getSelfEvaluation().getSelfEvalId(), "Revisada");
-            Controller.showAlert("Éxito", "Autoevaluación marcada como 'Revisada' correctamente.", AlertType.INFORMATION);
-            loadStudentsAndEvaluations();
-            clearDetails();
-        } catch (ManagerException e) {
-            Controller.showAlert("Error", "No se pudo actualizar el estado: " + e.getMessage(), AlertType.ERROR);
+        if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
+            try {
+                selfEvaluationManager.updateSelfEvaluation(selectedRow.getSelfEvaluation(), selectedRow.getSelfEvaluation().getSelfEvalId());
+                selfEvaluationManager.updateStatus(selectedRow.getSelfEvaluation().getSelfEvalId(), STATUS_REVIEWED);
+                Controller.showAlert("Éxito", "Autoevaluación marcada como 'Revisada' correctamente.", AlertType.INFORMATION);
+                loadStudentsAndEvaluations();
+                clearDetails();
+            } catch (ManagerException e) {
+                Controller.showAlert("Error", "No se pudo actualizar el estado: " + e.getMessage(), AlertType.ERROR);
+            }
         }
     }
 
