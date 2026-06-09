@@ -14,7 +14,7 @@ import mx.uv.fei.config.annotation.etiquette.StartEtiquette;
 import java.io.IOException;
 
 @StartEtiquette
-@Profile("local2")
+@Profile("local")
 
 public class MainApplication extends Application {
 
