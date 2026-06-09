@@ -1919,3 +1919,55 @@ Caused by: java.sql.SQLIntegrityConstraintViolationException: Cannot add or upda
 2026-06-09 10:01:12 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
 2026-06-09 10:01:12 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
 2026-06-09 10:01:12 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 09:52:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 09:52:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 09:52:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 09:52:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 09:52:05 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 09:52:08 [JavaFX Application Thread] ERROR m.uv.fei.presentation.MainController - Error crítico al verificar el estado inicial del sistema.
+mx.uv.fei.domain.exceptions.ManagerException: Error crítico al verificar el estado inicial del sistema.
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:33)
+	at mx.uv.fei/mx.uv.fei.presentation.MainController.lambda$startAppFlow$0(MainController.java:170)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.runHandler(Animation.java:1167)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.finished(Animation.java:1161)
+	at javafx.graphics@23.0.1/javafx.animation.AnimationAccessorImpl.finished(AnimationAccessorImpl.java:49)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.shared.SingleLoopClipEnvelope.timePulse(SingleLoopClipEnvelope.java:107)
+	at javafx.graphics@23.0.1/javafx.animation.Animation.doTimePulse(Animation.java:1254)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.lambda$timePulse$0(Animation.java:208)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@23.0.1/javafx.animation.Animation$1.timePulse(Animation.java:207)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer.timePulseImpl(AbstractPrimaryTimer.java:343)
+	at javafx.graphics@23.0.1/com.sun.scenario.animation.AbstractPrimaryTimer$MainLoop.run(AbstractPrimaryTimer.java:266)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:594)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulse(QuantumToolkit.java:578)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.pulseFromQueue(QuantumToolkit.java:571)
+	at javafx.graphics@23.0.1/com.sun.javafx.tk.quantum.QuantumToolkit.lambda$runToolkit$11(QuantumToolkit.java:352)
+	at javafx.graphics@23.0.1/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+Caused by: mx.uv.fei.dataaccess.exceptions.DAOException: Error al verificar la existencia del administrador en la base de datos.
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:51)
+	at mx.uv.fei/mx.uv.fei.domain.manager.AdminManager.checkSystemHasAdmin(AdminManager.java:31)
+	... 16 common frames omitted
+Caused by: java.sql.SQLSyntaxErrorException: Table 'profesionalpractice.administrator' doesn't exist
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:990)
+	at mysql.connector.j@9.3.0/com.mysql.cj.jdbc.ClientPreparedStatement.executeQuery(ClientPreparedStatement.java:1058)
+	at mx.uv.fei/mx.uv.fei.dataaccess.repositories.AdministratorDAO.checkIfAdminExists(AdministratorDAO.java:45)
+	... 17 common frames omitted
+2026-06-09 09:52:28 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 09:52:28 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 09:52:28 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 09:52:28 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 09:52:28 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 10:01:16 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 10:01:16 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 10:01:16 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 10:01:16 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 10:01:16 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 10:03:14 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DatabaseProperties
+2026-06-09 10:03:14 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: DataconnectionConfig
+2026-06-09 10:03:14 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: PractitionerConfig
+2026-06-09 10:03:14 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: AppStore
+2026-06-09 10:03:14 [JavaFX-Launcher] INFO  m.u.f.c.a.c.EagerInstanceInitializer - Clase @Keep inicializada y registrada: SessionFacade
+2026-06-09 10:14:45 [JavaFX Application Thread] WARN  o.apache.pdfbox.pdmodel.PDDocument - You are overwriting the existing file Reporte_Avance_Intermedio.pdf, this will produce a corrupted file if you're also reading from it
+2026-06-09 10:19:10 [JavaFX Application Thread] WARN  o.apache.pdfbox.pdmodel.PDDocument - You are overwriting the existing file PRAIS-03_Autoevaluacion.pdf, this will produce a corrupted file if you're also reading from it
