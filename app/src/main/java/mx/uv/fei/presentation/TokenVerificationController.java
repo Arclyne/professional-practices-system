@@ -79,6 +79,6 @@ public class TokenVerificationController implements Initializable {
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
         store.dispatch(new SessionAction.Logout());
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
     }
 }
