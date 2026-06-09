@@ -202,6 +202,6 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleReturnAction(ActionEvent event) {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_REPORTS_LIST));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

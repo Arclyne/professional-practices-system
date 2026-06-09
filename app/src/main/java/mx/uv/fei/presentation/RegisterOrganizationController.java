@@ -47,7 +47,7 @@ public class RegisterOrganizationController{
             organizationToRegister.setBusiness(fieldBusiness.getText());
             organizationToRegister.setMail(fieldMail.getText());
             organizationToRegister.setCellphone(fieldCellphone.getText());
-            organizationToRegister.setState("Activo");
+            organizationToRegister.setState("Active");
 
             organizationManager.registerOrganization(organizationToRegister);
 

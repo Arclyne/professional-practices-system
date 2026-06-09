@@ -40,6 +40,9 @@ public class DashboardController {
     @FXML private Button navigateToProgressReportButton;
     @FXML private Button navigateToGradeViewButton;
 
+    @FXML private Button navigateToSelfEvaluationButton;
+    @FXML private Button navigateToReviewSelfEvaluationButton;
+
     @FXML private Button systemLogoutButton;
     @FXML private Button navigateToMessagesButton;
 
@@ -127,6 +130,10 @@ public class DashboardController {
                 navigateToGradePractitionerButton.setVisible(true);
                 navigateToGradePractitionerButton.setManaged(true);
             }
+            if (navigateToReviewSelfEvaluationButton != null) {
+                navigateToReviewSelfEvaluationButton.setVisible(true);
+                navigateToReviewSelfEvaluationButton.setManaged(true);
+            }
 
         } else if (applicationDashboardManager.isPractitionerMenuAvailable(authenticatedUserRole)) {
             navigateToPractitionerProjectsButton.setVisible(true);
@@ -148,6 +155,10 @@ public class DashboardController {
             if (navigateToGradeViewButton != null) {
                 navigateToGradeViewButton.setVisible(true);
                 navigateToGradeViewButton.setManaged(true);
+            }
+            if (navigateToSelfEvaluationButton != null) {
+                navigateToSelfEvaluationButton.setVisible(true);
+                navigateToSelfEvaluationButton.setManaged(true);
             }
         }
     }
@@ -219,6 +230,14 @@ public class DashboardController {
         if (navigateToGradeViewButton != null) {
             navigateToGradeViewButton.setVisible(false);
             navigateToGradeViewButton.setManaged(false);
+        }
+        if (navigateToSelfEvaluationButton != null) {
+            navigateToSelfEvaluationButton.setVisible(false);
+            navigateToSelfEvaluationButton.setManaged(false);
+        }
+        if (navigateToReviewSelfEvaluationButton != null) {
+            navigateToReviewSelfEvaluationButton.setVisible(false);
+            navigateToReviewSelfEvaluationButton.setManaged(false);
         }
     }
 
@@ -337,5 +356,15 @@ public class DashboardController {
     @FXML
     private void handleNavigateToGradeViewAction(ActionEvent event) {
         applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_GRADE_VIEW));
+    }
+
+    @FXML
+    private void handleNavigateToSelfEvaluationAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_SELF_EVALUATION));
+    }
+
+    @FXML
+    private void handleNavigateToReviewSelfEvaluationAction(ActionEvent event) {
+        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_REVIEW_SELF_EVALUATION));
     }
 }

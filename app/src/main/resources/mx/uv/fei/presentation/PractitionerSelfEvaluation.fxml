@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-padding: 30;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerSelfEvaluationController">
+
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Button mnemonicParsing="false" onAction="#handleReturnToMenu" text="← Regresar" style="-fx-background-color: #E0E0E0; -fx-cursor: hand;" />
+        <Label text="PRAIS-03: Autoevaluación Final">
+            <font><Font name="System Bold" size="20.0" /></font>
+        </Label>
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #F5F5F5; -fx-padding: 10;">
+        <Label fx:id="statusLabel" text="Estado: Verificando requisitos..." textFill="#d32f2f" style="-fx-padding: 0 0 0 10;">
+            <font><Font name="System Bold" size="13.0" /></font>
+        </Label>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+        <VBox spacing="12.0" style="-fx-padding: 10;">
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="1. Mi participación en la Organización Vinculada fue productiva." wrapText="true" /><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ1" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="2. Logré la aplicación de los conocimientos teórico-prácticos." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ2" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="3. Me sentí seguro al realizar las actividades encomendadas." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ3" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="4. Las actividades encomendadas despertaron mi interés." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ4" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="5. La Organización Vinculada me proporcionó información y facilidades." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ5" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="6. La Organización Vinculada me dio a conocer las reglas internas." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ6" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="7. El Responsable del Proyecto me orientó correctamente." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ7" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="8. El Responsable del Proyecto realizó un seguimiento efectivo." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ8" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="9. El proyecto es congruente con la formación de mi carrera." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ9" prefWidth="70"/></HBox>
+            <HBox alignment="CENTER_LEFT" spacing="15"><Label prefWidth="550" text="10. Considero que las prácticas son importantes para mi formación." wrapText="true"/><Region HBox.hgrow="ALWAYS"/><ComboBox fx:id="cbQ10" prefWidth="70"/></HBox>
+        </VBox>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="15.0">
+        <Button fx:id="saveButton" onAction="#handleSaveEvaluation" text="Guardar Respuestas" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;" />
+        <Button fx:id="downloadPdfButton" onAction="#handleDownloadPdf" text="Descargar PRAIS-03" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand;" />
+        <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedPdf" text="Subir PDF Firmado" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;" />
+    </HBox>
+</VBox>
