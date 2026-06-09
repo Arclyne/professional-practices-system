@@ -1,9 +1,11 @@
 package mx.uv.fei.domain.manager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -13,6 +15,7 @@ import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,18 +54,32 @@ public class MonthlyReportManagerTest {
     }
 
     @Test
-    void getPractitionerReports_ValidId_ReturnsList() {
-        assertDoesNotThrow(() -> reportManager.getPractitionerReports(123));
+    void getPractitionerReports_ValidId_ReturnsExpectedList() throws ManagerException {
+        List<MonthlyReport> expectedList = new ArrayList<>();
+        MonthlyReport rep = new MonthlyReport();
+        rep.setReportId(1);
+        rep.setPractitionerId(123);
+        rep.setMonthName("Mayo");
+        rep.setYear(2026);
+        rep.setStartDate(Date.valueOf("2026-05-01"));
+        rep.setEndDate(Date.valueOf("2026-05-31"));
+        rep.setStatus("Borrador");
+        expectedList.add(rep);
+
+        List<MonthlyReport> resultList = reportManager.getPractitionerReports(123);
+        assertEquals(expectedList, resultList);
     }
 
     @Test
-    void getReportsForEvaluation_ReturnsList() {
-        assertDoesNotThrow(() -> reportManager.getReportsForEvaluation());
+    void getReportsForEvaluation_ReturnsExpectedList() throws ManagerException {
+        List<MonthlyReport> expectedList = new ArrayList<>();
+        List<MonthlyReport> resultList = reportManager.getReportsForEvaluation();
+
+        assertEquals(expectedList, resultList);
     }
 
     @Test
     void evaluateReport_ValidData_DoesNotThrow() {
         assertDoesNotThrow(() -> reportManager.evaluateReport(1, 10.0, "Excelente trabajo"));
     }
-
 }
