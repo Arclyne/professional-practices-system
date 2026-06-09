@@ -1,6 +1,6 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
@@ -12,6 +12,8 @@ import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,8 +51,19 @@ public class CoordinatorManagerTest {
     }
 
     @Test
-    void retrieveCurrentCoordinator_ReturnsCoordinator() {
-        assertDoesNotThrow(() -> coordinatorManager.retrieveCurrentCoordinator());
-    }
+    void retrieveCurrentCoordinator_ReturnsCoordinator() throws ManagerException {
+        Coordinator expected = new Coordinator();
+        expected.setId(67);
+        expected.setUserName("coord1");
+        expected.setPassword("12345");
+        expected.setName("Coord");
+        expected.setLastName("Test");
+        expected.setEmail("coord1@uv.mx");
+        expected.setRole("Coordinator");
+        expected.setStatus(UserStatus.ACTIVE);
+        expected.setGender(Gender.MALE);
 
+        Coordinator current = coordinatorManager.retrieveCurrentCoordinator();
+        assertEquals(expected, current);
+    }
 }

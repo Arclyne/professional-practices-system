@@ -1,8 +1,12 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -35,7 +39,16 @@ public class PracticeGroupManagerTest {
     }
 
     @Test
-    void getAllPracticeGroups_ReturnsList() throws ManagerException {
-        assertNotNull(practiceGroupManager.getAllPracticeGroups());
+    void getAllPracticeGroups_ReturnsExpectedList() throws ManagerException {
+        List<PracticeGroup> expectedList = new ArrayList<>();
+        PracticeGroup group = new PracticeGroup();
+        group.setGroupId(6);
+        group.setSection("Seccion G");
+        group.setPeriodId(5);
+        group.setProfessorId(68);
+        expectedList.add(group);
+
+        List<PracticeGroup> resultList = practiceGroupManager.getAllPracticeGroups();
+        assertEquals(expectedList, resultList);
     }
 }

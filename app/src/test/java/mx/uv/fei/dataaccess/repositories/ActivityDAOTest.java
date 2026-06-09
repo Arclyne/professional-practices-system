@@ -48,7 +48,7 @@ public class ActivityDAOTest {
     void insertActivity_ValidActivity_ReturnsGeneratedId() throws DAOException {
         int resultId = activityDAO.insertActivity(validActivity);
 
-        assertTrue(resultId > 0, "El ID generado debería ser mayor a 0 al insertar exitosamente");
+        assertTrue(resultId > 0);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ActivityDAOTest {
 
         boolean isUpdated = activityDAO.updateActivity(validActivity, 1);
 
-        assertTrue(isUpdated, "La actualización debe retornar true al modificar un registro existente");
+        assertTrue(isUpdated);
     }
 
     @Test
@@ -66,39 +66,83 @@ public class ActivityDAOTest {
         int targetPractitionerId = 123;
         List<Activity> expectedList = new ArrayList<>();
 
-        expectedList.add(buildExpectedActivity(4, 123, null, "Actividad Junio Valida", "Descripcion Junio", "2026-06-15", 5));
-        expectedList.add(buildExpectedActivity(3, 123, null, "Dummy 2", "Descripcion Dummy 2", "2026-05-03", 3));
-        expectedList.add(buildExpectedActivity(2, 123, null, "Dummy 1", "Descripcion Dummy 1", "2026-05-02", 4));
-        expectedList.add(buildExpectedActivity(1, 123, 1, "toRecover", "Descripcion toRecover", "2026-05-01", 5));
+        Activity act4 = new Activity();
+        act4.setActivityId(4);
+        act4.setPractitionerId(123);
+        act4.setReportId(null);
+        act4.setTitle("Actividad Junio Valida");
+        act4.setDescription("Descripcion Junio");
+        act4.setActivityDate(java.sql.Date.valueOf("2026-06-15"));
+        act4.setDurationHours(5);
+        expectedList.add(act4);
+
+        Activity act3 = new Activity();
+        act3.setActivityId(3);
+        act3.setPractitionerId(123);
+        act3.setReportId(null);
+        act3.setTitle("Dummy 2");
+        act3.setDescription("Descripcion Dummy 2");
+        act3.setActivityDate(java.sql.Date.valueOf("2026-05-03"));
+        act3.setDurationHours(3);
+        expectedList.add(act3);
+
+        Activity act2 = new Activity();
+        act2.setActivityId(2);
+        act2.setPractitionerId(123);
+        act2.setReportId(null);
+        act2.setTitle("Dummy 1");
+        act2.setDescription("Descripcion Dummy 1");
+        act2.setActivityDate(java.sql.Date.valueOf("2026-05-02"));
+        act2.setDurationHours(4);
+        expectedList.add(act2);
+
+        Activity act1 = new Activity();
+        act1.setActivityId(1);
+        act1.setPractitionerId(123);
+        act1.setReportId(1);
+        act1.setTitle("toRecover");
+        act1.setDescription("Descripcion toRecover");
+        act1.setActivityDate(java.sql.Date.valueOf("2026-05-01"));
+        act1.setDurationHours(5);
+        expectedList.add(act1);
 
         List<Activity> resultList = activityDAO.getActivitiesByPractitioner(targetPractitionerId);
 
-        assertEquals(expectedList, resultList, "La lista de actividades recuperada no coincide con la esperada");
+        assertEquals(expectedList, resultList);
     }
 
     @Test
     void getActivitiesByReport_ExistingReport_ReturnsExpectedList() throws DAOException {
         int targetReportId = 1;
         List<Activity> expectedList = new ArrayList<>();
-        expectedList.add(buildExpectedActivity(1, 123, 1, "toRecover", "Descripcion toRecover", "2026-05-01", 5));
+
+        Activity act1 = new Activity();
+        act1.setActivityId(1);
+        act1.setPractitionerId(123);
+        act1.setReportId(1);
+        act1.setTitle("toRecover");
+        act1.setDescription("Descripcion toRecover");
+        act1.setActivityDate(java.sql.Date.valueOf("2026-05-01"));
+        act1.setDurationHours(5);
+        expectedList.add(act1);
 
         List<Activity> resultList = activityDAO.getActivitiesByReport(targetReportId);
 
-        assertEquals(expectedList, resultList, "La lista de actividades recuperada no coincide con la esperada");
+        assertEquals(expectedList, resultList);
     }
 
     @Test
     void assignActivityToReport_ValidIds_ReturnsTrue() throws DAOException {
         boolean isAssigned = activityDAO.assignActivityToReport(2, 1);
 
-        assertTrue(isAssigned, "Debe retornar true al asignar correctamente un reporte a una actividad");
+        assertTrue(isAssigned);
     }
 
     @Test
     void removeActivityFromReport_ExistingActivity_ReturnsTrue() throws DAOException {
         boolean isRemoved = activityDAO.removeActivityFromReport(1);
 
-        assertTrue(isRemoved, "Debe retornar true al ejecutar la remoción del reporte de la actividad");
+        assertTrue(isRemoved);
     }
 
     @Test
@@ -107,7 +151,7 @@ public class ActivityDAOTest {
 
         assertThrows(DAOException.class, () -> {
             activityDAO.insertActivity(validActivity);
-        }, "Debería lanzar DAOException por violación de Foreign Key al no existir el practitioner_id");
+        });
     }
 
     @Test
@@ -116,14 +160,14 @@ public class ActivityDAOTest {
 
         boolean isUpdated = activityDAO.updateActivity(validActivity, nonExistentActivityId);
 
-        assertFalse(isUpdated, "Debe retornar false al intentar actualizar una actividad que no existe");
+        assertFalse(isUpdated);
     }
 
     @Test
     void getActivitiesByPractitioner_NonExistentPractitioner_ReturnsEmptyList() throws DAOException {
         List<Activity> resultList = activityDAO.getActivitiesByPractitioner(9999);
 
-        assertTrue(resultList.isEmpty(), "La lista debería estar vacía para un practicante que no existe o no tiene actividades");
+        assertEquals(new ArrayList<>(), resultList);
     }
 
     @Test
@@ -132,7 +176,7 @@ public class ActivityDAOTest {
 
         boolean isAssigned = activityDAO.assignActivityToReport(nonExistentActivityId, 1);
 
-        assertFalse(isAssigned, "Debe retornar false porque la actividad no existe para ser actualizada");
+        assertFalse(isAssigned);
     }
 
     @Test
@@ -141,7 +185,7 @@ public class ActivityDAOTest {
 
         assertThrows(DAOException.class, () -> {
             activityDAO.assignActivityToReport(1, nonExistentReportId);
-        }, "Debe lanzar DAOException por violación de Foreign Key al no existir el report_id");
+        });
     }
 
     @Test
@@ -150,18 +194,6 @@ public class ActivityDAOTest {
 
         boolean isRemoved = activityDAO.removeActivityFromReport(nonExistentActivityId);
 
-        assertFalse(isRemoved, "Debe retornar false al intentar remover un reporte de una actividad que no existe");
-    }
-
-    private Activity buildExpectedActivity(int id, int practitionerId, Integer reportId, String title, String description, String date, int duration) {
-        Activity activity = new Activity();
-        activity.setActivityId(id);
-        activity.setPractitionerId(practitionerId);
-        activity.setReportId(reportId);
-        activity.setTitle(title);
-        activity.setDescription(description);
-        activity.setActivityDate(java.sql.Date.valueOf(date));
-        activity.setDurationHours(duration);
-        return activity;
+        assertFalse(isRemoved);
     }
 }

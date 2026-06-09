@@ -1,15 +1,21 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,13 +47,27 @@ public class PractitionerManagerTest {
     }
 
     @Test
-    void retrievePractitionersPendingAssignment_ReturnsList() throws ManagerException {
-        assertNotNull(practitionerManager.retrievePractitionersPendingAssignment());
+    void retrievePractitionersPendingAssignment_ReturnsExpectedList() throws ManagerException {
+        List<Practitioner> expectedList = new ArrayList<>();
+        List<Practitioner> resultList = practitionerManager.retrievePractitionersPendingAssignment();
+
+        assertEquals(expectedList, resultList);
     }
 
     @Test
-    void retrieveAssignedPractitioners_ReturnsList() throws ManagerException {
-        assertNotNull(practitionerManager.retrieveAssignedPractitioners());
+    void retrieveAssignedPractitioners_ReturnsExpectedList() throws ManagerException {
+        List<Practitioner> expectedList = new ArrayList<>();
+        Practitioner p = new Practitioner();
+        p.setId(123);
+        p.setUserName("zS24242424");
+        p.setEnrollment("zS24242424");
+        p.setName("Angel");
+        p.setLastName("Aguilar");
+        p.setEmail("angel24@gmail.com");
+        expectedList.add(p);
+
+        List<Practitioner> resultList = practitionerManager.retrieveAssignedPractitioners();
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -56,6 +76,10 @@ public class PractitionerManagerTest {
         java.nio.file.Files.writeString(tempCsv.toPath(), "matricula,nombre,apellidos,correo,genero,lengua_indigena\nS20011111,Ana,Lopez,alopez@uv.mx,Female,Nahuatl");
         tempCsv.deleteOnExit();
 
-        assertNotNull(practitionerManager.registerPractitionerBatch(tempCsv, "coord_test"));
+        BatchRegistrationSummary expectedSummary = new BatchRegistrationSummary();
+        expectedSummary.incrementSuccess();
+
+        BatchRegistrationSummary actualSummary = practitionerManager.registerPractitionerBatch(tempCsv, "coord_test");
+        assertEquals(expectedSummary, actualSummary);
     }
 }
