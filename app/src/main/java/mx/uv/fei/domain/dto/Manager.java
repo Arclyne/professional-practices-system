@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.dto;
 
 import mx.uv.fei.domain.enums.UserStatus;
+import java.util.Objects;
 
 public class Manager {
 
@@ -65,4 +66,21 @@ public class Manager {
 
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Manager that = (Manager) obj;
+            isEqual = Objects.equals(this.email, that.email);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }

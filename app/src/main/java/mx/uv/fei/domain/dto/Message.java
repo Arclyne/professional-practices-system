@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Message {
     private int messageId;
@@ -33,4 +34,23 @@ public class Message {
 
     public int getReceiverId() { return receiverId; }
     public void setReceiverId(int receiverId) { this.receiverId = receiverId; }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Message that = (Message) obj;
+            isEqual = this.messageId == that.messageId &&
+                    this.senderId == that.senderId &&
+                    this.receiverId == that.receiverId;
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageId, senderId, receiverId);
+    }
 }

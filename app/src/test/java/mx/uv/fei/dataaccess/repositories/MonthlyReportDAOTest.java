@@ -1,12 +1,13 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class MonthlyReportDAOTest {
 
     private static final int PRACTITIONER_ID = 123;
@@ -55,17 +55,40 @@ public class MonthlyReportDAOTest {
     }
 
     @Test
-    void getReportsByPractitioner_WithExistingReports_ReturnsList() throws DAOException {
+    void getReportsByPractitioner_WithExistingReports_ReturnsExpectedList() throws DAOException {
+        List<MonthlyReport> expectedList = new ArrayList<>();
+        MonthlyReport rep = new MonthlyReport();
+        rep.setReportId(1);
+        rep.setPractitionerId(123);
+        rep.setMonthName("Mayo");
+        rep.setYear(2026);
+        rep.setStartDate(Date.valueOf("2026-05-01"));
+        rep.setEndDate(Date.valueOf("2026-05-31"));
+        rep.setStatus("Borrador");
+        expectedList.add(rep);
+
         List<MonthlyReport> resultList = monthlyReportDAO.getReportsByPractitioner(PRACTITIONER_ID);
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
-    void getSubmittedReports_WithSubmittedReports_ReturnsList() throws DAOException {
+    void getSubmittedReports_WithSubmittedReports_ReturnsExpectedList() throws DAOException {
         testReport.setStatus("Entregado");
-        monthlyReportDAO.insertReport(testReport);
+        int newId = monthlyReportDAO.insertReport(testReport);
+
+        List<MonthlyReport> expectedList = new ArrayList<>();
+        MonthlyReport rep = new MonthlyReport();
+        rep.setReportId(newId);
+        rep.setPractitionerId(123);
+        rep.setMonthName("Junio");
+        rep.setYear(2026);
+        rep.setStartDate(Date.valueOf("2026-06-01"));
+        rep.setEndDate(Date.valueOf("2026-06-30"));
+        rep.setStatus("Entregado");
+        expectedList.add(rep);
+
         List<MonthlyReport> resultList = monthlyReportDAO.getSubmittedReports();
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -87,7 +110,6 @@ public class MonthlyReportDAOTest {
     void updateReport_ValidModifiedData_ReturnsTrue() throws DAOException {
         testReport.setMonthName("Julio");
         testReport.setStatus("Entregado");
-
         boolean isUpdated = monthlyReportDAO.updateReport(testReport, 1);
         assertTrue(isUpdated);
     }
@@ -95,9 +117,7 @@ public class MonthlyReportDAOTest {
     @Test
     void insertReport_NonExistentPractitioner_ThrowsDAOException() {
         testReport.setPractitionerId(9999);
-        assertThrows(DAOException.class, () -> {
-            monthlyReportDAO.insertReport(testReport);
-        });
+        assertThrows(DAOException.class, () -> monthlyReportDAO.insertReport(testReport));
     }
 
     @Test

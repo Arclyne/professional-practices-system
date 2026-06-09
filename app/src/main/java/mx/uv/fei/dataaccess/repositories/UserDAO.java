@@ -160,7 +160,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     }
 
     private User extractUserFromQuery(String query, String parameter) throws DAOException {
-        User retrievedUser = null;
+        User retrievedUser = new User();
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -169,8 +169,6 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    retrievedUser = new User();
-
                     retrievedUser.setId(resultSet.getInt("user_id"));
                     retrievedUser.setUserName(resultSet.getString("username"));
                     retrievedUser.setPassword(resultSet.getString("password"));

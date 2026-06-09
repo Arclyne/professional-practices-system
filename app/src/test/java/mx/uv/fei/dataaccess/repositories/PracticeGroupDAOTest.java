@@ -1,11 +1,12 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class PracticeGroupDAOTest {
 
     @Inject
@@ -61,9 +61,17 @@ public class PracticeGroupDAOTest {
     }
 
     @Test
-    void getAllPracticeGroups_WithExistingData_ReturnsList() throws DAOException {
+    void getAllPracticeGroups_WithExistingData_ReturnsExpectedList() throws DAOException {
+        List<PracticeGroup> expectedList = new ArrayList<>();
+        PracticeGroup group = new PracticeGroup();
+        group.setGroupId(6);
+        group.setSection("Seccion G");
+        group.setPeriodId(5);
+        group.setProfessorId(68);
+        expectedList.add(group);
+
         List<PracticeGroup> resultList = groupDAO.getAllPracticeGroups();
-        assertFalse(resultList.isEmpty());
+        assertEquals(expectedList, resultList);
     }
 
     @Test
@@ -76,16 +84,13 @@ public class PracticeGroupDAOTest {
     @Test
     void insertPracticeGroup_NonExistentProfessor_ThrowsDAOException() {
         testGroup.setProfessorId(9999);
-        assertThrows(DAOException.class, () -> {
-            groupDAO.insertPracticeGroup(testGroup);
-        });
+        assertThrows(DAOException.class, () -> groupDAO.insertPracticeGroup(testGroup));
     }
 
     @Test
     void recoverPracticeGroup_NonExistentId_ReturnsEmptyGroup() throws DAOException {
-        PracticeGroup expectedEmpty = new PracticeGroup();
         PracticeGroup recovered = groupDAO.recoverPracticeGroup(9999);
-        assertEquals(expectedEmpty, recovered);
+        assertEquals(new PracticeGroup(), recovered);
     }
 
     @Test

@@ -1,11 +1,11 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.TestDatabaseSetup;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
-
 public class MessageDAOTest {
 
     private static final int SENDER_ID = 13;
@@ -58,26 +57,54 @@ public class MessageDAOTest {
     }
 
     @Test
-    void getMessagesBySender_WithExistingMessages_ReturnsList() throws DAOException {
+    void getMessagesBySender_WithExistingMessages_ReturnsExpectedList() throws DAOException {
         int messageId = messageDAO.insertMessage("Asunto enviado", "Cuerpo enviado.");
         messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
+
         List<Message> resultList = messageDAO.getMessagesBySender(SENDER_ID, 10, 0);
-        assertFalse(resultList.isEmpty());
+
+        List<Message> expectedList = new ArrayList<>();
+        Message expectedMsg = new Message();
+        expectedMsg.setMessageId(messageId);
+        expectedMsg.setSubject("Asunto enviado");
+        expectedMsg.setBody("Cuerpo enviado.");
+        expectedMsg.setSenderId(SENDER_ID);
+        expectedMsg.setReceiverId(RECEIVER_ID);
+        expectedMsg.setSenderName("Angel Aguilar");
+        if (!resultList.isEmpty()) {
+            expectedMsg.setSendDate(resultList.get(0).getSendDate());
+        }
+        expectedList.add(expectedMsg);
+
+        assertEquals(expectedList, resultList);
     }
 
     @Test
-    void getMessagesByReceiver_WithExistingMessages_ReturnsList() throws DAOException {
+    void getMessagesByReceiver_WithExistingMessages_ReturnsExpectedList() throws DAOException {
         int messageId = messageDAO.insertMessage("Asunto recibido", "Cuerpo recibido.");
         messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
+
         List<Message> resultList = messageDAO.getMessagesByReceiver(RECEIVER_ID, 10, 0);
-        assertFalse(resultList.isEmpty());
+
+        List<Message> expectedList = new ArrayList<>();
+        Message expectedMsg = new Message();
+        expectedMsg.setMessageId(messageId);
+        expectedMsg.setSubject("Asunto recibido");
+        expectedMsg.setBody("Cuerpo recibido.");
+        expectedMsg.setSenderId(SENDER_ID);
+        expectedMsg.setReceiverId(RECEIVER_ID);
+        expectedMsg.setSenderName("adm adm");
+        if (!resultList.isEmpty()) {
+            expectedMsg.setSendDate(resultList.get(0).getSendDate());
+        }
+        expectedList.add(expectedMsg);
+
+        assertEquals(expectedList, resultList);
     }
 
     @Test
     void insertParticipant_NonExistentMessageId_ThrowsDAOException() {
-        assertThrows(DAOException.class, () -> {
-            messageDAO.insertParticipant(9999, SENDER_ID, RECEIVER_ID);
-        });
+        assertThrows(DAOException.class, () -> messageDAO.insertParticipant(9999, SENDER_ID, RECEIVER_ID));
     }
 
     @Test
