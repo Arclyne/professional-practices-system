@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
 import mx.uv.fei.domain.dto.ProgressReport;
+import mx.uv.fei.domain.dto.Project;
+import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -26,18 +29,48 @@ public class ProgressReportManagerTest {
     private static final double HOURS_BELOW_420 = 300.0;
 
     private ProgressReportManager progressReportManager;
-    private StubProgressReportDAO stubDAO;
+    private StubProgressReportDAO stubProgressReportDAO;
+    private StubPostulationDAO stubPostulationDAO;
 
     @BeforeEach
     void setUp() {
-        stubDAO = new StubProgressReportDAO();
-        progressReportManager = new ProgressReportManager(stubDAO);
+        stubProgressReportDAO = new StubProgressReportDAO();
+        stubPostulationDAO = new StubPostulationDAO();
+
+        progressReportManager = new ProgressReportManager(stubProgressReportDAO, stubPostulationDAO);
+
+        stubPostulationDAO.setHasAssignedProject(true);
+    }
+
+
+
+    @Test
+    void generateProgressReport_NoAssignedProject_ThrowsManagerException() {
+        stubPostulationDAO.setHasAssignedProject(false);
+
+        ManagerException e = assertThrows(ManagerException.class,
+                () -> progressReportManager.generateProgressReport(
+                        PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+
+        assertTrue(e.getMessage().contains("sin tener un proyecto asignado"));
+    }
+
+    @Test
+    void generateProgressReport_ProjectCheckThrowsDAOException_ThrowsManagerException() {
+
+        stubPostulationDAO.setThrowDaoException(true);
+
+        ManagerException e = assertThrows(ManagerException.class,
+                () -> progressReportManager.generateProgressReport(
+                        PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+
+        assertTrue(e.getMessage().contains("verificar el estado de tu proyecto"));
     }
 
 
     @Test
     void generateProgressReport_IntermediateWith215Hours_ReturnsReport() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
 
         ProgressReport result = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END);
@@ -47,7 +80,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void generateProgressReport_IntermediateWith215Hours_SetsCorrectType() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
 
         ProgressReport result = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END);
@@ -57,8 +90,8 @@ public class ProgressReportManagerTest {
 
     @Test
     void generateProgressReport_FinalWith425Hours_ReturnsReport() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_420);
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_420);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ProgressReport result = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END);
@@ -68,7 +101,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void generateProgressReport_IntermediateWith215Hours_StoresTotalHours() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
 
         ProgressReport result = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END);
@@ -76,10 +109,9 @@ public class ProgressReportManagerTest {
         assertEquals(HOURS_210, result.getTotalHoursAtSubmission());
     }
 
-
     @Test
     void generateProgressReport_IntermediateWith100Hours_ThrowsManagerException() {
-        stubDAO.setAccumulatedHours(HOURS_BELOW_210);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_BELOW_210);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.generateProgressReport(
@@ -90,7 +122,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void generateProgressReport_FinalWith300Hours_ThrowsManagerException() {
-        stubDAO.setAccumulatedHours(HOURS_BELOW_420);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_BELOW_420);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.generateProgressReport(
@@ -101,8 +133,8 @@ public class ProgressReportManagerTest {
 
     @Test
     void generateProgressReport_IntermediateAlreadyExists_ThrowsManagerException() {
-        stubDAO.setAccumulatedHours(HOURS_210);
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.generateProgressReport(
@@ -113,29 +145,29 @@ public class ProgressReportManagerTest {
 
     @Test
     void submitSignedProgressReport_ValidFile_UpdatesStatus() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_210);
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         progressReportManager.submitSignedProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, "/files/reporte_firmado.pdf");
 
-        assertEquals("Entregado", stubDAO.getLastUpdatedReport().getStatus());
+        assertEquals("Entregado", stubProgressReportDAO.getLastUpdatedReport().getStatus());
     }
 
     @Test
     void submitSignedProgressReport_ValidFile_SetsFileUrl() throws ManagerException {
-        stubDAO.setAccumulatedHours(HOURS_210);
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setAccumulatedHours(HOURS_210);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         progressReportManager.submitSignedProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, "/files/firmado.pdf");
 
-        assertEquals("/files/firmado.pdf", stubDAO.getLastUpdatedReport().getSignedFileUrl());
+        assertEquals("/files/firmado.pdf", stubProgressReportDAO.getLastUpdatedReport().getSignedFileUrl());
     }
 
     @Test
     void submitSignedProgressReport_NullFile_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.submitSignedProgressReport(
@@ -146,7 +178,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void submitSignedProgressReport_BlankFile_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.submitSignedProgressReport(
@@ -157,7 +189,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void submitSignedProgressReport_ReportNotFound_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(false);
+        stubProgressReportDAO.setExistingIntermediate(false);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.submitSignedProgressReport(
@@ -168,27 +200,27 @@ public class ProgressReportManagerTest {
 
     @Test
     void evaluateProgressReport_ValidGradeAndFeedback_UpdatesStatus() throws ManagerException {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         progressReportManager.evaluateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, 9.0, "Excelente trabajo.");
 
-        assertEquals("Evaluado", stubDAO.getLastUpdatedReport().getStatus());
+        assertEquals("Evaluado", stubProgressReportDAO.getLastUpdatedReport().getStatus());
     }
 
     @Test
     void evaluateProgressReport_ValidGrade_SetsGradeOnReport() throws ManagerException {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         progressReportManager.evaluateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, 8.5, "Buen avance.");
 
-        assertEquals(8.5, stubDAO.getLastUpdatedReport().getGrade());
+        assertEquals(8.5, stubProgressReportDAO.getLastUpdatedReport().getGrade());
     }
 
     @Test
     void evaluateProgressReport_GradeAbove10_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.evaluateProgressReport(
@@ -199,7 +231,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void evaluateProgressReport_NegativeGrade_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.evaluateProgressReport(
@@ -210,7 +242,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void evaluateProgressReport_NullFeedback_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.evaluateProgressReport(
@@ -221,7 +253,7 @@ public class ProgressReportManagerTest {
 
     @Test
     void evaluateProgressReport_BlankFeedback_ThrowsManagerException() {
-        stubDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setExistingIntermediate(true);
 
         ManagerException e = assertThrows(ManagerException.class,
                 () -> progressReportManager.evaluateProgressReport(
@@ -230,10 +262,9 @@ public class ProgressReportManagerTest {
         assertNotNull(e.getMessage());
     }
 
-
     @Test
     void getSubmittedProgressReports_WithReports_ReturnsList() throws ManagerException {
-        stubDAO.addSubmittedReport(new ProgressReport());
+        stubProgressReportDAO.addSubmittedReport(new ProgressReport());
 
         List<ProgressReport> result = progressReportManager.getSubmittedProgressReports();
 
@@ -246,6 +277,8 @@ public class ProgressReportManagerTest {
 
         assertTrue(result.isEmpty());
     }
+
+    // --- CLASES STUB ---
 
     private static class StubProgressReportDAO implements IProgressReportDAO {
 
@@ -311,5 +344,32 @@ public class ProgressReportManagerTest {
         public double getTotalAccumulatedHours(int practitionerId) throws DAOException {
             return accumulatedHours;
         }
+    }
+
+    private static class StubPostulationDAO implements IPostulationDAO {
+        private boolean hasAssignedProject = true;
+        private boolean throwDaoException = false;
+
+        void setHasAssignedProject(boolean hasAssignedProject) {
+            this.hasAssignedProject = hasAssignedProject;
+        }
+
+        void setThrowDaoException(boolean throwDaoException) {
+            this.throwDaoException = throwDaoException;
+        }
+
+        @Override
+        public boolean hasAssignedProject(int practitionerId) throws DAOException {
+            if (throwDaoException) {
+                throw new DAOException("Error de BD simulado",new java.sql.SQLException("Simulated"));
+            }
+            return hasAssignedProject;
+        }
+
+        // Métodos vacíos (no usados en estas pruebas pero requeridos por la interfaz)
+        @Override public boolean hasPractitionerSubmittedPriorities(int id) { return false; }
+        @Override public boolean insertProjectPriorities(int id, List<Project> list) { return false; }
+        @Override public List<ProjectPostulation> retrievePractitionerPostulations(int id) { return new ArrayList<>(); }
+        @Override public boolean assignProjectUsingStoredProcedure(int pId, int prjId) { return false; }
     }
 }

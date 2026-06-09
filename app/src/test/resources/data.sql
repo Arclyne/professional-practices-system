@@ -50,6 +50,12 @@ INSERT INTO activity (activity_id, practitioner_id, title, description, activity
 INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status)
 VALUES (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
 
+INSERT INTO activity (activity_id, practitioner_id, title, description, activity_date, duration_hours) VALUES
+    (4, 123, 'Actividad Junio Valida', 'Descripcion Junio', '2026-06-15', 5);
+
+-- 12. POSTULACIÓN DE PROYECTO — Simula que el practicante ya tiene proyecto
+INSERT INTO project_postulation (practitioner_id, project_id, postulation_status, priority_level)
+VALUES (123, 1, 'Assigned', 1);
 -- REPORTE 1: Para pruebas de actualizar/recuperar
 INSERT INTO progress_report (report_id, practitioner_id, report_type, generation_date, period_covered_start, period_covered_end, total_hours_at_submission, status)
 VALUES (1, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');

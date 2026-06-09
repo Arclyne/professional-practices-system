@@ -1,6 +1,10 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,19 +23,32 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private static final String SQL_INSERT_PRACTITIONER =
             "INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id) VALUES (?, ?, ?, ?)";
+
     private static final String SQL_SELECT_PRACTITIONER_BY_ID =
-            "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
-                    "FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id WHERE p.practitioner_id = ?";
+            "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
+                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "WHERE p.practitioner_id = ?";
+
     private static final String SQL_SELECT_ALL_PRACTITIONERS =
-            "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
-                    "FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id";
+            "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
+                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id";
+
     private static final String SQL_UPDATE_PRACTITIONER =
-            "UPDATE practitioner SET indigenous_language = ?, grade = ?, group_id = ? WHERE practitioner_id = ?";
-    private static final String SQL_SELECT_PENDING_ASSIGNMENT_PRACTITIONERS =
+            "UPDATE practitioner SET indigenous_language = ?, grade = ?, group_id = ? " +
+                    "WHERE practitioner_id = ?";
+
+    private static final String SQL_SELECT_PENDING_ASSIGNMENT =
             "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
-                    "FROM practitioner p INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "WHERE p.practitioner_id IN (SELECT practitioner_id FROM project_postulation) " +
-                    "AND p.practitioner_id NOT IN (SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
+                    "AND p.practitioner_id NOT IN " +
+                    "(SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
+
     private static final String SQL_SELECT_ASSIGNED_PRACTITIONERS =
             "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
@@ -39,11 +56,23 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
                     "WHERE u.status = 'Active' AND pp.postulation_status = 'Assigned'";
 
-    private static final String MSG_INSERT_ROLLBACK = "SQL error while inserting the practitioner. Changes reverted.";
-    private static final String MSG_CRITICAL_CONN   = "Critical database connection error.";
-    private static final String MSG_RECOVER_ERROR   = "Database error while attempting to recover the practitioner.";
-    private static final String MSG_UPDATE_ROLLBACK = "SQL error while updating the practitioner. Changes reverted.";
-    private static final String MSG_PENDING_ERROR   = "An error occurred while querying practitioners pending assignment.";
+    private static final String SQL_SELECT_BY_PROFESSOR =
+            "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
+                    "INNER JOIN practice_group pg ON p.group_id = pg.group_id " +
+                    "WHERE u.status = 'Active' " +
+                    "AND pp.postulation_status = 'Assigned' " +
+                    "AND pg.professor_id = ?";
+
+    private static final String MSG_INSERT_ROLLBACK  = "SQL error while inserting the practitioner. Changes reverted.";
+    private static final String MSG_CRITICAL_CONN    = "Critical database connection error.";
+    private static final String MSG_RECOVER_ERROR    = "Database error while attempting to recover the practitioner.";
+    private static final String MSG_UPDATE_ROLLBACK  = "SQL error while updating the practitioner. Changes reverted.";
+    private static final String MSG_PENDING_ERROR    = "An error occurred while querying practitioners pending assignment.";
+    private static final String MSG_ASSIGNED_ERROR   = "An error occurred while querying assigned practitioners.";
+    private static final String MSG_BY_PROFESSOR_ERROR = "An error occurred while querying practitioners by professor.";
 
     private final IUserDAO userDAO;
 
@@ -68,20 +97,21 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException | DAOException e) {
+            } catch (SQLException | DAOException exception) {
                 connection.rollback();
-                throw new DAOException(MSG_INSERT_ROLLBACK, e);
+                throw new DAOException(MSG_INSERT_ROLLBACK, exception);
             } finally {
                 connection.setAutoCommit(true);
             }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_CRITICAL_CONN, e);
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_CRITICAL_CONN, exception);
         }
 
         return resultId;
     }
 
-    private int executePractitionerInsertTransaction(Connection connection, Practitioner practitioner) throws SQLException, DAOException {
+    private int executePractitionerInsertTransaction(Connection connection, Practitioner practitioner)
+            throws SQLException, DAOException {
         int insertedPractitionerId = -1;
         int generatedUserId = userDAO.insertUser(practitioner, connection);
 
@@ -120,8 +150,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     recoveredPractitioner = mapResultSetToPractitioner(resultSet);
                 }
             }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_RECOVER_ERROR, e);
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_RECOVER_ERROR, exception);
         }
 
         return recoveredPractitioner;
@@ -148,20 +178,21 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException | DAOException e) {
+            } catch (SQLException | DAOException exception) {
                 connection.rollback();
-                throw new DAOException(MSG_UPDATE_ROLLBACK, e);
+                throw new DAOException(MSG_UPDATE_ROLLBACK, exception);
             } finally {
                 connection.setAutoCommit(true);
             }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_CRITICAL_CONN, e);
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_CRITICAL_CONN, exception);
         }
 
         return isUpdated;
     }
 
-    private boolean executePractitionerUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId) throws SQLException, DAOException {
+    private boolean executePractitionerUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
+            throws SQLException, DAOException {
         boolean updateSuccessful = false;
         boolean userUpdated = userDAO.updateUser(practitioner, connection);
 
@@ -189,24 +220,69 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         List<Practitioner> pendingPractitionersList = new ArrayList<>();
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_PENDING_ASSIGNMENT_PRACTITIONERS);
-             ResultSet resultSet = selectStatement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_PENDING_ASSIGNMENT);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                Practitioner currentPractitioner = new Practitioner();
-                currentPractitioner.setId(resultSet.getInt("user_id"));
-                currentPractitioner.setEnrollment(resultSet.getString("matricula"));
-                currentPractitioner.setUserName(resultSet.getString("matricula"));
-                currentPractitioner.setName(resultSet.getString("name"));
-                currentPractitioner.setLastName(resultSet.getString("last_name"));
-                currentPractitioner.setEmail(resultSet.getString("email"));
-                pendingPractitionersList.add(currentPractitioner);
+                pendingPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
             }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_PENDING_ERROR, e);
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_PENDING_ERROR, exception);
         }
 
         return pendingPractitionersList;
+    }
+
+    @Override
+    public List<Practitioner> retrieveAssignedPractitioners() throws DAOException {
+        List<Practitioner> assignedPractitionersList = new ArrayList<>();
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ASSIGNED_PRACTITIONERS);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                assignedPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
+            }
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_ASSIGNED_ERROR, exception);
+        }
+
+        return assignedPractitionersList;
+    }
+
+    @Override
+    public List<Practitioner> retrievePractitionersByProfessor(int professorId) throws DAOException {
+        List<Practitioner> practitionersList = new ArrayList<>();
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_PROFESSOR)) {
+
+            statement.setInt(1, professorId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    practitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
+                }
+            }
+        } catch (SQLException exception) {
+            throw new DAOException(MSG_BY_PROFESSOR_ERROR, exception);
+        }
+
+        return practitionersList;
+    }
+
+    private Practitioner mapResultSetToMinimalPractitioner(ResultSet resultSet) throws SQLException {
+        Practitioner practitioner = new Practitioner();
+
+        practitioner.setId(resultSet.getInt("user_id"));
+        practitioner.setEnrollment(resultSet.getString("matricula"));
+        practitioner.setUserName(resultSet.getString("matricula"));
+        practitioner.setName(resultSet.getString("name"));
+        practitioner.setLastName(resultSet.getString("last_name"));
+        practitioner.setEmail(resultSet.getString("email"));
+
+        return practitioner;
     }
 
     private Practitioner mapResultSetToPractitioner(ResultSet resultSet) throws SQLException {
@@ -230,37 +306,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         practitioner.setGrade(resultSet.getDouble("grade"));
 
         int retrievedGroupId = resultSet.getInt("group_id");
-        if (resultSet.wasNull()) {
-            practitioner.setGroupId(null);
-        } else {
-            practitioner.setGroupId(retrievedGroupId);
-        }
+        practitioner.setGroupId(resultSet.wasNull() ? null : retrievedGroupId);
 
         return practitioner;
-    }
-
-    @Override
-    public List<Practitioner> retrieveAssignedPractitioners() throws DAOException {
-        List<Practitioner> assignedPractitionersList = new ArrayList<>();
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_ASSIGNED_PRACTITIONERS);
-             ResultSet resultSet = selectStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                Practitioner currentPractitioner = new Practitioner();
-                currentPractitioner.setId(resultSet.getInt("user_id"));
-                currentPractitioner.setEnrollment(resultSet.getString("matricula"));
-                currentPractitioner.setUserName(resultSet.getString("matricula"));
-                currentPractitioner.setName(resultSet.getString("name"));
-                currentPractitioner.setLastName(resultSet.getString("last_name"));
-                currentPractitioner.setEmail(resultSet.getString("email"));
-                assignedPractitionersList.add(currentPractitioner);
-            }
-        } catch (SQLException e) {
-            throw new DAOException("Ocurrio un error al consultar los practicantes asignados.", e);
-        }
-
-        return assignedPractitionersList;
     }
 }

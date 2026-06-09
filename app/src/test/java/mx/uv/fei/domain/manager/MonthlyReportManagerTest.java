@@ -31,6 +31,7 @@ public class MonthlyReportManagerTest {
         TestDatabaseSetup.initialize(dbConnection);
     }
 
+
     @Test
     void createReportAndLinkActivities_ValidData_DoesNotThrow() {
         MonthlyReport report = new MonthlyReport();
