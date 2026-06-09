@@ -13,7 +13,11 @@ import java.sql.*;
 public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
 
     private static final String SQL_INSERT = "INSERT INTO self_evaluation (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE self_evaluation SET status = ? WHERE self_eval_id = ?";
+
+    private static final String SQL_UPDATE = "UPDATE self_evaluation SET status = ?, evidence = ? WHERE self_eval_id = ?";
+    private static final String SQL_UPDATE_STATUS = "UPDATE self_evaluation SET status = ? WHERE self_eval_id = ?";
+    private static final String SQL_UPDATE_EVIDENCE = "UPDATE self_evaluation SET evidence = ? WHERE self_eval_id = ?";
+
     private static final String SQL_SELECT_BY_REPORT = "SELECT * FROM self_evaluation WHERE report_id = ?";
 
     @Inject
@@ -76,6 +80,21 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
     public boolean updateSelfEvaluation(SelfEvaluation evaluation, int selfEvalId) throws DAOException {
         return updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, evaluation.getStatus());
+            statement.setString(2, evaluation.getEvidence()); // Ahora sí guarda la evidencia
+            statement.setInt(3, selfEvalId);
+        });
+    }
+
+    public boolean updateStatus(int selfEvalId, String status) throws DAOException {
+        return updateTuple(SQL_UPDATE_STATUS, statement -> {
+            statement.setString(1, status);
+            statement.setInt(2, selfEvalId);
+        });
+    }
+
+    public boolean updateEvidence(int selfEvalId, String evidence) throws DAOException {
+        return updateTuple(SQL_UPDATE_EVIDENCE, statement -> {
+            statement.setString(1, evidence);
             statement.setInt(2, selfEvalId);
         });
     }

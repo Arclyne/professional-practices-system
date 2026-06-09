@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
@@ -14,10 +13,7 @@
     </HBox>
 
     <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #F5F5F5; -fx-padding: 10;">
-        <Label text="ID de tu Reporte Final:" />
-        <TextField fx:id="reportIdField" prefWidth="100.0" promptText="Ej: 1" />
-        <Button text="Buscar" onAction="#handleSearchReport" style="-fx-background-color: #607D8B; -fx-text-fill: white; -fx-cursor: hand;" />
-        <Label fx:id="statusLabel" text="Estado: -" textFill="#d32f2f" style="-fx-padding: 0 0 0 20;">
+        <Label fx:id="statusLabel" text="Estado: Verificando requisitos..." textFill="#d32f2f" style="-fx-padding: 0 0 0 10;">
             <font><Font name="System Bold" size="13.0" /></font>
         </Label>
     </HBox>

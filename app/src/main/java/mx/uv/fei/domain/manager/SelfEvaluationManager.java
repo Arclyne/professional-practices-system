@@ -8,12 +8,16 @@ import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.common.validators.SelfEvaluationValidator;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class SelfEvaluationManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(SelfEvaluationManager.class);
+
     private static final String MSG_REGISTER_ERROR = "No se pudo registrar la autoevaluación.";
-    private static final String MSG_UPDATE_ERROR = "Error al actualizar el estado de la autoevaluación.";
+    private static final String MSG_UPDATE_ERROR = "Error al actualizar la autoevaluación.";
 
     private final ISelfEvaluationDAO selfEvaluationDAO;
 
@@ -31,6 +35,7 @@ public class SelfEvaluationManager {
                 throw new ManagerException(MSG_REGISTER_ERROR);
             }
         } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
             throw new ManagerException(MSG_REGISTER_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
@@ -39,24 +44,25 @@ public class SelfEvaluationManager {
         ReportValidator.validateSignedReport(fileUrl);
 
         try {
-            SelfEvaluation eval = selfEvaluationDAO.getSelfEvaluationByReportId(evalId);
-            if (eval == null) throw new ManagerException("La autoevaluación no existe.");
-
-            eval.setEvidence(fileUrl);
-            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(eval, evalId);
+            boolean isUpdated = selfEvaluationDAO.updateEvidence(evalId, fileUrl);
             if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
         } catch (DAOException e) {
             throw new ManagerException("Error al adjuntar evidencia. Causa: " + e.getMessage(), e);
         }
     }
 
-    public void markAsReviewed(int evalId) throws ManagerException {
+    public void updateSelfEvaluation(SelfEvaluation evaluation, int evalId) throws ManagerException {
         try {
-            SelfEvaluation eval = selfEvaluationDAO.getSelfEvaluationByReportId(evalId);
-            if (eval == null) throw new ManagerException("La autoevaluación no existe.");
+            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(evaluation, evalId);
+            if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
+        }
+    }
 
-            eval.setStatus("Revisada");
-            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(eval, evalId);
+    public void updateStatus(int evalId, String status) throws ManagerException {
+        try {
+            boolean isUpdated = selfEvaluationDAO.updateStatus(evalId, status);
             if (!isUpdated) throw new ManagerException(MSG_UPDATE_ERROR);
         } catch (DAOException e) {
             throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
