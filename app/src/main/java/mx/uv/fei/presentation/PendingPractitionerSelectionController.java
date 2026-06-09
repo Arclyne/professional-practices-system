@@ -62,8 +62,8 @@ public class PendingPractitionerSelectionController {
             pendingPractitionersObservableList.clear();
             List<Practitioner> retrievedPendingList = practitionerManager.retrievePractitionersPendingAssignment();
             pendingPractitionersObservableList.addAll(retrievedPendingList);
-        } catch (ManagerException retrievalException) {
-            Controller.showAlert("Error de conexion", retrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de conexion", e.getMessage(), AlertType.ERROR);
         }
     }
 

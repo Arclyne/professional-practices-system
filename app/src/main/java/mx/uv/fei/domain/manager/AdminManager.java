@@ -29,8 +29,8 @@ public class AdminManager {
     public boolean checkSystemHasAdmin() throws ManagerException {
         try {
             return this.adminDAO.checkIfAdminExists();
-        } catch (DAOException exception) {
-            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", exception);
+        } catch (DAOException e) {
+            throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", e);
         }
     }
 

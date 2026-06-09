@@ -83,8 +83,8 @@ public class PrioritizeProjectsController {
             prioritizedProjectsObservableList.clear();
             List<Project> retrievedAvailableProjectsList = PostulationManager.retrieveAllAvailableProjects();
             availableProjectsObservableList.addAll(retrievedAvailableProjectsList);
-        } catch (ManagerException managerRetrievalException) {
-            Controller.showAlert("Error de conexion", managerRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de conexion", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -150,8 +150,8 @@ public class PrioritizeProjectsController {
                 PostulationManager.registerPractitionerPriorities(currentAuthenticatedPractitioner.getId(), finalizedPriorityProjectList);
                 Controller.showAlert("Postulacion Exitosa", "Sus prioridades han sido registradas en el sistema correctamente.", AlertType.INFORMATION);
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-            } catch (ManagerException priorityRegistrationException) {
-                Controller.showAlert("Error al guardar", priorityRegistrationException.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error al guardar", e.getMessage(), AlertType.ERROR);
             }
         }
     }

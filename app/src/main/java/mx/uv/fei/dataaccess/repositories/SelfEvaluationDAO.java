@@ -7,7 +7,11 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.ISelfEvaluationDAO;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 @Component
 public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
@@ -80,7 +84,7 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
     public boolean updateSelfEvaluation(SelfEvaluation evaluation, int selfEvalId) throws DAOException {
         return updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, evaluation.getStatus());
-            statement.setString(2, evaluation.getEvidence()); // Ahora sí guarda la evidencia
+            statement.setString(2, evaluation.getEvidence());
             statement.setInt(3, selfEvalId);
         });
     }

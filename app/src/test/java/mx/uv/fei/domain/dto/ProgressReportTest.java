@@ -26,7 +26,6 @@ public class ProgressReportTest {
         reportB.setTotalHoursAtSubmission(310.0);
     }
 
-
     @Test
     void equals_SamePractitionerAndType_ReturnsTrue() {
         boolean result = reportA.equals(reportB);
@@ -49,8 +48,6 @@ public class ProgressReportTest {
 
         assertTrue(result);
     }
-
-
 
     @Test
     void equals_DifferentPractitioner_ReturnsFalse() {
@@ -92,7 +89,6 @@ public class ProgressReportTest {
 
         assertFalse(result);
     }
-
 
     @Test
     void hashCode_SamePractitionerAndType_ProduceSameHash() {

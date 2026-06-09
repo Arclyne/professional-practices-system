@@ -9,7 +9,6 @@ import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
-
 @Component
 public class GradingManager {
 
@@ -26,12 +25,10 @@ public class GradingManager {
 
     private final IPractitionerGradeDAO practitionerGradeDAO;
 
-
     @Inject
     public GradingManager(IPractitionerGradeDAO practitionerGradeDAO) {
         this.practitionerGradeDAO = practitionerGradeDAO;
     }
-
 
     public PractitionerGrade registerGrade(
             int practitionerId,
@@ -59,8 +56,8 @@ public class GradingManager {
 
         try {
             tentativeGrade = practitionerGradeDAO.calculateTentativeGrade(practitionerId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return tentativeGrade;
@@ -74,8 +71,8 @@ public class GradingManager {
             if (existing != null) {
                 throw new ManagerException(String.format(MSG_ALREADY_GRADED, period));
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
     }
 
@@ -104,13 +101,12 @@ public class GradingManager {
             if (generatedId <= 0) {
                 throw new ManagerException(MSG_INSERT_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_INSERT_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_INSERT_ERROR + " Causa: " + e.getMessage(), e);
         }
 
         return generatedId;
     }
-
 
     public void updateFinalGrade(int practitionerId, String period, double newFinalGrade) throws ManagerException {
         validateGrade(newFinalGrade);
@@ -122,8 +118,8 @@ public class GradingManager {
             if (!isUpdated) {
                 throw new ManagerException(MSG_UPDATE_ERROR);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_UPDATE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
@@ -132,8 +128,8 @@ public class GradingManager {
 
         try {
             grade = practitionerGradeDAO.getGradeByPractitionerAndPeriod(practitionerId, period);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         if (grade == null) {
@@ -143,14 +139,13 @@ public class GradingManager {
         return grade;
     }
 
-
     public List<PractitionerGrade> getGradesByProfessor(int professorId) throws ManagerException {
         List<PractitionerGrade> grades;
 
         try {
             grades = practitionerGradeDAO.getGradesByProfessor(professorId);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return grades;
@@ -165,8 +160,8 @@ public class GradingManager {
 
         try {
             grade = practitionerGradeDAO.getGradeByPractitionerAndPeriod(practitionerId, period);
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
 
         return grade;

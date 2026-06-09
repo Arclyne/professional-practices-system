@@ -173,7 +173,6 @@ public class ReportPdfGenerator {
 
                 float cursorY = PAGE_HEIGHT - MARGIN;
 
-
                 contentStream.beginText();
                 contentStream.setFont(fontBold, 16);
                 contentStream.newLineAtOffset(MARGIN, cursorY);
@@ -188,14 +187,12 @@ public class ReportPdfGenerator {
                 contentStream.endText();
                 cursorY -= 30;
 
-
                 contentStream.beginText();
                 contentStream.setFont(fontBold, 14);
                 contentStream.newLineAtOffset(MARGIN, cursorY);
                 contentStream.showText("Reporte de Avance: " + report.getReportType());
                 contentStream.endText();
                 cursorY -= 25;
-
 
                 contentStream.beginText();
                 contentStream.setFont(fontNormal, 12);
@@ -207,7 +204,6 @@ public class ReportPdfGenerator {
                 contentStream.showText("Total de horas acumuladas: " + report.getTotalHoursAtSubmission() + " hrs");
                 contentStream.endText();
                 cursorY -= 60;
-
 
                 if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().isEmpty()) {
                     contentStream.beginText();
@@ -225,9 +221,7 @@ public class ReportPdfGenerator {
                     cursorY -= 60;
                 }
 
-
                 float signatureY = cursorY - 100;
-
 
                 contentStream.moveTo(MARGIN, signatureY);
                 contentStream.lineTo(MARGIN + 150, signatureY);
@@ -237,7 +231,6 @@ public class ReportPdfGenerator {
                 contentStream.newLineAtOffset(MARGIN + 15, signatureY - 15);
                 contentStream.showText("Firma del Profesor");
                 contentStream.endText();
-
 
                 contentStream.moveTo(PAGE_WIDTH - MARGIN - 150, signatureY);
                 contentStream.lineTo(PAGE_WIDTH - MARGIN, signatureY);

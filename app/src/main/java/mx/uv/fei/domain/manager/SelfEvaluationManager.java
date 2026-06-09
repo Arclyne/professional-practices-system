@@ -76,4 +76,7 @@ public class SelfEvaluationManager {
             throw new ManagerException("Ocurrió un error al recuperar la autoevaluación: " + e.getMessage(), e);
         }
     }
+
+    //public Object markAsReviewed(int i) {
+
 }

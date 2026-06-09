@@ -76,8 +76,8 @@ public class RegisterCoordinatorController implements Initializable {
 
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
 
-            } catch (ManagerException registrationManagerException) {
-                Controller.showAlert("Error en el Registro", registrationManagerException.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
             }
         }
     }

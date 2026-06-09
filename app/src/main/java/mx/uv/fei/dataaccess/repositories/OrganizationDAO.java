@@ -109,15 +109,15 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             try {
                 executeDeactivationBatch(activeDatabaseConnection, organizationIdentifiersList);
                 activeDatabaseConnection.commit();
-            } catch (SQLException executionException) {
+            } catch (SQLException e) {
                 activeDatabaseConnection.rollback();
                 allUpdatesSuccessful = false;
-                throw new DAOException("Error al ejecutar la inactivación masiva de organizaciones.", executionException);
+                throw new DAOException("Error al ejecutar la inactivación masiva de organizaciones.", e);
             } finally {
                 activeDatabaseConnection.setAutoCommit(true);
             }
-        } catch (SQLException connectionException) {
-            throw new DAOException("Error de conexión al procesar inactivación de organizaciones.", connectionException);
+        } catch (SQLException e) {
+            throw new DAOException("Error de conexión al procesar inactivación de organizaciones.", e);
         }
 
         return allUpdatesSuccessful;

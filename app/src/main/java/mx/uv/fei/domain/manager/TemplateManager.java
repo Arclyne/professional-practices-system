@@ -47,16 +47,13 @@ public class TemplateManager {
     private static final String MSG_DELETE_ERROR = "No se pudo eliminar la plantilla.";
     private static final String MSG_GENERATE_ERROR = "Error al generar el documento desde la plantilla.";
 
-
     public TemplateManager() {
         this.baseDirectory = DIR_APP;
     }
 
-
     TemplateManager(String baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
-
 
     public void saveTemplate(DocumentTemplate template) throws ManagerException {
         try {
@@ -65,8 +62,8 @@ public class TemplateManager {
             saveMetadataFile(template, templateDirectory);
             saveBodyFile(template, templateDirectory);
 
-        } catch (IOException exception) {
-            throw new ManagerException(MSG_SAVE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (IOException e) {
+            throw new ManagerException(MSG_SAVE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 
@@ -90,7 +87,6 @@ public class TemplateManager {
         }
     }
 
-
     public List<DocumentTemplate> loadAllTemplates() throws ManagerException {
         List<DocumentTemplate> loadedTemplates = new ArrayList<>();
 
@@ -108,8 +104,8 @@ public class TemplateManager {
                     }
                 }
             }
-        } catch (IOException exception) {
-            throw new ManagerException(MSG_LOAD_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (IOException e) {
+            throw new ManagerException(MSG_LOAD_ERROR + " Causa: " + e.getMessage(), e);
         }
 
         return loadedTemplates;
@@ -145,7 +141,6 @@ public class TemplateManager {
         return recoveredTemplate;
     }
 
-
     public String renderTemplate(DocumentTemplate template, Map<String, String> tokenValues) {
         String renderedContent = template.getBodyContent();
 
@@ -156,7 +151,6 @@ public class TemplateManager {
 
         return renderedContent;
     }
-
 
     public List<String> generateBatchDocuments(DocumentTemplate template, List<Map<String, String>> batchValues) throws ManagerException {
         List<String> generatedFilePaths = new ArrayList<>();
@@ -179,13 +173,12 @@ public class TemplateManager {
                 generatedFilePaths.add(outputFilePath.toAbsolutePath().toString());
                 documentIndex++;
             }
-        } catch (IOException exception) {
-            throw new ManagerException(MSG_GENERATE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (IOException e) {
+            throw new ManagerException(MSG_GENERATE_ERROR + " Causa: " + e.getMessage(), e);
         }
 
         return generatedFilePaths;
     }
-
 
     public void deleteTemplate(String templateId) throws ManagerException {
         try {
@@ -196,8 +189,8 @@ public class TemplateManager {
             Files.deleteIfExists(metaPath);
             Files.deleteIfExists(bodyPath);
 
-        } catch (IOException exception) {
-            throw new ManagerException(MSG_DELETE_ERROR + " Causa: " + exception.getMessage(), exception);
+        } catch (IOException e) {
+            throw new ManagerException(MSG_DELETE_ERROR + " Causa: " + e.getMessage(), e);
         }
     }
 

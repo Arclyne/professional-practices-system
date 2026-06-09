@@ -88,8 +88,8 @@ public class AssignProjectController {
             postulationsObservableList.clear();
             List<ProjectPostulation> retrievedPostulationsList = projectAssignmentManager.retrievePractitionerPostulations(targetPractitionerIdentifier);
             postulationsObservableList.addAll(retrievedPostulationsList);
-        } catch (ManagerException managerRetrievalException) {
-            Controller.showAlert("Error de conexión", managerRetrievalException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -102,8 +102,8 @@ public class AssignProjectController {
                 projectAssignmentManager.assignProjectToPractitioner(targetPractitionerIdentifier, selectedPostulationToAssign.getProjectIdentifier());
                 Controller.showAlert("Asignación Exitosa", "El proyecto ha sido asignado al practicante correctamente.", AlertType.INFORMATION);
                 applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
-            } catch (ManagerException assignmentException) {
-                Controller.showAlert("Error en la asignación", assignmentException.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error en la asignación", e.getMessage(), AlertType.ERROR);
             }
         } else {
             Controller.showAlert("Selección requerida", "Por favor, seleccione un proyecto de la lista para asignarlo.", AlertType.WARNING);

@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 
@@ -39,7 +40,7 @@ public class CoordinatorManagerTest {
         coordinator.setEmail("coordtest@uv.mx");
         coordinator.setGender(Gender.MALE);
 
-        assertNotNull(assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(coordinator)));
+        assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(coordinator));
     }
 
     @Test
@@ -51,6 +52,5 @@ public class CoordinatorManagerTest {
     void retrieveCurrentCoordinator_ReturnsCoordinator() {
         assertDoesNotThrow(() -> coordinatorManager.retrieveCurrentCoordinator());
     }
-
 
 }

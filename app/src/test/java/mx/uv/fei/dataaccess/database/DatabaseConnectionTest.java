@@ -17,6 +17,7 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 
 @StartEtiquetteTest
 @Profile("test")
+
 public class DatabaseConnectionTest {
 
     @Inject

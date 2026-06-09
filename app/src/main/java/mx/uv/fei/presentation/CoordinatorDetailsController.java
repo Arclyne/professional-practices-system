@@ -58,7 +58,6 @@ public class CoordinatorDetailsController {
 
                 statusLabel.setText(currentCoordinator.getStatus().getDatabaseValue());
 
-
                 if (currentCoordinator.getStatus() == UserStatus.INACTIVE) {
                     inactivateButton.setDisable(true);
                     inactivateButton.setText("Coordinador Inactivo");
@@ -67,7 +66,7 @@ public class CoordinatorDetailsController {
                 Controller.showAlert("Sin resultados", "No hay un coordinador activo o pendiente en el sistema actualmente.", AlertType.INFORMATION);
                 inactivateButton.setDisable(true);
             }
-        } catch (ManagerException retrievalException) {
+        } catch (ManagerException e) {
             Controller.showAlert("Error de conexión", "No se pudieron recuperar los datos del coordinador.", AlertType.ERROR);
         }
     }
@@ -106,8 +105,8 @@ public class CoordinatorDetailsController {
             coordinatorManager.inactivateCoordinator(currentCoordinatorId);
             Controller.showAlert("Éxito", "El coordinador ha sido inactivado correctamente.", AlertType.INFORMATION);
             loadCurrentCoordinatorData();
-        } catch (ManagerException inactivationException) {
-            Controller.showAlert("Error en el proceso", inactivationException.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error en el proceso", e.getMessage(), AlertType.ERROR);
         }
     }
 

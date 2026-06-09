@@ -2,7 +2,6 @@ package mx.uv.fei.domain.manager;
 
 import java.util.List;
 
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -10,7 +9,6 @@ import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
-
 
 @Component
 public class ManagerManager {
@@ -34,8 +32,8 @@ public class ManagerManager {
 
         try {
             managers = managerDAO.getAllManagers();
-        } catch (DAOException exception) {
-            throw new ManagerException(GET_ALL_ERROR_MESSAGE, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(GET_ALL_ERROR_MESSAGE, e);
         }
 
         return managers;
@@ -46,8 +44,8 @@ public class ManagerManager {
 
         try {
             managers = managerDAO.getManagersByOrganization(organizationId);
-        } catch (DAOException exception) {
-            throw new ManagerException(GET_MANAGERS_ERROR_MESSAGE, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(GET_MANAGERS_ERROR_MESSAGE, e);
         }
 
         return managers;
@@ -62,8 +60,8 @@ public class ManagerManager {
             if (!isRegistered) {
                 throw new ManagerException(REGISTER_MANAGER_ERROR_MESSAGE);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(CONNECTION_ERROR_MESSAGE, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(CONNECTION_ERROR_MESSAGE, e);
         }
     }
 
@@ -74,8 +72,8 @@ public class ManagerManager {
             if (!isProcessSuccessful) {
                 throw new ManagerException(INACTIVATE_ERROR_MESSAGE);
             }
-        } catch (DAOException exception) {
-            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, e);
         }
     }
 }

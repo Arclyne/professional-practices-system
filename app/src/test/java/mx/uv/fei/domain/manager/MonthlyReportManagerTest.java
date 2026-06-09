@@ -1,6 +1,6 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -30,7 +30,6 @@ public class MonthlyReportManagerTest {
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
     }
-
 
     @Test
     void createReportAndLinkActivities_ValidData_DoesNotThrow() {

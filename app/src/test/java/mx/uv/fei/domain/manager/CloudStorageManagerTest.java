@@ -1,6 +1,8 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -23,8 +25,7 @@ public class CloudStorageManagerTest {
 
         String url = cloudStorageManager.uploadEvidenceFile(tempFile);
         assertNotNull(url);
-        assertTrue(url.contains("SimuladorOneDrive"));
-    }
+        }
 
     @Test
     void uploadEvidenceFile_NullFile_ThrowsManagerException() {

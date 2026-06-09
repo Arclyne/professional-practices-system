@@ -2,14 +2,12 @@ package mx.uv.fei.domain.common;
 
 import java.util.Map;
 
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
-
 
 public class Controller {
 

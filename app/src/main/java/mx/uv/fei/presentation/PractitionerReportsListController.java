@@ -35,7 +35,6 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-
 @Component
 public class PractitionerReportsListController implements Initializable {
 
@@ -99,8 +98,8 @@ public class PractitionerReportsListController implements Initializable {
 
         try {
             hasProject = reportManager.verifyHasAssignedProject(practitionerId);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de verificación", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de verificación", e.getMessage(), AlertType.ERROR);
         }
 
         if (!hasProject) {
@@ -140,8 +139,8 @@ public class PractitionerReportsListController implements Initializable {
             List<MonthlyReport> reports = reportManager.getPractitionerReports(practitionerId);
             ObservableList<MonthlyReport> observableReports = FXCollections.observableArrayList(reports);
             reportsListView.setItems(observableReports);
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Carga", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -193,8 +192,8 @@ public class PractitionerReportsListController implements Initializable {
                 java.awt.Desktop.getDesktop().open(generatedFile);
                 Controller.showAlert("PDF Generado", "El reporte se ha guardado en Descargas.", AlertType.INFORMATION);
             }
-        } catch (ManagerException exception) {
-            Controller.showAlert("Error de Generación", exception.getMessage(), AlertType.ERROR);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Generación", e.getMessage(), AlertType.ERROR);
         } catch (Exception exception) {
             Controller.showAlert("Error de Sistema", MSG_PDF_OPEN_ERROR, AlertType.ERROR);
         }
@@ -224,8 +223,8 @@ public class PractitionerReportsListController implements Initializable {
                 int practitionerId = currentUser != null ? currentUser.getId() : 0;
                 loadReportsList(practitionerId);
                 showReportDetails(selectedReport);
-            } catch (ManagerException exception) {
-                Controller.showAlert("Error al Subir", exception.getMessage(), AlertType.ERROR);
+            } catch (ManagerException e) {
+                Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
             }
         }
     }

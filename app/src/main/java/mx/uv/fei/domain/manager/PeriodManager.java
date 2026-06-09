@@ -53,8 +53,8 @@ public class PeriodManager {
         List<Period> periods;
         try {
             periods = periodDAO.getAllPeriods();
-        } catch (DAOException exception) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, exception);
+        } catch (DAOException e) {
+            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
         }
         return periods;
     }

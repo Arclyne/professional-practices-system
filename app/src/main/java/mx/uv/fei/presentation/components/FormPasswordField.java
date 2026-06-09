@@ -23,8 +23,8 @@ public class FormPasswordField extends VBox {
 
         try {
             fxmlLoader.load();
-        } catch (IOException loaderException) {
-            throw new RuntimeException(loaderException);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

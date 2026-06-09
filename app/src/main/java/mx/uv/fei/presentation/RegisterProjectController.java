@@ -16,7 +16,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -33,7 +32,6 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
-
 
 @Component
 public class RegisterProjectController implements Initializable {
@@ -113,8 +111,8 @@ public class RegisterProjectController implements Initializable {
             }
             comboBoxOrganization.setItems(organizationOptions);
 
-        } catch (ManagerException exception) {
-            Controller.showErrorAlert(LOAD_ERROR_TITLE, exception.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert(LOAD_ERROR_TITLE, e.getMessage());
         }
     }
 
@@ -140,8 +138,8 @@ public class RegisterProjectController implements Initializable {
                 comboBoxManager.setPromptText("");
             }
 
-        } catch (ManagerException exception) {
-            Controller.showErrorAlert(ERROR_TITLE, exception.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert(ERROR_TITLE, e.getMessage());
             comboBoxManager.setDisable(true);
         }
     }
@@ -176,8 +174,8 @@ public class RegisterProjectController implements Initializable {
             Controller.showErrorAlert(FORMAT_ERROR_TITLE, FORMAT_ERROR_MESSAGE);
         } catch (IllegalArgumentException | DateTimeParseException _) {
             Controller.showErrorAlert(DATE_ERROR_TITLE, DATE_ERROR_MESSAGE);
-        } catch (ManagerException exception) {
-            Controller.showErrorAlert(SAVE_ERROR_TITLE, exception.getMessage());
+        } catch (ManagerException e) {
+            Controller.showErrorAlert(SAVE_ERROR_TITLE, e.getMessage());
         }
     }
 

@@ -103,8 +103,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             } finally {
                 connection.setAutoCommit(true);
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_CRITICAL_CONN, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_CRITICAL_CONN, e);
         }
 
         return resultId;
@@ -150,8 +150,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     recoveredPractitioner = mapResultSetToPractitioner(resultSet);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_RECOVER_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_RECOVER_ERROR, e);
         }
 
         return recoveredPractitioner;
@@ -184,8 +184,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             } finally {
                 connection.setAutoCommit(true);
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_CRITICAL_CONN, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_CRITICAL_CONN, e);
         }
 
         return isUpdated;
@@ -226,8 +226,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             while (resultSet.next()) {
                 pendingPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_PENDING_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_PENDING_ERROR, e);
         }
 
         return pendingPractitionersList;
@@ -244,8 +244,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             while (resultSet.next()) {
                 assignedPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_ASSIGNED_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_ASSIGNED_ERROR, e);
         }
 
         return assignedPractitionersList;
@@ -265,8 +265,8 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     practitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_BY_PROFESSOR_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_BY_PROFESSOR_ERROR, e);
         }
 
         return practitionersList;

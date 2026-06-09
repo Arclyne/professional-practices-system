@@ -14,7 +14,6 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 
-
 @Component
 public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeDAO {
 
@@ -71,8 +70,8 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                     }
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_INSERT_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_INSERT_ERROR, e);
         }
 
         return generatedId;
@@ -101,8 +100,8 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                     recoveredGrade = mapResultSetToGrade(resultSet);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_SELECT_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_SELECT_ERROR, e);
         }
 
         return recoveredGrade;
@@ -127,8 +126,8 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                     tentativeGrade = resultSet.getDouble(1);
                 }
             }
-        } catch (SQLException exception) {
-            throw new DAOException(MSG_CALC_ERROR, exception);
+        } catch (SQLException e) {
+            throw new DAOException(MSG_CALC_ERROR, e);
         }
 
         return tentativeGrade;

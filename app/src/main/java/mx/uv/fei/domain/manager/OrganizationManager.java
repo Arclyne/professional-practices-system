@@ -3,7 +3,7 @@ package mx.uv.fei.domain.manager;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
-import mx.uv.fei.dataaccess.interfaces.IManagerDAO; // <-- Interfaz corregida
+import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
 import mx.uv.fei.dataaccess.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
@@ -47,11 +47,9 @@ public class OrganizationManager {
             if (!isProcessSuccessful) {
                 throw new ManagerException("No se pudieron inactivar las organizaciones seleccionadas.");
             }
-        } catch (DAOException dataAccessException) {
-            throw new ManagerException("Error de base de datos al inactivar organizaciones.", dataAccessException);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al inactivar organizaciones.", e);
         }
     }
-
-
 
 }

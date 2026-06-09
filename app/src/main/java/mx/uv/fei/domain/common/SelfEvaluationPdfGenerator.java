@@ -58,7 +58,6 @@ public class SelfEvaluationPdfGenerator {
                 contentStream.showText("PUNTUACIÓN FINAL: " + evaluation.getTotalScore());
                 contentStream.newLine();
 
-                // Línea de firma
                 contentStream.newLineAtOffset(150, -100);
                 contentStream.showText("_________________________________________");
                 contentStream.newLine();
