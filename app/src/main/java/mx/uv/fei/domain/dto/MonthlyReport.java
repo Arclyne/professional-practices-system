@@ -3,7 +3,15 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
+/**
+ * Representa el reporte mensual de actividades de un practicante.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class MonthlyReport {
+
     private int reportId;
     private int practitionerId;
     private String monthName;
@@ -53,10 +61,10 @@ public class MonthlyReport {
         if (this == obj) {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
-            MonthlyReport that = (MonthlyReport) obj;
-            isEqual = this.practitionerId == that.practitionerId &&
-                    this.year == that.year &&
-                    Objects.equals(this.monthName, that.monthName);
+            MonthlyReport other = (MonthlyReport) obj;
+            isEqual = this.practitionerId == other.practitionerId &&
+                    this.year == other.year &&
+                    Objects.equals(this.monthName, other.monthName);
         }
         return isEqual;
     }

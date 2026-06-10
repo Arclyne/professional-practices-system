@@ -2,8 +2,6 @@ package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -13,6 +11,10 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -22,16 +24,20 @@ import java.util.concurrent.CompletableFuture;
 public class SmtpEmailManager {
 
     private static final Logger log = LoggerFactory.getLogger(SmtpEmailManager.class);
-    private final Properties configurationProperties = new Properties();
+    private static final String MAIL_CONFIG_FILE = "mail.properties";
+    private static final String MAIL_EMAIL_PROPERTY = "mail.system.email";
+    private static final String MAIL_PASSWORD_PROPERTY = "mail.system.password";
+
+    private final Properties mailProperties = new Properties();
 
     @Inject
     public SmtpEmailManager() {
-        try (InputStream propertiesInputStream = getClass().getClassLoader().getResourceAsStream("mail.properties")) {
-            if (propertiesInputStream != null) {
-                configurationProperties.load(propertiesInputStream);
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(MAIL_CONFIG_FILE)) {
+            if (inputStream != null) {
+                mailProperties.load(inputStream);
             }
         } catch (IOException e) {
-            log.error("No se pudo cargar el archivo de configuración mail.properties", e);
+            log.error("No se pudo cargar el archivo de configuración {}.", MAIL_CONFIG_FILE, e);
         }
     }
 
@@ -40,28 +46,35 @@ public class SmtpEmailManager {
             try {
                 sendEmail(recipientEmail, subject, body);
             } catch (MessagingException e) {
-                log.error("Fallo al enviar correo asíncrono a: {}", recipientEmail, e);
+                log.error("Fallo al enviar correo asíncrono a: {}.", recipientEmail, e);
             }
         });
     }
 
     private void sendEmail(String recipientEmail, String subject, String body) throws MessagingException {
-        Session session = Session.getInstance(configurationProperties, new Authenticator() {
+        Session mailSession = buildMailSession();
+        Message message = buildMessage(mailSession, recipientEmail, subject, body);
+        Transport.send(message);
+    }
+
+    private Session buildMailSession() {
+        return Session.getInstance(mailProperties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(
-                        configurationProperties.getProperty("mail.system.email"),
-                        configurationProperties.getProperty("mail.system.password")
+                        mailProperties.getProperty(MAIL_EMAIL_PROPERTY),
+                        mailProperties.getProperty(MAIL_PASSWORD_PROPERTY)
                 );
             }
         });
+    }
 
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(configurationProperties.getProperty("mail.system.email")));
+    private Message buildMessage(Session mailSession, String recipientEmail, String subject, String body) throws MessagingException {
+        Message message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(mailProperties.getProperty(MAIL_EMAIL_PROPERTY)));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
         message.setSubject(subject);
         message.setText(body);
-
-        Transport.send(message);
+        return message;
     }
 }

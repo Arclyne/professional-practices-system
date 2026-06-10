@@ -1,11 +1,12 @@
 package mx.uv.fei.domain.common;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.ProgressReport;
+import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.exceptions.ManagerException;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -13,244 +14,259 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
-import mx.uv.fei.config.annotation.etiquette.Component;
-import mx.uv.fei.domain.dto.Activity;
-import mx.uv.fei.domain.dto.MonthlyReport;
-import mx.uv.fei.domain.dto.User;
-import mx.uv.fei.domain.exceptions.ManagerException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Component
 public class ReportPdfGenerator {
 
-    private static final float MARGIN = 50;
+    private static final float PAGE_MARGIN = 50;
     private static final float PAGE_WIDTH = PDRectangle.LETTER.getWidth();
     private static final float PAGE_HEIGHT = PDRectangle.LETTER.getHeight();
+    private static final float LINE_HEIGHT_NORMAL = 20;
+    private static final float LINE_HEIGHT_LARGE = 25;
+    private static final float SECTION_SPACING = 30;
+    private static final float SECTION_SPACING_LARGE = 60;
+    private static final float HEADER_FONT_SIZE = 16;
+    private static final float SUBHEADER_FONT_SIZE = 14;
+    private static final float BODY_FONT_SIZE = 12;
+    private static final float SMALL_FONT_SIZE = 10;
+    private static final float DETAIL_FONT_SIZE = 11;
+    private static final int TITLE_MAX_LENGTH = 55;
+    private static final int TITLE_TRUNCATE_LENGTH = 52;
+    private static final float MINIMUM_PAGE_CURSOR = 200;
+    private static final float SIGNATURE_LINE_WIDTH = 150;
+    private static final String DOWNLOADS_DIRECTORY = "Downloads";
+    private static final String UNIVERSITY_NAME = "UNIVERSIDAD VERACRUZANA";
+    private static final String FACULTY_NAME = "Facultad de Estadística e Informática - Licenciatura en Ingeniería de Software";
 
-    public String generatePdf(MonthlyReport report, User practitioner, List<Activity> activities) throws ManagerException {
+    public String generateMonthlyReportPdf(MonthlyReport report, User practitioner, List<Activity> activities) throws ManagerException {
         try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage(PDRectangle.LETTER);
-            document.addPage(page);
+            PDPageContentStream contentStream = createDocumentPage(document);
 
-            PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-            PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-
-                float cursorY = PAGE_HEIGHT - MARGIN;
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 16);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("UNIVERSIDAD VERACRUZANA");
-                contentStream.endText();
-                cursorY -= 20;
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 12);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Facultad de Estadística e Informática - Licenciatura en Ingeniería de Software");
-                contentStream.endText();
-                cursorY -= 30;
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 14);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Reporte Mensual de Prácticas Profesionales");
-                contentStream.endText();
-                cursorY -= 25;
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 12);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Practicante: " + practitioner.getName() + " " + practitioner.getLastName());
-                contentStream.newLineAtOffset(0, -15);
-                contentStream.showText("Periodo: " + report.getMonthName() + " " + report.getYear() + " (" + report.getStartDate() + " al " + report.getEndDate() + ")");
-                contentStream.endText();
-                cursorY -= 40;
-
-                contentStream.setLineWidth(1f);
-                contentStream.moveTo(MARGIN, cursorY + 15);
-                contentStream.lineTo(PAGE_WIDTH - MARGIN, cursorY + 15);
-                contentStream.stroke();
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 12);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Fecha");
-                contentStream.newLineAtOffset(100, 0);
-                contentStream.showText("Actividad y Descripción");
-                contentStream.newLineAtOffset(320, 0);
-                contentStream.showText("Horas");
-                contentStream.endText();
-                cursorY -= 10;
-
-                contentStream.moveTo(MARGIN, cursorY);
-                contentStream.lineTo(PAGE_WIDTH - MARGIN, cursorY);
-                contentStream.stroke();
-                cursorY -= 20;
-
-                contentStream.setFont(fontNormal, 10);
-                int totalHours = 0;
-
-                for (Activity activity : activities) {
-                    contentStream.beginText();
-                    contentStream.newLineAtOffset(MARGIN, cursorY);
-                    contentStream.showText(activity.getActivityDate().toString());
-
-                    contentStream.newLineAtOffset(100, 0);
-                    String shortTitle = activity.getTitle().length() > 55 ? activity.getTitle().substring(0, 52) + "..." : activity.getTitle();
-                    contentStream.showText(shortTitle);
-
-                    contentStream.newLineAtOffset(320, 0);
-                    contentStream.showText(String.valueOf(activity.getDurationHours()));
-                    contentStream.endText();
-
-                    totalHours += activity.getDurationHours();
-                    cursorY -= 20;
-
-                    if (cursorY < 200) break;
-                }
-
-                contentStream.moveTo(MARGIN, cursorY + 10);
-                contentStream.lineTo(PAGE_WIDTH - MARGIN, cursorY + 10);
-                contentStream.stroke();
-                cursorY -= 15;
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 10);
-                contentStream.newLineAtOffset(PAGE_WIDTH - MARGIN - 60, cursorY);
-                contentStream.showText("Total: " + totalHours + " hrs");
-                contentStream.endText();
-                cursorY -= 80;
-
-                float signatureY = cursorY;
-
-                contentStream.moveTo(MARGIN, signatureY);
-                contentStream.lineTo(MARGIN + 150, signatureY);
-                contentStream.stroke();
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 10);
-                contentStream.newLineAtOffset(MARGIN + 15, signatureY - 15);
-                contentStream.showText("Organización Receptora");
-                contentStream.newLineAtOffset(15, -12);
-                contentStream.showText("Firma y Sello");
-                contentStream.endText();
-
-                contentStream.moveTo(PAGE_WIDTH - MARGIN - 150, signatureY);
-                contentStream.lineTo(PAGE_WIDTH - MARGIN, signatureY);
-                contentStream.stroke();
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 10);
-                contentStream.newLineAtOffset(PAGE_WIDTH - MARGIN - 145, signatureY - 15);
-                contentStream.showText("Firma del Practicante");
-                contentStream.newLineAtOffset(5, -12);
-                contentStream.showText(practitioner.getName() + " " + practitioner.getLastName());
-                contentStream.endText();
+            try (contentStream) {
+                float cursorY = PAGE_HEIGHT - PAGE_MARGIN;
+                cursorY = writePageHeader(contentStream, cursorY,
+                        "Reporte Mensual de Prácticas Profesionales");
+                cursorY = writePractitionerInfo(contentStream, cursorY, practitioner,
+                        "Periodo: " + report.getMonthName() + " " + report.getYear() +
+                                " (" + report.getStartDate() + " al " + report.getEndDate() + ")");
+                cursorY = writeActivitiesTable(contentStream, cursorY, activities);
+                writeMonthlyReportSignatures(contentStream, cursorY, practitioner);
             }
 
-            String home = System.getProperty("user.home");
-            String fileName = "Reporte_" + report.getMonthName() + "_" + report.getYear() + ".pdf";
-            File outputFile = Paths.get(home, "Downloads", fileName).toFile();
-
-            document.save(outputFile);
-            return outputFile.getAbsolutePath();
+            return saveDocument(document, "Reporte_" + report.getMonthName() + "_" + report.getYear() + ".pdf");
 
         } catch (IOException e) {
             throw new ManagerException("Error al generar el documento PDF.", e);
         }
     }
+
     public String generateProgressReportPdf(ProgressReport report, User practitioner) throws ManagerException {
         try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage(PDRectangle.LETTER);
-            document.addPage(page);
+            PDPageContentStream contentStream = createDocumentPage(document);
 
-            PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-            PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-
-                float cursorY = PAGE_HEIGHT - MARGIN;
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 16);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("UNIVERSIDAD VERACRUZANA");
-                contentStream.endText();
-                cursorY -= 20;
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 12);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Facultad de Estadística e Informática - Licenciatura en Ingeniería de Software");
-                contentStream.endText();
-                cursorY -= 30;
-
-                contentStream.beginText();
-                contentStream.setFont(fontBold, 14);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Reporte de Avance: " + report.getReportType());
-                contentStream.endText();
-                cursorY -= 25;
-
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 12);
-                contentStream.newLineAtOffset(MARGIN, cursorY);
-                contentStream.showText("Practicante: " + practitioner.getName() + " " + practitioner.getLastName());
-                contentStream.newLineAtOffset(0, -15);
-                contentStream.showText("Periodo cubierto: " + report.getPeriodCoveredStart() + " al " + report.getPeriodCoveredEnd());
-                contentStream.newLineAtOffset(0, -15);
-                contentStream.showText("Total de horas acumuladas: " + report.getTotalHoursAtSubmission() + " hrs");
-                contentStream.endText();
-                cursorY -= 60;
-
-                if (report.getProfessorFeedback() != null && !report.getProfessorFeedback().isEmpty()) {
-                    contentStream.beginText();
-                    contentStream.setFont(fontBold, 12);
-                    contentStream.newLineAtOffset(MARGIN, cursorY);
-                    contentStream.showText("Observaciones del Profesor:");
-                    contentStream.endText();
-                    cursorY -= 20;
-
-                    contentStream.beginText();
-                    contentStream.setFont(fontNormal, 11);
-                    contentStream.newLineAtOffset(MARGIN, cursorY);
-                    contentStream.showText(report.getProfessorFeedback());
-                    contentStream.endText();
-                    cursorY -= 60;
-                }
-
-                float signatureY = cursorY - 100;
-
-                contentStream.moveTo(MARGIN, signatureY);
-                contentStream.lineTo(MARGIN + 150, signatureY);
-                contentStream.stroke();
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 10);
-                contentStream.newLineAtOffset(MARGIN + 15, signatureY - 15);
-                contentStream.showText("Firma del Profesor");
-                contentStream.endText();
-
-                contentStream.moveTo(PAGE_WIDTH - MARGIN - 150, signatureY);
-                contentStream.lineTo(PAGE_WIDTH - MARGIN, signatureY);
-                contentStream.stroke();
-                contentStream.beginText();
-                contentStream.setFont(fontNormal, 10);
-                contentStream.newLineAtOffset(PAGE_WIDTH - MARGIN - 130, signatureY - 15);
-                contentStream.showText("Firma del Practicante");
-                contentStream.endText();
+            try (contentStream) {
+                float cursorY = PAGE_HEIGHT - PAGE_MARGIN;
+                cursorY = writePageHeader(contentStream, cursorY,
+                        "Reporte de Avance: " + report.getReportType());
+                cursorY = writePractitionerInfo(contentStream, cursorY, practitioner,
+                        "Periodo cubierto: " + report.getPeriodCoveredStart() + " al " + report.getPeriodCoveredEnd(),
+                        "Total de horas acumuladas: " + report.getTotalHoursAtSubmission() + " hrs");
+                cursorY = writeProfessorFeedback(contentStream, cursorY, report);
+                writeProgressReportSignatures(contentStream, cursorY);
             }
 
-            String home = System.getProperty("user.home");
-            String fileName = "Reporte_Avance_" + report.getReportType() + ".pdf";
-            File outputFile = Paths.get(home, "Downloads", fileName).toFile();
-
-            document.save(outputFile);
-            return outputFile.getAbsolutePath();
+            return saveDocument(document, "Reporte_Avance_" + report.getReportType() + ".pdf");
 
         } catch (IOException e) {
             throw new ManagerException("Error al generar el documento PDF de avance.", e);
         }
+    }
+
+    private PDPageContentStream createDocumentPage(PDDocument document) throws IOException {
+        PDPage page = new PDPage(PDRectangle.LETTER);
+        document.addPage(page);
+        return new PDPageContentStream(document, page);
+    }
+
+    private float writePageHeader(PDPageContentStream contentStream, float cursorY, String reportTitle) throws IOException {
+        PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+        writeTextLine(contentStream, fontBold, HEADER_FONT_SIZE, PAGE_MARGIN, cursorY, UNIVERSITY_NAME);
+        cursorY -= LINE_HEIGHT_NORMAL;
+
+        writeTextLine(contentStream, fontNormal, BODY_FONT_SIZE, PAGE_MARGIN, cursorY, FACULTY_NAME);
+        cursorY -= SECTION_SPACING;
+
+        writeTextLine(contentStream, fontBold, SUBHEADER_FONT_SIZE, PAGE_MARGIN, cursorY, reportTitle);
+        cursorY -= LINE_HEIGHT_LARGE;
+
+        return cursorY;
+    }
+
+    private float writePractitionerInfo(PDPageContentStream contentStream, float cursorY, User practitioner, String... additionalLines) throws IOException {
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+        contentStream.beginText();
+        contentStream.setFont(fontNormal, BODY_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_MARGIN, cursorY);
+        contentStream.showText("Practicante: " + practitioner.getName() + " " + practitioner.getLastName());
+
+        for (String line : additionalLines) {
+            contentStream.newLineAtOffset(0, -15);
+            contentStream.showText(line);
+        }
+        contentStream.endText();
+
+        return cursorY - (15 * additionalLines.length) - LINE_HEIGHT_LARGE;
+    }
+
+    private float writeActivitiesTable(PDPageContentStream contentStream, float cursorY, List<Activity> activities) throws IOException {
+        PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+        drawHorizontalLine(contentStream, cursorY + 15);
+        writeTableHeader(contentStream, fontBold, cursorY);
+        cursorY -= 10;
+        drawHorizontalLine(contentStream, cursorY);
+        cursorY -= LINE_HEIGHT_NORMAL;
+
+        contentStream.setFont(fontNormal, SMALL_FONT_SIZE);
+        int totalHours = 0;
+
+        for (Activity activity : activities) {
+            contentStream.beginText();
+            contentStream.newLineAtOffset(PAGE_MARGIN, cursorY);
+            contentStream.showText(activity.getActivityDate().toString());
+            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(truncateTitle(activity.getTitle()));
+            contentStream.newLineAtOffset(320, 0);
+            contentStream.showText(String.valueOf(activity.getDurationHours()));
+            contentStream.endText();
+
+            totalHours += activity.getDurationHours();
+            cursorY -= LINE_HEIGHT_NORMAL;
+
+            if (cursorY < MINIMUM_PAGE_CURSOR) {
+                break;
+            }
+        }
+
+        drawHorizontalLine(contentStream, cursorY + 10);
+        cursorY -= 15;
+        writeTotalHours(contentStream, fontBold, cursorY, totalHours);
+
+        return cursorY - SECTION_SPACING_LARGE;
+    }
+
+    private void writeTableHeader(PDPageContentStream contentStream, PDType1Font fontBold, float cursorY) throws IOException {
+        contentStream.beginText();
+        contentStream.setFont(fontBold, BODY_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_MARGIN, cursorY);
+        contentStream.showText("Fecha");
+        contentStream.newLineAtOffset(100, 0);
+        contentStream.showText("Actividad y Descripción");
+        contentStream.newLineAtOffset(320, 0);
+        contentStream.showText("Horas");
+        contentStream.endText();
+    }
+
+    private void writeTotalHours(PDPageContentStream contentStream, PDType1Font fontBold, float cursorY, int totalHours) throws IOException {
+        contentStream.beginText();
+        contentStream.setFont(fontBold, SMALL_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_WIDTH - PAGE_MARGIN - SECTION_SPACING_LARGE, cursorY);
+        contentStream.showText("Total: " + totalHours + " hrs");
+        contentStream.endText();
+    }
+
+    private float writeProfessorFeedback(PDPageContentStream contentStream, float cursorY, ProgressReport report) throws IOException {
+        if (report.getProfessorFeedback() == null || report.getProfessorFeedback().isEmpty()) {
+            return cursorY;
+        }
+        PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+        writeTextLine(contentStream, fontBold, BODY_FONT_SIZE, PAGE_MARGIN, cursorY, "Observaciones del Profesor:");
+        cursorY -= LINE_HEIGHT_NORMAL;
+        writeTextLine(contentStream, fontNormal, DETAIL_FONT_SIZE, PAGE_MARGIN, cursorY, report.getProfessorFeedback());
+
+        return cursorY - SECTION_SPACING_LARGE;
+    }
+
+    private void writeMonthlyReportSignatures(PDPageContentStream contentStream, float cursorY, User practitioner) throws IOException {
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+        drawSignatureLine(contentStream, PAGE_MARGIN, cursorY);
+        contentStream.beginText();
+        contentStream.setFont(fontNormal, SMALL_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_MARGIN + 15, cursorY - 15);
+        contentStream.showText("Organización Receptora");
+        contentStream.newLineAtOffset(15, -12);
+        contentStream.showText("Firma y Sello");
+        contentStream.endText();
+
+        drawSignatureLine(contentStream, PAGE_WIDTH - PAGE_MARGIN - SIGNATURE_LINE_WIDTH, cursorY);
+        contentStream.beginText();
+        contentStream.setFont(fontNormal, SMALL_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_WIDTH - PAGE_MARGIN - 145, cursorY - 15);
+        contentStream.showText("Firma del Practicante");
+        contentStream.newLineAtOffset(5, -12);
+        contentStream.showText(practitioner.getName() + " " + practitioner.getLastName());
+        contentStream.endText();
+    }
+
+    private void writeProgressReportSignatures(PDPageContentStream contentStream, float cursorY) throws IOException {
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        float signatureY = cursorY - 100;
+
+        drawSignatureLine(contentStream, PAGE_MARGIN, signatureY);
+        contentStream.beginText();
+        contentStream.setFont(fontNormal, SMALL_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_MARGIN + 15, signatureY - 15);
+        contentStream.showText("Firma del Profesor");
+        contentStream.endText();
+
+        drawSignatureLine(contentStream, PAGE_WIDTH - PAGE_MARGIN - SIGNATURE_LINE_WIDTH, signatureY);
+        contentStream.beginText();
+        contentStream.setFont(fontNormal, SMALL_FONT_SIZE);
+        contentStream.newLineAtOffset(PAGE_WIDTH - PAGE_MARGIN - 130, signatureY - 15);
+        contentStream.showText("Firma del Practicante");
+        contentStream.endText();
+    }
+
+    private void writeTextLine(PDPageContentStream contentStream, PDType1Font font, float fontSize, float x, float y, String text) throws IOException {
+        contentStream.beginText();
+        contentStream.setFont(font, fontSize);
+        contentStream.newLineAtOffset(x, y);
+        contentStream.showText(text);
+        contentStream.endText();
+    }
+
+    private void drawHorizontalLine(PDPageContentStream contentStream, float y) throws IOException {
+        contentStream.setLineWidth(1f);
+        contentStream.moveTo(PAGE_MARGIN, y);
+        contentStream.lineTo(PAGE_WIDTH - PAGE_MARGIN, y);
+        contentStream.stroke();
+    }
+
+    private void drawSignatureLine(PDPageContentStream contentStream, float x, float y) throws IOException {
+        contentStream.moveTo(x, y);
+        contentStream.lineTo(x + SIGNATURE_LINE_WIDTH, y);
+        contentStream.stroke();
+    }
+
+    private String truncateTitle(String title) {
+        return title.length() > TITLE_MAX_LENGTH ? title.substring(0, TITLE_TRUNCATE_LENGTH) + "..." : title;
+    }
+
+    private String saveDocument(PDDocument document, String fileName) throws IOException {
+        String homeDirectory = System.getProperty("user.home");
+        File outputFile = Paths.get(homeDirectory, DOWNLOADS_DIRECTORY, fileName).toFile();
+        document.save(outputFile);
+        return outputFile.getAbsolutePath();
     }
 }

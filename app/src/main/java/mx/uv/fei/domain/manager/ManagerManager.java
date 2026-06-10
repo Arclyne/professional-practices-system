@@ -1,7 +1,5 @@
 package mx.uv.fei.domain.manager;
 
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -10,15 +8,10 @@ import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+import java.util.List;
+
 @Component
 public class ManagerManager {
-
-    private static final String GET_ALL_ERROR_MESSAGE = "Error al obtener la lista de encargados.";
-    private static final String INACTIVATE_ERROR_MESSAGE = "No se pudieron inactivar los encargados seleccionados.";
-    private static final String INACTIVATE_CONNECTION_ERROR_MESSAGE = "Error de base de datos al inactivar encargados.";
-    private static final String GET_MANAGERS_ERROR_MESSAGE = "No se pudieron cargar los encargados de esta organización.";
-    private static final String REGISTER_MANAGER_ERROR_MESSAGE = "No se pudo completar el registro del encargado en el sistema.";
-    private static final String CONNECTION_ERROR_MESSAGE = "Ocurrió un problema de conexión. Por favor, intente más tarde.";
 
     private final IManagerDAO managerDAO;
 
@@ -28,52 +21,41 @@ public class ManagerManager {
     }
 
     public List<Manager> getAllManagers() throws ManagerException {
-        List<Manager> managers;
-
         try {
-            managers = managerDAO.getAllManagers();
+            return managerDAO.getAllManagers();
         } catch (DAOException e) {
-            throw new ManagerException(GET_ALL_ERROR_MESSAGE, e);
+            throw new ManagerException("Error al obtener la lista de encargados.", e);
         }
-
-        return managers;
     }
 
     public List<Manager> getManagersByOrganization(int organizationId) throws ManagerException {
-        List<Manager> managers;
-
         try {
-            managers = managerDAO.getManagersByOrganization(organizationId);
+            return managerDAO.getManagersByOrganization(organizationId);
         } catch (DAOException e) {
-            throw new ManagerException(GET_MANAGERS_ERROR_MESSAGE, e);
+            throw new ManagerException("No se pudieron cargar los encargados de esta organización.", e);
         }
-
-        return managers;
     }
 
-    public void registerManager(Manager managerToRegister) throws ManagerException {
-        UserValidator.validateManagerData(managerToRegister);
-
+    public void registerManager(Manager manager) throws ManagerException {
+        UserValidator.validateManagerData(manager);
         try {
-            boolean isRegistered = managerDAO.insertManager(managerToRegister);
-
+            boolean isRegistered = managerDAO.insertManager(manager);
             if (!isRegistered) {
-                throw new ManagerException(REGISTER_MANAGER_ERROR_MESSAGE);
+                throw new ManagerException("No se pudo completar el registro del encargado en el sistema.");
             }
         } catch (DAOException e) {
-            throw new ManagerException(CONNECTION_ERROR_MESSAGE, e);
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
 
-    public void inactivateMultipleManagers(List<Integer> managerIdentifiersList) throws ManagerException {
+    public void inactivateMultipleManagers(List<Integer> managerIds) throws ManagerException {
         try {
-            boolean isProcessSuccessful = managerDAO.deactivateMultipleManagers(managerIdentifiersList);
-
-            if (!isProcessSuccessful) {
-                throw new ManagerException(INACTIVATE_ERROR_MESSAGE);
+            boolean isDeactivationSuccessful = managerDAO.deactivateMultipleManagers(managerIds);
+            if (!isDeactivationSuccessful) {
+                throw new ManagerException("No se pudieron inactivar los encargados seleccionados.");
             }
         } catch (DAOException e) {
-            throw new ManagerException(INACTIVATE_CONNECTION_ERROR_MESSAGE, e);
+            throw new ManagerException("Error de base de datos al inactivar encargados.", e);
         }
     }
 }

@@ -3,7 +3,15 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Representa un mensaje enviado entre usuarios del sistema.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class Message {
+
     private int messageId;
     private String subject;
     private String body;
@@ -41,16 +49,17 @@ public class Message {
         if (this == obj) {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
-            Message that = (Message) obj;
-            isEqual = this.messageId == that.messageId &&
-                    this.senderId == that.senderId &&
-                    this.receiverId == that.receiverId;
+            Message other = (Message) obj;
+            isEqual = this.senderId == other.senderId &&
+                    this.receiverId == other.receiverId &&
+                    Objects.equals(this.subject, other.subject) &&
+                    Objects.equals(this.sendDate, other.sendDate);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(messageId, senderId, receiverId);
+        return Objects.hash(senderId, receiverId, subject, sendDate);
     }
 }

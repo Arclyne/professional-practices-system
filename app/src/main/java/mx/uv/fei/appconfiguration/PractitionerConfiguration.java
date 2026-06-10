@@ -10,7 +10,7 @@ import mx.uv.fei.domain.common.LocalCsvBackup;
 
 @Component
 @Keep
-public class PractitionerConfig {
+public class PractitionerConfiguration  {
 
     @Provide
     public IFileBackup provideFileBackup() {
