@@ -1,22 +1,8 @@
 package mx.uv.fei.presentation;
 
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import java.net.URL;
-
-import java.io.IOException;
-
-import javafx.stage.Stage;
-import javafx.util.Duration;
+import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
@@ -25,34 +11,107 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
 import mx.uv.fei.presentation.interfaces.IDisposable;
+
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.EnumMap;
+import java.util.Map;
 
 @Component
 public class MainController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
-    @FXML
-    private StackPane contentArea;
-    private Runnable unsubscribe;
+    private static final String VIEW_BASE_PATH = "/mx/uv/fei/presentation/";
+    private static final Map<AppSection, String> VIEW_PATHS = buildViewPaths();
+
+    private static final double DASHBOARD_WIDTH = 1100;
+    private static final double DASHBOARD_HEIGHT = 750;
+    private static final double FORM_WIDTH = 500;
+    private static final double FORM_HEIGHT = 450;
+    private static final double SPLASH_DELAY_SECONDS = 2;
+
+    @FXML private StackPane contentArea;
+
     private final DependencyInjector dependencyInjector;
     private final AppStore store;
     private final AdminManager administratorManager;
-    private AppSection activeApplicationSection = null;
-    private Object currentViewController = null;
+
+    private Runnable unsubscribe;
+    private AppSection activeSection;
+    private Object currentViewController;
 
     @Inject
-    public MainController(DependencyInjector dependencyInjector, AppStore applicationNavigationStore, AdminManager administratorManager) {
+    public MainController(DependencyInjector dependencyInjector, AppStore store, AdminManager administratorManager) {
         this.dependencyInjector = dependencyInjector;
-        this.store = applicationNavigationStore;
+        this.store = store;
         this.administratorManager = administratorManager;
     }
 
     @FXML
     public void initialize() {
-        this.unsubscribe = store.subscribe(this::handleApplicationStateChange);
+        unsubscribe = store.subscribe(this::handleApplicationStateChange);
         startAppFlow();
+    }
+
+    public void dispose() {
+        if (unsubscribe != null) {
+            unsubscribe.run();
+        }
+    }
+
+    private static Map<AppSection, String> buildViewPaths() {
+        Map<AppSection, String> paths = new EnumMap<>(AppSection.class);
+        paths.put(AppSection.SPLASH_SCREEN, VIEW_BASE_PATH + "loading.fxml");
+        paths.put(AppSection.ADMIN_REGISTRATION, VIEW_BASE_PATH + "registerAdmin.fxml");
+        paths.put(AppSection.LOGIN, VIEW_BASE_PATH + "startSession.fxml");
+        paths.put(AppSection.DASHBOARD, VIEW_BASE_PATH + "dashboard.fxml");
+        paths.put(AppSection.PASSWORD_RESET, VIEW_BASE_PATH + "passwordReset.fxml");
+        paths.put(AppSection.TOKEN_VERIFICATION, VIEW_BASE_PATH + "tokenVerification.fxml");
+        paths.put(AppSection.REGISTER_PRACTITIONER, VIEW_BASE_PATH + "registerPractitioner.fxml");
+        paths.put(AppSection.REGISTER_PROFESSOR, VIEW_BASE_PATH + "registerProfessor.fxml");
+        paths.put(AppSection.REGISTER_PROJECT, VIEW_BASE_PATH + "projectForm.fxml");
+        paths.put(AppSection.REGISTER_COORDINATOR, VIEW_BASE_PATH + "registerCoordinator.fxml");
+        paths.put(AppSection.COORDINATOR_DETAILS, VIEW_BASE_PATH + "coordinatorDetails.fxml");
+        paths.put(AppSection.PRIORITIZE_PROJECTS, VIEW_BASE_PATH + "prioritizeProjects.fxml");
+        paths.put(AppSection.VIEW_PRACTITIONER_PRIORITIES, VIEW_BASE_PATH + "viewPractitionerPriorities.fxml");
+        paths.put(AppSection.COORDINATOR_PRACTITIONER_MENU, VIEW_BASE_PATH + "coordinatorPractitionerMenu.fxml");
+        paths.put(AppSection.PENDING_PRACTITIONER_SELECTION, VIEW_BASE_PATH + "pendingPractitionerSelection.fxml");
+        paths.put(AppSection.REGISTER_MANAGER, VIEW_BASE_PATH + "registerManager.fxml");
+        paths.put(AppSection.PROFESSOR_MANAGEMENT_MENU, VIEW_BASE_PATH + "managerProfessor.fxml");
+        paths.put(AppSection.ASSIGN_PROJECT, VIEW_BASE_PATH + "assignProject.fxml");
+        paths.put(AppSection.PROJECT_MANAGEMENT_MENU, VIEW_BASE_PATH + "manageProjects.fxml");
+        paths.put(AppSection.MANAGER_MANAGEMENT_MENU, VIEW_BASE_PATH + "manageManagers.fxml");
+        paths.put(AppSection.ORGANIZATION_MANAGEMENT_MENU, VIEW_BASE_PATH + "manageOrganizations.fxml");
+        paths.put(AppSection.REGISTER_ORGANIZATION, VIEW_BASE_PATH + "registerOrganization.fxml");
+        paths.put(AppSection.MESSAGES, VIEW_BASE_PATH + "MessageView.fxml");
+        paths.put(AppSection.REGISTER_PERIOD, VIEW_BASE_PATH + "registerPeriod.fxml");
+        paths.put(AppSection.REGISTER_PRACTICE_GROUP, VIEW_BASE_PATH + "registerPracticeGroup.fxml");
+        paths.put(AppSection.TEMPLATE_GENERATOR, VIEW_BASE_PATH + "templateGenerator.fxml");
+        paths.put(AppSection.PRACTITIONER_LOGBOOK, VIEW_BASE_PATH + "practitionerLogbook.fxml");
+        paths.put(AppSection.PRACTITIONER_REPORT_GENERATOR, VIEW_BASE_PATH + "practitionerReportGenerator.fxml");
+        paths.put(AppSection.PRACTITIONER_REPORTS_LIST, VIEW_BASE_PATH + "practitionerReportsList.fxml");
+        paths.put(AppSection.PROFESSOR_EVALUATE_REPORT, VIEW_BASE_PATH + "professorEvaluateReport.fxml");
+        paths.put(AppSection.PROGRESS_REPORT_GENERATOR, VIEW_BASE_PATH + "progressReportGenerator.fxml");
+        paths.put(AppSection.GRADE_PRACTITIONER, VIEW_BASE_PATH + "gradePractitioner.fxml");
+        paths.put(AppSection.PRACTITIONER_GRADE_VIEW, VIEW_BASE_PATH + "practitionerGradeView.fxml");
+        paths.put(AppSection.PROFESSOR_REVIEW_SELF_EVALUATION, VIEW_BASE_PATH + "ReviewSelfEvaluation.fxml");
+        paths.put(AppSection.PRACTITIONER_SELF_EVALUATION, VIEW_BASE_PATH + "PractitionerSelfEvaluation.fxml");
+        return paths;
     }
 
     private Stage getStage() {
@@ -61,64 +120,36 @@ public class MainController {
 
     private void handleApplicationStateChange(RootState previousState, RootState newState) {
         AppSection targetSection = newState.navigationState().currentSection();
+        Platform.runLater(() -> renderSection(targetSection));
+    }
 
-        Platform.runLater(() -> {
-            if (this.activeApplicationSection != targetSection) {
-                this.activeApplicationSection = targetSection;
+    private void renderSection(AppSection targetSection) {
+        if (activeSection == targetSection) {
+            return;
+        }
+        activeSection = targetSection;
+        adjustStageSize(targetSection);
 
-                Stage stage = getStage();
+        String viewPath = VIEW_PATHS.get(targetSection);
+        if (viewPath != null) {
+            loadView(viewPath);
+        } else {
+            Controller.showAlert("Error de Navegación",
+                    "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
+        }
+    }
 
-                if (targetSection == AppSection.DASHBOARD) {
-                    stage.setWidth(1100);
-                    stage.setHeight(750);
-                    stage.centerOnScreen();
-                } else if (targetSection == AppSection.LOGIN || targetSection == AppSection.ADMIN_REGISTRATION) {
-                    stage.setWidth(500);
-                    stage.setHeight(450);
-                    stage.centerOnScreen();
-                }
-
-                switch (targetSection) {
-                    case SPLASH_SCREEN -> loadView("/mx/uv/fei/presentation/loading.fxml");
-                    case ADMIN_REGISTRATION -> loadView("/mx/uv/fei/presentation/registerAdmin.fxml");
-                    case LOGIN -> loadView("/mx/uv/fei/presentation/startSession.fxml");
-                    case DASHBOARD -> loadView("/mx/uv/fei/presentation/dashboard.fxml");
-                    case PASSWORD_RESET -> loadView("/mx/uv/fei/presentation/passwordReset.fxml");
-                    case TOKEN_VERIFICATION -> loadView("/mx/uv/fei/presentation/tokenVerification.fxml");
-                    case REGISTER_PRACTITIONER -> loadView("/mx/uv/fei/presentation/registerPractitioner.fxml");
-                    case REGISTER_PROFESSOR -> loadView("/mx/uv/fei/presentation/registerProfessor.fxml");
-                    case REGISTER_PROJECT -> loadView("/mx/uv/fei/presentation/projectForm.fxml");
-                    case REGISTER_COORDINATOR -> loadView("/mx/uv/fei/presentation/registerCoordinator.fxml");
-                    case COORDINATOR_DETAILS -> loadView("/mx/uv/fei/presentation/coordinatorDetails.fxml");
-                    case PRIORITIZE_PROJECTS -> loadView("/mx/uv/fei/presentation/prioritizeProjects.fxml");
-                    case VIEW_PRACTITIONER_PRIORITIES -> loadView("/mx/uv/fei/presentation/viewPractitionerPriorities.fxml");
-                    case COORDINATOR_PRACTITIONER_MENU -> loadView("/mx/uv/fei/presentation/coordinatorPractitionerMenu.fxml");
-                    case PENDING_PRACTITIONER_SELECTION -> loadView("/mx/uv/fei/presentation/pendingPractitionerSelection.fxml");
-                    case REGISTER_MANAGER -> loadView("/mx/uv/fei/presentation/registerManager.fxml");
-                    case PROFESSOR_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/managerProfessor.fxml");
-                    case ASSIGN_PROJECT -> loadView("/mx/uv/fei/presentation/assignProject.fxml");
-                    case PROJECT_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageProjects.fxml");
-                    case MANAGER_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageManagers.fxml");
-                    case ORGANIZATION_MANAGEMENT_MENU -> loadView("/mx/uv/fei/presentation/manageOrganizations.fxml");
-                    case REGISTER_ORGANIZATION -> loadView("/mx/uv/fei/presentation/registerOrganization.fxml");
-                    case MESSAGES -> loadView("/mx/uv/fei/presentation/MessageView.fxml");
-                    case REGISTER_PERIOD -> loadView("/mx/uv/fei/presentation/registerPeriod.fxml");
-                    case REGISTER_PRACTICE_GROUP -> loadView("/mx/uv/fei/presentation/registerPracticeGroup.fxml");
-                    case TEMPLATE_GENERATOR -> loadView("/mx/uv/fei/presentation/templateGenerator.fxml");
-                    case PRACTITIONER_LOGBOOK -> loadView("/mx/uv/fei/presentation/practitionerLogbook.fxml");
-                    case PRACTITIONER_REPORT_GENERATOR -> loadView("/mx/uv/fei/presentation/practitionerReportGenerator.fxml");
-                    case PRACTITIONER_REPORTS_LIST -> loadView("/mx/uv/fei/presentation/practitionerReportsList.fxml");
-                    case PROFESSOR_EVALUATE_REPORT -> loadView("/mx/uv/fei/presentation/professorEvaluateReport.fxml");
-                    case PROGRESS_REPORT_GENERATOR -> loadView("/mx/uv/fei/presentation/progressReportGenerator.fxml");
-                    case GRADE_PRACTITIONER -> loadView("/mx/uv/fei/presentation/gradePractitioner.fxml");
-                    case PRACTITIONER_GRADE_VIEW -> loadView("/mx/uv/fei/presentation/practitionerGradeView.fxml");
-                    case PROFESSOR_REVIEW_SELF_EVALUATION -> loadView("/mx/uv/fei/presentation/ReviewSelfEvaluation.fxml");
-                    case PRACTITIONER_SELF_EVALUATION -> loadView("/mx/uv/fei/presentation/PractitionerSelfEvaluation.fxml");
-
-                    default -> Controller.showAlert("Error de Navegación", "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
-                }
-            }
-        });
+    private void adjustStageSize(AppSection targetSection) {
+        Stage stage = getStage();
+        if (targetSection == AppSection.DASHBOARD) {
+            stage.setWidth(DASHBOARD_WIDTH);
+            stage.setHeight(DASHBOARD_HEIGHT);
+            stage.centerOnScreen();
+        } else if (targetSection == AppSection.LOGIN || targetSection == AppSection.ADMIN_REGISTRATION) {
+            stage.setWidth(FORM_WIDTH);
+            stage.setHeight(FORM_HEIGHT);
+            stage.centerOnScreen();
+        }
     }
 
     private void loadView(String fxmlPath) {
@@ -132,63 +163,50 @@ public class MainController {
             loader.setControllerFactory(dependencyInjector::retrieveInstance);
             Parent view = loader.load();
 
-            if (currentViewController instanceof IDisposable disposableController) {
-                disposableController.dispose();
-            }
-
+            disposeCurrentController();
             currentViewController = loader.getController();
-
-            if (view instanceof Region regionView) {
-                regionView.prefWidthProperty().bind(contentArea.widthProperty());
-                regionView.prefHeightProperty().bind(contentArea.heightProperty());
-            }
-
+            bindViewToContentArea(view);
             contentArea.getChildren().setAll(view);
-
         } catch (IOException e) {
-            logger.error("Error de E/S al cargar la vista FXML: " + fxmlPath, e);
+            log.error("Error de E/S al cargar la vista FXML: {}.", fxmlPath, e);
             Controller.showAlert("Error de Interfaz",
-                    "No se pudo cargar el archivo visual. Detalle: " + e.getMessage(),
-                    AlertType.ERROR);
-
+                    "No se pudo cargar el archivo visual.", AlertType.ERROR);
         } catch (IllegalArgumentException e) {
-            logger.error("Ruta de vista inválida", e);
+            log.error("Ruta de vista inválida: {}.", fxmlPath, e);
             Controller.showAlert("Error de Interfaz",
-                    "La ruta solicitada no existe en el sistema.",
-                    AlertType.ERROR);
+                    "La ruta solicitada no existe en el sistema.", AlertType.ERROR);
+        }
+    }
+
+    private void disposeCurrentController() {
+        if (currentViewController instanceof IDisposable disposableController) {
+            disposableController.dispose();
+        }
+    }
+
+    private void bindViewToContentArea(Parent view) {
+        if (view instanceof Region regionView) {
+            regionView.prefWidthProperty().bind(contentArea.widthProperty());
+            regionView.prefHeightProperty().bind(contentArea.heightProperty());
         }
     }
 
     private void startAppFlow() {
-
         store.dispatch(new NavigationAction.GoToSection(AppSection.SPLASH_SCREEN));
-
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
-
-        pause.setOnFinished(pauseTransitionEvent -> {
-            try {
-                boolean adminExists = administratorManager.checkSystemHasAdmin();
-
-                if (!adminExists) {
-                    store.dispatch(new NavigationAction.GoToSection(AppSection.ADMIN_REGISTRATION));
-                } else {
-                    store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
-                }
-
-            } catch (ManagerException e) {
-                logger.error(e.getMessage(), e);
-                Controller.showAlert("Error de Arranque",
-                        "El sistema falló al iniciar: " + e.getMessage(),
-                        AlertType.ERROR);
-            }
-        });
-
+        PauseTransition pause = new PauseTransition(Duration.seconds(SPLASH_DELAY_SECONDS));
+        pause.setOnFinished(_ -> resolveInitialSection());
         pause.play();
     }
 
-    public void dispose() {
-        if (unsubscribe != null) {
-            unsubscribe.run();
+    private void resolveInitialSection() {
+        try {
+            boolean adminExists = administratorManager.checkSystemHasAdmin();
+            AppSection initialSection = adminExists ? AppSection.LOGIN : AppSection.ADMIN_REGISTRATION;
+            store.dispatch(new NavigationAction.GoToSection(initialSection));
+        } catch (ManagerException e) {
+            log.error("El sistema falló al verificar el estado inicial.", e);
+            Controller.showAlert("Error de Arranque",
+                    "El sistema falló al iniciar.", AlertType.ERROR);
         }
     }
 }
