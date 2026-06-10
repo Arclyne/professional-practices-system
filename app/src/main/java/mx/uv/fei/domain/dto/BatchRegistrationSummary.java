@@ -2,7 +2,15 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+/**
+ * Acumula los resultados de un proceso de registro masivo de practicantes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class BatchRegistrationSummary {
+
     private int successfulRegistrations;
     private int failedRegistrations;
 
@@ -33,9 +41,9 @@ public class BatchRegistrationSummary {
         if (this == obj) {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
-            BatchRegistrationSummary that = (BatchRegistrationSummary) obj;
-            isEqual = this.successfulRegistrations == that.successfulRegistrations &&
-                    this.failedRegistrations == that.failedRegistrations;
+            BatchRegistrationSummary other = (BatchRegistrationSummary) obj;
+            isEqual = this.successfulRegistrations == other.successfulRegistrations &&
+                    this.failedRegistrations == other.failedRegistrations;
         }
         return isEqual;
     }

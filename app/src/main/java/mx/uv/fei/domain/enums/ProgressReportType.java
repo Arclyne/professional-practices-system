@@ -1,5 +1,12 @@
 package mx.uv.fei.domain.enums;
 
+/**
+ * Define los tipos de reporte de avance y sus horas requeridas de práctica.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public enum ProgressReportType {
 
     INTERMEDIO("Intermedio", 210),
@@ -13,28 +20,15 @@ public enum ProgressReportType {
         this.requiredHours = requiredHours;
     }
 
-    public String getDatabaseValue() {
-        return databaseValue;
-    }
+    public String getDatabaseValue() { return databaseValue; }
+    public int getRequiredHours() { return requiredHours; }
 
-    public int getRequiredHours() {
-        return requiredHours;
-    }
-
-    public static ProgressReportType fromString(String text) {
-        ProgressReportType matched = null;
-
-        for (ProgressReportType type : ProgressReportType.values()) {
-            if (type.databaseValue.equalsIgnoreCase(text)) {
-                matched = type;
-                break;
+    public static ProgressReportType fromString(String databaseValue) {
+        for (ProgressReportType type : values()) {
+            if (type.databaseValue.equalsIgnoreCase(databaseValue)) {
+                return type;
             }
         }
-
-        if (matched == null) {
-            throw new IllegalArgumentException("Tipo de reporte no válido: " + text);
-        }
-
-        return matched;
+        throw new IllegalArgumentException("Tipo de reporte no válido: " + databaseValue);
     }
 }

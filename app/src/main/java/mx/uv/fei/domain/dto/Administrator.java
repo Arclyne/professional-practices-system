@@ -2,6 +2,13 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+/**
+ * Representa un usuario con rol de administrador del sistema.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class Administrator extends User {
 
     public Administrator() {
@@ -9,18 +16,19 @@ public class Administrator extends User {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Administrator other = (Administrator) obj;
+            isEqual = Objects.equals(this.getEmail(), other.getEmail());
         }
+        return isEqual;
+    }
 
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-
-        Administrator that = (Administrator) object;
-
-        return Objects.equals(this.getName(), that.getName()) &&
-                Objects.equals(this.getLastName(), that.getLastName());
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEmail());
     }
 }

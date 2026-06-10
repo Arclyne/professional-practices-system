@@ -3,6 +3,13 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Representa un periodo escolar con fechas de inicio y fin para el programa de prácticas.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class SchoolPeriod {
 
     private int periodId;
@@ -11,62 +18,34 @@ public class SchoolPeriod {
     private LocalDate endDate;
     private String status;
 
-    public SchoolPeriod() {
-    }
+    public SchoolPeriod() {}
 
-    public int getPeriodId() {
-        return periodId;
-    }
+    public int getPeriodId() { return periodId; }
+    public void setPeriodId(int periodId) { this.periodId = periodId; }
 
-    public void setPeriodId(int periodId) {
-        this.periodId = periodId;
-    }
+    public String getPeriodName() { return periodName; }
+    public void setPeriodName(String periodName) { this.periodName = periodName; }
 
-    public String getPeriodName() {
-        return periodName;
-    }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public void setPeriodName(String periodName) {
-        this.periodName = periodName;
-    }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            SchoolPeriod that = (SchoolPeriod) object;
-            isEqual = Objects.equals(this.periodName, that.periodName)
-                    && Objects.equals(this.startDate, that.startDate)
-                    && Objects.equals(this.endDate, that.endDate);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            SchoolPeriod other = (SchoolPeriod) obj;
+            isEqual = Objects.equals(this.periodName, other.periodName) &&
+                    Objects.equals(this.startDate, other.startDate) &&
+                    Objects.equals(this.endDate, other.endDate);
         }
-
         return isEqual;
     }
 

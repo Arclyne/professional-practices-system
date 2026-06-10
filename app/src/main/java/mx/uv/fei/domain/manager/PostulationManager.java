@@ -5,10 +5,10 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProjectDAO;
-import mx.uv.fei.dataaccess.repositories.ProjectDAO;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.exceptions.ManagerException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,65 +17,56 @@ import java.util.List;
 @Component
 public class PostulationManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(PostulationManager.class);
-    private final IPostulationDAO postulationProjectDAO;
+    private static final Logger log = LoggerFactory.getLogger(PostulationManager.class);
+
+    private final IPostulationDAO postulationDAO;
     private final IProjectDAO projectDAO;
 
     @Inject
-    public PostulationManager(IPostulationDAO postulationProjectDAO, ProjectDAO projectDAO) {
-        this.postulationProjectDAO = postulationProjectDAO;
+    public PostulationManager(IPostulationDAO postulationDAO, IProjectDAO projectDAO) {
+        this.postulationDAO = postulationDAO;
         this.projectDAO = projectDAO;
     }
 
-    public List<ProjectPostulation> retrievePractitionerPostulations(int practitionerIdentifier) throws ManagerException {
-        List<ProjectPostulation> retrievedPostulationsList;
-
+    public List<ProjectPostulation> retrievePractitionerPostulations(int practitionerId) throws ManagerException {
         try {
-            retrievedPostulationsList = postulationProjectDAO.retrievePractitionerPostulations(practitionerIdentifier);
+            return postulationDAO.retrievePractitionerPostulations(practitionerId);
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrio un problema al recuperar las postulaciones desde el servidor.", e);
+            throw new ManagerException("Ocurrió un problema al recuperar las postulaciones.", e);
         }
-
-        return retrievedPostulationsList;
     }
 
-    public void assignProjectToPractitioner(int practitionerIdentifier, int projectIdentifier) throws ManagerException {
+    public void assignProjectToPractitioner(int practitionerId, int projectId) throws ManagerException {
         try {
-            boolean isProjectAssignedSuccessfully = postulationProjectDAO.assignProjectUsingStoredProcedure(practitionerIdentifier, projectIdentifier);
-
-            if (!isProjectAssignedSuccessfully) {
-                throw new ManagerException("No fue posible asignar el proyecto. Verifique que la postulacion exista y se encuentre activa.");
+            boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(practitionerId, projectId);
+            if (!isAssigned) {
+                throw new ManagerException("No fue posible asignar el proyecto. Verifique que la postulación exista y se encuentre activa.");
             }
         } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-            throw new ManagerException("Ocurrio un problema de conexion al intentar registrar la asignacion.",e);
+            log.error("Error al asignar el proyecto {} al practicante {}.", projectId, practitionerId, e);
+            throw new ManagerException("Ocurrió un problema de conexión al intentar registrar la asignación.", e);
         }
     }
 
     public List<Project> retrieveAllAvailableProjects() throws ManagerException {
-        List<Project> availableProjectsList;
-
         try {
-            availableProjectsList = projectDAO.getAvailableProjectsWithCapacity();
+            return projectDAO.getAvailableProjectsWithCapacity();
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrio un problema al intentar recuperar los proyectos disponibles desde el servidor.", e);
+            throw new ManagerException("Ocurrió un problema al intentar recuperar los proyectos disponibles.", e);
         }
-
-        return availableProjectsList;
     }
 
-    public void registerPractitionerPriorities(int systemPractitionerIdentifier, List<Project> prioritizedProjectsList) throws ManagerException {
-        if (prioritizedProjectsList == null || prioritizedProjectsList.isEmpty()) {
-            throw new ManagerException("La lista de prioridades proporcionada se encuentra vacia o corrupta.");
-        } else {
-            try {
-                boolean arePrioritiesSavedSuccessfully = postulationProjectDAO.insertProjectPriorities(systemPractitionerIdentifier, prioritizedProjectsList);
-                if (!arePrioritiesSavedSuccessfully) {
-                    throw new ManagerException("No fue posible registrar las prioridades en el sistema. Intente nuevamente.");
-                }
-            } catch (DAOException e) {
-                throw new ManagerException("Ocurrio un problema de conexion al intentar guardar sus prioridades.", e);
+    public void registerPractitionerPriorities(int practitionerId, List<Project> prioritizedProjects) throws ManagerException {
+        if (prioritizedProjects == null || prioritizedProjects.isEmpty()) {
+            throw new ManagerException("La lista de prioridades proporcionada se encuentra vacía.");
+        }
+        try {
+            boolean arePrioritiesSaved = postulationDAO.insertProjectPriorities(practitionerId, prioritizedProjects);
+            if (!arePrioritiesSaved) {
+                throw new ManagerException("No fue posible registrar las prioridades en el sistema. Intente nuevamente.");
             }
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión al intentar guardar las prioridades.", e);
         }
     }
 }

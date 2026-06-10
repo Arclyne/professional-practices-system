@@ -1,14 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -20,64 +11,71 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.RootState;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+
 import java.util.List;
 
 @Component
 public class AssignProjectController {
 
-    @FXML
-    private Label practitionerInformationLabel;
-    @FXML
-    private ListView<ProjectPostulation> practitionerPostulationsListView;
-    @FXML
-    private Button confirmAssignmentButton;
-    @FXML
-    private Button returnToDashboardButton;
+    @FXML private Label practitionerInformationLabel;
+    @FXML private ListView<ProjectPostulation> practitionerPostulationsListView;
+    @FXML private Button confirmAssignmentButton;
+    @FXML private Button returnToDashboardButton;
 
-    private final PostulationManager projectAssignmentManager;
-    private final AppStore applicationNavigationStore;
-    private final ObservableList<ProjectPostulation> postulationsObservableList = FXCollections.observableArrayList();
+    private final PostulationManager postulationManager;
+    private final AppStore store;
+    private final ObservableList<ProjectPostulation> postulations = FXCollections.observableArrayList();
 
-    private int targetPractitionerIdentifier;
+    private int targetPractitionerId;
 
     @Inject
-    public AssignProjectController(PostulationManager projectAssignmentManager, AppStore applicationNavigationStore) {
-        this.projectAssignmentManager = projectAssignmentManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+    public AssignProjectController(PostulationManager postulationManager, AppStore store) {
+        this.postulationManager = postulationManager;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
         try {
-            postulationsObservableList.clear();
-            RootState currentSystemState = applicationNavigationStore.getState();
-            String retrievedEntityIdentifier = currentSystemState.navigationState().targetEntityId();
+            RootState currentState = store.getState();
+            String entityId = currentState.navigationState().targetEntityId();
 
-            if (retrievedEntityIdentifier != null && !retrievedEntityIdentifier.isEmpty()) {
-                this.targetPractitionerIdentifier = Integer.parseInt(retrievedEntityIdentifier);
-                practitionerInformationLabel.setText("Practicante Seleccionado (ID): " + targetPractitionerIdentifier);
-
-                configurePostulationListViewDisplay();
-                practitionerPostulationsListView.setItems(postulationsObservableList);
+            if (entityId != null && !entityId.isEmpty()) {
+                targetPractitionerId = Integer.parseInt(entityId);
+                practitionerInformationLabel.setText("Practicante Seleccionado (ID): " + targetPractitionerId);
+                configurePostulationListView();
+                practitionerPostulationsListView.setItems(postulations);
                 loadPractitionerPostulations();
             } else {
-                Controller.showAlert("Información faltante", "No se pudo recuperar la información del practicante seleccionado.", AlertType.WARNING);
+                Controller.showAlert("Información faltante",
+                        "No se pudo recuperar la información del practicante seleccionado.", AlertType.WARNING);
             }
-        } catch (Exception initializationException) {
-            Controller.showAlert("Error de carga", "Ocurrió un problema al inicializar la pantalla de asignación.", AlertType.ERROR);
+        } catch (Exception e) {
+            Controller.showAlert("Error de carga",
+                    "Ocurrió un problema al inicializar la pantalla de asignación.", AlertType.ERROR);
         }
     }
 
-    private void configurePostulationListViewDisplay() {
-        practitionerPostulationsListView.setCellFactory(parameter -> new ListCell<>() {
+    private void configurePostulationListView() {
+        practitionerPostulationsListView.setCellFactory(_ -> new ListCell<>() {
             @Override
-            protected void updateItem(ProjectPostulation postulationItem, boolean isItemEmpty) {
-                super.updateItem(postulationItem, isItemEmpty);
-                if (isItemEmpty || postulationItem == null) {
+            protected void updateItem(ProjectPostulation postulation, boolean isEmpty) {
+                super.updateItem(postulation, isEmpty);
+                if (isEmpty || postulation == null) {
                     setText(null);
                 } else {
-                    String formattedDisplayString = "Prioridad " + postulationItem.getPriorityLevel() + " - " + postulationItem.getProjectName() + " (" + postulationItem.getPostulationStatus() + ")";
-                    setText(formattedDisplayString);
+                    setText("Prioridad " + postulation.getPriorityLevel()
+                            + " - " + postulation.getProjectName()
+                            + " (" + postulation.getPostulationStatus() + ")");
                 }
             }
         });
@@ -85,33 +83,38 @@ public class AssignProjectController {
 
     private void loadPractitionerPostulations() {
         try {
-            postulationsObservableList.clear();
-            List<ProjectPostulation> retrievedPostulationsList = projectAssignmentManager.retrievePractitionerPostulations(targetPractitionerIdentifier);
-            postulationsObservableList.addAll(retrievedPostulationsList);
+            postulations.clear();
+            List<ProjectPostulation> retrievedPostulations =
+                    postulationManager.retrievePractitionerPostulations(targetPractitionerId);
+            postulations.addAll(retrievedPostulations);
         } catch (ManagerException e) {
             Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleConfirmAssignmentAction(ActionEvent userActionEvent) {
-        ProjectPostulation selectedPostulationToAssign = practitionerPostulationsListView.getSelectionModel().getSelectedItem();
+    private void handleConfirmAssignmentAction() {
+        ProjectPostulation selectedPostulation =
+                practitionerPostulationsListView.getSelectionModel().getSelectedItem();
 
-        if (selectedPostulationToAssign != null) {
+        if (selectedPostulation != null) {
             try {
-                projectAssignmentManager.assignProjectToPractitioner(targetPractitionerIdentifier, selectedPostulationToAssign.getProjectIdentifier());
-                Controller.showAlert("Asignación Exitosa", "El proyecto ha sido asignado al practicante correctamente.", AlertType.INFORMATION);
-                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+                postulationManager.assignProjectToPractitioner(
+                        targetPractitionerId, selectedPostulation.getProjectId());
+                Controller.showAlert("Asignación Exitosa",
+                        "El proyecto ha sido asignado al practicante correctamente.", AlertType.INFORMATION);
+                store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
             } catch (ManagerException e) {
                 Controller.showAlert("Error en la asignación", e.getMessage(), AlertType.ERROR);
             }
         } else {
-            Controller.showAlert("Selección requerida", "Por favor, seleccione un proyecto de la lista para asignarlo.", AlertType.WARNING);
+            Controller.showAlert("Selección requerida",
+                    "Por favor, seleccione un proyecto de la lista para asignarlo.", AlertType.WARNING);
         }
     }
 
     @FXML
-    private void handleReturnToDashboardAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+    private void handleReturnToDashboardAction(ActionEvent e) {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
     }
 }

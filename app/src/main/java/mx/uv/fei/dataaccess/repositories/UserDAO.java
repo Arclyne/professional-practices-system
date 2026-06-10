@@ -1,12 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -16,20 +9,34 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Component
 public class UserDAO extends BaseDAO implements IUserDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO user (username, password, name, last_name, email, role_name, status, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SQL_DEACTIVATE = "UPDATE user SET status = 'Inactive', discharge_date = NOW() WHERE user_id = ?";
-    private static final String SQL_UPDATE = "UPDATE user SET username = ?, password = ?, name = ?, last_name = ?, email = ?, role_name = ?, status = ?, gender = ? WHERE user_id = ?";
-
-    private static final String SQL_SELECT_BY_USERNAME = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
-    private static final String SQL_SELECT_BY_EMAIL = "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE email = ?";
-
-    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME = "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
-    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL = "SELECT COUNT(*) FROM user WHERE email = ? AND password = ?";
-
-    private static final String SQL_GET_USER_ROLE = "SELECT role_name FROM user WHERE username = ?";
+    private static final String SQL_INSERT_USER =
+            "INSERT INTO user (username, password, name, last_name, email, role_name, status, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE_USER =
+            "UPDATE user SET username = ?, password = ?, name = ?, last_name = ?, email = ?, role_name = ?, status = ?, gender = ? WHERE user_id = ?";
+    private static final String SQL_DEACTIVATE_USER =
+            "UPDATE user SET status = 'Inactive', discharge_date = NOW() WHERE user_id = ?";
+    private static final String SQL_SELECT_USER_BY_USERNAME =
+            "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
+    private static final String SQL_SELECT_USER_BY_EMAIL =
+            "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE email = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME =
+            "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
+    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL =
+            "SELECT COUNT(*) FROM user WHERE email = ? AND password = ?";
+    private static final String SQL_SELECT_USER_ROLE_BY_USERNAME =
+            "SELECT role_name FROM user WHERE username = ?";
 
     @Inject
     public UserDAO(IDatabaseConnection databaseConnection) {
@@ -40,7 +47,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     public int insertUser(User user, Connection sharedConnection) throws DAOException {
         int generatedId = -1;
 
-        try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement statement = sharedConnection.prepareStatement(SQL_INSERT_USER, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getUserName());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getName());
@@ -65,16 +72,16 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     }
 
     @Override
-    public boolean deactivateUser(int idUsuario) throws DAOException {
-        return updateTuple(SQL_DEACTIVATE, statement -> {
-            statement.setInt(1, idUsuario);
+    public boolean deactivateUser(int userId) throws DAOException {
+        return updateTuple(SQL_DEACTIVATE_USER, statement -> {
+            statement.setInt(1, userId);
         });
     }
 
     @Override
     public boolean updateUser(User user, Connection sharedConnection) throws DAOException {
         try {
-            return updateTuple(sharedConnection, SQL_UPDATE, statement -> {
+            return updateTuple(sharedConnection, SQL_UPDATE_USER, statement -> {
                 statement.setString(1, user.getUserName());
                 statement.setString(2, user.getPassword());
                 statement.setString(3, user.getName());
@@ -92,6 +99,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
     @Override
     public boolean verifyCredentialsByUserName(String userName, String password) throws DAOException {
+        boolean isValid = false;
+
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_USERNAME)) {
 
@@ -100,17 +109,20 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getInt(1) > 0;
+                    isValid = resultSet.getInt(1) > 0;
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al verificar las credenciales del usuario por nombre de usuario.", e);
         }
-        return false;
+
+        return isValid;
     }
 
     @Override
     public boolean verifyCredentialsByEmail(String email, String password) throws DAOException {
+        boolean isValid = false;
+
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_EMAIL)) {
 
@@ -119,13 +131,14 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getInt(1) > 0;
+                    isValid = resultSet.getInt(1) > 0;
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al verificar las credenciales del usuario por correo electrónico.", e);
         }
-        return false;
+
+        return isValid;
     }
 
     @Override
@@ -133,7 +146,7 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         String retrievedRole = null;
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_GET_USER_ROLE)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_USER_ROLE_BY_USERNAME)) {
 
             statement.setString(1, userName);
 
@@ -151,44 +164,74 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
     @Override
     public User getUserByUserName(String userName) throws DAOException {
-        return extractUserFromQuery(SQL_SELECT_BY_USERNAME, userName);
+        return extractUserFromQuery(SQL_SELECT_USER_BY_USERNAME, userName);
     }
 
     @Override
     public User getUserByEmail(String email) throws DAOException {
-        return extractUserFromQuery(SQL_SELECT_BY_EMAIL, email);
+        return extractUserFromQuery(SQL_SELECT_USER_BY_EMAIL, email);
     }
 
-    private User extractUserFromQuery(String query, String parameter) throws DAOException {
+    @Override
+    public boolean deactivateMultipleUsers(List<Integer> userIds) throws DAOException {
+        boolean allDeactivationsSuccessful = false;
+
+        try (Connection connection = databaseConnection.getConnection()) {
+            connection.setAutoCommit(false);
+
+            try {
+                allDeactivationsSuccessful = executeDeactivationBatch(connection, userIds);
+
+                if (allDeactivationsSuccessful) {
+                    connection.commit();
+                } else {
+                    connection.rollback();
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", e);
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error de conexión al procesar inactivación masiva.", e);
+        }
+
+        return allDeactivationsSuccessful;
+    }
+
+    private boolean executeDeactivationBatch(Connection connection, List<Integer> userIds) throws SQLException {
+        boolean isSuccessful = true;
+
+        try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_USER)) {
+            for (Integer userId : userIds) {
+                statement.setInt(1, userId);
+                statement.addBatch();
+            }
+
+            int[] batchResults = statement.executeBatch();
+            for (int result : batchResults) {
+                if (result <= 0) {
+                    isSuccessful = false;
+                    break;
+                }
+            }
+        }
+
+        return isSuccessful;
+    }
+
+    private User extractUserFromQuery(String sqlStatement, String parameter) throws DAOException {
         User retrievedUser = new User();
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(sqlStatement)) {
 
             statement.setString(1, parameter);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    retrievedUser.setId(resultSet.getInt("user_id"));
-                    retrievedUser.setUserName(resultSet.getString("username"));
-                    retrievedUser.setPassword(resultSet.getString("password"));
-                    retrievedUser.setName(resultSet.getString("name"));
-                    retrievedUser.setLastName(resultSet.getString("last_name"));
-                    retrievedUser.setEmail(resultSet.getString("email"));
-                    retrievedUser.setRole(resultSet.getString("role_name"));
-
-                    String statusValue = resultSet.getString("status");
-                    retrievedUser.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
-
-                    String genderValue = resultSet.getString("gender");
-                    retrievedUser.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
-
-                    if (resultSet.getTimestamp("registration_date") != null) {
-                        retrievedUser.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
-                    }
-                    if (resultSet.getTimestamp("discharge_date") != null) {
-                        retrievedUser.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
-                    }
+                    retrievedUser = mapResultSetToUser(resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -198,38 +241,34 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         return retrievedUser;
     }
 
-    @Override
-    public boolean deactivateMultipleUsers(List<Integer> userIdentifiersList) throws DAOException {
-        boolean allUpdatesSuccessful = true;
-        try (Connection activeDatabaseConnection = databaseConnection.getConnection()) {
-            activeDatabaseConnection.setAutoCommit(false);
+    private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getInt("user_id"));
+        user.setUserName(resultSet.getString("username"));
+        user.setPassword(resultSet.getString("password"));
+        user.setName(resultSet.getString("name"));
+        user.setLastName(resultSet.getString("last_name"));
+        user.setEmail(resultSet.getString("email"));
+        user.setRole(resultSet.getString("role_name"));
+        user.setStatus(resolveNullableStatus(resultSet));
+        user.setGender(resolveNullableGender(resultSet));
+        user.setRegistrationDate(resolveNullableTimestamp(resultSet, "registration_date"));
+        user.setDischargeDate(resolveNullableTimestamp(resultSet, "discharge_date"));
+        return user;
+    }
 
-            try (PreparedStatement updateStatement = activeDatabaseConnection.prepareStatement(SQL_DEACTIVATE)) {
-                for (Integer currentIdentifier : userIdentifiersList) {
-                    updateStatement.setInt(1, currentIdentifier);
-                    updateStatement.addBatch();
-                }
-                int[] executionResults = updateStatement.executeBatch();
-                for (int result : executionResults) {
-                    if (result <= 0) {
-                        allUpdatesSuccessful = false;
-                        break;
-                    }
-                }
-                if (allUpdatesSuccessful) {
-                    activeDatabaseConnection.commit();
-                } else {
-                    activeDatabaseConnection.rollback();
-                }
-            } catch (SQLException e) {
-                activeDatabaseConnection.rollback();
-                throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", e);
-            } finally {
-                activeDatabaseConnection.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-            throw new DAOException("Error de conexión al procesar inactivación masiva.", e);
-        }
-        return allUpdatesSuccessful;
+    private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
+        String statusValue = resultSet.getString("status");
+        return statusValue != null ? UserStatus.fromString(statusValue) : null;
+    }
+
+    private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
+        String genderValue = resultSet.getString("gender");
+        return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
+    }
+
+    private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(columnName);
+        return timestamp != null ? timestamp.toLocalDateTime() : null;
     }
 }

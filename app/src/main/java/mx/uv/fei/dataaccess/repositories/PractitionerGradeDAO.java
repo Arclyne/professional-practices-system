@@ -1,12 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -14,30 +7,29 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.List;
+
 @Component
 public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeDAO {
 
-    private static final String SQL_INSERT =
+    private static final String SQL_INSERT_PRACTITIONER_GRADE =
             "INSERT INTO practitioner_grade (practitioner_id, professor_id, tentative_grade, " +
-            "final_grade, period) VALUES (?, ?, ?, ?, ?)";
-
+                    "final_grade, period) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE_FINAL_GRADE =
             "UPDATE practitioner_grade SET final_grade = ?, graded_at = NOW() WHERE grade_id = ?";
-
-    private static final String SQL_SELECT_BY_PRACTITIONER_AND_PERIOD =
+    private static final String SQL_SELECT_GRADE_BY_PRACTITIONER_AND_PERIOD =
             "SELECT * FROM practitioner_grade WHERE practitioner_id = ? AND period = ?";
-
-    private static final String SQL_SELECT_BY_PROFESSOR =
+    private static final String SQL_SELECT_GRADES_BY_PROFESSOR =
             "SELECT * FROM practitioner_grade WHERE professor_id = ? ORDER BY graded_at DESC";
-
-    private static final String SQL_CALCULATE_TENTATIVE =
+    private static final String SQL_CALCULATE_TENTATIVE_GRADE =
             "SELECT COALESCE(AVG(grade), 0.0) FROM monthly_report " +
-            "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL";
-
-    private static final String MSG_INSERT_ERROR  = "Error al registrar la calificación del practicante.";
-    private static final String MSG_UPDATE_ERROR  = "Error al actualizar la calificación final.";
-    private static final String MSG_SELECT_ERROR  = "Error al recuperar la calificación del practicante.";
-    private static final String MSG_CALC_ERROR    = "Error al calcular la calificación tentativa.";
+                    "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL";
 
     @Inject
     public PractitionerGradeDAO(IDatabaseConnection databaseConnection) {
@@ -45,23 +37,17 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
     }
 
     @Override
-    public int insertPractitionerGrade(PractitionerGrade grade) throws DAOException {
+    public int insertPractitionerGrade(PractitionerGrade practitionerGrade) throws DAOException {
         int generatedId = -1;
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PRACTITIONER_GRADE, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setInt(1, grade.getPractitionerId());
-            statement.setInt(2, grade.getProfessorId());
-            statement.setDouble(3, grade.getTentativeGrade());
-
-            if (grade.getFinalGrade() != null) {
-                statement.setDouble(4, grade.getFinalGrade());
-            } else {
-                statement.setNull(4, java.sql.Types.DECIMAL);
-            }
-
-            statement.setString(5, grade.getPeriod());
+            statement.setInt(1, practitionerGrade.getPractitionerId());
+            statement.setInt(2, practitionerGrade.getProfessorId());
+            statement.setDouble(3, practitionerGrade.getTentativeGrade());
+            statement.setObject(4, practitionerGrade.getFinalGrade(), Types.DECIMAL);
+            statement.setString(5, practitionerGrade.getPeriod());
 
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -71,7 +57,7 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_INSERT_ERROR, e);
+            throw new DAOException("Error al registrar la calificación del practicante.", e);
         }
 
         return generatedId;
@@ -90,18 +76,18 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         PractitionerGrade recoveredGrade = new PractitionerGrade();
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_PRACTITIONER_AND_PERIOD)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_GRADE_BY_PRACTITIONER_AND_PERIOD)) {
 
             statement.setInt(1, practitionerId);
             statement.setString(2, period);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    recoveredGrade = mapResultSetToGrade(resultSet);
+                    recoveredGrade = mapResultSetToPractitionerGrade(resultSet);
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_SELECT_ERROR, e);
+            throw new DAOException("Error al recuperar la calificación del practicante.", e);
         }
 
         return recoveredGrade;
@@ -109,7 +95,7 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
 
     @Override
     public List<PractitionerGrade> getGradesByProfessor(int professorId) throws DAOException {
-        return recoverALL(SQL_SELECT_BY_PROFESSOR, this::mapResultSetToGrade, professorId);
+        return recoverALL(SQL_SELECT_GRADES_BY_PROFESSOR, this::mapResultSetToPractitionerGrade, professorId);
     }
 
     @Override
@@ -117,7 +103,7 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         double tentativeGrade = 0.0;
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_CALCULATE_TENTATIVE)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_CALCULATE_TENTATIVE_GRADE)) {
 
             statement.setInt(1, practitionerId);
 
@@ -127,29 +113,31 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_CALC_ERROR, e);
+            throw new DAOException("Error al calcular la calificación tentativa.", e);
         }
 
         return tentativeGrade;
     }
 
-    private PractitionerGrade mapResultSetToGrade(ResultSet resultSet) throws SQLException {
-        PractitionerGrade grade = new PractitionerGrade();
+    private PractitionerGrade mapResultSetToPractitionerGrade(ResultSet resultSet) throws SQLException {
+        PractitionerGrade practitionerGrade = new PractitionerGrade();
+        practitionerGrade.setGradeId(resultSet.getInt("grade_id"));
+        practitionerGrade.setPractitionerId(resultSet.getInt("practitioner_id"));
+        practitionerGrade.setProfessorId(resultSet.getInt("professor_id"));
+        practitionerGrade.setTentativeGrade(resultSet.getDouble("tentative_grade"));
+        practitionerGrade.setFinalGrade(resolveNullableFinalGrade(resultSet));
+        practitionerGrade.setPeriod(resultSet.getString("period"));
+        practitionerGrade.setGradedAt(resolveNullableTimestamp(resultSet, "graded_at"));
+        return practitionerGrade;
+    }
 
-        grade.setGradeId(resultSet.getInt("grade_id"));
-        grade.setPractitionerId(resultSet.getInt("practitioner_id"));
-        grade.setProfessorId(resultSet.getInt("professor_id"));
-        grade.setTentativeGrade(resultSet.getDouble("tentative_grade"));
+    private Double resolveNullableFinalGrade(ResultSet resultSet) throws SQLException {
+        double finalGrade = resultSet.getDouble("final_grade");
+        return resultSet.wasNull() ? null : finalGrade;
+    }
 
-        double finalGradeValue = resultSet.getDouble("final_grade");
-        grade.setFinalGrade(resultSet.wasNull() ? null : finalGradeValue);
-
-        grade.setPeriod(resultSet.getString("period"));
-
-        if (resultSet.getTimestamp("graded_at") != null) {
-            grade.setGradedAt(resultSet.getTimestamp("graded_at").toLocalDateTime());
-        }
-
-        return grade;
+    private java.time.LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
+        java.sql.Timestamp timestamp = resultSet.getTimestamp(columnName);
+        return timestamp != null ? timestamp.toLocalDateTime() : null;
     }
 }

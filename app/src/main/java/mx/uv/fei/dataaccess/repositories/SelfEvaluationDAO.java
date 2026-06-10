@@ -16,13 +16,18 @@ import java.sql.Statement;
 @Component
 public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO self_evaluation (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String DEFAULT_SELF_EVALUATION_STATUS = "Pendiente";
 
-    private static final String SQL_UPDATE = "UPDATE self_evaluation SET status = ?, evidence = ? WHERE self_eval_id = ?";
-    private static final String SQL_UPDATE_STATUS = "UPDATE self_evaluation SET status = ? WHERE self_eval_id = ?";
-    private static final String SQL_UPDATE_EVIDENCE = "UPDATE self_evaluation SET evidence = ? WHERE self_eval_id = ?";
-
-    private static final String SQL_SELECT_BY_REPORT = "SELECT * FROM self_evaluation WHERE report_id = ?";
+    private static final String SQL_INSERT_SELF_EVALUATION =
+            "INSERT INTO self_evaluation (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE_SELF_EVALUATION =
+            "UPDATE self_evaluation SET status = ?, evidence = ? WHERE self_eval_id = ?";
+    private static final String SQL_UPDATE_SELF_EVALUATION_STATUS =
+            "UPDATE self_evaluation SET status = ? WHERE self_eval_id = ?";
+    private static final String SQL_UPDATE_SELF_EVALUATION_EVIDENCE =
+            "UPDATE self_evaluation SET evidence = ? WHERE self_eval_id = ?";
+    private static final String SQL_SELECT_SELF_EVALUATION_BY_REPORT =
+            "SELECT * FROM self_evaluation WHERE report_id = ?";
 
     @Inject
     public SelfEvaluationDAO(IDatabaseConnection databaseConnection) {
@@ -30,25 +35,17 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
     }
 
     @Override
-    public int insertSelfEvaluation(SelfEvaluation evaluation) throws DAOException {
+    public int insertSelfEvaluation(SelfEvaluation selfEvaluation) throws DAOException {
         int generatedId = -1;
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setInt(1, evaluation.getQ1());
-            statement.setInt(2, evaluation.getQ2());
-            statement.setInt(3, evaluation.getQ3());
-            statement.setInt(4, evaluation.getQ4());
-            statement.setInt(5, evaluation.getQ5());
-            statement.setInt(6, evaluation.getQ6());
-            statement.setInt(7, evaluation.getQ7());
-            statement.setInt(8, evaluation.getQ8());
-            statement.setInt(9, evaluation.getQ9());
-            statement.setInt(10, evaluation.getQ10());
-            statement.setString(11, evaluation.getEvidence());
-            statement.setInt(12, evaluation.getPractitionerId());
-            statement.setInt(13, evaluation.getReportId());
-            statement.setString(14, "Pendiente");
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_SELF_EVALUATION, Statement.RETURN_GENERATED_KEYS)) {
+
+            bindSelfEvaluationAnswers(statement, selfEvaluation);
+            statement.setString(11, selfEvaluation.getEvidence());
+            statement.setInt(12, selfEvaluation.getPractitionerId());
+            statement.setInt(13, selfEvaluation.getReportId());
+            statement.setString(14, DEFAULT_SELF_EVALUATION_STATUS);
 
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -60,69 +57,84 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         } catch (SQLException e) {
             throw new DAOException("Error al registrar la autoevaluación en la base de datos.", e);
         }
+
         return generatedId;
     }
 
     @Override
     public SelfEvaluation getSelfEvaluationByReportId(int reportId) throws DAOException {
-        SelfEvaluation eval = new SelfEvaluation();
+        SelfEvaluation recoveredSelfEvaluation = new SelfEvaluation();
 
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_REPORT)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_SELF_EVALUATION_BY_REPORT)) {
 
             statement.setInt(1, reportId);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    eval = mapResultSetToSelfEvaluation(resultSet);
+                    recoveredSelfEvaluation = mapResultSetToSelfEvaluation(resultSet);
                 }
             }
         } catch (SQLException e) {
             throw new DAOException("Error al recuperar la autoevaluación por reporte.", e);
         }
 
-        return eval;
+        return recoveredSelfEvaluation;
     }
 
     @Override
-    public boolean updateSelfEvaluation(SelfEvaluation evaluation, int selfEvalId) throws DAOException {
-        return updateTuple(SQL_UPDATE, statement -> {
-            statement.setString(1, evaluation.getStatus());
-            statement.setString(2, evaluation.getEvidence());
-            statement.setInt(3, selfEvalId);
+    public boolean updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException {
+        return updateTuple(SQL_UPDATE_SELF_EVALUATION, statement -> {
+            statement.setString(1, selfEvaluation.getStatus());
+            statement.setString(2, selfEvaluation.getEvidence());
+            statement.setInt(3, selfEvaluationId);
         });
     }
 
-    public boolean updateStatus(int selfEvalId, String status) throws DAOException {
-        return updateTuple(SQL_UPDATE_STATUS, statement -> {
+    public boolean updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException {
+        return updateTuple(SQL_UPDATE_SELF_EVALUATION_STATUS, statement -> {
             statement.setString(1, status);
-            statement.setInt(2, selfEvalId);
+            statement.setInt(2, selfEvaluationId);
         });
     }
 
-    public boolean updateEvidence(int selfEvalId, String evidence) throws DAOException {
-        return updateTuple(SQL_UPDATE_EVIDENCE, statement -> {
+    public boolean updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException {
+        return updateTuple(SQL_UPDATE_SELF_EVALUATION_EVIDENCE, statement -> {
             statement.setString(1, evidence);
-            statement.setInt(2, selfEvalId);
+            statement.setInt(2, selfEvaluationId);
         });
     }
 
-    private SelfEvaluation mapResultSetToSelfEvaluation(ResultSet rs) throws SQLException {
-        SelfEvaluation eval = new SelfEvaluation();
-        eval.setSelfEvalId(rs.getInt("self_eval_id"));
-        eval.setQ1(rs.getInt("q1"));
-        eval.setQ2(rs.getInt("q2"));
-        eval.setQ3(rs.getInt("q3"));
-        eval.setQ4(rs.getInt("q4"));
-        eval.setQ5(rs.getInt("q5"));
-        eval.setQ6(rs.getInt("q6"));
-        eval.setQ7(rs.getInt("q7"));
-        eval.setQ8(rs.getInt("q8"));
-        eval.setQ9(rs.getInt("q9"));
-        eval.setQ10(rs.getInt("q10"));
-        eval.setEvidence(rs.getString("evidence"));
-        eval.setPractitionerId(rs.getInt("practitioner_id"));
-        eval.setReportId(rs.getInt("report_id"));
-        eval.setStatus(rs.getString("status"));
-        return eval;
+    private void bindSelfEvaluationAnswers(PreparedStatement statement, SelfEvaluation selfEvaluation) throws SQLException {
+        statement.setInt(1, selfEvaluation.getQ1());
+        statement.setInt(2, selfEvaluation.getQ2());
+        statement.setInt(3, selfEvaluation.getQ3());
+        statement.setInt(4, selfEvaluation.getQ4());
+        statement.setInt(5, selfEvaluation.getQ5());
+        statement.setInt(6, selfEvaluation.getQ6());
+        statement.setInt(7, selfEvaluation.getQ7());
+        statement.setInt(8, selfEvaluation.getQ8());
+        statement.setInt(9, selfEvaluation.getQ9());
+        statement.setInt(10, selfEvaluation.getQ10());
+    }
+
+    private SelfEvaluation mapResultSetToSelfEvaluation(ResultSet resultSet) throws SQLException {
+        SelfEvaluation selfEvaluation = new SelfEvaluation();
+        selfEvaluation.setSelfEvalId(resultSet.getInt("self_eval_id"));
+        selfEvaluation.setQ1(resultSet.getInt("q1"));
+        selfEvaluation.setQ2(resultSet.getInt("q2"));
+        selfEvaluation.setQ3(resultSet.getInt("q3"));
+        selfEvaluation.setQ4(resultSet.getInt("q4"));
+        selfEvaluation.setQ5(resultSet.getInt("q5"));
+        selfEvaluation.setQ6(resultSet.getInt("q6"));
+        selfEvaluation.setQ7(resultSet.getInt("q7"));
+        selfEvaluation.setQ8(resultSet.getInt("q8"));
+        selfEvaluation.setQ9(resultSet.getInt("q9"));
+        selfEvaluation.setQ10(resultSet.getInt("q10"));
+        selfEvaluation.setEvidence(resultSet.getString("evidence"));
+        selfEvaluation.setPractitionerId(resultSet.getInt("practitioner_id"));
+        selfEvaluation.setReportId(resultSet.getInt("report_id"));
+        selfEvaluation.setStatus(resultSet.getString("status"));
+        return selfEvaluation;
     }
 }

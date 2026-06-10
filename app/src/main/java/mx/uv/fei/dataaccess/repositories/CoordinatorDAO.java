@@ -14,12 +14,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
-    private static final String SQL_INSERT_COORDINATOR = "INSERT INTO coordinator (coordinator_id) VALUES (?)";
+    private static final String SQL_INSERT_COORDINATOR =
+            "INSERT INTO coordinator (coordinator_id) VALUES (?)";
     private static final String SQL_SELECT_COORDINATOR_BY_ID =
             "SELECT u.user_id, u.username, u.password, u.name, u.last_name, u.email, u.role_name, u.status, u.gender, u.registration_date, u.discharge_date " +
                     "FROM coordinator c INNER JOIN user u ON c.coordinator_id = u.user_id WHERE c.coordinator_id = ?";
@@ -40,15 +43,24 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
     @Override
     public int insertCoordinator(Coordinator coordinator) throws DAOException {
-        int resultId = -1;
+        int generatedId = -1;
 
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                resultId = executeCoordinatorTransaction(connection, coordinator);
+                int generatedUserId = userDAO.insertUser(coordinator, connection);
 
-                if (resultId > 0) {
+                if (generatedUserId > 0) {
+                    try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_COORDINATOR)) {
+                        statement.setInt(1, generatedUserId);
+                        if (statement.executeUpdate() > 0) {
+                            generatedId = generatedUserId;
+                        }
+                    }
+                }
+
+                if (generatedId > 0) {
                     connection.commit();
                 } else {
                     connection.rollback();
@@ -60,27 +72,10 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException("Error critico de conexion a la base de datos.", e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
-        return resultId;
-    }
-
-    private int executeCoordinatorTransaction(Connection connection, Coordinator coordinator) throws SQLException, DAOException {
-        int insertedCoordinatorId = -1;
-        int generatedUserId = userDAO.insertUser(coordinator, connection);
-
-        if (generatedUserId > 0) {
-            try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_COORDINATOR)) {
-                statement.setInt(1, generatedUserId);
-
-                if (statement.executeUpdate() > 0) {
-                    insertedCoordinatorId = generatedUserId;
-                }
-            }
-        }
-
-        return insertedCoordinatorId;
+        return generatedId;
     }
 
     @Override
@@ -116,7 +111,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                 currentCoordinator = mapResultSetToCoordinator(resultSet);
             }
         } catch (SQLException e) {
-            throw new DAOException("Error al intentar recuperar el coordinador actual activo de la base de datos.", e);
+            throw new DAOException("Error al intentar recuperar el coordinador activo de la base de datos.", e);
         }
 
         return currentCoordinator;
@@ -150,7 +145,7 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException("Error critico de conexion a la base de datos.", e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
         return isUpdated;
@@ -166,21 +161,26 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         coordinator.setLastName(resultSet.getString("last_name"));
         coordinator.setEmail(resultSet.getString("email"));
         coordinator.setRole(resultSet.getString("role_name"));
-
-        String statusValue = resultSet.getString("status");
-        coordinator.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
-
-        String genderValue = resultSet.getString("gender");
-        coordinator.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
-
-        if (resultSet.getTimestamp("registration_date") != null) {
-            coordinator.setRegistrationDate(resultSet.getTimestamp("registration_date").toLocalDateTime());
-        }
-
-        if (resultSet.getTimestamp("discharge_date") != null) {
-            coordinator.setDischargeDate(resultSet.getTimestamp("discharge_date").toLocalDateTime());
-        }
+        coordinator.setStatus(resolveNullableStatus(resultSet));
+        coordinator.setGender(resolveNullableGender(resultSet));
+        coordinator.setRegistrationDate(resolveNullableTimestamp(resultSet, "registration_date"));
+        coordinator.setDischargeDate(resolveNullableTimestamp(resultSet, "discharge_date"));
 
         return coordinator;
+    }
+
+    private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
+        String statusValue = resultSet.getString("status");
+        return statusValue != null ? UserStatus.fromString(statusValue) : null;
+    }
+
+    private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
+        String genderValue = resultSet.getString("gender");
+        return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
+    }
+
+    private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp(columnName);
+        return timestamp != null ? timestamp.toLocalDateTime() : null;
     }
 }

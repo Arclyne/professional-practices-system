@@ -1,12 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -14,13 +7,24 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
 import mx.uv.fei.domain.dto.PracticeGroup;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 @Component
 public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
 
-    private static final String SQL_INSERT = "INSERT INTO practice_group (section, professor_id, period_id) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT_ONE = "SELECT group_id, section, professor_id, period_id FROM practice_group WHERE group_id = ?";
-    private static final String SQL_SELECT_ALL = "SELECT group_id, section, professor_id, period_id FROM practice_group";
-    private static final String SQL_UPDATE = "UPDATE practice_group SET section = ?, professor_id = ?, period_id = ? WHERE group_id = ?";
+    private static final String SQL_INSERT_PRACTICE_GROUP =
+            "INSERT INTO practice_group (section, professor_id, period_id) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT_PRACTICE_GROUP_BY_ID =
+            "SELECT group_id, section, professor_id, period_id FROM practice_group WHERE group_id = ?";
+    private static final String SQL_SELECT_ALL_PRACTICE_GROUPS =
+            "SELECT group_id, section, professor_id, period_id FROM practice_group";
+    private static final String SQL_UPDATE_PRACTICE_GROUP =
+            "UPDATE practice_group SET section = ?, professor_id = ?, period_id = ? WHERE group_id = ?";
 
     @Inject
     public PracticeGroupDAO(IDatabaseConnection databaseConnection) {
@@ -28,65 +32,72 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     }
 
     @Override
-    public int insertPracticeGroup(PracticeGroup group) throws DAOException {
-        int generatedIndex = -1;
+    public int insertPracticeGroup(PracticeGroup practiceGroup) throws DAOException {
+        int generatedId = -1;
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, group.getSection());
-            statement.setInt(2, group.getProfessorId());
-            statement.setInt(3, group.getPeriodId());
+             PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PRACTICE_GROUP, Statement.RETURN_GENERATED_KEYS)) {
+
+            statement.setString(1, practiceGroup.getSection());
+            statement.setInt(2, practiceGroup.getProfessorId());
+            statement.setInt(3, practiceGroup.getPeriodId());
+
             if (statement.executeUpdate() > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        generatedIndex = generatedKeys.getInt(1);
+                        generatedId = generatedKeys.getInt(1);
                     }
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error saving the practice group to the database. Ensure Professor ID and Period ID exist.", e);
+            throw new DAOException("Error al guardar el grupo de prácticas en la base de datos.", e);
         }
-        return generatedIndex;
+
+        return generatedId;
     }
 
     @Override
-    public PracticeGroup recoverPracticeGroup(int groupIndex) throws DAOException {
-        PracticeGroup groupToSearch = new PracticeGroup();
+    public PracticeGroup recoverPracticeGroup(int groupId) throws DAOException {
+        PracticeGroup recoveredGroup = new PracticeGroup();
+
         try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ONE)) {
-            statement.setInt(1, groupIndex);
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_PRACTICE_GROUP_BY_ID)) {
+
+            statement.setInt(1, groupId);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    groupToSearch.setGroupId(resultSet.getInt("group_id"));
-                    groupToSearch.setSection(resultSet.getString("section"));
-                    groupToSearch.setProfessorId(resultSet.getInt("professor_id"));
-                    groupToSearch.setPeriodId(resultSet.getInt("period_id"));
+                    recoveredGroup = mapResultSetToPracticeGroup(resultSet);
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Error recovering the practice group from the database.", e);
+            throw new DAOException("Error al recuperar el grupo de prácticas de la base de datos.", e);
         }
-        return groupToSearch;
+
+        return recoveredGroup;
     }
 
     @Override
     public List<PracticeGroup> getAllPracticeGroups() throws DAOException {
-        return recoverALL(SQL_SELECT_ALL, resultSet -> {
-            PracticeGroup groupRecovered = new PracticeGroup();
-            groupRecovered.setGroupId(resultSet.getInt("group_id"));
-            groupRecovered.setSection(resultSet.getString("section"));
-            groupRecovered.setProfessorId(resultSet.getInt("professor_id"));
-            groupRecovered.setPeriodId(resultSet.getInt("period_id"));
-            return groupRecovered;
-        });
+        return recoverALL(SQL_SELECT_ALL_PRACTICE_GROUPS, this::mapResultSetToPracticeGroup);
     }
 
     @Override
-    public boolean updatePracticeGroup(PracticeGroup group, int groupIndex) throws DAOException {
-        return updateTuple(SQL_UPDATE, statement -> {
-            statement.setString(1, group.getSection());
-            statement.setInt(2, group.getProfessorId());
-            statement.setInt(3, group.getPeriodId());
-            statement.setInt(4, groupIndex);
+    public boolean updatePracticeGroup(PracticeGroup practiceGroup, int groupId) throws DAOException {
+        return updateTuple(SQL_UPDATE_PRACTICE_GROUP, statement -> {
+            statement.setString(1, practiceGroup.getSection());
+            statement.setInt(2, practiceGroup.getProfessorId());
+            statement.setInt(3, practiceGroup.getPeriodId());
+            statement.setInt(4, groupId);
         });
+    }
+
+    private PracticeGroup mapResultSetToPracticeGroup(ResultSet resultSet) throws SQLException {
+        PracticeGroup practiceGroup = new PracticeGroup();
+        practiceGroup.setGroupId(resultSet.getInt("group_id"));
+        practiceGroup.setSection(resultSet.getString("section"));
+        practiceGroup.setProfessorId(resultSet.getInt("professor_id"));
+        practiceGroup.setPeriodId(resultSet.getInt("period_id"));
+        return practiceGroup;
     }
 }

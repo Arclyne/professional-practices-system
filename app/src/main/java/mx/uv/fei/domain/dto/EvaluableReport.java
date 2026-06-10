@@ -2,6 +2,13 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
+/**
+ * Representa un reporte evaluable unificado, independientemente de si es mensual o de avance.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class EvaluableReport {
 
     public static final String KIND_MONTHLY      = "Mensual";
@@ -17,121 +24,76 @@ public class EvaluableReport {
     private Double grade;
     private String professorFeedback;
 
-    public EvaluableReport() {
-    }
+    public EvaluableReport() {}
 
     public static EvaluableReport fromMonthlyReport(MonthlyReport source) {
-        EvaluableReport item = new EvaluableReport();
-        item.setReportId(source.getReportId());
-        item.setPractitionerId(source.getPractitionerId());
-        item.setReportKind(KIND_MONTHLY);
-        item.setDisplayName("[Mensual] " + source.getMonthName() + " " + source.getYear()
+        EvaluableReport evaluableReport = new EvaluableReport();
+        evaluableReport.setReportId(source.getReportId());
+        evaluableReport.setPractitionerId(source.getPractitionerId());
+        evaluableReport.setReportKind(KIND_MONTHLY);
+        evaluableReport.setDisplayName("[Mensual] " + source.getMonthName() + " " + source.getYear()
                 + " — Practicante " + source.getPractitionerId());
-        item.setStatus(source.getStatus());
-        item.setSignedFileUrl(source.getSignedFileUrl());
-        item.setGrade(source.getGrade());
-        item.setProfessorFeedback(source.getProfessorFeedback());
-        return item;
+        evaluableReport.setStatus(source.getStatus());
+        evaluableReport.setSignedFileUrl(source.getSignedFileUrl());
+        evaluableReport.setGrade(source.getGrade());
+        evaluableReport.setProfessorFeedback(source.getProfessorFeedback());
+        return evaluableReport;
     }
 
     public static EvaluableReport fromProgressReport(ProgressReport source) {
-        EvaluableReport item = new EvaluableReport();
-        item.setReportId(source.getReportId());
-        item.setPractitionerId(source.getPractitionerId());
-        item.setReportKind(source.getReportType());
-        item.setDisplayName("[" + source.getReportType() + "] "
+        EvaluableReport evaluableReport = new EvaluableReport();
+        evaluableReport.setReportId(source.getReportId());
+        evaluableReport.setPractitionerId(source.getPractitionerId());
+        evaluableReport.setReportKind(source.getReportType());
+        evaluableReport.setDisplayName("[" + source.getReportType() + "] "
                 + source.getPeriodCoveredStart() + " al " + source.getPeriodCoveredEnd()
                 + " — " + source.getTotalHoursAtSubmission() + " hrs"
                 + " — Practicante " + source.getPractitionerId());
-        item.setStatus(source.getStatus());
-        item.setSignedFileUrl(source.getSignedFileUrl());
-        item.setGrade(source.getGrade());
-        item.setProfessorFeedback(source.getProfessorFeedback());
-        return item;
+        evaluableReport.setStatus(source.getStatus());
+        evaluableReport.setSignedFileUrl(source.getSignedFileUrl());
+        evaluableReport.setGrade(source.getGrade());
+        evaluableReport.setProfessorFeedback(source.getProfessorFeedback());
+        return evaluableReport;
     }
 
-    public int getReportId() {
-        return reportId;
-    }
+    public int getReportId() { return reportId; }
+    public void setReportId(int reportId) { this.reportId = reportId; }
 
-    public void setReportId(int reportId) {
-        this.reportId = reportId;
-    }
+    public int getPractitionerId() { return practitionerId; }
+    public void setPractitionerId(int practitionerId) { this.practitionerId = practitionerId; }
 
-    public int getPractitionerId() {
-        return practitionerId;
-    }
+    public String getReportKind() { return reportKind; }
+    public void setReportKind(String reportKind) { this.reportKind = reportKind; }
 
-    public void setPractitionerId(int practitionerId) {
-        this.practitionerId = practitionerId;
-    }
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
-    public String getReportKind() {
-        return reportKind;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setReportKind(String reportKind) {
-        this.reportKind = reportKind;
-    }
+    public String getSignedFileUrl() { return signedFileUrl; }
+    public void setSignedFileUrl(String signedFileUrl) { this.signedFileUrl = signedFileUrl; }
 
-    public String getDisplayName() {
-        return displayName;
-    }
+    public Double getGrade() { return grade; }
+    public void setGrade(Double grade) { this.grade = grade; }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+    public String getProfessorFeedback() { return professorFeedback; }
+    public void setProfessorFeedback(String professorFeedback) { this.professorFeedback = professorFeedback; }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getSignedFileUrl() {
-        return signedFileUrl;
-    }
-
-    public void setSignedFileUrl(String signedFileUrl) {
-        this.signedFileUrl = signedFileUrl;
-    }
-
-    public Double getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Double grade) {
-        this.grade = grade;
-    }
-
-    public String getProfessorFeedback() {
-        return professorFeedback;
-    }
-
-    public void setProfessorFeedback(String professorFeedback) {
-        this.professorFeedback = professorFeedback;
-    }
-
-    
     public boolean isProgressReport() {
         return KIND_INTERMEDIATE.equals(reportKind) || KIND_FINAL.equals(reportKind);
     }
 
-    
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            EvaluableReport that = (EvaluableReport) object;
-            isEqual = this.reportId == that.reportId
-                    && Objects.equals(this.reportKind, that.reportKind);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            EvaluableReport other = (EvaluableReport) obj;
+            isEqual = this.reportId == other.reportId &&
+                    Objects.equals(this.reportKind, other.reportKind);
         }
-
         return isEqual;
     }
 
