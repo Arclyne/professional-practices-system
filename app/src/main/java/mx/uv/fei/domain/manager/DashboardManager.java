@@ -37,12 +37,15 @@ public class DashboardManager {
         AppSection targetSection;
 
         try {
-            boolean hasSubmittedPriorities = postulationDAO.hasPractitionerSubmittedPriorities(practitionerId);
-            targetSection = hasSubmittedPriorities
-                    ? AppSection.VIEW_PRACTITIONER_PRIORITIES
-                    : AppSection.PRIORITIZE_PROJECTS;
+            if (postulationDAO.hasAssignedProject(practitionerId)) {
+                targetSection = AppSection.VIEW_ASSIGNED_PROJECT;
+            } else if (postulationDAO.hasPractitionerSubmittedPriorities(practitionerId)) {
+                targetSection = AppSection.VIEW_PRACTITIONER_PRIORITIES;
+            } else {
+                targetSection = AppSection.PRIORITIZE_PROJECTS;
+            }
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un fallo al verificar el estado de las prioridades del practicante.", e);
+            throw new ManagerException("No se pudo verificar el estado del proyecto asignado del practicante.", e);
         }
 
         return targetSection;
