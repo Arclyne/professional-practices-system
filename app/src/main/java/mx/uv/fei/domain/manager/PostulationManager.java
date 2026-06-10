@@ -69,4 +69,12 @@ public class PostulationManager {
             throw new ManagerException("Ocurrió un problema de conexión al intentar guardar las prioridades.", e);
         }
     }
+
+    public Project getAssignedProject(int practitionerId) throws ManagerException {
+        try {
+            return projectDAO.getAssignedProjectByPractitioner(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar el proyecto asignado.", e);
+        }
+    }
 }

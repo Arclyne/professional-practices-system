@@ -36,6 +36,12 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     private static final String SQL_DEACTIVATE_PROJECT =
             "UPDATE project SET status = 'Inactive' WHERE project_id = ?";
 
+    private static final String SQL_SELECT_ASSIGNED_PROJECT_BY_PRACTITIONER =
+            "SELECT p.project_id, p.project_name, p.description, p.participant_capacity, p.manager_id, p.status, p.start_date, p.end_date, p.organization_id " +
+                    "FROM project p " +
+                    "INNER JOIN project_postulation pp ON p.project_id = pp.project_id " +
+                    "WHERE pp.practitioner_id = ? AND pp.postulation_status = 'Assigned'";
+
     @Inject
     public ProjectDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
@@ -128,6 +134,27 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         }
 
         return allDeactivationsSuccessful;
+    }
+
+    @Override
+    public Project getAssignedProjectByPractitioner(int practitionerId) throws DAOException {
+        Project assignedProject = new Project();
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ASSIGNED_PROJECT_BY_PRACTITIONER)) {
+
+            statement.setInt(1, practitionerId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    assignedProject = mapResultSetToProject(resultSet);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al recuperar el proyecto asignado del practicante.", e);
+        }
+
+        return assignedProject;
     }
 
     private boolean executeDeactivationBatch(Connection connection, List<Integer> projectIds) throws SQLException {
