@@ -1,14 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -19,6 +10,15 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ListView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,91 +27,97 @@ import java.util.Map;
 @Component
 public class ProjectManagementController {
 
+    private static final String STATUS_INACTIVE = "Inactive";
+    private static final String PROJECT_DISPLAY_FORMAT = "%s (Cupo: %d) - %s";
+
     @FXML private ListView<String> projectsListView;
 
     private final ProjectManager projectManager;
-    private final AppStore applicationNavigationStore;
+    private final AppStore store;
 
-    private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
-    private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
+    private final Map<String, Integer> displayToProjectId = new HashMap<>();
+    private final Map<String, BooleanProperty> displaySelectionState = new HashMap<>();
 
     @Inject
-    public ProjectManagementController(ProjectManager projectManager, AppStore applicationNavigationStore) {
+    public ProjectManagementController(ProjectManager projectManager, AppStore store) {
         this.projectManager = projectManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
-        projectsListView.setCellFactory(CheckBoxListCell.forListView(itemString -> itemSelectionStateMap.get(itemString)));
-        projectsListView.setOnMouseClicked(event -> {
-            String selectedItem = projectsListView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                BooleanProperty checkboxState = itemSelectionStateMap.get(selectedItem);
-                if (checkboxState != null) {
-                    checkboxState.set(!checkboxState.get());
-                    projectsListView.getSelectionModel().clearSelection();
-                }
-            }
-        });
-
+        Controller.setupCheckBoxListView(projectsListView, displaySelectionState);
         loadActiveProjects();
     }
 
     private void loadActiveProjects() {
-        itemToIdentifierMap.clear();
-        itemSelectionStateMap.clear();
-        ObservableList<String> displayItemsList = FXCollections.observableArrayList();
+        displayToProjectId.clear();
+        displaySelectionState.clear();
+        ObservableList<String> displayItems = FXCollections.observableArrayList();
 
         try {
-            List<Project> registeredProjectsList = projectManager.getAllProjects();
-            for (Project currentProject : registeredProjectsList) {
-                if (currentProject.getStatus() != null && !"Inactive".equalsIgnoreCase(currentProject.getStatus())) {
-
-                    String formattedDisplayString = currentProject.getProjectName() + " (Cupo: " + currentProject.getParticipantCapacity() + ") - " + currentProject.getStatus();
-                    itemToIdentifierMap.put(formattedDisplayString, currentProject.getProjectId());
-                    itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
-                    displayItemsList.add(formattedDisplayString);
+            List<Project> projects = projectManager.getAllProjects();
+            for (Project project : projects) {
+                if (isProjectActive(project)) {
+                    addProjectToDisplay(project, displayItems);
                 }
             }
         } catch (ManagerException e) {
             Controller.showAlert("Error de carga", e.getMessage(), AlertType.ERROR);
         }
 
-        projectsListView.setItems(displayItemsList);
+        projectsListView.setItems(displayItems);
+    }
+
+    private boolean isProjectActive(Project project) {
+        return project.getStatus() != null && !STATUS_INACTIVE.equalsIgnoreCase(project.getStatus());
+    }
+
+    private void addProjectToDisplay(Project project, ObservableList<String> displayItems) {
+        String displayText = String.format(PROJECT_DISPLAY_FORMAT,
+                project.getProjectName(), project.getParticipantCapacity(), project.getStatus());
+        displayToProjectId.put(displayText, project.getProjectId());
+        displaySelectionState.put(displayText, new SimpleBooleanProperty(false));
+        displayItems.add(displayText);
     }
 
     @FXML
-    private void handleInactivateSelectedAction(ActionEvent userActionEvent) {
-        List<Integer> identifiersToInactivateList = new ArrayList<>();
+    private void handleInactivateSelectedAction() {
+        List<Integer> selectedProjectIds = collectSelectedProjectIds();
 
-        for (Map.Entry<String, BooleanProperty> currentMapEntry : itemSelectionStateMap.entrySet()) {
-            if (currentMapEntry.getValue().get()) {
-                identifiersToInactivateList.add(itemToIdentifierMap.get(currentMapEntry.getKey()));
-            }
-        }
-
-        if (identifiersToInactivateList.isEmpty()) {
-            Controller.showAlert("Sin selección", "Debe seleccionar al menos un proyecto para inactivar.", AlertType.WARNING);
+        if (selectedProjectIds.isEmpty()) {
+            Controller.showAlert("Sin selección",
+                    "Debe seleccionar al menos un proyecto para inactivar.", AlertType.WARNING);
             return;
         }
 
         try {
-            projectManager.inactivateMultipleProjects(identifiersToInactivateList);
-            Controller.showAlert("Proceso Exitoso", "Los proyectos seleccionados han sido inactivados.", AlertType.INFORMATION);
+            projectManager.inactivateMultipleProjects(selectedProjectIds);
+            Controller.showAlert("Proceso Exitoso",
+                    "Los proyectos seleccionados han sido inactivados.", AlertType.INFORMATION);
             loadActiveProjects();
         } catch (ManagerException e) {
             Controller.showAlert("Error en la Operación", e.getMessage(), AlertType.ERROR);
         }
     }
 
-    @FXML
-    private void handleRegisterNewProjectAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+    private List<Integer> collectSelectedProjectIds() {
+        List<Integer> selectedProjectIds = new ArrayList<>();
+        for (Map.Entry<String, BooleanProperty> selectionEntry : displaySelectionState.entrySet()) {
+            if (selectionEntry.getValue().get()) {
+                selectedProjectIds.add(displayToProjectId.get(selectionEntry.getKey()));
+            }
+        }
+        return selectedProjectIds;
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+    private void handleRegisterNewProjectAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+    }
+
+    @FXML
+    private void handleReturnAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

@@ -1,12 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -22,6 +15,13 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +31,8 @@ import java.util.ResourceBundle;
 @Component
 public class RegisterManagerController implements Initializable {
 
-    private final OrganizationManager organizationManager;
-    private final ManagerManager managerManager;
-    private final AppStore store;
-
-    private final Map<String, Integer> organizationMap = new HashMap<>();
+    private static final String STATUS_ACTIVE = "Active";
+    private static final int NO_ORGANIZATION_SELECTED = 0;
 
     @FXML private FormField fieldName;
     @FXML private FormField fieldPhone;
@@ -44,8 +41,15 @@ public class RegisterManagerController implements Initializable {
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
+    private final OrganizationManager organizationManager;
+    private final ManagerManager managerManager;
+    private final AppStore store;
+
+    private final Map<String, Integer> organizationNameToId = new HashMap<>();
+
     @Inject
-    public RegisterManagerController(OrganizationManager organizationManager, ManagerManager managerManager, AppStore store) {
+    public RegisterManagerController(OrganizationManager organizationManager,
+                                     ManagerManager managerManager, AppStore store) {
         this.organizationManager = organizationManager;
         this.managerManager = managerManager;
         this.store = store;
@@ -61,48 +65,50 @@ public class RegisterManagerController implements Initializable {
             List<Organization> organizations = organizationManager.getAllOrganizations();
             ObservableList<String> organizationOptions = FXCollections.observableArrayList();
 
-            for (Organization org : organizations) {
-                if ("Active".equalsIgnoreCase(org.getState())) {
-                    organizationOptions.add(org.getNameOrganization());
-                    organizationMap.put(org.getNameOrganization(), org.getIdOrganization());
+            for (Organization organization : organizations) {
+                if (STATUS_ACTIVE.equalsIgnoreCase(organization.getState())) {
+                    organizationOptions.add(organization.getNameOrganization());
+                    organizationNameToId.put(organization.getNameOrganization(), organization.getIdOrganization());
                 }
             }
             comboBoxOrganization.setItems(organizationOptions);
-
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de Carga", e.getMessage());
         }
     }
 
     @FXML
-    private void handleActionSaveButton(ActionEvent event) {
+    private void handleActionSaveButton() {
         try {
-            Manager managerToRegister = new Manager();
-            managerToRegister.setName(fieldName.getText());
-            managerToRegister.setPhone(fieldPhone.getText());
-            managerToRegister.setEmail(fieldEmail.getText());
-            managerToRegister.setStatus(UserStatus.ACTIVE);
-
-            String selectedOrg = comboBoxOrganization.getValue();
-
-            int orgId = (selectedOrg != null && organizationMap.containsKey(selectedOrg))
-                    ? organizationMap.get(selectedOrg)
-                    : 0;
-
-            managerToRegister.setOrganizationId(orgId);
-
-            managerManager.registerManager(managerToRegister);
-
+            Manager manager = buildManagerFromForm();
+            managerManager.registerManager(manager);
             Controller.showSuccessAlert("Registro Exitoso", "El encargado ha sido guardado correctamente.");
             store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-
         } catch (ManagerException e) {
             Controller.showErrorAlert("Validación", e.getMessage());
         }
     }
 
+    private Manager buildManagerFromForm() {
+        Manager manager = new Manager();
+        manager.setName(fieldName.getText());
+        manager.setPhone(fieldPhone.getText());
+        manager.setEmail(fieldEmail.getText());
+        manager.setStatus(UserStatus.ACTIVE);
+        manager.setOrganizationId(resolveSelectedOrganizationId());
+        return manager;
+    }
+
+    private int resolveSelectedOrganizationId() {
+        String selectedOrganization = comboBoxOrganization.getValue();
+        if (selectedOrganization != null && organizationNameToId.containsKey(selectedOrganization)) {
+            return organizationNameToId.get(selectedOrganization);
+        }
+        return NO_ORGANIZATION_SELECTED;
+    }
+
     @FXML
-    private void handleActionCancelButton(ActionEvent event) {
+    private void handleActionCancelButton() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

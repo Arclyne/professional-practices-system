@@ -153,8 +153,8 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
 
     private ProjectPostulation mapResultSetToPostulation(ResultSet resultSet) throws SQLException {
         ProjectPostulation postulation = new ProjectPostulation();
-        postulation.setPractitionerIdentifier(resultSet.getInt("practitioner_id"));
-        postulation.setProjectIdentifier(resultSet.getInt("project_id"));
+        postulation.setPractitionerId(resultSet.getInt("practitioner_id"));
+        postulation.setProjectId(resultSet.getInt("project_id"));
         postulation.setProjectName(resultSet.getString("project_name"));
         postulation.setPriorityLevel(resultSet.getInt("priority_level"));
         postulation.setPostulationStatus(resultSet.getString("postulation_status"));
