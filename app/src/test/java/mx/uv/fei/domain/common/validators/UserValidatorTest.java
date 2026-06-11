@@ -17,7 +17,7 @@ public class UserValidatorTest {
         validPractitioner.setPassword("ClaveSegura2026");
         validPractitioner.setGender(Gender.MALE);
         validPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
-        validPractitioner.setEnrollment("zs24242424");
+        validPractitioner.setEnrollment("s24242424");
         return validPractitioner;
     }
 
