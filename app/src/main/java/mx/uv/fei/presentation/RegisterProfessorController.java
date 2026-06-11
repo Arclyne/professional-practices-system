@@ -93,7 +93,8 @@ public class RegisterProfessorController implements Initializable {
     }
 
     @FXML
-    private void handleActionCancelButton() {
+    private void handleActionCancelButton(ActionEvent event) {
+
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 
