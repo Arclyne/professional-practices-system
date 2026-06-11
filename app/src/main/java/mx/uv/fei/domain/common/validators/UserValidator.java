@@ -32,15 +32,48 @@ public class UserValidator {
         if (!BaseValidator.isValidEnrollment(practitioner.getEnrollment())) {
             throw new ManagerException("El formato de matrícula proporcionado no es válido.");
         }
+        BaseValidator.validateMaxLength(practitioner.getIndigenousLanguage(), FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX,
+                "La lengua indígena no puede exceder " + FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX + " caracteres.");
+    }
+
+    public static void validatePractitionerText(Practitioner practitioner) throws ManagerException {
+        BaseValidator.validateString(practitioner.getName(),
+                "El nombre del practicante es obligatorio.");
+        BaseValidator.validateMaxLength(practitioner.getName(), FieldLengthLimits.NAME_MAX,
+                "El nombre del practicante no puede exceder " + FieldLengthLimits.NAME_MAX + " caracteres.");
+        BaseValidator.validateString(practitioner.getLastName(),
+                "El apellido del practicante es obligatorio.");
+        BaseValidator.validateMaxLength(practitioner.getLastName(), FieldLengthLimits.LAST_NAME_MAX,
+                "El apellido del practicante no puede exceder " + FieldLengthLimits.LAST_NAME_MAX + " caracteres.");
+        BaseValidator.validateString(practitioner.getEmail(),
+                "El correo electrónico del practicante es obligatorio.");
+        BaseValidator.validateMaxLength(practitioner.getEmail(), FieldLengthLimits.EMAIL_MAX,
+                "El correo electrónico del practicante no puede exceder " + FieldLengthLimits.EMAIL_MAX + " caracteres.");
+        if (!BaseValidator.isValidEmail(practitioner.getEmail())) {
+            throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
+        }
+        BaseValidator.validateString(practitioner.getEnrollment(),
+                "La matrícula del practicante es obligatoria.");
+        if (!BaseValidator.isValidEnrollment(practitioner.getEnrollment())) {
+            throw new ManagerException("El formato de matrícula proporcionado no es válido.");
+        }
+        BaseValidator.validateMaxLength(practitioner.getIndigenousLanguage(), FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX,
+                "La lengua indígena no puede exceder " + FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX + " caracteres.");
     }
 
     public static void validateManagerData(Manager manager) throws ManagerException {
         BaseValidator.validateString(manager.getName(),
                 "El nombre del encargado es obligatorio.");
+        BaseValidator.validateMaxLength(manager.getName(), FieldLengthLimits.MANAGER_NAME_MAX,
+                "El nombre del encargado no puede exceder " + FieldLengthLimits.MANAGER_NAME_MAX + " caracteres.");
         BaseValidator.validateString(manager.getPhone(),
                 "El teléfono del encargado es obligatorio.");
+        BaseValidator.validateMaxLength(manager.getPhone(), FieldLengthLimits.PHONE_MAX,
+                "El teléfono del encargado no puede exceder " + FieldLengthLimits.PHONE_MAX + " caracteres.");
         BaseValidator.validateString(manager.getEmail(),
                 "El correo electrónico del encargado es obligatorio.");
+        BaseValidator.validateMaxLength(manager.getEmail(), FieldLengthLimits.EMAIL_MAX,
+                "El correo electrónico del encargado no puede exceder " + FieldLengthLimits.EMAIL_MAX + " caracteres.");
         if (!BaseValidator.isValidEmail(manager.getEmail())) {
             throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
         }
@@ -51,14 +84,20 @@ public class UserValidator {
     public static void validateUser(User user, String roleLabel) throws ManagerException {
         BaseValidator.validateString(user.getName(),
                 "El nombre de " + roleLabel + " es obligatorio.");
+        BaseValidator.validateMaxLength(user.getName(), FieldLengthLimits.NAME_MAX,
+                "El nombre de " + roleLabel + " no puede exceder " + FieldLengthLimits.NAME_MAX + " caracteres.");
         BaseValidator.validateString(user.getLastName(),
                 "El apellido de " + roleLabel + " es obligatorio.");
+        BaseValidator.validateMaxLength(user.getLastName(), FieldLengthLimits.LAST_NAME_MAX,
+                "El apellido de " + roleLabel + " no puede exceder " + FieldLengthLimits.LAST_NAME_MAX + " caracteres.");
         PasswordValidator.validatePassword(user.getPassword());
         if (user.getGender() == null) {
             throw new ManagerException("El género de " + roleLabel + " es obligatorio.");
         }
         BaseValidator.validateString(user.getEmail(),
                 "El correo electrónico de " + roleLabel + " es obligatorio.");
+        BaseValidator.validateMaxLength(user.getEmail(), FieldLengthLimits.EMAIL_MAX,
+                "El correo electrónico de " + roleLabel + " no puede exceder " + FieldLengthLimits.EMAIL_MAX + " caracteres.");
         if (!BaseValidator.isValidEmail(user.getEmail())) {
             throw new ManagerException("El formato del correo electrónico proporcionado no es válido.");
         }
@@ -67,6 +106,8 @@ public class UserValidator {
     private static void validatePersonalNumber(String personalNumber) throws ManagerException {
         BaseValidator.validateString(personalNumber,
                 "El número de personal es obligatorio.");
+        BaseValidator.validateMaxLength(personalNumber, FieldLengthLimits.USERNAME_MAX,
+                "El número de personal no puede exceder " + FieldLengthLimits.USERNAME_MAX + " caracteres.");
         if (!BaseValidator.isValidPersonalNumber(personalNumber)) {
             throw new ManagerException("Formato inválido: el número de personal debe contener solo números.");
         }

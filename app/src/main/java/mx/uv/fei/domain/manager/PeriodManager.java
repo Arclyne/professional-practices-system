@@ -4,6 +4,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPeriodDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -49,9 +51,10 @@ public class PeriodManager {
     }
 
     private void validatePeriodData(Period period) throws ManagerException {
-        if (period.getPeriodName() == null || period.getPeriodName().trim().isEmpty()) {
-            throw new ManagerException("El nombre del periodo es obligatorio.");
-        }
+        BaseValidator.validateString(period.getPeriodName(),
+                "El nombre del periodo es obligatorio.");
+        BaseValidator.validateMaxLength(period.getPeriodName(), FieldLengthLimits.PERIOD_NAME_MAX,
+                "El nombre del periodo no puede exceder " + FieldLengthLimits.PERIOD_NAME_MAX + " caracteres.");
         if (period.getStartDate() == null || period.getEndDate() == null) {
             throw new ManagerException("Las fechas de inicio y fin del periodo son obligatorias.");
         }
