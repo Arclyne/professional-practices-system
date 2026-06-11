@@ -24,78 +24,91 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PracticeGroupDAOTest {
 
+    private static final int STORED_GROUP_ID = 6;
+    private static final int STORED_PROFESSOR_ID = 68;
+    private static final int STORED_PERIOD_ID = 5;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private IPracticeGroupDAO groupDAO;
 
-    private PracticeGroup testGroup;
+    private PracticeGroup newGroup;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testGroup = new PracticeGroup();
-        testGroup.setSection("NRC-84932");
-        testGroup.setProfessorId(68);
-        testGroup.setPeriodId(5);
+        newGroup = new PracticeGroup();
+        newGroup.setSection("NRC-84932");
+        newGroup.setProfessorId(STORED_PROFESSOR_ID);
+        newGroup.setPeriodId(STORED_PERIOD_ID);
+    }
+
+    private PracticeGroup buildStoredGroup() {
+        PracticeGroup storedGroup = new PracticeGroup();
+        storedGroup.setGroupId(STORED_GROUP_ID);
+        storedGroup.setSection("Seccion 601");
+        storedGroup.setPeriodId(STORED_PERIOD_ID);
+        storedGroup.setProfessorId(STORED_PROFESSOR_ID);
+        return storedGroup;
     }
 
     @Test
     void insertPracticeGroup_ValidGroup_ReturnsGeneratedId() throws DAOException {
-        int resultId = groupDAO.insertPracticeGroup(testGroup);
+        int resultId = groupDAO.insertPracticeGroup(newGroup);
+
         assertTrue(resultId > 0);
     }
 
     @Test
     void recoverPracticeGroup_ExistingId_ReturnsGroup() throws DAOException {
-        PracticeGroup expectedGroup = new PracticeGroup();
-        expectedGroup.setGroupId(6);
-        expectedGroup.setSection("Seccion G");
-        expectedGroup.setPeriodId(5);
-        expectedGroup.setProfessorId(68);
+        PracticeGroup expectedGroup = buildStoredGroup();
 
-        PracticeGroup recovered = groupDAO.recoverPracticeGroup(6);
-        assertEquals(expectedGroup, recovered);
+        PracticeGroup recoveredGroup = groupDAO.recoverPracticeGroup(STORED_GROUP_ID);
+
+        assertEquals(expectedGroup, recoveredGroup);
     }
 
     @Test
     void getAllPracticeGroups_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<PracticeGroup> expectedList = new ArrayList<>();
-        PracticeGroup group = new PracticeGroup();
-        group.setGroupId(6);
-        group.setSection("Seccion G");
-        group.setPeriodId(5);
-        group.setProfessorId(68);
-        expectedList.add(group);
+        List<PracticeGroup> expectedGroups = new ArrayList<>();
+        expectedGroups.add(buildStoredGroup());
 
-        List<PracticeGroup> resultList = groupDAO.getAllPracticeGroups();
-        assertEquals(expectedList, resultList);
+        List<PracticeGroup> resultGroups = groupDAO.getAllPracticeGroups();
+
+        assertEquals(expectedGroups, resultGroups);
     }
 
     @Test
     void updatePracticeGroup_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testGroup.setSection("NRC-99999");
-        boolean isUpdated = groupDAO.updatePracticeGroup(testGroup, 6);
+        newGroup.setSection("NRC-99999");
+
+        boolean isUpdated = groupDAO.updatePracticeGroup(newGroup, STORED_GROUP_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void insertPracticeGroup_NonExistentProfessor_ThrowsDAOException() {
-        testGroup.setProfessorId(9999);
-        assertThrows(DAOException.class, () -> groupDAO.insertPracticeGroup(testGroup));
+        newGroup.setProfessorId(NON_EXISTENT_ID);
+
+        assertThrows(DAOException.class, () -> groupDAO.insertPracticeGroup(newGroup));
     }
 
     @Test
     void recoverPracticeGroup_NonExistentId_ReturnsEmptyGroup() throws DAOException {
-        PracticeGroup recovered = groupDAO.recoverPracticeGroup(9999);
-        assertEquals(new PracticeGroup(), recovered);
+        PracticeGroup recoveredGroup = groupDAO.recoverPracticeGroup(NON_EXISTENT_ID);
+
+        assertEquals(new PracticeGroup(), recoveredGroup);
     }
 
     @Test
     void updatePracticeGroup_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = groupDAO.updatePracticeGroup(testGroup, 9999);
+        boolean isUpdated = groupDAO.updatePracticeGroup(newGroup, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }

@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 public class MonthlyReportDAOTest {
 
     private static final int PRACTITIONER_ID = 123;
+    private static final int STORED_REPORT_ID = 1;
+    private static final int NON_EXISTENT_ID = 9999;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -33,96 +35,101 @@ public class MonthlyReportDAOTest {
     @Inject
     private IMonthlyReportDAO monthlyReportDAO;
 
-    private MonthlyReport testReport;
+    private MonthlyReport juneReport;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testReport = new MonthlyReport();
-        testReport.setPractitionerId(PRACTITIONER_ID);
-        testReport.setMonthName("Junio");
-        testReport.setYear(2026);
-        testReport.setStartDate(Date.valueOf("2026-06-01"));
-        testReport.setEndDate(Date.valueOf("2026-06-30"));
-        testReport.setStatus("Pendiente de Firma");
+        juneReport = new MonthlyReport();
+        juneReport.setPractitionerId(PRACTITIONER_ID);
+        juneReport.setMonthName("Junio");
+        juneReport.setYear(2026);
+        juneReport.setStartDate(Date.valueOf("2026-06-01"));
+        juneReport.setEndDate(Date.valueOf("2026-06-30"));
+        juneReport.setStatus("Pendiente de Firma");
+    }
+
+    private MonthlyReport buildStoredMayReport() {
+        MonthlyReport storedReport = new MonthlyReport();
+        storedReport.setReportId(STORED_REPORT_ID);
+        storedReport.setPractitionerId(PRACTITIONER_ID);
+        storedReport.setMonthName("Mayo");
+        storedReport.setYear(2026);
+        storedReport.setStartDate(Date.valueOf("2026-05-01"));
+        storedReport.setEndDate(Date.valueOf("2026-05-31"));
+        storedReport.setStatus("Borrador");
+        return storedReport;
     }
 
     @Test
     void insertReport_ValidReport_ReturnsGeneratedId() throws DAOException {
-        int generatedId = monthlyReportDAO.insertReport(testReport);
+        int generatedId = monthlyReportDAO.insertReport(juneReport);
+
         assertTrue(generatedId > 0);
     }
 
     @Test
     void getReportsByPractitioner_WithExistingReports_ReturnsExpectedList() throws DAOException {
-        List<MonthlyReport> expectedList = new ArrayList<>();
-        MonthlyReport rep = new MonthlyReport();
-        rep.setReportId(1);
-        rep.setPractitionerId(123);
-        rep.setMonthName("Mayo");
-        rep.setYear(2026);
-        rep.setStartDate(Date.valueOf("2026-05-01"));
-        rep.setEndDate(Date.valueOf("2026-05-31"));
-        rep.setStatus("Borrador");
-        expectedList.add(rep);
+        List<MonthlyReport> expectedReports = new ArrayList<>();
+        expectedReports.add(buildStoredMayReport());
 
-        List<MonthlyReport> resultList = monthlyReportDAO.getReportsByPractitioner(PRACTITIONER_ID);
-        assertEquals(expectedList, resultList);
+        List<MonthlyReport> resultReports = monthlyReportDAO.getReportsByPractitioner(PRACTITIONER_ID);
+
+        assertEquals(expectedReports, resultReports);
     }
 
     @Test
     void getSubmittedReports_WithSubmittedReports_ReturnsExpectedList() throws DAOException {
-        testReport.setStatus("Entregado");
-        int newId = monthlyReportDAO.insertReport(testReport);
+        juneReport.setStatus("Entregado");
+        int generatedId = monthlyReportDAO.insertReport(juneReport);
 
-        List<MonthlyReport> expectedList = new ArrayList<>();
-        MonthlyReport rep = new MonthlyReport();
-        rep.setReportId(newId);
-        rep.setPractitionerId(123);
-        rep.setMonthName("Junio");
-        rep.setYear(2026);
-        rep.setStartDate(Date.valueOf("2026-06-01"));
-        rep.setEndDate(Date.valueOf("2026-06-30"));
-        rep.setStatus("Entregado");
-        expectedList.add(rep);
+        List<MonthlyReport> expectedReports = new ArrayList<>();
+        MonthlyReport submittedReport = new MonthlyReport();
+        submittedReport.setReportId(generatedId);
+        submittedReport.setPractitionerId(PRACTITIONER_ID);
+        submittedReport.setMonthName("Junio");
+        submittedReport.setYear(2026);
+        submittedReport.setStartDate(Date.valueOf("2026-06-01"));
+        submittedReport.setEndDate(Date.valueOf("2026-06-30"));
+        submittedReport.setStatus("Entregado");
+        expectedReports.add(submittedReport);
 
-        List<MonthlyReport> resultList = monthlyReportDAO.getSubmittedReports();
-        assertEquals(expectedList, resultList);
+        List<MonthlyReport> resultReports = monthlyReportDAO.getSubmittedReports();
+
+        assertEquals(expectedReports, resultReports);
     }
 
     @Test
     void getReportById_ExistingId_ReturnsReport() throws DAOException {
-        MonthlyReport expectedReport = new MonthlyReport();
-        expectedReport.setReportId(1);
-        expectedReport.setPractitionerId(123);
-        expectedReport.setMonthName("Mayo");
-        expectedReport.setYear(2026);
-        expectedReport.setStartDate(Date.valueOf("2026-05-01"));
-        expectedReport.setEndDate(Date.valueOf("2026-05-31"));
-        expectedReport.setStatus("Borrador");
+        MonthlyReport expectedReport = buildStoredMayReport();
 
-        MonthlyReport recovered = monthlyReportDAO.getReportById(1);
-        assertEquals(expectedReport, recovered);
+        MonthlyReport recoveredReport = monthlyReportDAO.getReportById(STORED_REPORT_ID);
+
+        assertEquals(expectedReport, recoveredReport);
     }
 
     @Test
     void updateReport_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testReport.setMonthName("Julio");
-        testReport.setStatus("Entregado");
-        boolean isUpdated = monthlyReportDAO.updateReport(testReport, 1);
+        juneReport.setMonthName("Julio");
+        juneReport.setStatus("Entregado");
+
+        boolean isUpdated = monthlyReportDAO.updateReport(juneReport, STORED_REPORT_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void insertReport_NonExistentPractitioner_ThrowsDAOException() {
-        testReport.setPractitionerId(9999);
-        assertThrows(DAOException.class, () -> monthlyReportDAO.insertReport(testReport));
+        juneReport.setPractitionerId(NON_EXISTENT_ID);
+
+        assertThrows(DAOException.class, () -> monthlyReportDAO.insertReport(juneReport));
     }
 
     @Test
     void updateReport_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = monthlyReportDAO.updateReport(testReport, 9999);
+        boolean isUpdated = monthlyReportDAO.updateReport(juneReport, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }

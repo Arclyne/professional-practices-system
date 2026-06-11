@@ -26,95 +26,100 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ProfessorDAOTest {
 
+    private static final int STORED_PROFESSOR_ID = 68;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private IProfessorDAO professorDAO;
 
-    private Professor testProfessor;
+    private Professor newProfessor;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testProfessor = new Professor();
-        testProfessor.setName("Angel");
-        testProfessor.setLastName("Aguilar");
-        testProfessor.setUserName("profAguilar");
-        testProfessor.setEmail("profAguilar@uv.mx");
-        testProfessor.setPassword("profesorPass123");
-        testProfessor.setRole("Professor");
-        testProfessor.setStatus(UserStatus.ACTIVE);
-        testProfessor.setGender(Gender.MALE);
+        newProfessor = new Professor();
+        newProfessor.setName("Norma Angelica");
+        newProfessor.setLastName("Sandoval Rivas");
+        newProfessor.setUserName("nsandoval");
+        newProfessor.setEmail("nsandoval@uv.mx");
+        newProfessor.setPassword("ProfesoraUv2026");
+        newProfessor.setRole("Professor");
+        newProfessor.setStatus(UserStatus.ACTIVE);
+        newProfessor.setGender(Gender.FEMALE);
+    }
+
+    private Professor buildStoredProfessor() {
+        Professor storedProfessor = new Professor();
+        storedProfessor.setId(STORED_PROFESSOR_ID);
+        storedProfessor.setUserName("eprior");
+        storedProfessor.setPassword("ProfeFei2026");
+        storedProfessor.setName("Jose Eduardo");
+        storedProfessor.setLastName("Prior Hernandez");
+        storedProfessor.setEmail("eprior@uv.mx");
+        storedProfessor.setRole("Professor");
+        storedProfessor.setStatus(UserStatus.ACTIVE);
+        storedProfessor.setGender(Gender.MALE);
+        return storedProfessor;
     }
 
     @Test
     void insertProfessor_ValidProfessor_ReturnsGeneratedId() throws DAOException {
-        int resultId = professorDAO.insertProfessor(testProfessor);
+        int resultId = professorDAO.insertProfessor(newProfessor);
+
         assertTrue(resultId > 0);
     }
 
     @Test
     void recoverProfessor_ExistingId_ReturnsProfessor() throws DAOException {
-        Professor expectedProfessor = new Professor();
-        expectedProfessor.setId(68);
-        expectedProfessor.setUserName("prof1");
-        expectedProfessor.setPassword("12345");
-        expectedProfessor.setName("Prof");
-        expectedProfessor.setLastName("Test");
-        expectedProfessor.setEmail("prof1@uv.mx");
-        expectedProfessor.setRole("Professor");
-        expectedProfessor.setStatus(UserStatus.ACTIVE);
-        expectedProfessor.setGender(Gender.MALE);
+        Professor expectedProfessor = buildStoredProfessor();
 
-        Professor recovered = professorDAO.recoverProfessor(68);
-        assertEquals(expectedProfessor, recovered);
+        Professor recoveredProfessor = professorDAO.recoverProfessor(STORED_PROFESSOR_ID);
+
+        assertEquals(expectedProfessor, recoveredProfessor);
     }
 
     @Test
     void getAllProfessors_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Professor> expectedList = new ArrayList<>();
-        Professor prof = new Professor();
-        prof.setId(68);
-        prof.setUserName("prof1");
-        prof.setPassword("12345");
-        prof.setName("Prof");
-        prof.setLastName("Test");
-        prof.setEmail("prof1@uv.mx");
-        prof.setRole("Professor");
-        prof.setStatus(UserStatus.ACTIVE);
-        prof.setGender(Gender.MALE);
-        expectedList.add(prof);
+        List<Professor> expectedProfessors = new ArrayList<>();
+        expectedProfessors.add(buildStoredProfessor());
 
-        List<Professor> resultList = professorDAO.getAllProfessors();
-        assertEquals(expectedList, resultList);
+        List<Professor> resultProfessors = professorDAO.getAllProfessors();
+
+        assertEquals(expectedProfessors, resultProfessors);
     }
 
     @Test
     void updateProfessor_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testProfessor.setName("Angel Gabriel");
-        testProfessor.setStatus(UserStatus.INACTIVE);
+        newProfessor.setName("Norma Leticia");
+        newProfessor.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = professorDAO.updateProfessor(testProfessor, 68);
+        boolean isUpdated = professorDAO.updateProfessor(newProfessor, STORED_PROFESSOR_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void insertProfessor_DuplicateUsername_ThrowsDAOException() {
-        testProfessor.setUserName("prof1");
-        assertThrows(DAOException.class, () -> professorDAO.insertProfessor(testProfessor));
+        newProfessor.setUserName("eprior");
+
+        assertThrows(DAOException.class, () -> professorDAO.insertProfessor(newProfessor));
     }
 
     @Test
     void recoverProfessor_NonExistentId_ReturnsEmptyProfessor() throws DAOException {
-        Professor recovered = professorDAO.recoverProfessor(9999);
-        assertEquals(new Professor(), recovered);
+        Professor recoveredProfessor = professorDAO.recoverProfessor(NON_EXISTENT_ID);
+
+        assertEquals(new Professor(), recoveredProfessor);
     }
 
     @Test
     void updateProfessor_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = professorDAO.updateProfessor(testProfessor, 9999);
+        boolean isUpdated = professorDAO.updateProfessor(newProfessor, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }

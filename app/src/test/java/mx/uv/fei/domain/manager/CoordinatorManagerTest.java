@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class CoordinatorManagerTest {
 
+    private static final int STORED_COORDINATOR_ID = 67;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -34,36 +36,37 @@ public class CoordinatorManagerTest {
 
     @Test
     void registerNewCoordinator_ValidData_ReturnsPassword() {
-        Coordinator coordinator = new Coordinator();
-        coordinator.setName("Coord");
-        coordinator.setLastName("Test");
-        coordinator.setUserName("12345678");
-        coordinator.setPassword("Pass12345");
-        coordinator.setEmail("coordtest@uv.mx");
-        coordinator.setGender(Gender.MALE);
+        Coordinator newCoordinator = new Coordinator();
+        newCoordinator.setName("Patricia");
+        newCoordinator.setLastName("Luna Mendez");
+        newCoordinator.setUserName("pluna");
+        newCoordinator.setPassword("CoordUv2026");
+        newCoordinator.setEmail("pluna@uv.mx");
+        newCoordinator.setGender(Gender.FEMALE);
 
-        assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(coordinator));
+        assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(newCoordinator));
     }
 
     @Test
     void inactivateCoordinator_ExistingId_DoesNotThrow() {
-        assertDoesNotThrow(() -> coordinatorManager.inactivateCoordinator(67));
+        assertDoesNotThrow(() -> coordinatorManager.inactivateCoordinator(STORED_COORDINATOR_ID));
     }
 
     @Test
     void retrieveCurrentCoordinator_ReturnsCoordinator() throws ManagerException {
-        Coordinator expected = new Coordinator();
-        expected.setId(67);
-        expected.setUserName("coord1");
-        expected.setPassword("12345");
-        expected.setName("Coord");
-        expected.setLastName("Test");
-        expected.setEmail("coord1@uv.mx");
-        expected.setRole("Coordinator");
-        expected.setStatus(UserStatus.ACTIVE);
-        expected.setGender(Gender.MALE);
+        Coordinator expectedCoordinator = new Coordinator();
+        expectedCoordinator.setId(STORED_COORDINATOR_ID);
+        expectedCoordinator.setUserName("mrodriguez");
+        expectedCoordinator.setPassword("CoordFei2026");
+        expectedCoordinator.setName("Marco Antonio");
+        expectedCoordinator.setLastName("Rodriguez Castillo");
+        expectedCoordinator.setEmail("mrodriguez@uv.mx");
+        expectedCoordinator.setRole("Coordinator");
+        expectedCoordinator.setStatus(UserStatus.ACTIVE);
+        expectedCoordinator.setGender(Gender.MALE);
 
-        Coordinator current = coordinatorManager.retrieveCurrentCoordinator();
-        assertEquals(expected, current);
+        Coordinator currentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
+
+        assertEquals(expectedCoordinator, currentCoordinator);
     }
 }

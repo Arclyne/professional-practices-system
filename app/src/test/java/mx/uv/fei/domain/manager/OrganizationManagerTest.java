@@ -34,44 +34,45 @@ public class OrganizationManagerTest {
 
     @Test
     void registerOrganization_ValidData_DoesNotThrow() {
-        Organization org = new Organization();
-        org.setNameOrganization("Nueva Org");
-        org.setState("Veracruz");
-        org.setMail("nueva@uv.mx");
+        Organization newOrganization = new Organization();
+        newOrganization.setNameOrganization("Soluciones Digitales del Golfo");
+        newOrganization.setState("Veracruz");
+        newOrganization.setMail("contacto@solucionesgolfo.mx");
 
-        assertDoesNotThrow(() -> organizationManager.registerOrganization(org));
+        assertDoesNotThrow(() -> organizationManager.registerOrganization(newOrganization));
     }
 
     @Test
     void getAllOrganizations_ReturnsExpectedList() throws ManagerException {
-        List<Organization> expectedList = new ArrayList<>();
+        List<Organization> expectedOrganizations = new ArrayList<>();
 
-        Organization org1 = new Organization();
-        org1.setIdOrganization(1);
-        org1.setNameOrganization("toRecover");
-        org1.setState("Active");
-        org1.setBusiness("Technology");
-        org1.setMail("torecover@uv.mx");
-        expectedList.add(org1);
+        Organization firstOrganization = new Organization();
+        firstOrganization.setIdOrganization(1);
+        firstOrganization.setNameOrganization("Tecnologias Web del Golfo");
+        firstOrganization.setState("Active");
+        firstOrganization.setBusiness("Technology");
+        firstOrganization.setMail("contacto@tecgolfo.mx");
+        expectedOrganizations.add(firstOrganization);
 
-        Organization org2 = new Organization();
-        org2.setIdOrganization(2);
-        org2.setNameOrganization("Dummy 1");
-        org2.setState("Active");
-        org2.setBusiness("Technology");
-        org2.setMail("dummy1@uv.mx");
-        expectedList.add(org2);
+        Organization secondOrganization = new Organization();
+        secondOrganization.setIdOrganization(2);
+        secondOrganization.setNameOrganization("Consultoria Digital Xalapa");
+        secondOrganization.setState("Active");
+        secondOrganization.setBusiness("Technology");
+        secondOrganization.setMail("contacto@cdxalapa.mx");
+        expectedOrganizations.add(secondOrganization);
 
-        Organization org3 = new Organization();
-        org3.setIdOrganization(3);
-        org3.setNameOrganization("Dummy 2");
-        org3.setState("Active");
-        org3.setBusiness("Technology");
-        org3.setMail("dummy2@uv.mx");
-        expectedList.add(org3);
+        Organization thirdOrganization = new Organization();
+        thirdOrganization.setIdOrganization(3);
+        thirdOrganization.setNameOrganization("Software Veracruzano");
+        thirdOrganization.setState("Active");
+        thirdOrganization.setBusiness("Technology");
+        thirdOrganization.setMail("contacto@softver.mx");
+        expectedOrganizations.add(thirdOrganization);
 
-        List<Organization> resultList = organizationManager.getAllOrganizations();
-        assertEquals(expectedList, resultList);
+        List<Organization> resultOrganizations = organizationManager.getAllOrganizations();
+
+        assertEquals(expectedOrganizations, resultOrganizations);
     }
 
     @Test
