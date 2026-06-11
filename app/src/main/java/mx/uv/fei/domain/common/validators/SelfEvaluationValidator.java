@@ -15,6 +15,8 @@ public class SelfEvaluationValidator {
                 "Practicante no identificado.");
         BaseValidator.validateString(selfEvaluation.getEvidence(),
                 "La evidencia es obligatoria.");
+        BaseValidator.validateMaxLength(selfEvaluation.getEvidence(), FieldLengthLimits.LONG_TEXT_MAX,
+                "La evidencia no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
 
         validateScore(selfEvaluation.getQ1(), "Pregunta 1");
         validateScore(selfEvaluation.getQ2(), "Pregunta 2");

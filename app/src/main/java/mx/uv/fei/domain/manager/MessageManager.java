@@ -4,7 +4,10 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.repositories.MessageDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.Message;
+import mx.uv.fei.domain.dto.MessageRequest;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import org.slf4j.Logger;
@@ -16,8 +19,6 @@ import java.util.List;
 public class MessageManager {
 
     private static final Logger log = LoggerFactory.getLogger(MessageManager.class);
-    private static final int MAXIMUM_SUBJECT_LENGTH = 255;
-    private static final int MAXIMUM_BODY_LENGTH = 3000;
 
     private final MessageDAO messageDAO;
     private final SmtpEmailManager emailManager;
@@ -28,21 +29,21 @@ public class MessageManager {
         this.emailManager = emailManager;
     }
 
-    public void sendMessage(int senderId, String receiverEmail, String subject, String body) throws ManagerException {
-        validateMessageLengths(subject, body);
+    public void sendMessage(MessageRequest messageRequest) throws ManagerException {
+        validateMessageRequest(messageRequest);
 
         try {
-            int receiverId = messageDAO.getUserIdByEmail(receiverEmail);
+            int receiverId = messageDAO.getUserIdByEmail(messageRequest.receiverEmail());
             if (receiverId <= 0) {
                 throw new ManagerException("El correo proporcionado no pertenece a ningún usuario registrado en el sistema.");
             }
 
-            int generatedMessageId = messageDAO.insertMessage(subject, body);
+            int generatedMessageId = messageDAO.insertMessage(messageRequest.subject(), messageRequest.body());
             if (generatedMessageId <= 0) {
                 throw new ManagerException("No se pudo registrar el contenido del mensaje.");
             }
 
-            boolean isParticipantInserted = messageDAO.insertParticipant(generatedMessageId, senderId, receiverId);
+            boolean isParticipantInserted = messageDAO.insertParticipant(generatedMessageId, messageRequest.senderId(), receiverId);
             if (!isParticipantInserted) {
                 throw new ManagerException("El mensaje se creó, pero no se pudo vincular al remitente y destinatario.");
             }
@@ -70,12 +71,19 @@ public class MessageManager {
         }
     }
 
-    private void validateMessageLengths(String subject, String body) throws ManagerException {
-        if (subject != null && subject.length() > MAXIMUM_SUBJECT_LENGTH) {
-            throw new ManagerException("El asunto es demasiado grande. El límite máximo es de " + MAXIMUM_SUBJECT_LENGTH + " caracteres.");
+    private void validateMessageRequest(MessageRequest messageRequest) throws ManagerException {
+        BaseValidator.validateString(messageRequest.receiverEmail(),
+                "El correo del destinatario es obligatorio.");
+        BaseValidator.validateMaxLength(messageRequest.receiverEmail(), FieldLengthLimits.EMAIL_MAX,
+                "El correo del destinatario no puede exceder " + FieldLengthLimits.EMAIL_MAX + " caracteres.");
+        if (!BaseValidator.isValidEmail(messageRequest.receiverEmail())) {
+            throw new ManagerException("El formato del correo del destinatario no es válido.");
         }
-        if (body != null && body.length() > MAXIMUM_BODY_LENGTH) {
-            throw new ManagerException("El cuerpo del mensaje es demasiado grande. El límite máximo es de " + MAXIMUM_BODY_LENGTH + " caracteres.");
-        }
+        BaseValidator.validateString(messageRequest.body(),
+                "El cuerpo del mensaje es obligatorio.");
+        BaseValidator.validateMaxLength(messageRequest.subject(), FieldLengthLimits.MESSAGE_SUBJECT_MAX,
+                "El asunto no puede exceder " + FieldLengthLimits.MESSAGE_SUBJECT_MAX + " caracteres.");
+        BaseValidator.validateMaxLength(messageRequest.body(), FieldLengthLimits.LONG_TEXT_MAX,
+                "El cuerpo del mensaje no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
     }
 }

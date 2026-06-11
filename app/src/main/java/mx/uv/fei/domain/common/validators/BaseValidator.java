@@ -38,6 +38,12 @@ public class BaseValidator {
         }
     }
 
+    public static void validateMaxLength(String value, int maxLength, String errorMessage) throws ManagerException {
+        if (value != null && value.length() > maxLength) {
+            throw new ManagerException(errorMessage);
+        }
+    }
+
     public static void validateDateRange(Date startDate, Date endDate, String errorMessage) throws ManagerException {
         if (startDate != null && endDate != null && endDate.before(startDate)) {
             throw new ManagerException(errorMessage);

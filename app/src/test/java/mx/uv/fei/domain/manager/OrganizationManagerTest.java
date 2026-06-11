@@ -2,6 +2,7 @@ package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class OrganizationManagerTest {
         TestDatabaseSetup.initialize(dbConnection);
     }
 
+    private static final int ORGANIZATION_NAME_LIMIT = 150;
+
     @Test
     void registerOrganization_ValidData_DoesNotThrow() {
         Organization newOrganization = new Organization();
@@ -40,6 +43,24 @@ public class OrganizationManagerTest {
         newOrganization.setMail("contacto@solucionesgolfo.mx");
 
         assertDoesNotThrow(() -> organizationManager.registerOrganization(newOrganization));
+    }
+
+    @Test
+    void registerOrganization_NameExceedsLimit_ThrowsManagerException() {
+        Organization oversizedNameOrganization = new Organization();
+        oversizedNameOrganization.setNameOrganization("A".repeat(ORGANIZATION_NAME_LIMIT + 1));
+        oversizedNameOrganization.setMail("contacto@solucionesgolfo.mx");
+
+        assertThrows(ManagerException.class, () -> organizationManager.registerOrganization(oversizedNameOrganization));
+    }
+
+    @Test
+    void registerOrganization_InvalidEmailFormat_ThrowsManagerException() {
+        Organization invalidEmailOrganization = new Organization();
+        invalidEmailOrganization.setNameOrganization("Soluciones Digitales del Golfo");
+        invalidEmailOrganization.setMail("correo-invalido");
+
+        assertThrows(ManagerException.class, () -> organizationManager.registerOrganization(invalidEmailOrganization));
     }
 
     @Test
