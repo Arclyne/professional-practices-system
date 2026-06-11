@@ -58,5 +58,7 @@ public class PeriodManager {
         if (period.getStartDate() == null || period.getEndDate() == null) {
             throw new ManagerException("Las fechas de inicio y fin del periodo son obligatorias.");
         }
+        BaseValidator.validateStartBeforeEnd(period.getStartDate(), period.getEndDate(),
+                "La fecha de inicio debe ser anterior a la fecha de fin del periodo.");
     }
 }
