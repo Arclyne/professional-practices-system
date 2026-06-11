@@ -1,26 +1,22 @@
 package mx.uv.fei.domain.manager;
 
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.dto.Period;
-import mx.uv.fei.dataaccess.interfaces.IPeriodDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IPeriodDAO;
+import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.exceptions.ManagerException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @Component
 public class PeriodManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(PeriodManager.class);
-
-    private static final String MSG_REGISTER_ERROR = "The academic period could not be registered.";
-    private static final String MSG_CONNECTION_ERROR = "A connection problem occurred. Please try again later.";
-    private static final String MSG_RETRIEVE_ERROR = "An error occurred while retrieving academic periods.";
-    private static final String MSG_INVALID_DATA = "The period data is incomplete or invalid.";
-    private static final String STATUS_ACTIVE = "Active";
+    private static final Logger log = LoggerFactory.getLogger(PeriodManager.class);
+    private static final String PERIOD_STATUS_ACTIVE = "Active";
 
     private final IPeriodDAO periodDAO;
 
@@ -29,33 +25,35 @@ public class PeriodManager {
         this.periodDAO = periodDAO;
     }
 
-    public void registerNewPeriod(Period periodToRegister) throws ManagerException {
-        if (periodToRegister.getPeriodName() == null || periodToRegister.getPeriodName().trim().isEmpty() ||
-                periodToRegister.getStartDate() == null || periodToRegister.getEndDate() == null) {
-            throw new ManagerException(MSG_INVALID_DATA);
-        }
-
-        periodToRegister.setPeriodStatus(STATUS_ACTIVE);
+    public void registerNewPeriod(Period period) throws ManagerException {
+        validatePeriodData(period);
+        period.setPeriodStatus(PERIOD_STATUS_ACTIVE);
 
         try {
-            int resultId = periodDAO.insertPeriod(periodToRegister);
-
-            if (resultId <= 0) {
-                throw new ManagerException(MSG_REGISTER_ERROR);
+            int generatedId = periodDAO.insertPeriod(period);
+            if (generatedId <= 0) {
+                throw new ManagerException("No se pudo registrar el periodo académico.");
             }
         } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-            throw new ManagerException(MSG_CONNECTION_ERROR, e);
+            log.error("Error al insertar el periodo académico.", e);
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
 
     public List<Period> getAllPeriods() throws ManagerException {
-        List<Period> periods;
         try {
-            periods = periodDAO.getAllPeriods();
+            return periodDAO.getAllPeriods();
         } catch (DAOException e) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
+            throw new ManagerException("Ocurrió un error al recuperar los periodos académicos.", e);
         }
-        return periods;
+    }
+
+    private void validatePeriodData(Period period) throws ManagerException {
+        if (period.getPeriodName() == null || period.getPeriodName().trim().isEmpty()) {
+            throw new ManagerException("El nombre del periodo es obligatorio.");
+        }
+        if (period.getStartDate() == null || period.getEndDate() == null) {
+            throw new ManagerException("Las fechas de inicio y fin del periodo son obligatorias.");
+        }
     }
 }

@@ -1,13 +1,5 @@
 package mx.uv.fei.dataaccess.repositories;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
@@ -18,45 +10,45 @@ import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
 @Component
 public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private static final String SQL_INSERT_PRACTITIONER =
             "INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id) VALUES (?, ?, ?, ?)";
-
+    private static final String SQL_UPDATE_PRACTITIONER =
+            "UPDATE practitioner SET indigenous_language = ?, grade = ?, group_id = ? WHERE practitioner_id = ?";
     private static final String SQL_SELECT_PRACTITIONER_BY_ID =
             "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
                     "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "WHERE p.practitioner_id = ?";
-
     private static final String SQL_SELECT_ALL_PRACTITIONERS =
             "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
                     "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id";
-
-    private static final String SQL_UPDATE_PRACTITIONER =
-            "UPDATE practitioner SET indigenous_language = ?, grade = ?, group_id = ? " +
-                    "WHERE practitioner_id = ?";
-
-    private static final String SQL_SELECT_PENDING_ASSIGNMENT =
+    private static final String SQL_SELECT_PRACTITIONERS_PENDING_ASSIGNMENT =
             "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "WHERE p.practitioner_id IN (SELECT practitioner_id FROM project_postulation) " +
                     "AND p.practitioner_id NOT IN " +
                     "(SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
-
     private static final String SQL_SELECT_ASSIGNED_PRACTITIONERS =
             "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
                     "WHERE u.status = 'Active' AND pp.postulation_status = 'Assigned'";
-
-    private static final String SQL_SELECT_BY_PROFESSOR =
+    private static final String SQL_SELECT_PRACTITIONERS_BY_PROFESSOR =
             "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
@@ -65,14 +57,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "WHERE u.status = 'Active' " +
                     "AND pp.postulation_status = 'Assigned' " +
                     "AND pg.professor_id = ?";
-
-    private static final String MSG_INSERT_ROLLBACK  = "SQL error while inserting the practitioner. Changes reverted.";
-    private static final String MSG_CRITICAL_CONN    = "Critical database connection error.";
-    private static final String MSG_RECOVER_ERROR    = "Database error while attempting to recover the practitioner.";
-    private static final String MSG_UPDATE_ROLLBACK  = "SQL error while updating the practitioner. Changes reverted.";
-    private static final String MSG_PENDING_ERROR    = "An error occurred while querying practitioners pending assignment.";
-    private static final String MSG_ASSIGNED_ERROR   = "An error occurred while querying assigned practitioners.";
-    private static final String MSG_BY_PROFESSOR_ERROR = "An error occurred while querying practitioners by professor.";
 
     private final IUserDAO userDAO;
 
@@ -84,56 +68,43 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     @Override
     public int insertPractitioner(Practitioner practitioner) throws DAOException {
-        int resultId = -1;
+        int generatedId = -1;
 
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                resultId = executePractitionerInsertTransaction(connection, practitioner);
+                int generatedUserId = userDAO.insertUser(practitioner, connection);
 
-                if (resultId > 0) {
+                if (generatedUserId > 0) {
+                    try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PRACTITIONER)) {
+                        statement.setInt(1, generatedUserId);
+                        statement.setString(2, practitioner.getIndigenousLanguage());
+                        statement.setDouble(3, practitioner.getGrade());
+                        statement.setObject(4, practitioner.getGroupId(), Types.INTEGER);
+
+                        if (statement.executeUpdate() > 0) {
+                            generatedId = generatedUserId;
+                        }
+                    }
+                }
+
+                if (generatedId > 0) {
                     connection.commit();
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException | DAOException exception) {
+            } catch (SQLException | DAOException e) {
                 connection.rollback();
-                throw new DAOException(MSG_INSERT_ROLLBACK, exception);
+                throw new DAOException("Error SQL al insertar el practicante. Cambios revertidos.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_CRITICAL_CONN, e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
-        return resultId;
-    }
-
-    private int executePractitionerInsertTransaction(Connection connection, Practitioner practitioner)
-            throws SQLException, DAOException {
-        int insertedPractitionerId = -1;
-        int generatedUserId = userDAO.insertUser(practitioner, connection);
-
-        if (generatedUserId > 0) {
-            try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_PRACTITIONER)) {
-                statement.setInt(1, generatedUserId);
-                statement.setString(2, practitioner.getIndigenousLanguage());
-                statement.setDouble(3, practitioner.getGrade());
-
-                if (practitioner.getGroupId() != null) {
-                    statement.setInt(4, practitioner.getGroupId());
-                } else {
-                    statement.setNull(4, Types.INTEGER);
-                }
-
-                if (statement.executeUpdate() > 0) {
-                    insertedPractitionerId = generatedUserId;
-                }
-            }
-        }
-
-        return insertedPractitionerId;
+        return generatedId;
     }
 
     @Override
@@ -151,7 +122,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_RECOVER_ERROR, e);
+            throw new DAOException("Error en la base de datos al intentar recuperar el practicante.", e);
         }
 
         return recoveredPractitioner;
@@ -171,143 +142,99 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
             connection.setAutoCommit(false);
 
             try {
-                isUpdated = executePractitionerUpdateTransaction(connection, practitionerToUpdate, practitionerId);
+                isUpdated = executeUpdateTransaction(connection, practitionerToUpdate, practitionerId);
 
                 if (isUpdated) {
                     connection.commit();
                 } else {
                     connection.rollback();
                 }
-            } catch (SQLException | DAOException exception) {
+            } catch (SQLException | DAOException e) {
                 connection.rollback();
-                throw new DAOException(MSG_UPDATE_ROLLBACK, exception);
+                throw new DAOException("Error SQL al actualizar el practicante. Cambios revertidos.", e);
             } finally {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DAOException(MSG_CRITICAL_CONN, e);
+            throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
 
         return isUpdated;
     }
 
-    private boolean executePractitionerUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
-            throws SQLException, DAOException {
-        boolean updateSuccessful = false;
-        boolean userUpdated = userDAO.updateUser(practitioner, connection);
-
-        if (userUpdated) {
-            try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
-                statement.setString(1, practitioner.getIndigenousLanguage());
-                statement.setDouble(2, practitioner.getGrade());
-
-                if (practitioner.getGroupId() != null) {
-                    statement.setInt(3, practitioner.getGroupId());
-                } else {
-                    statement.setNull(3, Types.INTEGER);
-                }
-
-                statement.setInt(4, practitionerId);
-                updateSuccessful = statement.executeUpdate() > 0;
-            }
-        }
-
-        return updateSuccessful;
-    }
-
     @Override
     public List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException {
-        List<Practitioner> pendingPractitionersList = new ArrayList<>();
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_PENDING_ASSIGNMENT);
-             ResultSet resultSet = statement.executeQuery()) {
-
-            while (resultSet.next()) {
-                pendingPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_PENDING_ERROR, e);
-        }
-
-        return pendingPractitionersList;
+        return recoverALL(SQL_SELECT_PRACTITIONERS_PENDING_ASSIGNMENT, this::mapResultSetToMinimalPractitioner);
     }
 
     @Override
     public List<Practitioner> retrieveAssignedPractitioners() throws DAOException {
-        List<Practitioner> assignedPractitionersList = new ArrayList<>();
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ASSIGNED_PRACTITIONERS);
-             ResultSet resultSet = statement.executeQuery()) {
-
-            while (resultSet.next()) {
-                assignedPractitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
-            }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_ASSIGNED_ERROR, e);
-        }
-
-        return assignedPractitionersList;
+        return recoverALL(SQL_SELECT_ASSIGNED_PRACTITIONERS, this::mapResultSetToMinimalPractitioner);
     }
 
     @Override
     public List<Practitioner> retrievePractitionersByProfessor(int professorId) throws DAOException {
-        List<Practitioner> practitionersList = new ArrayList<>();
+        return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR, this::mapResultSetToMinimalPractitioner, professorId);
+    }
 
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_PROFESSOR)) {
+    private boolean executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
+            throws SQLException, DAOException {
+        boolean isUpdateSuccessful = false;
+        boolean isUserUpdated = userDAO.updateUser(practitioner, connection);
 
-            statement.setInt(1, professorId);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    practitionersList.add(mapResultSetToMinimalPractitioner(resultSet));
-                }
+        if (isUserUpdated) {
+            try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
+                statement.setString(1, practitioner.getIndigenousLanguage());
+                statement.setDouble(2, practitioner.getGrade());
+                statement.setObject(3, practitioner.getGroupId(), Types.INTEGER);
+                statement.setInt(4, practitionerId);
+                isUpdateSuccessful = statement.executeUpdate() > 0;
             }
-        } catch (SQLException e) {
-            throw new DAOException(MSG_BY_PROFESSOR_ERROR, e);
         }
 
-        return practitionersList;
+        return isUpdateSuccessful;
     }
 
     private Practitioner mapResultSetToMinimalPractitioner(ResultSet resultSet) throws SQLException {
         Practitioner practitioner = new Practitioner();
-
         practitioner.setId(resultSet.getInt("user_id"));
         practitioner.setEnrollment(resultSet.getString("matricula"));
         practitioner.setUserName(resultSet.getString("matricula"));
         practitioner.setName(resultSet.getString("name"));
         practitioner.setLastName(resultSet.getString("last_name"));
         practitioner.setEmail(resultSet.getString("email"));
-
         return practitioner;
     }
 
     private Practitioner mapResultSetToPractitioner(ResultSet resultSet) throws SQLException {
         Practitioner practitioner = new Practitioner();
-
         practitioner.setId(resultSet.getInt("user_id"));
         practitioner.setPassword(resultSet.getString("password"));
         practitioner.setName(resultSet.getString("name"));
         practitioner.setLastName(resultSet.getString("last_name"));
         practitioner.setEmail(resultSet.getString("email"));
-
-        String statusValue = resultSet.getString("status");
-        practitioner.setStatus(statusValue != null ? UserStatus.fromString(statusValue) : null);
-
-        String genderValue = resultSet.getString("gender");
-        practitioner.setGender(genderValue != null ? Gender.fromDatabaseValue(genderValue) : null);
-
+        practitioner.setStatus(resolveNullableStatus(resultSet));
+        practitioner.setGender(resolveNullableGender(resultSet));
         practitioner.setEnrollment(resultSet.getString("matricula"));
         practitioner.setUserName(resultSet.getString("matricula"));
         practitioner.setIndigenousLanguage(resultSet.getString("indigenous_language"));
         practitioner.setGrade(resultSet.getDouble("grade"));
-
-        int retrievedGroupId = resultSet.getInt("group_id");
-        practitioner.setGroupId(resultSet.wasNull() ? null : retrievedGroupId);
-
+        practitioner.setGroupId(resolveNullableGroupId(resultSet));
         return practitioner;
+    }
+
+    private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
+        String statusValue = resultSet.getString("status");
+        return statusValue != null ? UserStatus.fromString(statusValue) : null;
+    }
+
+    private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
+        String genderValue = resultSet.getString("gender");
+        return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
+    }
+
+    private Integer resolveNullableGroupId(ResultSet resultSet) throws SQLException {
+        int groupId = resultSet.getInt("group_id");
+        return resultSet.wasNull() ? null : groupId;
     }
 }

@@ -3,6 +3,13 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
+/**
+ * Representa un proyecto de prácticas profesionales ofertado por una organización vinculada.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class Project {
 
     private int projectId;
@@ -15,91 +22,44 @@ public class Project {
     private Date endDate;
     private int companyId;
 
-    public int getProjectId() {
-        return projectId;
-    }
+    public int getProjectId() { return projectId; }
+    public void setProjectId(int projectId) { this.projectId = projectId; }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
-    }
+    public String getProjectName() { return projectName; }
+    public void setProjectName(String projectName) { this.projectName = projectName; }
 
-    public String getProjectName() {
-        return projectName;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
+    public int getParticipantCapacity() { return participantCapacity; }
+    public void setParticipantCapacity(int participantCapacity) { this.participantCapacity = participantCapacity; }
 
-    public String getDescription() {
-        return description;
-    }
+    public int getManagerId() { return managerId; }
+    public void setManagerId(int managerId) { this.managerId = managerId; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public int getParticipantCapacity() {
-        return participantCapacity;
-    }
+    public Date getStartDate() { return startDate; }
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
 
-    public void setParticipantCapacity(int participantCapacity) {
-        this.participantCapacity = participantCapacity;
-    }
+    public Date getEndDate() { return endDate; }
+    public void setEndDate(Date endDate) { this.endDate = endDate; }
 
-    public int getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(int managerId) {
-        this.managerId = managerId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public int getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(int companyId) {
-        this.companyId = companyId;
-    }
+    public int getCompanyId() { return companyId; }
+    public void setCompanyId(int companyId) { this.companyId = companyId; }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            Project that = (Project) object;
-            isEqual = managerId == that.managerId
-                    && companyId == that.companyId
-                    && Objects.equals(projectName, that.projectName);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            Project other = (Project) obj;
+            isEqual = this.managerId == other.managerId &&
+                    this.companyId == other.companyId &&
+                    Objects.equals(this.projectName, other.projectName);
         }
-
         return isEqual;
     }
 

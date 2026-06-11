@@ -5,31 +5,32 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 
 public class SelfEvaluationValidator {
 
-    private static final int MIN_SCORE = 1;
-    private static final int MAX_SCORE = 5;
+    private static final int MINIMUM_QUESTION_SCORE = 1;
+    private static final int MAXIMUM_QUESTION_SCORE = 5;
 
-    public static void validateEvaluationData(SelfEvaluation evaluation) throws ManagerException {
-        BaseValidator.validateId(evaluation.getReportId(), "Debe seleccionar un reporte válido.");
-        BaseValidator.validateId(evaluation.getPractitionerId(), "Practicante no identificado.");
-        BaseValidator.validateString(evaluation.getEvidence(), "La evidencia es obligatoria.");
+    public static void validateEvaluationData(SelfEvaluation selfEvaluation) throws ManagerException {
+        BaseValidator.validateId(selfEvaluation.getReportId(),
+                "Debe seleccionar un reporte válido.");
+        BaseValidator.validateId(selfEvaluation.getPractitionerId(),
+                "Practicante no identificado.");
+        BaseValidator.validateString(selfEvaluation.getEvidence(),
+                "La evidencia es obligatoria.");
 
-        validateScore(evaluation.getQ1(), "Pregunta 1");
-        validateScore(evaluation.getQ2(), "Pregunta 2");
-        validateScore(evaluation.getQ3(), "Pregunta 3");
-        validateScore(evaluation.getQ4(), "Pregunta 4");
-        validateScore(evaluation.getQ5(), "Pregunta 5");
-        validateScore(evaluation.getQ6(), "Pregunta 6");
-        validateScore(evaluation.getQ7(), "Pregunta 7");
-        validateScore(evaluation.getQ8(), "Pregunta 8");
-        validateScore(evaluation.getQ9(), "Pregunta 9");
-        validateScore(evaluation.getQ10(), "Pregunta 10");
+        validateScore(selfEvaluation.getQ1(), "Pregunta 1");
+        validateScore(selfEvaluation.getQ2(), "Pregunta 2");
+        validateScore(selfEvaluation.getQ3(), "Pregunta 3");
+        validateScore(selfEvaluation.getQ4(), "Pregunta 4");
+        validateScore(selfEvaluation.getQ5(), "Pregunta 5");
+        validateScore(selfEvaluation.getQ6(), "Pregunta 6");
+        validateScore(selfEvaluation.getQ7(), "Pregunta 7");
+        validateScore(selfEvaluation.getQ8(), "Pregunta 8");
+        validateScore(selfEvaluation.getQ9(), "Pregunta 9");
+        validateScore(selfEvaluation.getQ10(), "Pregunta 10");
     }
 
-    private static void validateScore(int score, String fieldName) throws ManagerException {
-        boolean isValidScore = score >= MIN_SCORE && score <= MAX_SCORE;
-
-        if (!isValidScore) {
-            throw new ManagerException("El valor de " + fieldName + " debe estar entre 1 y 5.");
+    private static void validateScore(int score, String questionName) throws ManagerException {
+        if (score < MINIMUM_QUESTION_SCORE || score > MAXIMUM_QUESTION_SCORE) {
+            throw new ManagerException("El valor de " + questionName + " debe estar entre 1 y 5.");
         }
     }
 }

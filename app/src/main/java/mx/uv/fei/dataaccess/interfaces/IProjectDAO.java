@@ -17,4 +17,7 @@ public interface IProjectDAO {
     List<Project> getAvailableProjectsWithCapacity() throws DAOException;
 
     boolean deactivateMultipleProjects(List<Integer> projectIdentifiersList) throws DAOException;
+
+    Project getAssignedProjectByPractitioner(int practitionerId) throws DAOException;
+
 }

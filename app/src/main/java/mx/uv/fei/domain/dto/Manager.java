@@ -1,8 +1,16 @@
 package mx.uv.fei.domain.dto;
 
 import mx.uv.fei.domain.enums.UserStatus;
+
 import java.util.Objects;
 
+/**
+ * Representa al encargado de un proyecto dentro de una organización vinculada.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class Manager {
 
     private int id;
@@ -12,8 +20,7 @@ public class Manager {
     private int organizationId;
     private UserStatus status;
 
-    public Manager() {
-    }
+    public Manager() {}
 
     public Manager(int id, String name, String phone, String email, int organizationId, UserStatus status) {
         this.id = id;
@@ -24,45 +31,20 @@ public class Manager {
         this.status = status;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(int organizationId) {
-        this.organizationId = organizationId;
-    }
+    public int getOrganizationId() { return organizationId; }
+    public void setOrganizationId(int organizationId) { this.organizationId = organizationId; }
 
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
@@ -73,8 +55,8 @@ public class Manager {
         if (this == obj) {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
-            Manager that = (Manager) obj;
-            isEqual = Objects.equals(this.email, that.email);
+            Manager other = (Manager) obj;
+            isEqual = Objects.equals(this.email, other.email);
         }
         return isEqual;
     }

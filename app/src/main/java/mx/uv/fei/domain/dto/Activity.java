@@ -3,7 +3,15 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
+/**
+ * Representa una actividad registrada por un practicante en su bitácora.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class Activity {
+
     private int activityId;
     private int practitionerId;
     private Integer reportId;
@@ -41,10 +49,10 @@ public class Activity {
         if (this == obj) {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
-            Activity that = (Activity) obj;
-            isEqual = this.practitionerId == that.practitionerId &&
-                    Objects.equals(this.title, that.title) &&
-                    Objects.equals(this.activityDate, that.activityDate);
+            Activity other = (Activity) obj;
+            isEqual = this.practitionerId == other.practitionerId &&
+                    Objects.equals(this.title, other.title) &&
+                    Objects.equals(this.activityDate, other.activityDate);
         }
         return isEqual;
     }

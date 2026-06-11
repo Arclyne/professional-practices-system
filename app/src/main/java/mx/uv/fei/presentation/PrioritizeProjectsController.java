@@ -1,13 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -19,145 +11,150 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class PrioritizeProjectsController {
 
-    @FXML
-    private ListView<Project> availableProjectsListView;
-    @FXML
-    private ListView<Project> prioritizedProjectsListView;
-    @FXML
-    private Button assignProjectButton;
-    @FXML
-    private Button revokeProjectButton;
-    @FXML
-    private Button movePriorityUpButton;
-    @FXML
-    private Button movePriorityDownButton;
-    @FXML
-    private Button savePostulationButton;
-    @FXML
-    private Button cancelPostulationButton;
+    @FXML private ListView<Project> availableProjectsListView;
+    @FXML private ListView<Project> prioritizedProjectsListView;
+    @FXML private Button assignProjectButton;
+    @FXML private Button revokeProjectButton;
+    @FXML private Button movePriorityUpButton;
+    @FXML private Button movePriorityDownButton;
+    @FXML private Button savePostulationButton;
+    @FXML private Button cancelPostulationButton;
 
-    private final PostulationManager PostulationManager;
-    private final AppStore applicationNavigationStore;
+    private final PostulationManager postulationManager;
+    private final AppStore store;
 
-    private final ObservableList<Project> availableProjectsObservableList = FXCollections.observableArrayList();
-    private final ObservableList<Project> prioritizedProjectsObservableList = FXCollections.observableArrayList();
+    private final ObservableList<Project> availableProjects = FXCollections.observableArrayList();
+    private final ObservableList<Project> prioritizedProjects = FXCollections.observableArrayList();
 
     @Inject
-    public PrioritizeProjectsController(PostulationManager PostulationManager, AppStore applicationNavigationStore) {
-        this.PostulationManager = PostulationManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+    public PrioritizeProjectsController(PostulationManager postulationManager, AppStore store) {
+        this.postulationManager = postulationManager;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
-        configureListViewProjectDisplay(availableProjectsListView);
-        configureListViewProjectDisplay(prioritizedProjectsListView);
-        availableProjectsListView.setItems(availableProjectsObservableList);
-        prioritizedProjectsListView.setItems(prioritizedProjectsObservableList);
-        loadSystemAvailableProjects();
+        configureProjectListView(availableProjectsListView);
+        configureProjectListView(prioritizedProjectsListView);
+        availableProjectsListView.setItems(availableProjects);
+        prioritizedProjectsListView.setItems(prioritizedProjects);
+        loadAvailableProjects();
     }
 
-    private void configureListViewProjectDisplay(ListView<Project> targetProjectListView) {
-        targetProjectListView.setCellFactory(parameter -> new ListCell<>() {
+    private void configureProjectListView(ListView<Project> projectListView) {
+        projectListView.setCellFactory(_ -> new ListCell<>() {
             @Override
-            protected void updateItem(Project currentProjectItem, boolean isItemEmpty) {
-                super.updateItem(currentProjectItem, isItemEmpty);
-                if (isItemEmpty || currentProjectItem == null || currentProjectItem.getProjectName() == null) {
+            protected void updateItem(Project project, boolean isEmpty) {
+                super.updateItem(project, isEmpty);
+                if (isEmpty || project == null || project.getProjectName() == null) {
                     setText(null);
                 } else {
-                    setText(currentProjectItem.getProjectName());
+                    setText(project.getProjectName());
                 }
             }
         });
     }
 
-    private void loadSystemAvailableProjects() {
+    private void loadAvailableProjects() {
         try {
-            availableProjectsObservableList.clear();
-            prioritizedProjectsObservableList.clear();
-            List<Project> retrievedAvailableProjectsList = PostulationManager.retrieveAllAvailableProjects();
-            availableProjectsObservableList.addAll(retrievedAvailableProjectsList);
+            availableProjects.clear();
+            prioritizedProjects.clear();
+            List<Project> retrievedProjects = postulationManager.retrieveAllAvailableProjects();
+            availableProjects.addAll(retrievedProjects);
         } catch (ManagerException e) {
-            Controller.showAlert("Error de conexion", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleAssignProjectAction(ActionEvent userActionEvent) {
-        Project selectedProjectToAssign = availableProjectsListView.getSelectionModel().getSelectedItem();
-
-        if (selectedProjectToAssign != null) {
-            availableProjectsObservableList.remove(selectedProjectToAssign);
-            prioritizedProjectsObservableList.add(selectedProjectToAssign);
+    private void handleAssignProjectAction() {
+        Project selectedProject = availableProjectsListView.getSelectionModel().getSelectedItem();
+        if (selectedProject != null) {
+            availableProjects.remove(selectedProject);
+            prioritizedProjects.add(selectedProject);
         } else {
-            Controller.showAlert("Seleccion requerida", "Por favor, seleccione un proyecto de la lista de disponibles.", AlertType.WARNING);
+            Controller.showAlert("Selección requerida",
+                    "Por favor, seleccione un proyecto de la lista de disponibles.", AlertType.WARNING);
         }
     }
 
     @FXML
-    private void handleRevokeProjectAction(ActionEvent userActionEvent) {
-        Project selectedProjectToRevoke = prioritizedProjectsListView.getSelectionModel().getSelectedItem();
-
-        if (selectedProjectToRevoke != null) {
-            prioritizedProjectsObservableList.remove(selectedProjectToRevoke);
-            availableProjectsObservableList.add(selectedProjectToRevoke);
+    private void handleRevokeProjectAction() {
+        Project selectedProject = prioritizedProjectsListView.getSelectionModel().getSelectedItem();
+        if (selectedProject != null) {
+            prioritizedProjects.remove(selectedProject);
+            availableProjects.add(selectedProject);
         } else {
-            Controller.showAlert("Seleccion requerida", "Por favor, seleccione un proyecto de su lista de prioridades para devolverlo.", AlertType.WARNING);
+            Controller.showAlert("Selección requerida",
+                    "Por favor, seleccione un proyecto de su lista de prioridades para devolverlo.", AlertType.WARNING);
         }
     }
 
     @FXML
-    private void handleMovePriorityUpAction(ActionEvent userActionEvent) {
-        int currentlySelectedProjectIndex = prioritizedProjectsListView.getSelectionModel().getSelectedIndex();
-
-        if (currentlySelectedProjectIndex > 0) {
-            Project projectToMoveUpwards = prioritizedProjectsObservableList.get(currentlySelectedProjectIndex);
-            Project projectToSwapPositionsWith = prioritizedProjectsObservableList.get(currentlySelectedProjectIndex - 1);
-            prioritizedProjectsObservableList.set(currentlySelectedProjectIndex - 1, projectToMoveUpwards);
-            prioritizedProjectsObservableList.set(currentlySelectedProjectIndex, projectToSwapPositionsWith);
-            prioritizedProjectsListView.getSelectionModel().select(currentlySelectedProjectIndex - 1);
+    private void handleMovePriorityUpAction() {
+        int selectedIndex = prioritizedProjectsListView.getSelectionModel().getSelectedIndex();
+        if (selectedIndex > 0) {
+            swapPriorities(selectedIndex, selectedIndex - 1);
         }
     }
 
     @FXML
-    private void handleMovePriorityDownAction(ActionEvent userActionEvent) {
-        int currentlySelectedProjectIndex = prioritizedProjectsListView.getSelectionModel().getSelectedIndex();
-        int maximumValidListIndex = prioritizedProjectsObservableList.size() - 1;
-
-        if (currentlySelectedProjectIndex >= 0 && currentlySelectedProjectIndex < maximumValidListIndex) {
-            Project projectToMoveDownwards = prioritizedProjectsObservableList.get(currentlySelectedProjectIndex);
-            Project projectToSwapPositionsWith = prioritizedProjectsObservableList.get(currentlySelectedProjectIndex + 1);
-            prioritizedProjectsObservableList.set(currentlySelectedProjectIndex + 1, projectToMoveDownwards);
-            prioritizedProjectsObservableList.set(currentlySelectedProjectIndex, projectToSwapPositionsWith);
-            prioritizedProjectsListView.getSelectionModel().select(currentlySelectedProjectIndex + 1);
+    private void handleMovePriorityDownAction() {
+        int selectedIndex = prioritizedProjectsListView.getSelectionModel().getSelectedIndex();
+        int lastIndex = prioritizedProjects.size() - 1;
+        if (selectedIndex >= 0 && selectedIndex < lastIndex) {
+            swapPriorities(selectedIndex, selectedIndex + 1);
         }
     }
 
+    private void swapPriorities(int firstIndex, int secondIndex) {
+        Project firstProject = prioritizedProjects.get(firstIndex);
+        Project secondProject = prioritizedProjects.get(secondIndex);
+        prioritizedProjects.set(secondIndex, firstProject);
+        prioritizedProjects.set(firstIndex, secondProject);
+        prioritizedProjectsListView.getSelectionModel().select(secondIndex);
+    }
+
     @FXML
-    private void handleSavePostulationAction(ActionEvent userActionEvent) {
-        if (!availableProjectsObservableList.isEmpty()) {
-            Controller.showAlert("Postulacion Incompleta", "Debe asignar una prioridad a todos los proyectos disponibles antes de guardar.", AlertType.WARNING);
+    private void handleSavePostulationAction() {
+        if (!availableProjects.isEmpty()) {
+            Controller.showAlert("Postulación Incompleta",
+                    "Debe asignar una prioridad a todos los proyectos disponibles antes de guardar.",
+                    AlertType.WARNING);
         } else {
-            try {
-                User currentAuthenticatedPractitioner = applicationNavigationStore.getState().sessionState().currentUserInSession();
-                List<Project> finalizedPriorityProjectList = new ArrayList<>(prioritizedProjectsObservableList);
-                PostulationManager.registerPractitionerPriorities(currentAuthenticatedPractitioner.getId(), finalizedPriorityProjectList);
-                Controller.showAlert("Postulacion Exitosa", "Sus prioridades han sido registradas en el sistema correctamente.", AlertType.INFORMATION);
-                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-            } catch (ManagerException e) {
-                Controller.showAlert("Error al guardar", e.getMessage(), AlertType.ERROR);
-            }
+            savePractitionerPriorities();
+        }
+    }
+
+    private void savePractitionerPriorities() {
+        try {
+            User currentUser = store.getState().sessionState().currentUserInSession();
+            List<Project> priorities = new ArrayList<>(prioritizedProjects);
+            postulationManager.registerPractitionerPriorities(currentUser.getId(), priorities);
+            Controller.showAlert("Postulación Exitosa",
+                    "Sus prioridades han sido registradas en el sistema correctamente.", AlertType.INFORMATION);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al guardar", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleCancelPostulationAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+    private void handleCancelPostulationAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

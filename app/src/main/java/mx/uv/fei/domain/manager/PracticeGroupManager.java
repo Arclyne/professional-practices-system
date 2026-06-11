@@ -1,20 +1,16 @@
 package mx.uv.fei.domain.manager;
 
-import java.util.List;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.dto.PracticeGroup;
-import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.exceptions.ManagerException;
+
+import java.util.List;
 
 @Component
 public class PracticeGroupManager {
-
-    private static final String MSG_REGISTER_ERROR = "The practice group could not be registered in the system.";
-    private static final String MSG_CONNECTION_ERROR = "A connection problem occurred. Please try again later.";
-    private static final String MSG_RETRIEVE_ERROR = "An error occurred while retrieving the practice groups.";
 
     private final IPracticeGroupDAO practiceGroupDAO;
 
@@ -23,26 +19,22 @@ public class PracticeGroupManager {
         this.practiceGroupDAO = practiceGroupDAO;
     }
 
-    public void registerNewPracticeGroup(PracticeGroup groupToRegister) throws ManagerException {
-
+    public void registerNewPracticeGroup(PracticeGroup practiceGroup) throws ManagerException {
         try {
-            int resultId = practiceGroupDAO.insertPracticeGroup(groupToRegister);
-
-            if (resultId <= 0) {
-                throw new ManagerException(MSG_REGISTER_ERROR);
+            int generatedId = practiceGroupDAO.insertPracticeGroup(practiceGroup);
+            if (generatedId <= 0) {
+                throw new ManagerException("No se pudo registrar el grupo de prácticas en el sistema.");
             }
         } catch (DAOException e) {
-            throw new ManagerException(MSG_CONNECTION_ERROR, e);
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
 
     public List<PracticeGroup> getAllPracticeGroups() throws ManagerException {
-        List<PracticeGroup> groups;
         try {
-            groups = practiceGroupDAO.getAllPracticeGroups();
+            return practiceGroupDAO.getAllPracticeGroups();
         } catch (DAOException e) {
-            throw new ManagerException(MSG_RETRIEVE_ERROR, e);
+            throw new ManagerException("Ocurrió un error al recuperar los grupos de prácticas.", e);
         }
-        return groups;
     }
 }

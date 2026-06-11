@@ -1,18 +1,5 @@
 package mx.uv.fei.presentation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -24,91 +11,111 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class ManagerManagementController {
 
-    private static final String LOAD_ERROR_TITLE = "Error de carga";
-    private static final String NO_SELECTION_TITLE = "Sin selección";
-    private static final String NO_SELECTION_MESSAGE = "Debe seleccionar al menos un encargado para inactivar.";
-    private static final String SUCCESS_TITLE = "Proceso Exitoso";
-    private static final String SUCCESS_MESSAGE = "Los encargados seleccionados han sido inactivados.";
-    private static final String OPERATION_ERROR_TITLE = "Error en la Operación";
-    private static final String DISPLAY_ITEM_FORMAT = "%s (%s) - %s";
+    private static final String MANAGER_DISPLAY_FORMAT = "%s (%s) - %s";
 
-    @FXML
-    private ListView<String> managersListView;
+    @FXML private ListView<String> managersListView;
 
     private final ManagerManager managerManager;
-    private final AppStore applicationNavigationStore;
+    private final AppStore store;
 
-    private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
-    private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
+    private final Map<String, Integer> displayToManagerId = new HashMap<>();
+    private final Map<String, BooleanProperty> displaySelectionState = new HashMap<>();
 
     @Inject
-    public ManagerManagementController(ManagerManager managerManager, AppStore applicationNavigationStore) {
+    public ManagerManagementController(ManagerManager managerManager, AppStore store) {
         this.managerManager = managerManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
-        Controller.setupCheckBoxListView(managersListView, itemSelectionStateMap);
+        Controller.setupCheckBoxListView(managersListView, displaySelectionState);
         loadActiveManagers();
     }
 
     private void loadActiveManagers() {
-        itemToIdentifierMap.clear();
-        itemSelectionStateMap.clear();
-        ObservableList<String> displayItemsList = FXCollections.observableArrayList();
+        displayToManagerId.clear();
+        displaySelectionState.clear();
+        ObservableList<String> displayItems = FXCollections.observableArrayList();
 
         try {
-            List<Manager> registeredManagersList = managerManager.getAllManagers();
-
-            for (Manager currentManager : registeredManagersList) {
-                if (currentManager.getStatus() != null && currentManager.getStatus() != UserStatus.INACTIVE) {
-                    String formattedDisplayString = String.format(DISPLAY_ITEM_FORMAT, currentManager.getName(), currentManager.getEmail(), currentManager.getStatus());
-                    itemToIdentifierMap.put(formattedDisplayString, currentManager.getId());
-                    itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
-                    displayItemsList.add(formattedDisplayString);
+            List<Manager> managers = managerManager.getAllManagers();
+            for (Manager manager : managers) {
+                if (isManagerActive(manager)) {
+                    addManagerToDisplay(manager, displayItems);
                 }
             }
         } catch (ManagerException e) {
-            Controller.showAlert(LOAD_ERROR_TITLE, e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error de carga", e.getMessage(), AlertType.ERROR);
         }
 
-        managersListView.setItems(displayItemsList);
+        managersListView.setItems(displayItems);
+    }
+
+    private boolean isManagerActive(Manager manager) {
+        return manager.getStatus() != null && manager.getStatus() != UserStatus.INACTIVE;
+    }
+
+    private void addManagerToDisplay(Manager manager, ObservableList<String> displayItems) {
+        String displayText = String.format(MANAGER_DISPLAY_FORMAT,
+                manager.getName(), manager.getEmail(), manager.getStatus());
+        displayToManagerId.put(displayText, manager.getId());
+        displaySelectionState.put(displayText, new SimpleBooleanProperty(false));
+        displayItems.add(displayText);
     }
 
     @FXML
     private void handleInactivateSelectedAction() {
-        List<Integer> identifiersToInactivateList = new ArrayList<>();
+        List<Integer> selectedManagerIds = collectSelectedManagerIds();
 
-        for (Map.Entry<String, BooleanProperty> currentMapEntry : itemSelectionStateMap.entrySet()) {
-            if (currentMapEntry.getValue().get()) {
-                identifiersToInactivateList.add(itemToIdentifierMap.get(currentMapEntry.getKey()));
-            }
-        }
-
-        if (identifiersToInactivateList.isEmpty()) {
-            Controller.showAlert(NO_SELECTION_TITLE, NO_SELECTION_MESSAGE, AlertType.WARNING);
+        if (selectedManagerIds.isEmpty()) {
+            Controller.showAlert("Sin selección",
+                    "Debe seleccionar al menos un encargado para inactivar.", AlertType.WARNING);
         } else {
             try {
-                managerManager.inactivateMultipleManagers(identifiersToInactivateList);
-                Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+                managerManager.inactivateMultipleManagers(selectedManagerIds);
+                Controller.showInfoAlert("Proceso Exitoso",
+                        "Los encargados seleccionados han sido inactivados.");
                 loadActiveManagers();
             } catch (ManagerException e) {
-                Controller.showErrorAlert(OPERATION_ERROR_TITLE, e.getMessage());
+                Controller.showErrorAlert("Error en la Operación", e.getMessage());
             }
         }
+    }
+
+    private List<Integer> collectSelectedManagerIds() {
+        List<Integer> selectedManagerIds = new ArrayList<>();
+        for (Map.Entry<String, BooleanProperty> selectionEntry : displaySelectionState.entrySet()) {
+            if (selectionEntry.getValue().get()) {
+                selectedManagerIds.add(displayToManagerId.get(selectionEntry.getKey()));
+            }
+        }
+        return selectedManagerIds;
     }
 
     @FXML
     private void handleRegisterNewManagerAction() {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_MANAGER));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_MANAGER));
     }
 
     @FXML
     private void handleReturnAction() {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

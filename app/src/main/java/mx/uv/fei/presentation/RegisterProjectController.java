@@ -19,7 +19,7 @@ import javafx.scene.control.TextField;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
-import mx.uv.fei.domain.common.Parse;
+import mx.uv.fei.domain.common.DateParser;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.dto.Project;
@@ -151,8 +151,8 @@ public class RegisterProjectController implements Initializable {
             projectInformation.setProjectName(fieldProjectName.getText());
             projectInformation.setDescription(textAreaDescription.getText());
             projectInformation.setParticipantCapacity(Integer.parseInt(fieldCapacity.getText()));
-            projectInformation.setStartDate(Parse.parseDate(textFieldStartDay.getText(), textFieldStartMonth.getText(), textFieldStartYear.getText()));
-            projectInformation.setEndDate(Parse.parseDate(textFieldDeadlineDay.getText(), textFieldDeadlineMonth.getText(), textFieldDeadlineYear.getText()));
+            projectInformation.setStartDate(DateParser.parseDate(textFieldStartDay.getText(), textFieldStartMonth.getText(), textFieldStartYear.getText()));
+            projectInformation.setEndDate(DateParser.parseDate(textFieldDeadlineDay.getText(), textFieldDeadlineMonth.getText(), textFieldDeadlineYear.getText()));
             projectInformation.setStatus(STATUS_ACTIVE);
 
             String selectedOrg = (String) comboBoxOrganization.getValue();

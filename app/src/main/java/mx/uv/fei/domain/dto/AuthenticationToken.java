@@ -4,7 +4,15 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+/**
+ * Representa un token de autenticación asociado a una sesión de usuario.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class AuthenticationToken {
+
     private int valueToken;
     private LocalDateTime timeCreation;
     private String userName;
@@ -17,16 +25,16 @@ public class AuthenticationToken {
         return valueToken;
     }
 
-    public void setValueToken(int value) {
-        this.valueToken = value;
+    public void setValueToken(int valueToken) {
+        this.valueToken = valueToken;
     }
 
     public LocalDateTime getTimeCreation() {
         return timeCreation;
     }
 
-    public void setTimeCreation(LocalDateTime time) {
-        this.timeCreation = time != null ? time.truncatedTo(ChronoUnit.SECONDS) : null;
+    public void setTimeCreation(LocalDateTime timeCreation) {
+        this.timeCreation = timeCreation != null ? timeCreation.truncatedTo(ChronoUnit.SECONDS) : null;
     }
 
     public String getUserName() {
@@ -38,12 +46,16 @@ public class AuthenticationToken {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        AuthenticationToken that = (AuthenticationToken) object;
-        return valueToken == that.getValueToken() &&
-                Objects.equals(userName, that.getUserName());
+    public boolean equals(Object obj) {
+        boolean isEqual = false;
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj != null && getClass() == obj.getClass()) {
+            AuthenticationToken other = (AuthenticationToken) obj;
+            isEqual = this.valueToken == other.getValueToken() &&
+                    Objects.equals(this.userName, other.getUserName());
+        }
+        return isEqual;
     }
 
     @Override

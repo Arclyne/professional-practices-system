@@ -1,6 +1,14 @@
 package mx.uv.fei.domain.enums;
 
+/**
+ * Representa el género de un usuario registrado en el sistema.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public enum Gender {
+
     MALE("Male", "Masculino"),
     FEMALE("Female", "Femenino"),
     OTHER("Other", "Otro");
@@ -13,29 +21,24 @@ public enum Gender {
         this.displayValue = displayValue;
     }
 
-    public String getDatabaseValue() {
-        return databaseValue;
-    }
+    public String getDatabaseValue() { return databaseValue; }
+    public String getDisplayValue() { return displayValue; }
 
-    public String getDisplayValue() {
-        return displayValue;
-    }
-
-    public static Gender fromDatabaseValue(String text) {
-        for (Gender gender : Gender.values()) {
-            if (gender.databaseValue.equalsIgnoreCase(text)) {
+    public static Gender fromDatabaseValue(String databaseValue) {
+        for (Gender gender : values()) {
+            if (gender.databaseValue.equalsIgnoreCase(databaseValue)) {
                 return gender;
             }
         }
-        throw new IllegalArgumentException("Género en base de datos no válido: " + text);
+        throw new IllegalArgumentException("Género en base de datos no válido: " + databaseValue);
     }
 
-    public static Gender fromDisplayValue(String text) {
-        for (Gender gender : Gender.values()) {
-            if (gender.displayValue.equalsIgnoreCase(text)) {
+    public static Gender fromDisplayValue(String displayValue) {
+        for (Gender gender : values()) {
+            if (gender.displayValue.equalsIgnoreCase(displayValue)) {
                 return gender;
             }
         }
-        throw new IllegalArgumentException("Género de interfaz no válido: " + text);
+        throw new IllegalArgumentException("Género de interfaz no válido: " + displayValue);
     }
 }
