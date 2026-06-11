@@ -1,30 +1,42 @@
 package mx.uv.fei.presentation;
 
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.awt.GraphicsEnvironment;
 import java.util.List;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 
 public class RegisterPractitionerControllerTest extends ApplicationTest {
+
+    @BeforeAll
+    static void requireGraphicalDisplay() {
+        assumeFalse(GraphicsEnvironment.isHeadless(),
+                "Se omiten las pruebas de interfaz porque no hay un entorno gráfico disponible.");
+    }
+
 
     private static final String FXML_PATH = "/mx/uv/fei/presentation/registerPractitioner.fxml";
     private static final int STORED_GROUP_ID = 6;
@@ -70,18 +82,22 @@ public class RegisterPractitionerControllerTest extends ApplicationTest {
         });
     }
 
+    private void clickRegisterButton() {
+        interact(() -> lookup("#registerButton").queryAs(Button.class).fire());
+    }
+
     @Test
-    void handleActionRegisterButton_IncompleteForm_DoesNotRegisterPractitioner() throws Exception {
-        clickOn("#registerButton");
+    void handleActionRegisterButton_IncompleteForm_DoesNotRegisterPractitioner() throws ManagerException {
+        clickRegisterButton();
 
         verify(practitionerManager, never()).registerNewPractitioner(any(Practitioner.class));
     }
 
     @Test
-    void handleActionRegisterButton_ValidForm_RegistersPractitioner() throws Exception {
+    void handleActionRegisterButton_ValidForm_RegistersPractitioner() throws ManagerException {
         fillValidForm();
 
-        clickOn("#registerButton");
+        clickRegisterButton();
 
         verify(practitionerManager).registerNewPractitioner(any(Practitioner.class));
     }
