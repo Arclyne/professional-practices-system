@@ -16,13 +16,19 @@ public class ReportValidator {
     public static void validateSignedReport(String signedFileUrl) throws ManagerException {
         BaseValidator.validateString(signedFileUrl,
                 "No se detectó el documento. El archivo PDF es obligatorio.");
+        BaseValidator.validateMaxLength(signedFileUrl, FieldLengthLimits.SIGNED_FILE_URL_MAX,
+                "La ruta del documento firmado no puede exceder " + FieldLengthLimits.SIGNED_FILE_URL_MAX + " caracteres.");
     }
 
     public static void validateLogbookActivity(Activity activity) throws ManagerException {
         BaseValidator.validateString(activity.getTitle(),
                 "El título de la actividad es obligatorio.");
+        BaseValidator.validateMaxLength(activity.getTitle(), FieldLengthLimits.ACTIVITY_TITLE_MAX,
+                "El título de la actividad no puede exceder " + FieldLengthLimits.ACTIVITY_TITLE_MAX + " caracteres.");
         BaseValidator.validateString(activity.getDescription(),
                 "La descripción es obligatoria.");
+        BaseValidator.validateMaxLength(activity.getDescription(), FieldLengthLimits.LONG_TEXT_MAX,
+                "La descripción de la actividad no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
         if (activity.getActivityDate() == null) {
             throw new ManagerException("Debe seleccionar la fecha de la actividad.");
         }
@@ -55,6 +61,8 @@ public class ReportValidator {
         }
         BaseValidator.validateString(feedback,
                 "La retroalimentación para el practicante es obligatoria.");
+        BaseValidator.validateMaxLength(feedback, FieldLengthLimits.LONG_TEXT_MAX,
+                "La retroalimentación no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
     }
 
     private static void validateActivitiesWithinReportRange(MonthlyReport report, List<Activity> activities) throws ManagerException {
