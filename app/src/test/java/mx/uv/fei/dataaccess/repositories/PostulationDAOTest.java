@@ -25,8 +25,9 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PostulationDAOTest {
 
-    private static final int MISS_PRACTITIONER_ID = 99999;
     private static final int PRACTITIONER_ID = 123;
+    private static final int ASSIGNED_PROJECT_ID = 1;
+    private static final int NON_EXISTENT_PRACTITIONER_ID = 9999;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -40,57 +41,65 @@ public class PostulationDAOTest {
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        Project project1 = new Project();
-        project1.setProjectId(1);
+        Project inventoryProject = new Project();
+        inventoryProject.setProjectId(1);
 
-        Project project2 = new Project();
-        project2.setProjectId(2);
+        Project salesProject = new Project();
+        salesProject.setProjectId(2);
 
-        prioritizedProjects = List.of(project1, project2);
+        prioritizedProjects = List.of(inventoryProject, salesProject);
     }
 
     @Test
     void hasPractitionerSubmittedPriorities_WithNoPriorSubmission_ReturnsFalse() throws DAOException {
-        boolean hasSubmitted = postulationDAO.hasPractitionerSubmittedPriorities(MISS_PRACTITIONER_ID);
+        boolean hasSubmitted = postulationDAO.hasPractitionerSubmittedPriorities(NON_EXISTENT_PRACTITIONER_ID);
+
         assertFalse(hasSubmitted);
     }
 
     @Test
     void insertProjectPriorities_ValidProjects_ReturnsTrue() throws DAOException {
         boolean isInserted = postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
+
         assertTrue(isInserted);
     }
 
     @Test
     void retrievePractitionerPostulations_WithExistingPostulations_ReturnsExpectedList() throws DAOException {
-        List<ProjectPostulation> expectedList = new ArrayList<>();
-        ProjectPostulation postulation = new ProjectPostulation();
-        postulation.setPractitionerIdentifier(PRACTITIONER_ID);
-        postulation.setProjectIdentifier(1);
-        postulation.setProjectName("toRecover");
-        postulation.setPostulationStatus("Assigned");
-        postulation.setPriorityLevel(1);
-        expectedList.add(postulation);
+        List<ProjectPostulation> expectedPostulations = new ArrayList<>();
+        ProjectPostulation assignedPostulation = new ProjectPostulation();
+        assignedPostulation.setPractitionerId(PRACTITIONER_ID);
+        assignedPostulation.setProjectId(ASSIGNED_PROJECT_ID);
+        assignedPostulation.setProjectName("Sistema de Inventario Web");
+        assignedPostulation.setPostulationStatus("Assigned");
+        assignedPostulation.setPriorityLevel(1);
+        expectedPostulations.add(assignedPostulation);
 
-        List<ProjectPostulation> resultList = postulationDAO.retrievePractitionerPostulations(PRACTITIONER_ID);
-        assertEquals(expectedList, resultList);
+        List<ProjectPostulation> resultPostulations = postulationDAO.retrievePractitionerPostulations(PRACTITIONER_ID);
+
+        assertEquals(expectedPostulations, resultPostulations);
     }
 
     @Test
     void assignProjectUsingStoredProcedure_ValidIds_ReturnsTrue() throws DAOException {
         postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
-        boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, 1);
+
+        boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, ASSIGNED_PROJECT_ID);
+
         assertTrue(isAssigned);
     }
 
     @Test
     void insertProjectPriorities_NonExistentPractitioner_ThrowsDAOException() {
-        assertThrows(DAOException.class, () -> postulationDAO.insertProjectPriorities(9999, prioritizedProjects));
+        assertThrows(DAOException.class,
+                () -> postulationDAO.insertProjectPriorities(NON_EXISTENT_PRACTITIONER_ID, prioritizedProjects));
     }
 
     @Test
     void retrievePractitionerPostulations_NonExistentPractitioner_ReturnsEmptyList() throws DAOException {
-        List<ProjectPostulation> resultList = postulationDAO.retrievePractitionerPostulations(9999);
-        assertEquals(new ArrayList<>(), resultList);
+        List<ProjectPostulation> resultPostulations =
+                postulationDAO.retrievePractitionerPostulations(NON_EXISTENT_PRACTITIONER_ID);
+
+        assertEquals(new ArrayList<>(), resultPostulations);
     }
 }

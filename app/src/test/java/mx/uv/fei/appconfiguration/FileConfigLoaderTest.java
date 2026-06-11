@@ -4,33 +4,37 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Properties;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class FileConfigLoaderTest {
 
+    private FileConfigLoader configLoader;
+
+    @BeforeEach
+    void setUp() {
+        configLoader = new FileConfigLoader();
+    }
+
     @Test
     void loadProperties_ValidFileName_ReturnsProperties() {
-        FileConfigLoader loader = new FileConfigLoader();
+        Properties databaseProperties = configLoader.loadProperties("database.properties");
 
-        Properties baseProperties = loader.loadProperties("database.properties");
-        assertNotNull(baseProperties);
+        assertNotNull(databaseProperties);
     }
 
     @Test
-    void loadProperties_NonExistentFile_ThrowsException() {
-        FileConfigLoader loader = new FileConfigLoader();
-
-        assertThrows(RuntimeException.class, () -> {
-            loader.loadProperties("archivo_que_no_existe.properties");
-        }, "Debería lanzar una excepción al intentar cargar un archivo inexistente");
+    void loadProperties_NonExistentFile_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> configLoader.loadProperties("configuracion_inexistente.properties"),
+                "Deberia lanzar una excepcion al intentar cargar un archivo inexistente");
     }
 
     @Test
-    void loadProperties_NullFileName_ThrowsIllegalArgumentException() {
-        FileConfigLoader loader = new FileConfigLoader();
-
-        assertThrows(RuntimeException.class, () -> {
-            loader.loadProperties(null);
-        }, "Debería lanzar IllegalArgumentException si el nombre del archivo es null");
+    void loadProperties_NullFileName_ThrowsNullPointerException() {
+        assertThrows(NullPointerException.class,
+                () -> configLoader.loadProperties(null),
+                "Deberia lanzar una excepcion si el nombre del archivo es null");
     }
 }

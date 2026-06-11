@@ -1,114 +1,118 @@
 package mx.uv.fei.domain.dto;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class PractitionerGradeTest {
 
-    private PractitionerGrade gradeA;
-    private PractitionerGrade gradeB;
+    private static final int PRACTITIONER_ID = 123;
+    private static final int PROFESSOR_ID = 68;
+    private static final String PERIOD = "Junio-Diciembre 2026";
+
+    private PractitionerGrade baseGrade;
+    private PractitionerGrade comparedGrade;
 
     @BeforeEach
     void setUp() {
-        gradeA = new PractitionerGrade();
-        gradeA.setPractitionerId(123);
-        gradeA.setProfessorId(68);
-        gradeA.setPeriod("Junio-Diciembre 2026");
-        gradeA.setTentativeGrade(8.5);
-        gradeA.setFinalGrade(9.0);
+        baseGrade = new PractitionerGrade();
+        baseGrade.setPractitionerId(PRACTITIONER_ID);
+        baseGrade.setProfessorId(PROFESSOR_ID);
+        baseGrade.setPeriod(PERIOD);
+        baseGrade.setTentativeGrade(8.5);
+        baseGrade.setFinalGrade(9.0);
 
-        gradeB = new PractitionerGrade();
-        gradeB.setPractitionerId(123);
-        gradeB.setProfessorId(68);
-        gradeB.setPeriod("Junio-Diciembre 2026");
-        gradeB.setTentativeGrade(7.0);
-        gradeB.setFinalGrade(7.5);
+        comparedGrade = new PractitionerGrade();
+        comparedGrade.setPractitionerId(PRACTITIONER_ID);
+        comparedGrade.setProfessorId(PROFESSOR_ID);
+        comparedGrade.setPeriod(PERIOD);
+        comparedGrade.setTentativeGrade(7.0);
+        comparedGrade.setFinalGrade(7.5);
     }
 
     @Test
     void equals_SamePractitionerAndPeriod_ReturnsTrue() {
-        boolean result = gradeA.equals(gradeB);
+        boolean isEqual = baseGrade.equals(comparedGrade);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameInstance_ReturnsTrue() {
-        boolean result = gradeA.equals(gradeA);
+        boolean isEqual = baseGrade.equals(baseGrade);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SamePeriodDifferentGrades_ReturnsTrue() {
-        gradeB.setFinalGrade(6.0);
+        comparedGrade.setFinalGrade(6.0);
 
-        boolean result = gradeA.equals(gradeB);
+        boolean isEqual = baseGrade.equals(comparedGrade);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_DifferentPractitioner_ReturnsFalse() {
-        gradeB.setPractitionerId(999);
+        comparedGrade.setPractitionerId(999);
 
-        boolean result = gradeA.equals(gradeB);
+        boolean isEqual = baseGrade.equals(comparedGrade);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_DifferentPeriod_ReturnsFalse() {
-        gradeB.setPeriod("Enero-Junio 2027");
+        comparedGrade.setPeriod("Enero-Junio 2027");
 
-        boolean result = gradeA.equals(gradeB);
+        boolean isEqual = baseGrade.equals(comparedGrade);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_NullPeriod_ReturnsFalse() {
-        gradeB.setPeriod(null);
+        comparedGrade.setPeriod(null);
 
-        boolean result = gradeA.equals(gradeB);
+        boolean isEqual = baseGrade.equals(comparedGrade);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToNull_ReturnsFalse() {
-        boolean result = gradeA.equals(null);
+        boolean isEqual = baseGrade.equals(null);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToDifferentClass_ReturnsFalse() {
-        boolean result = gradeA.equals("Junio-Diciembre 2026");
+        boolean isEqual = baseGrade.equals(PERIOD);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void hashCode_SamePractitionerAndPeriod_ProduceSameHash() {
-        int hashA = gradeA.hashCode();
-        int hashB = gradeB.hashCode();
+        int baseHash = baseGrade.hashCode();
+        int comparedHash = comparedGrade.hashCode();
 
-        assertEquals(hashA, hashB);
+        assertEquals(baseHash, comparedHash);
     }
 
     @Test
     void hashCode_DifferentPeriod_ProduceDifferentHash() {
-        gradeB.setPeriod("Enero-Junio 2027");
+        comparedGrade.setPeriod("Enero-Junio 2027");
 
-        int hashA = gradeA.hashCode();
-        int hashB = gradeB.hashCode();
+        int baseHash = baseGrade.hashCode();
+        int comparedHash = comparedGrade.hashCode();
 
-        assertNotEquals(hashA, hashB);
+        assertNotEquals(baseHash, comparedHash);
     }
 }

@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ActivityManagerTest {
 
+    private static final int STORED_PRACTITIONER_ID = 123;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -35,61 +37,62 @@ public class ActivityManagerTest {
 
     @Test
     void registerActivity_ValidActivity_DoesNotThrow() {
-        Activity activity = new Activity();
-        activity.setPractitionerId(123);
-        activity.setTitle("Test");
-        activity.setDescription("Desc");
-        activity.setActivityDate(Date.valueOf("2026-06-01"));
-        activity.setDurationHours(2);
+        Activity newActivity = new Activity();
+        newActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        newActivity.setTitle("Capacitacion en herramientas internas");
+        newActivity.setDescription("Induccion al uso de los sistemas internos de la empresa.");
+        newActivity.setActivityDate(Date.valueOf("2026-06-01"));
+        newActivity.setDurationHours(2);
 
-        assertDoesNotThrow(() -> activityManager.registerActivity(activity));
+        assertDoesNotThrow(() -> activityManager.registerActivity(newActivity));
     }
 
     @Test
     void getPractitionerLogbook_ValidId_ReturnsExpectedList() throws ManagerException {
-        List<Activity> expectedList = new ArrayList<>();
+        List<Activity> expectedActivities = new ArrayList<>();
 
-        Activity act4 = new Activity();
-        act4.setActivityId(4);
-        act4.setPractitionerId(123);
-        act4.setReportId(null);
-        act4.setTitle("Actividad Junio Valida");
-        act4.setDescription("Descripcion Junio");
-        act4.setActivityDate(Date.valueOf("2026-06-15"));
-        act4.setDurationHours(5);
-        expectedList.add(act4);
+        Activity manualActivity = new Activity();
+        manualActivity.setActivityId(4);
+        manualActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        manualActivity.setReportId(null);
+        manualActivity.setTitle("Manual de usuario del sistema");
+        manualActivity.setDescription("Avance del manual de usuario para el personal de la empresa");
+        manualActivity.setActivityDate(Date.valueOf("2026-06-15"));
+        manualActivity.setDurationHours(5);
+        expectedActivities.add(manualActivity);
 
-        Activity act3 = new Activity();
-        act3.setActivityId(3);
-        act3.setPractitionerId(123);
-        act3.setReportId(null);
-        act3.setTitle("Dummy 2");
-        act3.setDescription("Descripcion Dummy 2");
-        act3.setActivityDate(Date.valueOf("2026-05-03"));
-        act3.setDurationHours(3);
-        expectedList.add(act3);
+        Activity testingActivity = new Activity();
+        testingActivity.setActivityId(3);
+        testingActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        testingActivity.setReportId(null);
+        testingActivity.setTitle("Pruebas de formularios de inventario");
+        testingActivity.setDescription("Pruebas funcionales sobre los formularios de captura");
+        testingActivity.setActivityDate(Date.valueOf("2026-05-03"));
+        testingActivity.setDurationHours(3);
+        expectedActivities.add(testingActivity);
 
-        Activity act2 = new Activity();
-        act2.setActivityId(2);
-        act2.setPractitionerId(123);
-        act2.setReportId(null);
-        act2.setTitle("Dummy 1");
-        act2.setDescription("Descripcion Dummy 1");
-        act2.setActivityDate(Date.valueOf("2026-05-02"));
-        act2.setDurationHours(4);
-        expectedList.add(act2);
+        Activity developmentActivity = new Activity();
+        developmentActivity.setActivityId(2);
+        developmentActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        developmentActivity.setReportId(null);
+        developmentActivity.setTitle("Desarrollo de pantallas de inventario");
+        developmentActivity.setDescription("Maquetado de las pantallas del sistema de inventario");
+        developmentActivity.setActivityDate(Date.valueOf("2026-05-02"));
+        developmentActivity.setDurationHours(4);
+        expectedActivities.add(developmentActivity);
 
-        Activity act1 = new Activity();
-        act1.setActivityId(1);
-        act1.setPractitionerId(123);
-        act1.setReportId(1);
-        act1.setTitle("toRecover");
-        act1.setDescription("Descripcion toRecover");
-        act1.setActivityDate(Date.valueOf("2026-05-01"));
-        act1.setDurationHours(5);
-        expectedList.add(act1);
+        Activity requirementsActivity = new Activity();
+        requirementsActivity.setActivityId(1);
+        requirementsActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        requirementsActivity.setReportId(1);
+        requirementsActivity.setTitle("Levantamiento de requisitos");
+        requirementsActivity.setDescription("Entrevistas con el personal del area de sistemas");
+        requirementsActivity.setActivityDate(Date.valueOf("2026-05-01"));
+        requirementsActivity.setDurationHours(5);
+        expectedActivities.add(requirementsActivity);
 
-        List<Activity> resultList = activityManager.getPractitionerLogbook(123);
-        assertEquals(expectedList, resultList);
+        List<Activity> resultActivities = activityManager.getPractitionerLogbook(STORED_PRACTITIONER_ID);
+
+        assertEquals(expectedActivities, resultActivities);
     }
 }

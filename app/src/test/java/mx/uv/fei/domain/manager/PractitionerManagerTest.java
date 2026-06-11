@@ -3,6 +3,9 @@ package mx.uv.fei.domain.manager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +18,6 @@ import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
-import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +26,13 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PractitionerManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private PractitionerManager practitionerManager;
+    private static final String COORDINATOR_USERNAME = "mrodriguez";
+
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private PractitionerManager practitionerManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -34,52 +41,56 @@ public class PractitionerManagerTest {
 
     @Test
     void registerNewPractitioner_ValidData_ReturnsPassword() {
-        Practitioner p = new Practitioner();
-        p.setName("New");
-        p.setLastName("User");
-        p.setEnrollment("s20000000");
-        p.setEmail("new@uv.mx");
-        p.setGender(Gender.MALE);
-        p.setIndigenousLanguage("Ninguna");
-        p.setGrade(9.0);
+        Practitioner newPractitioner = new Practitioner();
+        newPractitioner.setName("Luis Fernando");
+        newPractitioner.setLastName("Martinez Rivera");
+        newPractitioner.setEnrollment("s25080910");
+        newPractitioner.setEmail("zS25080910@estudiantes.uv.mx");
+        newPractitioner.setGender(Gender.MALE);
+        newPractitioner.setIndigenousLanguage("Ninguna");
+        newPractitioner.setGrade(9.0);
 
-        assertDoesNotThrow(() -> practitionerManager.registerNewPractitioner(p));
+        assertDoesNotThrow(() -> practitionerManager.registerNewPractitioner(newPractitioner));
     }
 
     @Test
     void retrievePractitionersPendingAssignment_ReturnsExpectedList() throws ManagerException {
-        List<Practitioner> expectedList = new ArrayList<>();
-        List<Practitioner> resultList = practitionerManager.retrievePractitionersPendingAssignment();
+        List<Practitioner> expectedPractitioners = new ArrayList<>();
 
-        assertEquals(expectedList, resultList);
+        List<Practitioner> resultPractitioners = practitionerManager.retrievePractitionersPendingAssignment();
+
+        assertEquals(expectedPractitioners, resultPractitioners);
     }
 
     @Test
     void retrieveAssignedPractitioners_ReturnsExpectedList() throws ManagerException {
-        List<Practitioner> expectedList = new ArrayList<>();
-        Practitioner p = new Practitioner();
-        p.setId(123);
-        p.setUserName("zS24242424");
-        p.setEnrollment("zS24242424");
-        p.setName("Angel");
-        p.setLastName("Aguilar");
-        p.setEmail("angel24@gmail.com");
-        expectedList.add(p);
+        List<Practitioner> expectedPractitioners = new ArrayList<>();
+        Practitioner assignedPractitioner = new Practitioner();
+        assignedPractitioner.setId(123);
+        assignedPractitioner.setUserName("zS24242424");
+        assignedPractitioner.setEnrollment("zS24242424");
+        assignedPractitioner.setName("Angel Gabriel");
+        assignedPractitioner.setLastName("Aguilar Hernandez");
+        assignedPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
+        expectedPractitioners.add(assignedPractitioner);
 
-        List<Practitioner> resultList = practitionerManager.retrieveAssignedPractitioners();
-        assertEquals(expectedList, resultList);
+        List<Practitioner> resultPractitioners = practitionerManager.retrieveAssignedPractitioners();
+
+        assertEquals(expectedPractitioners, resultPractitioners);
     }
 
     @Test
-    void registerPractitionerBatch_ValidFile_ReturnsSummary() throws Exception {
-        java.io.File tempCsv = java.nio.file.Files.createTempFile("batch", ".csv").toFile();
-        java.nio.file.Files.writeString(tempCsv.toPath(), "matricula,nombre,apellidos,correo,genero,lengua_indigena\nS20011111,Ana,Lopez,alopez@uv.mx,Female,Nahuatl");
-        tempCsv.deleteOnExit();
-
+    void registerPractitionerBatch_ValidFile_ReturnsSummary() throws IOException, ManagerException {
+        File batchCsvFile = Files.createTempFile("registro_practicantes", ".csv").toFile();
+        Files.writeString(batchCsvFile.toPath(),
+                "matricula,nombre,apellidos,correo,genero,lengua_indigena\n"
+                        + "S20011111,Ana,Lopez Jimenez,zS20011111@estudiantes.uv.mx,Female,Nahuatl");
+        batchCsvFile.deleteOnExit();
         BatchRegistrationSummary expectedSummary = new BatchRegistrationSummary();
         expectedSummary.incrementSuccess();
 
-        BatchRegistrationSummary actualSummary = practitionerManager.registerPractitionerBatch(tempCsv, "coord_test");
-        assertEquals(expectedSummary, actualSummary);
+        BatchRegistrationSummary resultSummary = practitionerManager.registerPractitionerBatch(batchCsvFile, COORDINATOR_USERNAME);
+
+        assertEquals(expectedSummary, resultSummary);
     }
 }

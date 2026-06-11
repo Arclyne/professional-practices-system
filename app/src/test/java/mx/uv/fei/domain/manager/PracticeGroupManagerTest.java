@@ -21,8 +21,15 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PracticeGroupManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private PracticeGroupManager practiceGroupManager;
+    private static final int STORED_GROUP_ID = 6;
+    private static final int STORED_PROFESSOR_ID = 68;
+    private static final int STORED_PERIOD_ID = 5;
+
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private PracticeGroupManager practiceGroupManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -31,24 +38,26 @@ public class PracticeGroupManagerTest {
 
     @Test
     void registerNewPracticeGroup_ValidGroup_DoesNotThrow() {
-        PracticeGroup group = new PracticeGroup();
-        group.setSection("NRC-12345");
-        group.setProfessorId(68);
-        group.setPeriodId(5);
-        assertDoesNotThrow(() -> practiceGroupManager.registerNewPracticeGroup(group));
+        PracticeGroup newGroup = new PracticeGroup();
+        newGroup.setSection("NRC-12345");
+        newGroup.setProfessorId(STORED_PROFESSOR_ID);
+        newGroup.setPeriodId(STORED_PERIOD_ID);
+
+        assertDoesNotThrow(() -> practiceGroupManager.registerNewPracticeGroup(newGroup));
     }
 
     @Test
     void getAllPracticeGroups_ReturnsExpectedList() throws ManagerException {
-        List<PracticeGroup> expectedList = new ArrayList<>();
-        PracticeGroup group = new PracticeGroup();
-        group.setGroupId(6);
-        group.setSection("Seccion G");
-        group.setPeriodId(5);
-        group.setProfessorId(68);
-        expectedList.add(group);
+        List<PracticeGroup> expectedGroups = new ArrayList<>();
+        PracticeGroup storedGroup = new PracticeGroup();
+        storedGroup.setGroupId(STORED_GROUP_ID);
+        storedGroup.setSection("Seccion 601");
+        storedGroup.setPeriodId(STORED_PERIOD_ID);
+        storedGroup.setProfessorId(STORED_PROFESSOR_ID);
+        expectedGroups.add(storedGroup);
 
-        List<PracticeGroup> resultList = practiceGroupManager.getAllPracticeGroups();
-        assertEquals(expectedList, resultList);
+        List<PracticeGroup> resultGroups = practiceGroupManager.getAllPracticeGroups();
+
+        assertEquals(expectedGroups, resultGroups);
     }
 }

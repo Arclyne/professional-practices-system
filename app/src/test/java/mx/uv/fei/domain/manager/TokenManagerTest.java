@@ -1,12 +1,15 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.sql.SQLException;
+
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +17,11 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class TokenManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private TokenManager tokenManager;
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private TokenManager tokenManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -24,7 +30,6 @@ public class TokenManagerTest {
 
     @Test
     void verifyToken_EmptyInput_ThrowsManagerException() {
-        assertThrows(Exception.class, () -> tokenManager.verifyToken(""));
+        assertThrows(ManagerException.class, () -> tokenManager.verifyToken(""));
     }
-
 }

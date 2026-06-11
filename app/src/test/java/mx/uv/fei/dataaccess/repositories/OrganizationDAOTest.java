@@ -9,9 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -20,10 +17,16 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IOrganizationDAO;
 import mx.uv.fei.domain.dto.Organization;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @StartEtiquetteTest
 @Profile("test")
 public class OrganizationDAOTest {
+
+    private static final String STORED_ORGANIZATION_NAME = "Tecnologias Web del Golfo";
+    private static final int FIRST_ORGANIZATION_ID = 1;
+    private static final int NON_EXISTENT_ID = 9999;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -31,101 +34,108 @@ public class OrganizationDAOTest {
     @Inject
     private IOrganizationDAO organizationDAO;
 
-    private Organization testOrganization;
+    private Organization newOrganization;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testOrganization = new Organization();
-        testOrganization.setNameOrganization("Python Software");
-        testOrganization.setState("Veracruz");
-        testOrganization.setAdress("Av. Xalapa");
-        testOrganization.setCity("Xalapa");
-        testOrganization.setBusiness("Technology");
-        testOrganization.setMail("python@softwareuv.mx");
-        testOrganization.setCellphone("7485961234");
+        newOrganization = new Organization();
+        newOrganization.setNameOrganization("Soluciones Digitales del Golfo");
+        newOrganization.setState("Veracruz");
+        newOrganization.setAdress("Av. Lazaro Cardenas 850");
+        newOrganization.setCity("Xalapa");
+        newOrganization.setBusiness("Technology");
+        newOrganization.setMail("contacto@solucionesgolfo.mx");
+        newOrganization.setCellphone("2288456790");
+    }
+
+    private Organization buildFirstStoredOrganization() {
+        Organization storedOrganization = new Organization();
+        storedOrganization.setIdOrganization(FIRST_ORGANIZATION_ID);
+        storedOrganization.setNameOrganization(STORED_ORGANIZATION_NAME);
+        storedOrganization.setState("Active");
+        storedOrganization.setBusiness("Technology");
+        storedOrganization.setMail("contacto@tecgolfo.mx");
+        return storedOrganization;
     }
 
     @Test
     void insertOrganization_ValidOrganization_ReturnsTrue() throws DAOException {
-        boolean resultTest = organizationDAO.insertOrganization(testOrganization);
-        assertTrue(resultTest);
+        boolean isInserted = organizationDAO.insertOrganization(newOrganization);
+
+        assertTrue(isInserted);
     }
 
     @Test
     void recoverOrganization_ExistingName_ReturnsOrganization() throws DAOException {
-        Organization expectedOrganization = new Organization();
-        expectedOrganization.setIdOrganization(1);
-        expectedOrganization.setNameOrganization("toRecover");
-        expectedOrganization.setState("Active");
-        expectedOrganization.setBusiness("Technology");
-        expectedOrganization.setMail("torecover@uv.mx");
+        Organization expectedOrganization = buildFirstStoredOrganization();
 
-        Organization resultTest = organizationDAO.recoverOrganization("toRecover");
-        assertEquals(expectedOrganization, resultTest);
+        Organization recoveredOrganization = organizationDAO.recoverOrganization(STORED_ORGANIZATION_NAME);
+
+        assertEquals(expectedOrganization, recoveredOrganization);
     }
 
     @Test
     void getAllOrganizations_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Organization> expectedList = new ArrayList<>();
+        List<Organization> expectedOrganizations = new ArrayList<>();
+        expectedOrganizations.add(buildFirstStoredOrganization());
 
-        Organization org1 = new Organization();
-        org1.setIdOrganization(1);
-        org1.setNameOrganization("toRecover");
-        org1.setState("Active");
-        org1.setBusiness("Technology");
-        org1.setMail("torecover@uv.mx");
-        expectedList.add(org1);
+        Organization secondOrganization = new Organization();
+        secondOrganization.setIdOrganization(2);
+        secondOrganization.setNameOrganization("Consultoria Digital Xalapa");
+        secondOrganization.setState("Active");
+        secondOrganization.setBusiness("Technology");
+        secondOrganization.setMail("contacto@cdxalapa.mx");
+        expectedOrganizations.add(secondOrganization);
 
-        Organization org2 = new Organization();
-        org2.setIdOrganization(2);
-        org2.setNameOrganization("Dummy 1");
-        org2.setState("Active");
-        org2.setBusiness("Technology");
-        org2.setMail("dummy1@uv.mx");
-        expectedList.add(org2);
+        Organization thirdOrganization = new Organization();
+        thirdOrganization.setIdOrganization(3);
+        thirdOrganization.setNameOrganization("Software Veracruzano");
+        thirdOrganization.setState("Active");
+        thirdOrganization.setBusiness("Technology");
+        thirdOrganization.setMail("contacto@softver.mx");
+        expectedOrganizations.add(thirdOrganization);
 
-        Organization org3 = new Organization();
-        org3.setIdOrganization(3);
-        org3.setNameOrganization("Dummy 2");
-        org3.setState("Active");
-        org3.setBusiness("Technology");
-        org3.setMail("dummy2@uv.mx");
-        expectedList.add(org3);
+        List<Organization> resultOrganizations = organizationDAO.getAllOrganizations();
 
-        List<Organization> resultTest = organizationDAO.getAllOrganizations();
-        assertEquals(expectedList, resultTest);
+        assertEquals(expectedOrganizations, resultOrganizations);
     }
 
     @Test
     void updateOrganization_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testOrganization.setNameOrganization("UV Soft Updated");
-        boolean isUpdated = organizationDAO.updateOrganization(testOrganization, 1);
+        newOrganization.setNameOrganization("Soluciones Digitales de Veracruz");
+
+        boolean isUpdated = organizationDAO.updateOrganization(newOrganization, FIRST_ORGANIZATION_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void deactivateMultipleOrganizations_ValidIds_ReturnsTrue() throws DAOException {
         boolean isDeactivated = organizationDAO.deactivateMultipleOrganizations(List.of(1, 2));
+
         assertTrue(isDeactivated);
     }
 
     @Test
     void insertOrganization_DuplicateEmail_ThrowsDAOException() {
-        testOrganization.setMail("torecover@uv.mx");
-        assertThrows(DAOException.class, () -> organizationDAO.insertOrganization(testOrganization));
+        newOrganization.setMail("contacto@tecgolfo.mx");
+
+        assertThrows(DAOException.class, () -> organizationDAO.insertOrganization(newOrganization));
     }
 
     @Test
     void recoverOrganization_NonExistentName_ReturnsEmptyOrganization() throws DAOException {
-        Organization resultTest = organizationDAO.recoverOrganization("Organizacion Fantasma");
-        assertEquals(new Organization(), resultTest);
+        Organization recoveredOrganization = organizationDAO.recoverOrganization("Organizacion Inexistente");
+
+        assertEquals(new Organization(), recoveredOrganization);
     }
 
     @Test
     void updateOrganization_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = organizationDAO.updateOrganization(testOrganization, 9999);
+        boolean isUpdated = organizationDAO.updateOrganization(newOrganization, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }

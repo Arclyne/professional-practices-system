@@ -1,7 +1,9 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.sql.SQLException;
+
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -15,8 +17,11 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PasswordManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private PasswordManager passwordManager;
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private PasswordManager passwordManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -25,6 +30,7 @@ public class PasswordManagerTest {
 
     @Test
     void updatePasswordAndActivate_NoSession_ThrowsManagerException() {
-        assertThrows(ManagerException.class, () -> passwordManager.updatePasswordAndActivate("NewPass123", "NewPass123"));
+        assertThrows(ManagerException.class,
+                () -> passwordManager.updatePasswordAndActivate("ClaveSegura2026", "ClaveSegura2026"));
     }
 }

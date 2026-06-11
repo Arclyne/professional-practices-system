@@ -26,130 +26,135 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PractitionerDAOTest {
 
+    private static final int STORED_PRACTITIONER_ID = 123;
+    private static final int STORED_GROUP_ID = 6;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private IPractitionerDAO practitionerDAO;
 
-    private Practitioner testPractitioner;
+    private Practitioner newPractitioner;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testPractitioner = new Practitioner();
-        testPractitioner.setName("Angel Gabriel");
-        testPractitioner.setLastName("Aguilar Hernandez");
-        testPractitioner.setUserName("aguilar");
-        testPractitioner.setEmail("aguilar@uv.mx");
-        testPractitioner.setPassword("practicantePass123");
-        testPractitioner.setRole("Practitioner");
-        testPractitioner.setStatus(UserStatus.ACTIVE);
-        testPractitioner.setGender(Gender.MALE);
-        testPractitioner.setIndigenousLanguage("Nahuatl");
-        testPractitioner.setGrade(9.5);
-        testPractitioner.setGroupId(6);
+        newPractitioner = new Practitioner();
+        newPractitioner.setName("Luis Fernando");
+        newPractitioner.setLastName("Martinez Rivera");
+        newPractitioner.setUserName("zS25080910");
+        newPractitioner.setEmail("zS25080910@estudiantes.uv.mx");
+        newPractitioner.setPassword("PracticanteUv2026");
+        newPractitioner.setRole("Practitioner");
+        newPractitioner.setStatus(UserStatus.ACTIVE);
+        newPractitioner.setGender(Gender.MALE);
+        newPractitioner.setIndigenousLanguage("Nahuatl");
+        newPractitioner.setGrade(9.5);
+        newPractitioner.setGroupId(STORED_GROUP_ID);
+    }
+
+    private Practitioner buildStoredPractitioner() {
+        Practitioner storedPractitioner = new Practitioner();
+        storedPractitioner.setId(STORED_PRACTITIONER_ID);
+        storedPractitioner.setUserName("zS24242424");
+        storedPractitioner.setEnrollment("zS24242424");
+        storedPractitioner.setPassword("PracticasUv2026");
+        storedPractitioner.setName("Angel Gabriel");
+        storedPractitioner.setLastName("Aguilar Hernandez");
+        storedPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
+        storedPractitioner.setStatus(UserStatus.ACTIVE);
+        storedPractitioner.setGender(Gender.MALE);
+        storedPractitioner.setRole("Practitioner");
+        storedPractitioner.setIndigenousLanguage("Ninguna");
+        storedPractitioner.setGrade(0.00);
+        storedPractitioner.setGroupId(STORED_GROUP_ID);
+        return storedPractitioner;
     }
 
     @Test
     void insertPractitioner_ValidPractitioner_ReturnsGeneratedId() throws DAOException {
-        int resultId = practitionerDAO.insertPractitioner(testPractitioner);
+        int resultId = practitionerDAO.insertPractitioner(newPractitioner);
+
         assertTrue(resultId > 0);
     }
 
     @Test
     void recoverPractitioner_ExistingId_ReturnsPractitioner() throws DAOException {
-        Practitioner expected = new Practitioner();
-        expected.setId(123);
-        expected.setUserName("zS24242424");
-        expected.setEnrollment("zS24242424");
-        expected.setPassword("12345");
-        expected.setName("Angel");
-        expected.setLastName("Aguilar");
-        expected.setEmail("angel24@gmail.com");
-        expected.setStatus(UserStatus.ACTIVE);
-        expected.setGender(Gender.MALE);
-        expected.setRole("Practitioner");
-        expected.setIndigenousLanguage("Ninguna");
-        expected.setGrade(0.00);
-        expected.setGroupId(6);
+        Practitioner expectedPractitioner = buildStoredPractitioner();
 
-        Practitioner recovered = practitionerDAO.recoverPractitioner(123);
-        assertEquals(expected, recovered);
+        Practitioner recoveredPractitioner = practitionerDAO.recoverPractitioner(STORED_PRACTITIONER_ID);
+
+        assertEquals(expectedPractitioner, recoveredPractitioner);
     }
 
     @Test
     void getAllPractitioners_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Practitioner> expectedList = new ArrayList<>();
-        Practitioner p = new Practitioner();
-        p.setId(123);
-        p.setUserName("zS24242424");
-        p.setEnrollment("zS24242424");
-        p.setPassword("12345");
-        p.setName("Angel");
-        p.setLastName("Aguilar");
-        p.setEmail("angel24@gmail.com");
-        p.setStatus(UserStatus.ACTIVE);
-        p.setGender(Gender.MALE);
-        p.setRole("Practitioner");
-        p.setIndigenousLanguage("Ninguna");
-        p.setGrade(0.00);
-        p.setGroupId(6);
-        expectedList.add(p);
+        List<Practitioner> expectedPractitioners = new ArrayList<>();
+        expectedPractitioners.add(buildStoredPractitioner());
 
-        List<Practitioner> resultList = practitionerDAO.getAllPractitioners();
-        assertEquals(expectedList, resultList);
+        List<Practitioner> resultPractitioners = practitionerDAO.getAllPractitioners();
+
+        assertEquals(expectedPractitioners, resultPractitioners);
     }
 
     @Test
     void updatePractitioner_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testPractitioner.setGrade(10.0);
-        testPractitioner.setIndigenousLanguage("Maya");
-        testPractitioner.setStatus(UserStatus.INACTIVE);
+        newPractitioner.setGrade(10.0);
+        newPractitioner.setIndigenousLanguage("Maya");
+        newPractitioner.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = practitionerDAO.updatePractitioner(testPractitioner, 123);
+        boolean isUpdated = practitionerDAO.updatePractitioner(newPractitioner, STORED_PRACTITIONER_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void retrievePractitionersPendingAssignment_WithExistingData_ReturnsEmptyList() throws DAOException {
-        List<Practitioner> expectedList = new ArrayList<>();
-        List<Practitioner> resultList = practitionerDAO.retrievePractitionersPendingAssignment();
-        assertEquals(expectedList, resultList);
+        List<Practitioner> expectedPractitioners = new ArrayList<>();
+
+        List<Practitioner> resultPractitioners = practitionerDAO.retrievePractitionersPendingAssignment();
+
+        assertEquals(expectedPractitioners, resultPractitioners);
     }
 
     @Test
     void retrieveAssignedPractitioners_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Practitioner> expectedList = new ArrayList<>();
-        Practitioner p = new Practitioner();
-        p.setId(123);
-        p.setUserName("zS24242424");
-        p.setEnrollment("zS24242424");
-        p.setName("Angel");
-        p.setLastName("Aguilar");
-        p.setEmail("angel24@gmail.com");
-        expectedList.add(p);
+        List<Practitioner> expectedPractitioners = new ArrayList<>();
+        Practitioner assignedPractitioner = new Practitioner();
+        assignedPractitioner.setId(STORED_PRACTITIONER_ID);
+        assignedPractitioner.setUserName("zS24242424");
+        assignedPractitioner.setEnrollment("zS24242424");
+        assignedPractitioner.setName("Angel Gabriel");
+        assignedPractitioner.setLastName("Aguilar Hernandez");
+        assignedPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
+        expectedPractitioners.add(assignedPractitioner);
 
-        List<Practitioner> resultList = practitionerDAO.retrieveAssignedPractitioners();
-        assertEquals(expectedList, resultList);
+        List<Practitioner> resultPractitioners = practitionerDAO.retrieveAssignedPractitioners();
+
+        assertEquals(expectedPractitioners, resultPractitioners);
     }
 
     @Test
     void insertPractitioner_DuplicateEmail_ThrowsDAOException() {
-        testPractitioner.setEmail("angel24@gmail.com");
-        assertThrows(DAOException.class, () -> practitionerDAO.insertPractitioner(testPractitioner));
+        newPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
+
+        assertThrows(DAOException.class, () -> practitionerDAO.insertPractitioner(newPractitioner));
     }
 
     @Test
     void recoverPractitioner_NonExistentId_ReturnsEmptyPractitioner() throws DAOException {
-        Practitioner recovered = practitionerDAO.recoverPractitioner(9999);
-        assertEquals(new Practitioner(), recovered);
+        Practitioner recoveredPractitioner = practitionerDAO.recoverPractitioner(NON_EXISTENT_ID);
+
+        assertEquals(new Practitioner(), recoveredPractitioner);
     }
 
     @Test
     void updatePractitioner_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = practitionerDAO.updatePractitioner(testPractitioner, 9999);
+        boolean isUpdated = practitionerDAO.updatePractitioner(newPractitioner, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }
