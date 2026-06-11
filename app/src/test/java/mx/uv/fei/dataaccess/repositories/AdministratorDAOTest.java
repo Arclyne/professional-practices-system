@@ -55,7 +55,7 @@ public class AdministratorDAOTest {
     private Administrator buildStoredAdministrator() {
         Administrator storedAdministrator = new Administrator();
         storedAdministrator.setId(STORED_ADMINISTRATOR_ID);
-        storedAdministrator.setUserName("rmarquez");
+        storedAdministrator.setUserName("30011111");
         storedAdministrator.setPassword("AdminFei2026");
         storedAdministrator.setName("Ricardo");
         storedAdministrator.setLastName("Marquez Sosa");

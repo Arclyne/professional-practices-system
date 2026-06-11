@@ -28,7 +28,7 @@ public class UserDAOTest {
 
     private static final int STORED_ADMINISTRATOR_ID = 13;
     private static final int STORED_COORDINATOR_ID = 67;
-    private static final String STORED_ADMIN_USERNAME = "rmarquez";
+    private static final String STORED_ADMIN_USERNAME = "30011111";
     private static final String STORED_ADMIN_EMAIL = "rmarquez@uv.mx";
     private static final String STORED_ADMIN_PASSWORD = "AdminFei2026";
 

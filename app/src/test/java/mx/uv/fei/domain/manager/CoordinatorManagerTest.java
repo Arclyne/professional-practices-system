@@ -39,7 +39,7 @@ public class CoordinatorManagerTest {
         Coordinator newCoordinator = new Coordinator();
         newCoordinator.setName("Patricia");
         newCoordinator.setLastName("Luna Mendez");
-        newCoordinator.setUserName("pluna");
+        newCoordinator.setUserName("30025566");
         newCoordinator.setPassword("CoordUv2026");
         newCoordinator.setEmail("pluna@uv.mx");
         newCoordinator.setGender(Gender.FEMALE);
@@ -56,7 +56,7 @@ public class CoordinatorManagerTest {
     void retrieveCurrentCoordinator_ReturnsCoordinator() throws ManagerException {
         Coordinator expectedCoordinator = new Coordinator();
         expectedCoordinator.setId(STORED_COORDINATOR_ID);
-        expectedCoordinator.setUserName("mrodriguez");
+        expectedCoordinator.setUserName("30022222");
         expectedCoordinator.setPassword("CoordFei2026");
         expectedCoordinator.setName("Marco Antonio");
         expectedCoordinator.setLastName("Rodriguez Castillo");
