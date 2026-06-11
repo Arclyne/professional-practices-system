@@ -63,6 +63,12 @@ public class ProgressReportManagerTest {
     }
 
     @Test
+    void generateProgressReport_StartDateAfterEndDate_ThrowsManagerException() {
+        assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
+                PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_END, PERIOD_START));
+    }
+
+    @Test
     void generateProgressReport_ProjectCheckThrowsDAOException_PreservesCause() {
         stubPostulationDAO.setThrowDaoException(true);
 

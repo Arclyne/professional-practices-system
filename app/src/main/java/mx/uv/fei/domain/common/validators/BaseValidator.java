@@ -49,4 +49,10 @@ public class BaseValidator {
             throw new ManagerException(errorMessage);
         }
     }
+
+    public static void validateStartBeforeEnd(Date startDate, Date endDate, String errorMessage) throws ManagerException {
+        if (startDate != null && endDate != null && !startDate.before(endDate)) {
+            throw new ManagerException(errorMessage);
+        }
+    }
 }
