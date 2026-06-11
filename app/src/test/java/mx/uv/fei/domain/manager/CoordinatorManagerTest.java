@@ -39,7 +39,7 @@ public class CoordinatorManagerTest {
         Coordinator newCoordinator = new Coordinator();
         newCoordinator.setName("Patricia");
         newCoordinator.setLastName("Luna Mendez");
-        newCoordinator.setUserName("pluna");
+        newCoordinator.setUserName("30025566");
         newCoordinator.setPassword("CoordUv2026");
         newCoordinator.setEmail("pluna@uv.mx");
         newCoordinator.setGender(Gender.FEMALE);

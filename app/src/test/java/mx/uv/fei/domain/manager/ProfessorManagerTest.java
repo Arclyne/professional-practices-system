@@ -41,7 +41,7 @@ public class ProfessorManagerTest {
         Professor newProfessor = new Professor();
         newProfessor.setName("Norma Angelica");
         newProfessor.setLastName("Sandoval Rivas");
-        newProfessor.setUserName("nsandoval");
+        newProfessor.setUserName("30036677");
         newProfessor.setEmail("nsandoval@uv.mx");
         newProfessor.setGender(Gender.FEMALE);
 

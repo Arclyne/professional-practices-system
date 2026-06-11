@@ -32,7 +32,7 @@ public class AdminManagerTest {
     @Test
     void registerInitialAdmin_ValidAdmin_DoesNotThrow() {
         Administrator initialAdministrator = new Administrator();
-        initialAdministrator.setUserName("jcastaneda");
+        initialAdministrator.setUserName("30014455");
         initialAdministrator.setPassword("AdminUv2026");
         initialAdministrator.setName("Jorge");
         initialAdministrator.setLastName("Castaneda Morales");
