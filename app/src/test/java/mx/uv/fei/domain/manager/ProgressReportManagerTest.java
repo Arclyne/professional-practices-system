@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,6 +60,17 @@ public class ProgressReportManagerTest {
 
         assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+    }
+
+    @Test
+    void generateProgressReport_ProjectCheckThrowsDAOException_PreservesCause() {
+        stubPostulationDAO.setThrowDaoException(true);
+
+        ManagerException thrownException = assertThrows(ManagerException.class,
+                () -> progressReportManager.generateProgressReport(
+                        PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+
+        assertInstanceOf(DAOException.class, thrownException.getCause());
     }
 
     @Test

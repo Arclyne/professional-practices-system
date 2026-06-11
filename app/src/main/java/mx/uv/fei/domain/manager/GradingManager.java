@@ -4,6 +4,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -130,8 +132,9 @@ public class GradingManager {
     }
 
     private void validatePeriod(String period) throws ManagerException {
-        if (period == null || period.trim().isEmpty()) {
-            throw new ManagerException("El periodo escolar es obligatorio para registrar la calificación.");
-        }
+        BaseValidator.validateString(period,
+                "El periodo escolar es obligatorio para registrar la calificación.");
+        BaseValidator.validateMaxLength(period, FieldLengthLimits.GRADE_PERIOD_MAX,
+                "El periodo escolar no puede exceder " + FieldLengthLimits.GRADE_PERIOD_MAX + " caracteres.");
     }
 }

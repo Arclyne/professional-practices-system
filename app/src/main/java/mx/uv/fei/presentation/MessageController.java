@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Message;
+import mx.uv.fei.domain.dto.MessageRequest;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.MessageManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -221,7 +222,7 @@ public class MessageController implements Initializable, IDisposable {
 
         try {
             int senderId = store.getState().sessionState().currentUserInSession().getId();
-            messageManager.sendMessage(senderId, receiverEmail, subject, body);
+            messageManager.sendMessage(new MessageRequest(senderId, receiverEmail, subject, body));
             Controller.showAlert("Éxito",
                     "El mensaje institucional ha sido enviado correctamente.", AlertType.INFORMATION);
             clearComposeForm();

@@ -4,6 +4,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -20,6 +22,8 @@ public class PracticeGroupManager {
     }
 
     public void registerNewPracticeGroup(PracticeGroup practiceGroup) throws ManagerException {
+        validatePracticeGroupData(practiceGroup);
+
         try {
             int generatedId = practiceGroupDAO.insertPracticeGroup(practiceGroup);
             if (generatedId <= 0) {
@@ -36,5 +40,16 @@ public class PracticeGroupManager {
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al recuperar los grupos de prácticas.", e);
         }
+    }
+
+    private void validatePracticeGroupData(PracticeGroup practiceGroup) throws ManagerException {
+        BaseValidator.validateString(practiceGroup.getSection(),
+                "La sección del grupo de prácticas es obligatoria.");
+        BaseValidator.validateMaxLength(practiceGroup.getSection(), FieldLengthLimits.SECTION_MAX,
+                "La sección no puede exceder " + FieldLengthLimits.SECTION_MAX + " caracteres.");
+        BaseValidator.validateId(practiceGroup.getPeriodId(),
+                "Debe seleccionar el periodo escolar del grupo.");
+        BaseValidator.validateId(practiceGroup.getProfessorId(),
+                "Debe seleccionar el académico responsable del grupo.");
     }
 }
