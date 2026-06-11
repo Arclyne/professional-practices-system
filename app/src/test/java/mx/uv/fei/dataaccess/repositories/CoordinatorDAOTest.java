@@ -55,7 +55,7 @@ public class CoordinatorDAOTest {
     private Coordinator buildStoredCoordinator() {
         Coordinator storedCoordinator = new Coordinator();
         storedCoordinator.setId(STORED_COORDINATOR_ID);
-        storedCoordinator.setUserName("mrodriguez");
+        storedCoordinator.setUserName("30022222");
         storedCoordinator.setPassword("CoordFei2026");
         storedCoordinator.setName("Marco Antonio");
         storedCoordinator.setLastName("Rodriguez Castillo");
