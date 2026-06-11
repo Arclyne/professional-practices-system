@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
@@ -28,6 +29,8 @@ public class ProgressReportManager {
 
     public ProgressReport generateProgressReport(int practitionerId, ProgressReportType reportType,
                                                  Date periodStart, Date periodEnd) throws ManagerException {
+        BaseValidator.validateStartBeforeEnd(periodStart, periodEnd,
+                "La fecha de inicio del periodo debe ser anterior a la fecha de fin.");
         validateHasAssignedProject(practitionerId);
         double accumulatedHours = getAccumulatedHours(practitionerId);
         validateHoursRequirement(reportType, accumulatedHours);
