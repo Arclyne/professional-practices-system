@@ -22,7 +22,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <Label styleClass="form-title" text="Registro de Practicante" />
             <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="uploadCsvButton" mnemonicParsing="false" onAction="#handleActionUploadCSV" text="Cargar desde CSV" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
+            <Button fx:id="uploadCsvButton" mnemonicParsing="false" onAction="#handleActionUploadCsv" text="Cargar desde CSV" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;" />
         </HBox>
 
         <Label text="Capture la información del nuevo practicante" textFill="#6b7280">
