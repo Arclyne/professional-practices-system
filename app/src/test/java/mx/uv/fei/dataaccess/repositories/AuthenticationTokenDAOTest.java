@@ -1,5 +1,10 @@
 package mx.uv.fei.dataaccess.repositories;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -14,11 +19,14 @@ import mx.uv.fei.domain.dto.AuthenticationToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @StartEtiquetteTest
 @Profile("test")
 public class AuthenticationTokenDAOTest {
+
+    private static final int STORED_TOKEN_VALUE = 123456;
+    private static final int NEW_TOKEN_VALUE = 987654;
+    private static final String STORED_TOKEN_OWNER = "zS23151617";
+    private static final String PRACTITIONER_USERNAME = "zS24242424";
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -33,40 +41,44 @@ public class AuthenticationTokenDAOTest {
         TestDatabaseSetup.initialize(dbConnection);
 
         validToken = new AuthenticationToken();
-        validToken.setValueToken(987654);
+        validToken.setValueToken(NEW_TOKEN_VALUE);
         validToken.setTimeCreation(LocalDateTime.now().withNano(0));
-        validToken.setUserName("zS24242424");
+        validToken.setUserName(PRACTITIONER_USERNAME);
     }
 
     @Test
     void insertToken_ValidToken_ReturnsTrue() throws DAOException {
         boolean result = authenticationTokenDAO.insertToken(validToken);
-        assertTrue(result, "La inserción del token debería retornar true");
+
+        assertTrue(result, "La insercion del token deberia retornar true");
     }
 
     @Test
     void recoverToken_ExistingToken_ReturnsTokenObject() throws DAOException {
         AuthenticationToken expectedToken = new AuthenticationToken();
-        expectedToken.setValueToken(123456);
-        expectedToken.setUserName("test");
+        expectedToken.setValueToken(STORED_TOKEN_VALUE);
+        expectedToken.setUserName(STORED_TOKEN_OWNER);
 
-        AuthenticationToken recovered = authenticationTokenDAO.recoverToken(123456);
-        assertEquals(expectedToken, recovered, "El token recuperado debe coincidir exactamente con el esperado");
+        AuthenticationToken recoveredToken = authenticationTokenDAO.recoverToken(STORED_TOKEN_VALUE);
+
+        assertEquals(expectedToken, recoveredToken, "El token recuperado debe coincidir exactamente con el esperado");
     }
 
     @Test
     void getTokenCreationTime_ValidTokenAndUser_ReturnsLocalDateTime() throws DAOException {
         authenticationTokenDAO.insertToken(validToken);
-        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(987654, "zS24242424");
-        assertEquals(validToken.getTimeCreation(), creationTime, "El tiempo de creación debe coincidir exactamente");
+
+        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(NEW_TOKEN_VALUE, PRACTITIONER_USERNAME);
+
+        assertEquals(validToken.getTimeCreation(), creationTime, "El tiempo de creacion debe coincidir exactamente");
     }
 
     @Test
     void insertToken_DuplicateTokenValue_ThrowsDAOException() {
         AuthenticationToken duplicateToken = new AuthenticationToken();
-        duplicateToken.setValueToken(123456);
+        duplicateToken.setValueToken(STORED_TOKEN_VALUE);
         duplicateToken.setTimeCreation(LocalDateTime.now().withNano(0));
-        duplicateToken.setUserName("zS24242424");
+        duplicateToken.setUserName(PRACTITIONER_USERNAME);
 
         assertThrows(DAOException.class, () -> authenticationTokenDAO.insertToken(duplicateToken));
     }
@@ -76,20 +88,22 @@ public class AuthenticationTokenDAOTest {
         AuthenticationToken orphanToken = new AuthenticationToken();
         orphanToken.setValueToken(111222);
         orphanToken.setTimeCreation(LocalDateTime.now().withNano(0));
-        orphanToken.setUserName("usuarioFantasma");
+        orphanToken.setUserName("usuarioInexistente");
 
         assertThrows(DAOException.class, () -> authenticationTokenDAO.insertToken(orphanToken));
     }
 
     @Test
     void recoverToken_NonExistentToken_ReturnsEmptyObject() throws DAOException {
-        AuthenticationToken recovered = authenticationTokenDAO.recoverToken(999999);
-        assertEquals(new AuthenticationToken(), recovered, "Debería retornar objeto vacío si el token no existe");
+        AuthenticationToken recoveredToken = authenticationTokenDAO.recoverToken(999999);
+
+        assertEquals(new AuthenticationToken(), recoveredToken, "Deberia retornar objeto vacio si el token no existe");
     }
 
     @Test
     void getTokenCreationTime_InvalidUserForToken_ReturnsNull() throws DAOException {
-        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(123456, "zS24242424");
+        LocalDateTime creationTime = authenticationTokenDAO.getTokenCreationTime(STORED_TOKEN_VALUE, PRACTITIONER_USERNAME);
+
         assertNull(creationTime);
     }
 }

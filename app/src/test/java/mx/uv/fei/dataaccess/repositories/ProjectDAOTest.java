@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,170 +25,144 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ProjectDAOTest {
 
+    private static final String STORED_PROJECT_NAME = "Sistema de Inventario Web";
+    private static final int FIRST_PROJECT_ID = 1;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private IProjectDAO projectDAO;
 
-    private Project testProject;
+    private Project newProject;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testProject = new Project();
-        testProject.setProjectName("Sistema Integral FEI");
-        testProject.setDescription("Desarrollo de modulos core del sistema de practicas");
-        testProject.setParticipantCapacity(5);
-        testProject.setManagerId(1);
-        testProject.setStatus("Active");
-        testProject.setStartDate(java.sql.Date.valueOf("2026-05-01"));
-        testProject.setEndDate(java.sql.Date.valueOf("2026-12-01"));
-        testProject.setCompanyId(1);
+        newProject = new Project();
+        newProject.setProjectName("Sistema Integral FEI");
+        newProject.setDescription("Desarrollo de modulos core del sistema de practicas");
+        newProject.setParticipantCapacity(5);
+        newProject.setManagerId(1);
+        newProject.setStatus("Active");
+        newProject.setStartDate(Date.valueOf("2026-05-01"));
+        newProject.setEndDate(Date.valueOf("2026-12-01"));
+        newProject.setCompanyId(1);
+    }
+
+    private List<Project> buildStoredProjects() {
+        List<Project> storedProjects = new ArrayList<>();
+
+        Project inventoryProject = new Project();
+        inventoryProject.setProjectId(1);
+        inventoryProject.setProjectName(STORED_PROJECT_NAME);
+        inventoryProject.setDescription("Desarrollo de un sistema web para el control de inventario");
+        inventoryProject.setParticipantCapacity(2);
+        inventoryProject.setManagerId(1);
+        inventoryProject.setStatus("Active");
+        inventoryProject.setStartDate(Date.valueOf("2026-01-01"));
+        inventoryProject.setEndDate(Date.valueOf("2026-06-01"));
+        inventoryProject.setCompanyId(1);
+        storedProjects.add(inventoryProject);
+
+        Project salesProject = new Project();
+        salesProject.setProjectId(2);
+        salesProject.setProjectName("Aplicacion Movil de Ventas");
+        salesProject.setDescription("Desarrollo de una aplicacion movil para la gestion de ventas");
+        salesProject.setParticipantCapacity(3);
+        salesProject.setManagerId(2);
+        salesProject.setStatus("Active");
+        salesProject.setStartDate(Date.valueOf("2026-01-01"));
+        salesProject.setEndDate(Date.valueOf("2026-06-01"));
+        salesProject.setCompanyId(2);
+        storedProjects.add(salesProject);
+
+        Project humanResourcesProject = new Project();
+        humanResourcesProject.setProjectId(3);
+        humanResourcesProject.setProjectName("Portal de Recursos Humanos");
+        humanResourcesProject.setDescription("Mantenimiento del portal interno de recursos humanos");
+        humanResourcesProject.setParticipantCapacity(1);
+        humanResourcesProject.setManagerId(3);
+        humanResourcesProject.setStatus("Active");
+        humanResourcesProject.setStartDate(Date.valueOf("2026-01-01"));
+        humanResourcesProject.setEndDate(Date.valueOf("2026-06-01"));
+        humanResourcesProject.setCompanyId(3);
+        storedProjects.add(humanResourcesProject);
+
+        return storedProjects;
     }
 
     @Test
     void insertProject_ValidProject_ReturnsTrue() throws DAOException {
-        boolean isInserted = projectDAO.insertProject(testProject);
+        boolean isInserted = projectDAO.insertProject(newProject);
+
         assertTrue(isInserted);
     }
 
     @Test
     void recoverProject_ExistingProject_ReturnsProject() throws DAOException {
-        Project expectedProject = new Project();
-        expectedProject.setProjectId(1);
-        expectedProject.setProjectName("toRecover");
-        expectedProject.setDescription("Project for recovery test");
-        expectedProject.setParticipantCapacity(2);
-        expectedProject.setManagerId(1);
-        expectedProject.setStatus("Active");
-        expectedProject.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        expectedProject.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        expectedProject.setCompanyId(1);
+        Project expectedProject = buildStoredProjects().get(0);
 
-        Project recovered = projectDAO.recoverProject("toRecover", 1);
-        assertEquals(expectedProject, recovered);
+        Project recoveredProject = projectDAO.recoverProject(STORED_PROJECT_NAME, FIRST_PROJECT_ID);
+
+        assertEquals(expectedProject, recoveredProject);
     }
 
     @Test
     void getAllProjects_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Project> expectedList = new ArrayList<>();
+        List<Project> expectedProjects = buildStoredProjects();
 
-        Project p1 = new Project();
-        p1.setProjectId(1);
-        p1.setProjectName("toRecover");
-        p1.setDescription("Project for recovery test");
-        p1.setParticipantCapacity(2);
-        p1.setManagerId(1);
-        p1.setStatus("Active");
-        p1.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p1.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p1.setCompanyId(1);
-        expectedList.add(p1);
+        List<Project> resultProjects = projectDAO.getAllProjects();
 
-        Project p2 = new Project();
-        p2.setProjectId(2);
-        p2.setProjectName("Dummy 1");
-        p2.setDescription("First dummy project");
-        p2.setParticipantCapacity(3);
-        p2.setManagerId(2);
-        p2.setStatus("Active");
-        p2.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p2.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p2.setCompanyId(2);
-        expectedList.add(p2);
-
-        Project p3 = new Project();
-        p3.setProjectId(3);
-        p3.setProjectName("Dummy 2");
-        p3.setDescription("Second dummy project");
-        p3.setParticipantCapacity(1);
-        p3.setManagerId(3);
-        p3.setStatus("Active");
-        p3.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p3.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p3.setCompanyId(3);
-        expectedList.add(p3);
-
-        List<Project> resultList = projectDAO.getAllProjects();
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedProjects, resultProjects);
     }
 
     @Test
     void updateProject_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testProject.setDescription("Descripcion actualizada");
-        testProject.setParticipantCapacity(10);
+        newProject.setDescription("Mantenimiento de los modulos de reportes del sistema");
+        newProject.setParticipantCapacity(10);
 
-        boolean isUpdated = projectDAO.updateProject(testProject, 1);
+        boolean isUpdated = projectDAO.updateProject(newProject, FIRST_PROJECT_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void deactivateMultipleProjects_ValidIds_ReturnsTrue() throws DAOException {
         boolean isDeactivated = projectDAO.deactivateMultipleProjects(List.of(1, 2));
+
         assertTrue(isDeactivated);
     }
 
     @Test
     void getAvailableProjectsWithCapacity_WithActiveProjects_ReturnsExpectedList() throws DAOException {
-        List<Project> expectedList = new ArrayList<>();
+        List<Project> expectedProjects = buildStoredProjects();
 
-        Project p1 = new Project();
-        p1.setProjectId(1);
-        p1.setProjectName("toRecover");
-        p1.setDescription("Project for recovery test");
-        p1.setParticipantCapacity(2);
-        p1.setManagerId(1);
-        p1.setStatus("Active");
-        p1.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p1.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p1.setCompanyId(1);
-        expectedList.add(p1);
+        List<Project> resultProjects = projectDAO.getAvailableProjectsWithCapacity();
 
-        Project p2 = new Project();
-        p2.setProjectId(2);
-        p2.setProjectName("Dummy 1");
-        p2.setDescription("First dummy project");
-        p2.setParticipantCapacity(3);
-        p2.setManagerId(2);
-        p2.setStatus("Active");
-        p2.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p2.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p2.setCompanyId(2);
-        expectedList.add(p2);
-
-        Project p3 = new Project();
-        p3.setProjectId(3);
-        p3.setProjectName("Dummy 2");
-        p3.setDescription("Second dummy project");
-        p3.setParticipantCapacity(1);
-        p3.setManagerId(3);
-        p3.setStatus("Active");
-        p3.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p3.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p3.setCompanyId(3);
-        expectedList.add(p3);
-
-        List<Project> resultList = projectDAO.getAvailableProjectsWithCapacity();
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedProjects, resultProjects);
     }
 
     @Test
     void insertProject_NonExistentOrganization_ThrowsDAOException() {
-        testProject.setCompanyId(9999);
-        assertThrows(DAOException.class, () -> projectDAO.insertProject(testProject));
+        newProject.setCompanyId(NON_EXISTENT_ID);
+
+        assertThrows(DAOException.class, () -> projectDAO.insertProject(newProject));
     }
 
     @Test
     void recoverProject_NonExistentName_ReturnsEmptyProject() throws DAOException {
-        Project recovered = projectDAO.recoverProject("Proyecto Fantasma", 1);
-        assertEquals(new Project(), recovered);
+        Project recoveredProject = projectDAO.recoverProject("Proyecto Inexistente", FIRST_PROJECT_ID);
+
+        assertEquals(new Project(), recoveredProject);
     }
 
     @Test
     void updateProject_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = projectDAO.updateProject(testProject, 9999);
+        boolean isUpdated = projectDAO.updateProject(newProject, NON_EXISTENT_ID);
+
         assertFalse(isUpdated);
     }
 }

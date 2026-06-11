@@ -31,14 +31,14 @@ public class AdminManagerTest {
 
     @Test
     void registerInitialAdmin_ValidAdmin_DoesNotThrow() {
-        Administrator admin = new Administrator();
-        admin.setUserName("11111");
-        admin.setPassword("Password123");
-        admin.setName("Admin");
-        admin.setLastName("Test");
-        admin.setEmail("admin2@uv.mx");
-        admin.setGender(Gender.MALE);
+        Administrator initialAdministrator = new Administrator();
+        initialAdministrator.setUserName("jcastaneda");
+        initialAdministrator.setPassword("AdminUv2026");
+        initialAdministrator.setName("Jorge");
+        initialAdministrator.setLastName("Castaneda Morales");
+        initialAdministrator.setEmail("jcastaneda@uv.mx");
+        initialAdministrator.setGender(Gender.MALE);
 
-        assertDoesNotThrow(() -> adminManager.registerInitialAdmin(admin));
+        assertDoesNotThrow(() -> adminManager.registerInitialAdmin(initialAdministrator));
     }
 }

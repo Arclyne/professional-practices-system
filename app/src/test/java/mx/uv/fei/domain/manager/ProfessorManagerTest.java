@@ -23,8 +23,13 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ProfessorManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private ProfessorManager professorManager;
+    private static final int STORED_PROFESSOR_ID = 68;
+
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private ProfessorManager professorManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -33,36 +38,38 @@ public class ProfessorManagerTest {
 
     @Test
     void registerNewProfessor_ValidData_ReturnsPassword() {
-        Professor p = new Professor();
-        p.setName("Prof");
-        p.setLastName("Test");
-        p.setUserName("111222");
-        p.setEmail("prof@uv.mx");
-        p.setGender(Gender.MALE);
-        assertDoesNotThrow(() -> professorManager.registerNewProfessor(p));
+        Professor newProfessor = new Professor();
+        newProfessor.setName("Norma Angelica");
+        newProfessor.setLastName("Sandoval Rivas");
+        newProfessor.setUserName("nsandoval");
+        newProfessor.setEmail("nsandoval@uv.mx");
+        newProfessor.setGender(Gender.FEMALE);
+
+        assertDoesNotThrow(() -> professorManager.registerNewProfessor(newProfessor));
     }
 
     @Test
     void getAllProfessors_ReturnsExpectedList() throws ManagerException {
-        List<Professor> expectedList = new ArrayList<>();
-        Professor prof = new Professor();
-        prof.setId(68);
-        prof.setUserName("prof1");
-        prof.setPassword("12345");
-        prof.setName("Prof");
-        prof.setLastName("Test");
-        prof.setEmail("prof1@uv.mx");
-        prof.setRole("Professor");
-        prof.setStatus(UserStatus.ACTIVE);
-        prof.setGender(Gender.MALE);
-        expectedList.add(prof);
+        List<Professor> expectedProfessors = new ArrayList<>();
+        Professor storedProfessor = new Professor();
+        storedProfessor.setId(STORED_PROFESSOR_ID);
+        storedProfessor.setUserName("eprior");
+        storedProfessor.setPassword("ProfeFei2026");
+        storedProfessor.setName("Jose Eduardo");
+        storedProfessor.setLastName("Prior Hernandez");
+        storedProfessor.setEmail("eprior@uv.mx");
+        storedProfessor.setRole("Professor");
+        storedProfessor.setStatus(UserStatus.ACTIVE);
+        storedProfessor.setGender(Gender.MALE);
+        expectedProfessors.add(storedProfessor);
 
-        List<Professor> resultList = professorManager.getAllProfessors();
-        assertEquals(expectedList, resultList);
+        List<Professor> resultProfessors = professorManager.getAllProfessors();
+
+        assertEquals(expectedProfessors, resultProfessors);
     }
 
     @Test
     void inactivateMultipleProfessors_ValidList_DoesNotThrow() {
-        assertDoesNotThrow(() -> professorManager.inactivateMultipleProfessors(java.util.List.of(68)));
+        assertDoesNotThrow(() -> professorManager.inactivateMultipleProfessors(List.of(STORED_PROFESSOR_ID)));
     }
 }

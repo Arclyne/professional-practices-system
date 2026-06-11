@@ -23,6 +23,9 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class MonthlyReportManagerTest {
 
+    private static final int STORED_PRACTITIONER_ID = 123;
+    private static final int STORED_REPORT_ID = 1;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -36,50 +39,52 @@ public class MonthlyReportManagerTest {
 
     @Test
     void createReportAndLinkActivities_ValidData_DoesNotThrow() {
-        MonthlyReport report = new MonthlyReport();
-        report.setPractitionerId(123);
-        report.setMonthName("Junio");
-        report.setYear(2026);
-        report.setStartDate(Date.valueOf("2026-06-01"));
-        report.setEndDate(Date.valueOf("2026-06-30"));
+        MonthlyReport juneReport = new MonthlyReport();
+        juneReport.setPractitionerId(STORED_PRACTITIONER_ID);
+        juneReport.setMonthName("Junio");
+        juneReport.setYear(2026);
+        juneReport.setStartDate(Date.valueOf("2026-06-01"));
+        juneReport.setEndDate(Date.valueOf("2026-06-30"));
 
-        Activity activityFromDb = new Activity();
-        activityFromDb.setActivityId(4);
-        activityFromDb.setTitle("Actividad Junio Valida");
-        activityFromDb.setActivityDate(Date.valueOf("2026-06-15"));
+        Activity manualActivity = new Activity();
+        manualActivity.setActivityId(4);
+        manualActivity.setTitle("Manual de usuario del sistema");
+        manualActivity.setActivityDate(Date.valueOf("2026-06-15"));
 
-        List<Activity> activities = List.of(activityFromDb);
+        List<Activity> juneActivities = List.of(manualActivity);
 
-        assertDoesNotThrow(() -> reportManager.createReportAndLinkActivities(report, activities));
+        assertDoesNotThrow(() -> reportManager.createReportAndLinkActivities(juneReport, juneActivities));
     }
 
     @Test
     void getPractitionerReports_ValidId_ReturnsExpectedList() throws ManagerException {
-        List<MonthlyReport> expectedList = new ArrayList<>();
-        MonthlyReport rep = new MonthlyReport();
-        rep.setReportId(1);
-        rep.setPractitionerId(123);
-        rep.setMonthName("Mayo");
-        rep.setYear(2026);
-        rep.setStartDate(Date.valueOf("2026-05-01"));
-        rep.setEndDate(Date.valueOf("2026-05-31"));
-        rep.setStatus("Borrador");
-        expectedList.add(rep);
+        List<MonthlyReport> expectedReports = new ArrayList<>();
+        MonthlyReport storedReport = new MonthlyReport();
+        storedReport.setReportId(STORED_REPORT_ID);
+        storedReport.setPractitionerId(STORED_PRACTITIONER_ID);
+        storedReport.setMonthName("Mayo");
+        storedReport.setYear(2026);
+        storedReport.setStartDate(Date.valueOf("2026-05-01"));
+        storedReport.setEndDate(Date.valueOf("2026-05-31"));
+        storedReport.setStatus("Borrador");
+        expectedReports.add(storedReport);
 
-        List<MonthlyReport> resultList = reportManager.getPractitionerReports(123);
-        assertEquals(expectedList, resultList);
+        List<MonthlyReport> resultReports = reportManager.getPractitionerReports(STORED_PRACTITIONER_ID);
+
+        assertEquals(expectedReports, resultReports);
     }
 
     @Test
     void getReportsForEvaluation_ReturnsExpectedList() throws ManagerException {
-        List<MonthlyReport> expectedList = new ArrayList<>();
-        List<MonthlyReport> resultList = reportManager.getReportsForEvaluation();
+        List<MonthlyReport> expectedReports = new ArrayList<>();
 
-        assertEquals(expectedList, resultList);
+        List<MonthlyReport> resultReports = reportManager.getReportsForEvaluation();
+
+        assertEquals(expectedReports, resultReports);
     }
 
     @Test
     void evaluateReport_ValidData_DoesNotThrow() {
-        assertDoesNotThrow(() -> reportManager.evaluateReport(1, 10.0, "Excelente trabajo"));
+        assertDoesNotThrow(() -> reportManager.evaluateReport(STORED_REPORT_ID, 10.0, "Excelente trabajo"));
     }
 }

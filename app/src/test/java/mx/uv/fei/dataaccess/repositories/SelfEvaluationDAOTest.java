@@ -22,6 +22,11 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class SelfEvaluationDAOTest {
 
+    private static final int PRACTITIONER_ID = 123;
+    private static final int STORED_EVALUATION_ID = 1;
+    private static final int NON_EXISTENT_ID = 9999;
+    private static final String STORED_EVIDENCE_URL = "https://storage.uv.mx/evidencias/autoevaluacion_zS24242424.pdf";
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -45,8 +50,8 @@ public class SelfEvaluationDAOTest {
         validEvaluation.setQ8(4);
         validEvaluation.setQ9(5);
         validEvaluation.setQ10(4);
-        validEvaluation.setEvidence("http://nueva.url/evidencia.pdf");
-        validEvaluation.setPractitionerId(123);
+        validEvaluation.setEvidence("https://storage.uv.mx/evidencias/autoevaluacion_final_zS24242424.pdf");
+        validEvaluation.setPractitionerId(PRACTITIONER_ID);
         validEvaluation.setReportId(2);
         validEvaluation.setStatus("Pendiente");
     }
@@ -61,7 +66,7 @@ public class SelfEvaluationDAOTest {
     @Test
     void getSelfEvaluationByReportId_ExistingReport_ReturnsEvaluation() throws DAOException {
         SelfEvaluation expectedEvaluation = new SelfEvaluation();
-        expectedEvaluation.setSelfEvalId(1);
+        expectedEvaluation.setSelfEvalId(STORED_EVALUATION_ID);
         expectedEvaluation.setQ1(5);
         expectedEvaluation.setQ2(5);
         expectedEvaluation.setQ3(5);
@@ -72,73 +77,73 @@ public class SelfEvaluationDAOTest {
         expectedEvaluation.setQ8(5);
         expectedEvaluation.setQ9(5);
         expectedEvaluation.setQ10(5);
-        expectedEvaluation.setEvidence("http://pdf.url");
-        expectedEvaluation.setPractitionerId(123);
+        expectedEvaluation.setEvidence(STORED_EVIDENCE_URL);
+        expectedEvaluation.setPractitionerId(PRACTITIONER_ID);
         expectedEvaluation.setReportId(1);
         expectedEvaluation.setStatus("Pendiente");
 
-        SelfEvaluation recovered = selfEvaluationDAO.getSelfEvaluationByReportId(1);
+        SelfEvaluation recoveredEvaluation = selfEvaluationDAO.getSelfEvaluationByReportId(1);
 
-        assertEquals(expectedEvaluation, recovered);
+        assertEquals(expectedEvaluation, recoveredEvaluation);
     }
 
     @Test
     void updateSelfEvaluation_ValidModifiedData_ReturnsTrue() throws DAOException {
         validEvaluation.setStatus("Revisada");
-        validEvaluation.setEvidence("http://modificada.url/evidencia.pdf");
+        validEvaluation.setEvidence("https://storage.uv.mx/evidencias/autoevaluacion_corregida_zS24242424.pdf");
 
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, 1);
-
-        assertTrue(isUpdated);
-    }
-
-    @Test
-    void updateStatus_ValidStatus_ReturnsTrue() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateStatus(1, "Revisada");
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, STORED_EVALUATION_ID);
 
         assertTrue(isUpdated);
     }
 
     @Test
-    void updateEvidence_ValidEvidence_ReturnsTrue() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateEvidence(1, "http://nueva-evidencia.url");
+    void updateSelfEvaluationStatus_ValidStatus_ReturnsTrue() throws DAOException {
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationStatus(STORED_EVALUATION_ID, "Revisada");
+
+        assertTrue(isUpdated);
+    }
+
+    @Test
+    void updateSelfEvaluationEvidence_ValidEvidence_ReturnsTrue() throws DAOException {
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationEvidence(STORED_EVALUATION_ID,
+                "https://storage.uv.mx/evidencias/evidencia_actualizada_zS24242424.pdf");
 
         assertTrue(isUpdated);
     }
 
     @Test
     void insertSelfEvaluation_NonExistentReport_ThrowsDAOException() {
-        validEvaluation.setReportId(9999);
+        validEvaluation.setReportId(NON_EXISTENT_ID);
 
-        assertThrows(DAOException.class, () -> {
-            selfEvaluationDAO.insertSelfEvaluation(validEvaluation);
-        });
+        assertThrows(DAOException.class, () -> selfEvaluationDAO.insertSelfEvaluation(validEvaluation));
     }
 
     @Test
     void getSelfEvaluationByReportId_NonExistentReport_ReturnsEmptyEvaluation() throws DAOException {
-        SelfEvaluation recovered = selfEvaluationDAO.getSelfEvaluationByReportId(9999);
+        SelfEvaluation recoveredEvaluation = selfEvaluationDAO.getSelfEvaluationByReportId(NON_EXISTENT_ID);
 
-        assertEquals(new SelfEvaluation(), recovered);
+        assertEquals(new SelfEvaluation(), recoveredEvaluation);
     }
 
     @Test
     void updateSelfEvaluation_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, 9999);
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, NON_EXISTENT_ID);
 
         assertFalse(isUpdated);
     }
 
     @Test
-    void updateStatus_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateStatus(9999, "Revisada");
+    void updateSelfEvaluationStatus_NonExistentId_ReturnsFalse() throws DAOException {
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationStatus(NON_EXISTENT_ID, "Revisada");
 
         assertFalse(isUpdated);
     }
 
     @Test
-    void updateEvidence_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateEvidence(9999, "http://url");
+    void updateSelfEvaluationEvidence_NonExistentId_ReturnsFalse() throws DAOException {
+        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationEvidence(NON_EXISTENT_ID,
+                "https://storage.uv.mx/evidencias/evidencia_huerfana.pdf");
 
         assertFalse(isUpdated);
     }

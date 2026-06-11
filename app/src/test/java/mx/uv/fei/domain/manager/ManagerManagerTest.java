@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ManagerManagerTest {
 
+    private static final int FIRST_ORGANIZATION_ID = 1;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -33,60 +35,59 @@ public class ManagerManagerTest {
         TestDatabaseSetup.initialize(dbConnection);
     }
 
+    private Manager buildFirstStoredManager() {
+        Manager storedManager = new Manager();
+        storedManager.setId(1);
+        storedManager.setName("Roberto Sanchez Luna");
+        storedManager.setOrganizationId(1);
+        storedManager.setStatus(UserStatus.ACTIVE);
+        return storedManager;
+    }
+
     @Test
     void getAllManagers_ReturnsExpectedList() throws ManagerException {
-        List<Manager> expectedList = new ArrayList<>();
+        List<Manager> expectedManagers = new ArrayList<>();
+        expectedManagers.add(buildFirstStoredManager());
 
-        Manager m1 = new Manager();
-        m1.setId(1);
-        m1.setName("Manager toRecover");
-        m1.setOrganizationId(1);
-        m1.setStatus(UserStatus.ACTIVE);
-        expectedList.add(m1);
+        Manager secondManager = new Manager();
+        secondManager.setId(2);
+        secondManager.setName("Maria Fernanda Ortiz Cabrera");
+        secondManager.setOrganizationId(2);
+        secondManager.setStatus(UserStatus.ACTIVE);
+        expectedManagers.add(secondManager);
 
-        Manager m2 = new Manager();
-        m2.setId(2);
-        m2.setName("Manager Dummy 1");
-        m2.setOrganizationId(2);
-        m2.setStatus(UserStatus.ACTIVE);
-        expectedList.add(m2);
+        Manager thirdManager = new Manager();
+        thirdManager.setId(3);
+        thirdManager.setName("Carlos Dominguez Ruiz");
+        thirdManager.setOrganizationId(3);
+        thirdManager.setStatus(UserStatus.ACTIVE);
+        expectedManagers.add(thirdManager);
 
-        Manager m3 = new Manager();
-        m3.setId(3);
-        m3.setName("Manager Dummy 2");
-        m3.setOrganizationId(3);
-        m3.setStatus(UserStatus.ACTIVE);
-        expectedList.add(m3);
+        List<Manager> resultManagers = managerManager.getAllManagers();
 
-        List<Manager> resultList = managerManager.getAllManagers();
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedManagers, resultManagers);
     }
 
     @Test
     void registerManager_ValidData_DoesNotThrow() {
-        Manager manager = new Manager();
-        manager.setName("Manager");
-        manager.setPhone("2281234567");
-        manager.setEmail("man@uv.mx");
-        manager.setStatus(UserStatus.ACTIVE);
-        manager.setOrganizationId(1);
+        Manager newManager = new Manager();
+        newManager.setName("Alejandro Vergara Soto");
+        newManager.setPhone("2281234567");
+        newManager.setEmail("alejandro.vergara@tecgolfo.mx");
+        newManager.setStatus(UserStatus.ACTIVE);
+        newManager.setOrganizationId(FIRST_ORGANIZATION_ID);
 
-        assertDoesNotThrow(() -> managerManager.registerManager(manager));
+        assertDoesNotThrow(() -> managerManager.registerManager(newManager));
     }
 
     @Test
     void getManagersByOrganization_ValidId_ReturnsExpectedList() throws ManagerException {
-        List<Manager> expectedList = new ArrayList<>();
+        List<Manager> expectedManagers = new ArrayList<>();
+        expectedManagers.add(buildFirstStoredManager());
 
-        Manager m1 = new Manager();
-        m1.setId(1);
-        m1.setName("Manager toRecover");
-        m1.setOrganizationId(1);
-        m1.setStatus(UserStatus.ACTIVE);
-        expectedList.add(m1);
+        List<Manager> resultManagers = managerManager.getManagersByOrganization(FIRST_ORGANIZATION_ID);
 
-        List<Manager> resultList = managerManager.getManagersByOrganization(1);
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedManagers, resultManagers);
     }
 
     @Test

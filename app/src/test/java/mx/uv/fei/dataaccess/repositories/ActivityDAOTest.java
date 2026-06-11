@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,10 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class ActivityDAOTest {
 
+    private static final int STORED_PRACTITIONER_ID = 123;
+    private static final int STORED_REPORT_ID = 1;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -37,11 +42,23 @@ public class ActivityDAOTest {
         TestDatabaseSetup.initialize(dbConnection);
 
         validActivity = new Activity();
-        validActivity.setPractitionerId(123);
-        validActivity.setTitle("Desarrollo de DAO");
-        validActivity.setDescription("Implementacion de metodos CRUD en Java.");
-        validActivity.setActivityDate(java.sql.Date.valueOf("2026-04-15"));
+        validActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        validActivity.setTitle("Desarrollo de la capa de acceso a datos");
+        validActivity.setDescription("Implementacion de los metodos CRUD del sistema de inventario.");
+        validActivity.setActivityDate(Date.valueOf("2026-04-15"));
         validActivity.setDurationHours(4);
+    }
+
+    private Activity buildRequirementsActivity() {
+        Activity requirementsActivity = new Activity();
+        requirementsActivity.setActivityId(1);
+        requirementsActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        requirementsActivity.setReportId(STORED_REPORT_ID);
+        requirementsActivity.setTitle("Levantamiento de requisitos");
+        requirementsActivity.setDescription("Entrevistas con el personal del area de sistemas");
+        requirementsActivity.setActivityDate(Date.valueOf("2026-05-01"));
+        requirementsActivity.setDurationHours(5);
+        return requirementsActivity;
     }
 
     @Test
@@ -53,87 +70,68 @@ public class ActivityDAOTest {
 
     @Test
     void updateActivity_ValidModifiedData_ReturnsTrue() throws DAOException {
-        validActivity.setTitle("Titulo Modificado");
-        validActivity.setDescription("Descripcion modificada para la prueba de update.");
+        validActivity.setTitle("Desarrollo de la capa de servicios");
+        validActivity.setDescription("Ajustes al alcance de la actividad registrada en la bitacora.");
 
-        boolean isUpdated = activityDAO.updateActivity(validActivity, 1);
+        boolean isUpdated = activityDAO.updateActivity(validActivity, STORED_REPORT_ID);
 
         assertTrue(isUpdated);
     }
 
     @Test
     void getActivitiesByPractitioner_ExistingPractitioner_ReturnsExpectedList() throws DAOException {
-        int targetPractitionerId = 123;
-        List<Activity> expectedList = new ArrayList<>();
+        List<Activity> expectedActivities = new ArrayList<>();
 
-        Activity act4 = new Activity();
-        act4.setActivityId(4);
-        act4.setPractitionerId(123);
-        act4.setReportId(null);
-        act4.setTitle("Actividad Junio Valida");
-        act4.setDescription("Descripcion Junio");
-        act4.setActivityDate(java.sql.Date.valueOf("2026-06-15"));
-        act4.setDurationHours(5);
-        expectedList.add(act4);
+        Activity manualActivity = new Activity();
+        manualActivity.setActivityId(4);
+        manualActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        manualActivity.setReportId(null);
+        manualActivity.setTitle("Manual de usuario del sistema");
+        manualActivity.setDescription("Avance del manual de usuario para el personal de la empresa");
+        manualActivity.setActivityDate(Date.valueOf("2026-06-15"));
+        manualActivity.setDurationHours(5);
+        expectedActivities.add(manualActivity);
 
-        Activity act3 = new Activity();
-        act3.setActivityId(3);
-        act3.setPractitionerId(123);
-        act3.setReportId(null);
-        act3.setTitle("Dummy 2");
-        act3.setDescription("Descripcion Dummy 2");
-        act3.setActivityDate(java.sql.Date.valueOf("2026-05-03"));
-        act3.setDurationHours(3);
-        expectedList.add(act3);
+        Activity testingActivity = new Activity();
+        testingActivity.setActivityId(3);
+        testingActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        testingActivity.setReportId(null);
+        testingActivity.setTitle("Pruebas de formularios de inventario");
+        testingActivity.setDescription("Pruebas funcionales sobre los formularios de captura");
+        testingActivity.setActivityDate(Date.valueOf("2026-05-03"));
+        testingActivity.setDurationHours(3);
+        expectedActivities.add(testingActivity);
 
-        Activity act2 = new Activity();
-        act2.setActivityId(2);
-        act2.setPractitionerId(123);
-        act2.setReportId(null);
-        act2.setTitle("Dummy 1");
-        act2.setDescription("Descripcion Dummy 1");
-        act2.setActivityDate(java.sql.Date.valueOf("2026-05-02"));
-        act2.setDurationHours(4);
-        expectedList.add(act2);
+        Activity developmentActivity = new Activity();
+        developmentActivity.setActivityId(2);
+        developmentActivity.setPractitionerId(STORED_PRACTITIONER_ID);
+        developmentActivity.setReportId(null);
+        developmentActivity.setTitle("Desarrollo de pantallas de inventario");
+        developmentActivity.setDescription("Maquetado de las pantallas del sistema de inventario");
+        developmentActivity.setActivityDate(Date.valueOf("2026-05-02"));
+        developmentActivity.setDurationHours(4);
+        expectedActivities.add(developmentActivity);
 
-        Activity act1 = new Activity();
-        act1.setActivityId(1);
-        act1.setPractitionerId(123);
-        act1.setReportId(1);
-        act1.setTitle("toRecover");
-        act1.setDescription("Descripcion toRecover");
-        act1.setActivityDate(java.sql.Date.valueOf("2026-05-01"));
-        act1.setDurationHours(5);
-        expectedList.add(act1);
+        expectedActivities.add(buildRequirementsActivity());
 
-        List<Activity> resultList = activityDAO.getActivitiesByPractitioner(targetPractitionerId);
+        List<Activity> resultActivities = activityDAO.getActivitiesByPractitioner(STORED_PRACTITIONER_ID);
 
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedActivities, resultActivities);
     }
 
     @Test
     void getActivitiesByReport_ExistingReport_ReturnsExpectedList() throws DAOException {
-        int targetReportId = 1;
-        List<Activity> expectedList = new ArrayList<>();
+        List<Activity> expectedActivities = new ArrayList<>();
+        expectedActivities.add(buildRequirementsActivity());
 
-        Activity act1 = new Activity();
-        act1.setActivityId(1);
-        act1.setPractitionerId(123);
-        act1.setReportId(1);
-        act1.setTitle("toRecover");
-        act1.setDescription("Descripcion toRecover");
-        act1.setActivityDate(java.sql.Date.valueOf("2026-05-01"));
-        act1.setDurationHours(5);
-        expectedList.add(act1);
+        List<Activity> resultActivities = activityDAO.getActivitiesByReport(STORED_REPORT_ID);
 
-        List<Activity> resultList = activityDAO.getActivitiesByReport(targetReportId);
-
-        assertEquals(expectedList, resultList);
+        assertEquals(expectedActivities, resultActivities);
     }
 
     @Test
     void assignActivityToReport_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isAssigned = activityDAO.assignActivityToReport(2, 1);
+        boolean isAssigned = activityDAO.assignActivityToReport(2, STORED_REPORT_ID);
 
         assertTrue(isAssigned);
     }
@@ -147,52 +145,40 @@ public class ActivityDAOTest {
 
     @Test
     void insertActivity_NonExistentPractitioner_ThrowsDAOException() {
-        validActivity.setPractitionerId(9999);
+        validActivity.setPractitionerId(NON_EXISTENT_ID);
 
-        assertThrows(DAOException.class, () -> {
-            activityDAO.insertActivity(validActivity);
-        });
+        assertThrows(DAOException.class, () -> activityDAO.insertActivity(validActivity));
     }
 
     @Test
     void updateActivity_NonExistentId_ReturnsFalse() throws DAOException {
-        int nonExistentActivityId = 9999;
-
-        boolean isUpdated = activityDAO.updateActivity(validActivity, nonExistentActivityId);
+        boolean isUpdated = activityDAO.updateActivity(validActivity, NON_EXISTENT_ID);
 
         assertFalse(isUpdated);
     }
 
     @Test
     void getActivitiesByPractitioner_NonExistentPractitioner_ReturnsEmptyList() throws DAOException {
-        List<Activity> resultList = activityDAO.getActivitiesByPractitioner(9999);
+        List<Activity> resultActivities = activityDAO.getActivitiesByPractitioner(NON_EXISTENT_ID);
 
-        assertEquals(new ArrayList<>(), resultList);
+        assertEquals(new ArrayList<>(), resultActivities);
     }
 
     @Test
     void assignActivityToReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        int nonExistentActivityId = 9999;
-
-        boolean isAssigned = activityDAO.assignActivityToReport(nonExistentActivityId, 1);
+        boolean isAssigned = activityDAO.assignActivityToReport(NON_EXISTENT_ID, STORED_REPORT_ID);
 
         assertFalse(isAssigned);
     }
 
     @Test
     void assignActivityToReport_NonExistentReport_ThrowsDAOException() {
-        int nonExistentReportId = 9999;
-
-        assertThrows(DAOException.class, () -> {
-            activityDAO.assignActivityToReport(1, nonExistentReportId);
-        });
+        assertThrows(DAOException.class, () -> activityDAO.assignActivityToReport(1, NON_EXISTENT_ID));
     }
 
     @Test
     void removeActivityFromReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        int nonExistentActivityId = 9999;
-
-        boolean isRemoved = activityDAO.removeActivityFromReport(nonExistentActivityId);
+        boolean isRemoved = activityDAO.removeActivityFromReport(NON_EXISTENT_ID);
 
         assertFalse(isRemoved);
     }

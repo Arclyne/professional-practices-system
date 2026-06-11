@@ -7,11 +7,15 @@ import java.sql.Statement;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 
 public class TestDatabaseSetup {
-    public static void initialize(IDatabaseConnection dbConnection) throws SQLException {
-        try (Connection conn = dbConnection.getConnection();
-                Statement statement = conn.createStatement()) {
-            statement.execute("RUNSCRIPT FROM 'classpath:schema.sql'");
-            statement.execute("RUNSCRIPT FROM 'classpath:data.sql'");
+
+    private static final String SQL_RUN_SCHEMA_SCRIPT = "RUNSCRIPT FROM 'classpath:schema.sql'";
+    private static final String SQL_RUN_DATA_SCRIPT = "RUNSCRIPT FROM 'classpath:data.sql'";
+
+    public static void initialize(IDatabaseConnection databaseConnection) throws SQLException {
+        try (Connection connection = databaseConnection.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(SQL_RUN_SCHEMA_SCRIPT);
+            statement.execute(SQL_RUN_DATA_SCRIPT);
         }
     }
 }

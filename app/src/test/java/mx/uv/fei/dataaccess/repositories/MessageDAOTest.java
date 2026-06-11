@@ -25,6 +25,10 @@ public class MessageDAOTest {
 
     private static final int SENDER_ID = 13;
     private static final int RECEIVER_ID = 123;
+    private static final String SENDER_FULL_NAME = "Ricardo Marquez Sosa";
+    private static final String RECEIVER_FULL_NAME = "Angel Gabriel Aguilar Hernandez";
+    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_OFFSET = 0;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -39,67 +43,73 @@ public class MessageDAOTest {
 
     @Test
     void insertMessage_ValidSubjectAndBody_ReturnsGeneratedId() throws DAOException {
-        int generatedId = messageDAO.insertMessage("Asunto de prueba", "Cuerpo del mensaje de prueba.");
+        int generatedId = messageDAO.insertMessage("Entrega de reporte mensual",
+                "Le recuerdo entregar su reporte mensual antes del viernes.");
+
         assertTrue(generatedId > 0);
     }
 
     @Test
     void insertParticipant_ValidIds_ReturnsTrue() throws DAOException {
-        int messageId = messageDAO.insertMessage("Asunto participante", "Cuerpo participante.");
+        int messageId = messageDAO.insertMessage("Revision de bitacora",
+                "Su bitacora de actividades fue revisada por el academico.");
+
         boolean isInserted = messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
+
         assertTrue(isInserted);
     }
 
     @Test
     void getUserIdByEmail_ExistingEmail_ReturnsUserId() throws DAOException {
-        int userId = messageDAO.getUserIdByEmail("adm@adm.com");
+        int userId = messageDAO.getUserIdByEmail("rmarquez@uv.mx");
+
         assertEquals(SENDER_ID, userId);
     }
 
     @Test
     void getMessagesBySender_WithExistingMessages_ReturnsExpectedList() throws DAOException {
-        int messageId = messageDAO.insertMessage("Asunto enviado", "Cuerpo enviado.");
+        int messageId = messageDAO.insertMessage("Asignacion de proyecto",
+                "Su proyecto de practicas fue asignado correctamente.");
         messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
 
-        List<Message> resultList = messageDAO.getMessagesBySender(SENDER_ID, 10, 0);
+        List<Message> resultMessages = messageDAO.getMessagesBySender(SENDER_ID, PAGE_SIZE, PAGE_OFFSET);
 
-        List<Message> expectedList = new ArrayList<>();
-        Message expectedMsg = new Message();
-        expectedMsg.setMessageId(messageId);
-        expectedMsg.setSubject("Asunto enviado");
-        expectedMsg.setBody("Cuerpo enviado.");
-        expectedMsg.setSenderId(SENDER_ID);
-        expectedMsg.setReceiverId(RECEIVER_ID);
-        expectedMsg.setSenderName("Angel Aguilar");
-        if (!resultList.isEmpty()) {
-            expectedMsg.setSendDate(resultList.get(0).getSendDate());
+        List<Message> expectedMessages = new ArrayList<>();
+        Message expectedMessage = new Message();
+        expectedMessage.setMessageId(messageId);
+        expectedMessage.setSubject("Asignacion de proyecto");
+        expectedMessage.setBody("Su proyecto de practicas fue asignado correctamente.");
+        expectedMessage.setSenderId(SENDER_ID);
+        expectedMessage.setReceiverId(RECEIVER_ID);
+        expectedMessage.setSenderName(RECEIVER_FULL_NAME);
+        if (!resultMessages.isEmpty()) {
+            expectedMessage.setSendDate(resultMessages.get(0).getSendDate());
         }
-        expectedList.add(expectedMsg);
-
-        assertEquals(expectedList, resultList);
+        expectedMessages.add(expectedMessage);
+        assertEquals(expectedMessages, resultMessages);
     }
 
     @Test
     void getMessagesByReceiver_WithExistingMessages_ReturnsExpectedList() throws DAOException {
-        int messageId = messageDAO.insertMessage("Asunto recibido", "Cuerpo recibido.");
+        int messageId = messageDAO.insertMessage("Resultado de evaluacion",
+                "Su reporte mensual de mayo fue evaluado satisfactoriamente.");
         messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
 
-        List<Message> resultList = messageDAO.getMessagesByReceiver(RECEIVER_ID, 10, 0);
+        List<Message> resultMessages = messageDAO.getMessagesByReceiver(RECEIVER_ID, PAGE_SIZE, PAGE_OFFSET);
 
-        List<Message> expectedList = new ArrayList<>();
-        Message expectedMsg = new Message();
-        expectedMsg.setMessageId(messageId);
-        expectedMsg.setSubject("Asunto recibido");
-        expectedMsg.setBody("Cuerpo recibido.");
-        expectedMsg.setSenderId(SENDER_ID);
-        expectedMsg.setReceiverId(RECEIVER_ID);
-        expectedMsg.setSenderName("adm adm");
-        if (!resultList.isEmpty()) {
-            expectedMsg.setSendDate(resultList.get(0).getSendDate());
+        List<Message> expectedMessages = new ArrayList<>();
+        Message expectedMessage = new Message();
+        expectedMessage.setMessageId(messageId);
+        expectedMessage.setSubject("Resultado de evaluacion");
+        expectedMessage.setBody("Su reporte mensual de mayo fue evaluado satisfactoriamente.");
+        expectedMessage.setSenderId(SENDER_ID);
+        expectedMessage.setReceiverId(RECEIVER_ID);
+        expectedMessage.setSenderName(SENDER_FULL_NAME);
+        if (!resultMessages.isEmpty()) {
+            expectedMessage.setSendDate(resultMessages.get(0).getSendDate());
         }
-        expectedList.add(expectedMsg);
-
-        assertEquals(expectedList, resultList);
+        expectedMessages.add(expectedMessage);
+        assertEquals(expectedMessages, resultMessages);
     }
 
     @Test
@@ -109,7 +119,8 @@ public class MessageDAOTest {
 
     @Test
     void getUserIdByEmail_NonExistentEmail_ReturnsNegativeOne() throws DAOException {
-        int userId = messageDAO.getUserIdByEmail("fantasma@uv.mx");
+        int userId = messageDAO.getUserIdByEmail("correo.inexistente@uv.mx");
+
         assertEquals(-1, userId);
     }
 }

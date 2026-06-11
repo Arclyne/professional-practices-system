@@ -1,110 +1,114 @@
 package mx.uv.fei.domain.dto;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class ProgressReportTest {
 
-    private ProgressReport reportA;
-    private ProgressReport reportB;
+    private static final int PRACTITIONER_ID = 123;
+    private static final String INTERMEDIATE_TYPE = "Intermedio";
+    private static final String FINAL_TYPE = "Final";
+
+    private ProgressReport baseReport;
+    private ProgressReport comparedReport;
 
     @BeforeEach
     void setUp() {
-        reportA = new ProgressReport();
-        reportA.setPractitionerId(123);
-        reportA.setReportType("Intermedio");
-        reportA.setTotalHoursAtSubmission(215.0);
+        baseReport = new ProgressReport();
+        baseReport.setPractitionerId(PRACTITIONER_ID);
+        baseReport.setReportType(INTERMEDIATE_TYPE);
+        baseReport.setTotalHoursAtSubmission(215.0);
 
-        reportB = new ProgressReport();
-        reportB.setPractitionerId(123);
-        reportB.setReportType("Intermedio");
-        reportB.setTotalHoursAtSubmission(310.0);
+        comparedReport = new ProgressReport();
+        comparedReport.setPractitionerId(PRACTITIONER_ID);
+        comparedReport.setReportType(INTERMEDIATE_TYPE);
+        comparedReport.setTotalHoursAtSubmission(310.0);
     }
 
     @Test
     void equals_SamePractitionerAndType_ReturnsTrue() {
-        boolean result = reportA.equals(reportB);
+        boolean isEqual = baseReport.equals(comparedReport);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameInstance_ReturnsTrue() {
-        boolean result = reportA.equals(reportA);
+        boolean isEqual = baseReport.equals(baseReport);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameTypeButDifferentHours_ReturnsTrue() {
-        reportB.setTotalHoursAtSubmission(420.0);
+        comparedReport.setTotalHoursAtSubmission(420.0);
 
-        boolean result = reportA.equals(reportB);
+        boolean isEqual = baseReport.equals(comparedReport);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_DifferentPractitioner_ReturnsFalse() {
-        reportB.setPractitionerId(999);
+        comparedReport.setPractitionerId(999);
 
-        boolean result = reportA.equals(reportB);
+        boolean isEqual = baseReport.equals(comparedReport);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_DifferentType_ReturnsFalse() {
-        reportB.setReportType("Final");
+        comparedReport.setReportType(FINAL_TYPE);
 
-        boolean result = reportA.equals(reportB);
+        boolean isEqual = baseReport.equals(comparedReport);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_NullType_ReturnsFalse() {
-        reportB.setReportType(null);
+        comparedReport.setReportType(null);
 
-        boolean result = reportA.equals(reportB);
+        boolean isEqual = baseReport.equals(comparedReport);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToNull_ReturnsFalse() {
-        boolean result = reportA.equals(null);
+        boolean isEqual = baseReport.equals(null);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToDifferentClass_ReturnsFalse() {
-        boolean result = reportA.equals("Intermedio");
+        boolean isEqual = baseReport.equals(INTERMEDIATE_TYPE);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void hashCode_SamePractitionerAndType_ProduceSameHash() {
-        int hashA = reportA.hashCode();
-        int hashB = reportB.hashCode();
+        int baseHash = baseReport.hashCode();
+        int comparedHash = comparedReport.hashCode();
 
-        assertEquals(hashA, hashB);
+        assertEquals(baseHash, comparedHash);
     }
 
     @Test
     void hashCode_DifferentType_ProduceDifferentHash() {
-        reportB.setReportType("Final");
+        comparedReport.setReportType(FINAL_TYPE);
 
-        int hashA = reportA.hashCode();
-        int hashB = reportB.hashCode();
+        int baseHash = baseReport.hashCode();
+        int comparedHash = comparedReport.hashCode();
 
-        assertNotEquals(hashA, hashB);
+        assertNotEquals(baseHash, comparedHash);
     }
 }
