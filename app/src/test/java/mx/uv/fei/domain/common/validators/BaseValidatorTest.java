@@ -30,6 +30,21 @@ public class BaseValidatorTest {
     }
 
     @Test
+    void isValidPersonalNumber_NumericValue_ReturnsTrue() {
+        assertTrue(BaseValidator.isValidPersonalNumber("1"));
+    }
+
+    @Test
+    void isValidPersonalNumber_NonNumericValue_ReturnsFalse() {
+        assertFalse(BaseValidator.isValidPersonalNumber("abc123"));
+    }
+
+    @Test
+    void isValidPersonalNumber_NullValue_ReturnsFalse() {
+        assertFalse(BaseValidator.isValidPersonalNumber(null));
+    }
+
+    @Test
     void validateString_EmptyValue_ThrowsManagerException() {
         assertThrows(ManagerException.class,
                 () -> BaseValidator.validateString("", "El nombre no puede estar vacio"));
