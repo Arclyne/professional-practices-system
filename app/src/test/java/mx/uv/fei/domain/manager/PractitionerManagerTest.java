@@ -15,9 +15,6 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
-import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
-import mx.uv.fei.domain.common.IFileBackup;
-import mx.uv.fei.domain.common.IPractitionerParser;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.Gender;
@@ -36,12 +33,6 @@ public class PractitionerManagerTest {
 
     @Inject
     private PractitionerManager practitionerManager;
-
-    @Inject
-    private IPractitionerDAO practitionerDAO;
-
-    @Inject
-    private IPractitionerParser practitionerParser;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -95,21 +86,11 @@ public class PractitionerManagerTest {
                 "matricula,nombre,apellidos,correo,genero,lengua_indigena\n"
                         + "S20011111,Ana,Lopez Jimenez,zS20011111@estudiantes.uv.mx,Female,Nahuatl");
         batchCsvFile.deleteOnExit();
-        PractitionerManager isolatedManager =
-                new PractitionerManager(practitionerDAO, new StubFileBackup(), practitionerParser);
         BatchRegistrationSummary expectedSummary = new BatchRegistrationSummary();
         expectedSummary.incrementSuccess();
 
-        BatchRegistrationSummary resultSummary = isolatedManager.registerPractitionerBatch(batchCsvFile, COORDINATOR_USERNAME);
+        BatchRegistrationSummary resultSummary = practitionerManager.registerPractitionerBatch(batchCsvFile, COORDINATOR_USERNAME);
 
         assertEquals(expectedSummary, resultSummary);
-    }
-
-    private static class StubFileBackup implements IFileBackup {
-
-        @Override
-        public void backupFile(File sourceFile, String userIdentifier) throws ManagerException {
-            // El respaldo se omite en pruebas porque LocalCsvBackup escribiria archivos versionables fuera del temporal
-        }
     }
 }
