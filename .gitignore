@@ -16,4 +16,9 @@ bin/
 # Java
 *.class
 
+# Artefactos generados en tiempo de ejecucion (respaldos de lotes y documentos)
+app/documents/batches/
+app/documents/generated/
+app/app/
+
 repomix-output.xml
