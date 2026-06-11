@@ -93,4 +93,21 @@ public class PractitionerManagerTest {
 
         assertEquals(expectedSummary, resultSummary);
     }
+
+    @Test
+    void registerPractitionerBatch_InvalidRow_CountsRowAsFailure() throws IOException, ManagerException {
+        File batchCsvFile = Files.createTempFile("registro_practicantes", ".csv").toFile();
+        Files.writeString(batchCsvFile.toPath(),
+                "matricula,nombre,apellidos,correo,genero,lengua_indigena\n"
+                        + "S20011111,Ana,Lopez Jimenez,zS20011111@estudiantes.uv.mx,Female,Nahuatl\n"
+                        + "S20022222,Beto,Ramirez Soto,correo-sin-arroba,Male,Ninguna");
+        batchCsvFile.deleteOnExit();
+        BatchRegistrationSummary expectedSummary = new BatchRegistrationSummary();
+        expectedSummary.incrementSuccess();
+        expectedSummary.incrementFailure();
+
+        BatchRegistrationSummary resultSummary = practitionerManager.registerPractitionerBatch(batchCsvFile, COORDINATOR_USERNAME);
+
+        assertEquals(expectedSummary, resultSummary);
+    }
 }
