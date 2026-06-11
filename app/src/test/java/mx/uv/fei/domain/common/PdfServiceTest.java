@@ -1,12 +1,10 @@
 package mx.uv.fei.domain.common;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -20,11 +18,13 @@ import org.junit.jupiter.api.io.TempDir;
 
 public class PdfServiceTest {
 
-    private PdfService pdfService;
+    private static final String PRACTITIONER_FIELD_NAME = "NombrePracticante";
+    private static final String PRACTITIONER_FULL_NAME = "Angel Gabriel Aguilar Hernandez";
 
     @TempDir
-    Path tempDir;
+    Path temporaryDirectory;
 
+    private PdfService pdfService;
     private String validTemplatePath;
     private String outputPdfPath;
 
@@ -32,43 +32,38 @@ public class PdfServiceTest {
     void setUp() throws IOException {
         pdfService = new PdfService();
 
-        File tempPdf = tempDir.resolve("template.pdf").toFile();
-        try (PDDocument doc = new PDDocument()) {
-            PDPage page = new PDPage();
-            doc.addPage(page);
+        File templatePdfFile = temporaryDirectory.resolve("plantilla_oficio.pdf").toFile();
+        try (PDDocument templateDocument = new PDDocument()) {
+            PDPage templatePage = new PDPage();
+            templateDocument.addPage(templatePage);
 
-            PDAcroForm acroForm = new PDAcroForm(doc);
-            doc.getDocumentCatalog().setAcroForm(acroForm);
+            PDAcroForm acroForm = new PDAcroForm(templateDocument);
+            templateDocument.getDocumentCatalog().setAcroForm(acroForm);
 
-            PDTextField textBox = new PDTextField(acroForm);
-            textBox.setPartialName("NombrePracticante");
-            acroForm.getFields().add(textBox);
+            PDTextField practitionerNameField = new PDTextField(acroForm);
+            practitionerNameField.setPartialName(PRACTITIONER_FIELD_NAME);
+            acroForm.getFields().add(practitionerNameField);
 
-            doc.save(tempPdf);
+            templateDocument.save(templatePdfFile);
         }
 
-        validTemplatePath = tempPdf.getAbsolutePath();
-        outputPdfPath = tempDir.resolve("output_filled.pdf").toAbsolutePath().toString();
+        validTemplatePath = templatePdfFile.getAbsolutePath();
+        outputPdfPath = temporaryDirectory.resolve("oficio_generado.pdf").toAbsolutePath().toString();
     }
 
     @Test
     void fillPdfTemplate_ValidTemplateAndData_CreatesFilledPdf() {
-        Map<String, String> data = Map.of("NombrePracticante", "Angel Aguilar");
+        Map<String, String> templateData = Map.of(PRACTITIONER_FIELD_NAME, PRACTITIONER_FULL_NAME);
 
-        assertDoesNotThrow(() -> pdfService.fillPdfTemplate(validTemplatePath, outputPdfPath, data));
+        assertDoesNotThrow(() -> pdfService.fillPdfTemplate(validTemplatePath, outputPdfPath, templateData));
     }
 
     @Test
     void fillPdfTemplate_NonExistentFile_ThrowsIOException() {
+        String nonExistentTemplatePath = "plantilla_inexistente.pdf";
+        Map<String, String> templateData = Map.of(PRACTITIONER_FIELD_NAME, PRACTITIONER_FULL_NAME);
 
-        String badPath = "plantilla_que_no_existe.pdf";
-
-        String outputPath = tempDir.resolve("salida.pdf").toAbsolutePath().toString();
-
-        Map<String, String> data = Map.of("NombrePracticante", "Angel Aguilar");
-
-        assertThrows(IOException.class, () -> {
-            pdfService.fillPdfTemplate(badPath, outputPath, data);
-        });
+        assertThrows(IOException.class,
+                () -> pdfService.fillPdfTemplate(nonExistentTemplatePath, outputPdfPath, templateData));
     }
 }

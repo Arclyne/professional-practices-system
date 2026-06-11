@@ -21,6 +21,11 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class MessageManagerTest {
 
+    private static final int ADMINISTRATOR_ID = 13;
+    private static final int PRACTITIONER_ID = 123;
+    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_OFFSET = 0;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
@@ -34,22 +39,25 @@ public class MessageManagerTest {
 
     @Test
     void sendMessage_ValidData_DoesNotThrow() {
-        assertDoesNotThrow(() -> messageManager.sendMessage(13, "angel24@gmail.com", "Asunto", "Cuerpo"));
+        assertDoesNotThrow(() -> messageManager.sendMessage(ADMINISTRATOR_ID, "zS24242424@estudiantes.uv.mx",
+                "Entrega de reporte mensual", "Le recuerdo entregar su reporte mensual antes del viernes."));
     }
 
     @Test
     void getInboxMessages_ValidId_ReturnsExpectedList() throws ManagerException {
-        List<Message> expectedList = new ArrayList<>();
-        List<Message> resultList = messageManager.getInboxMessages(123, 10, 0);
+        List<Message> expectedMessages = new ArrayList<>();
 
-        assertEquals(expectedList, resultList);
+        List<Message> resultMessages = messageManager.getInboxMessages(PRACTITIONER_ID, PAGE_SIZE, PAGE_OFFSET);
+
+        assertEquals(expectedMessages, resultMessages);
     }
 
     @Test
     void getSentMessages_ValidId_ReturnsExpectedList() throws ManagerException {
-        List<Message> expectedList = new ArrayList<>();
-        List<Message> resultList = messageManager.getSentMessages(13, 10, 0);
+        List<Message> expectedMessages = new ArrayList<>();
 
-        assertEquals(expectedList, resultList);
+        List<Message> resultMessages = messageManager.getSentMessages(ADMINISTRATOR_ID, PAGE_SIZE, PAGE_OFFSET);
+
+        assertEquals(expectedMessages, resultMessages);
     }
 }

@@ -23,43 +23,47 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PeriodDAOTest {
 
+    private static final int STORED_PERIOD_ID = 5;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private IPeriodDAO periodDAO;
 
-    private Period testPeriod;
+    private Period newPeriod;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testPeriod = new Period();
-        testPeriod.setPeriodName("Agosto-Enero 2027");
-        testPeriod.setStartDate(Date.valueOf("2026-08-15"));
-        testPeriod.setEndDate(Date.valueOf("2027-01-31"));
-        testPeriod.setPeriodStatus("Upcoming");
+        newPeriod = new Period();
+        newPeriod.setPeriodName("Agosto 2026 - Enero 2027");
+        newPeriod.setStartDate(Date.valueOf("2026-08-15"));
+        newPeriod.setEndDate(Date.valueOf("2027-01-31"));
+        newPeriod.setPeriodStatus("Upcoming");
     }
 
     @Test
     void insertPeriod_ValidPeriod_ReturnsGeneratedId() throws DAOException {
-        int generatedId = periodDAO.insertPeriod(testPeriod);
+        int generatedId = periodDAO.insertPeriod(newPeriod);
+
         assertTrue(generatedId > 0);
     }
 
     @Test
     void getAllPeriods_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Period> expectedList = new ArrayList<>();
-        Period period = new Period();
-        period.setPeriodId(5);
-        period.setPeriodName("Junio-Diciembre 2026");
-        period.setStartDate(Date.valueOf("2026-06-01"));
-        period.setEndDate(Date.valueOf("2026-12-12"));
-        period.setPeriodStatus("Active");
-        expectedList.add(period);
+        List<Period> expectedPeriods = new ArrayList<>();
+        Period storedPeriod = new Period();
+        storedPeriod.setPeriodId(STORED_PERIOD_ID);
+        storedPeriod.setPeriodName("Junio-Diciembre 2026");
+        storedPeriod.setStartDate(Date.valueOf("2026-06-01"));
+        storedPeriod.setEndDate(Date.valueOf("2026-12-12"));
+        storedPeriod.setPeriodStatus("Active");
+        expectedPeriods.add(storedPeriod);
 
-        List<Period> resultList = periodDAO.getAllPeriods();
-        assertEquals(expectedList, resultList);
+        List<Period> resultPeriods = periodDAO.getAllPeriods();
+
+        assertEquals(expectedPeriods, resultPeriods);
     }
 }

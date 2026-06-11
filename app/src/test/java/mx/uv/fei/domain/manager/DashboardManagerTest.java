@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
+
 import mx.uv.fei.TestDatabaseSetup;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
@@ -20,8 +21,13 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class DashboardManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private DashboardManager dashboardManager;
+    private static final int STORED_PRACTITIONER_ID = 123;
+
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private DashboardManager dashboardManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -68,15 +74,15 @@ public class DashboardManagerTest {
         assertFalse(dashboardManager.isPractitionerMenuAvailable("Administrator"));
     }
 
-        @Test
+    @Test
     void resolvePractitionerProjectsNavigation_ExistingPractitioner_DoesNotThrow() {
-        assertDoesNotThrow(() -> dashboardManager.resolvePractitionerProjectsNavigation(123));
+        assertDoesNotThrow(() -> dashboardManager.resolvePractitionerProjectsNavigation(STORED_PRACTITIONER_ID));
     }
 
     @Test
     void resolvePractitionerProjectsNavigation_ExistingPractitioner_ReturnsNotNull() throws ManagerException {
-        AppSection section = dashboardManager.resolvePractitionerProjectsNavigation(123);
+        AppSection resolvedSection = dashboardManager.resolvePractitionerProjectsNavigation(STORED_PRACTITIONER_ID);
 
-        assertNotNull(section);
+        assertNotNull(resolvedSection);
     }
 }

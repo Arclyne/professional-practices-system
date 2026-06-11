@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,14 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class PostulationManagerTest {
 
-    @Inject private IDatabaseConnection dbConnection;
-    @Inject private PostulationManager postulationManager;
+    private static final int STORED_PRACTITIONER_ID = 123;
+    private static final int ASSIGNED_PROJECT_ID = 1;
+
+    @Inject
+    private IDatabaseConnection dbConnection;
+
+    @Inject
+    private PostulationManager postulationManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -33,70 +40,74 @@ public class PostulationManagerTest {
 
     @Test
     void retrievePractitionerPostulations_ValidPractitioner_ReturnsExpectedList() throws ManagerException {
-        List<ProjectPostulation> expectedList = new ArrayList<>();
-        ProjectPostulation postulation = new ProjectPostulation();
-        postulation.setPractitionerIdentifier(123);
-        postulation.setProjectIdentifier(1);
-        postulation.setProjectName("toRecover");
-        postulation.setPostulationStatus("Assigned");
-        postulation.setPriorityLevel(1);
-        expectedList.add(postulation);
+        List<ProjectPostulation> expectedPostulations = new ArrayList<>();
+        ProjectPostulation assignedPostulation = new ProjectPostulation();
+        assignedPostulation.setPractitionerId(STORED_PRACTITIONER_ID);
+        assignedPostulation.setProjectId(ASSIGNED_PROJECT_ID);
+        assignedPostulation.setProjectName("Sistema de Inventario Web");
+        assignedPostulation.setPostulationStatus("Assigned");
+        assignedPostulation.setPriorityLevel(1);
+        expectedPostulations.add(assignedPostulation);
 
-        List<ProjectPostulation> resultList = postulationManager.retrievePractitionerPostulations(123);
-        assertEquals(expectedList, resultList);
+        List<ProjectPostulation> resultPostulations =
+                postulationManager.retrievePractitionerPostulations(STORED_PRACTITIONER_ID);
+
+        assertEquals(expectedPostulations, resultPostulations);
     }
 
     @Test
     void registerPractitionerPriorities_EmptyList_ThrowsManagerException() {
-        assertThrows(ManagerException.class, () -> postulationManager.registerPractitionerPriorities(123, List.of()));
+        assertThrows(ManagerException.class,
+                () -> postulationManager.registerPractitionerPriorities(STORED_PRACTITIONER_ID, List.of()));
     }
 
     @Test
     void assignProjectToPractitioner_ValidIds_DoesNotThrow() {
-        assertDoesNotThrow(() -> postulationManager.assignProjectToPractitioner(123, 1));
+        assertDoesNotThrow(() -> postulationManager.assignProjectToPractitioner(STORED_PRACTITIONER_ID, ASSIGNED_PROJECT_ID));
     }
 
     @Test
     void retrieveAllAvailableProjects_ReturnsExpectedList() throws ManagerException {
-        List<Project> expectedList = new ArrayList<>();
+        List<Project> expectedProjects = new ArrayList<>();
 
-        Project p1 = new Project();
-        p1.setProjectId(1);
-        p1.setProjectName("toRecover");
-        p1.setDescription("Project for recovery test");
-        p1.setParticipantCapacity(2);
-        p1.setManagerId(1);
-        p1.setStatus("Active");
-        p1.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p1.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p1.setCompanyId(1);
-        expectedList.add(p1);
+        Project inventoryProject = new Project();
+        inventoryProject.setProjectId(1);
+        inventoryProject.setProjectName("Sistema de Inventario Web");
+        inventoryProject.setDescription("Desarrollo de un sistema web para el control de inventario");
+        inventoryProject.setParticipantCapacity(2);
+        inventoryProject.setManagerId(1);
+        inventoryProject.setStatus("Active");
+        inventoryProject.setStartDate(Date.valueOf("2026-01-01"));
+        inventoryProject.setEndDate(Date.valueOf("2026-06-01"));
+        inventoryProject.setCompanyId(1);
+        expectedProjects.add(inventoryProject);
 
-        Project p2 = new Project();
-        p2.setProjectId(2);
-        p2.setProjectName("Dummy 1");
-        p2.setDescription("First dummy project");
-        p2.setParticipantCapacity(3);
-        p2.setManagerId(2);
-        p2.setStatus("Active");
-        p2.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p2.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p2.setCompanyId(2);
-        expectedList.add(p2);
+        Project salesProject = new Project();
+        salesProject.setProjectId(2);
+        salesProject.setProjectName("Aplicacion Movil de Ventas");
+        salesProject.setDescription("Desarrollo de una aplicacion movil para la gestion de ventas");
+        salesProject.setParticipantCapacity(3);
+        salesProject.setManagerId(2);
+        salesProject.setStatus("Active");
+        salesProject.setStartDate(Date.valueOf("2026-01-01"));
+        salesProject.setEndDate(Date.valueOf("2026-06-01"));
+        salesProject.setCompanyId(2);
+        expectedProjects.add(salesProject);
 
-        Project p3 = new Project();
-        p3.setProjectId(3);
-        p3.setProjectName("Dummy 2");
-        p3.setDescription("Second dummy project");
-        p3.setParticipantCapacity(1);
-        p3.setManagerId(3);
-        p3.setStatus("Active");
-        p3.setStartDate(java.sql.Date.valueOf("2026-01-01"));
-        p3.setEndDate(java.sql.Date.valueOf("2026-06-01"));
-        p3.setCompanyId(3);
-        expectedList.add(p3);
+        Project humanResourcesProject = new Project();
+        humanResourcesProject.setProjectId(3);
+        humanResourcesProject.setProjectName("Portal de Recursos Humanos");
+        humanResourcesProject.setDescription("Mantenimiento del portal interno de recursos humanos");
+        humanResourcesProject.setParticipantCapacity(1);
+        humanResourcesProject.setManagerId(3);
+        humanResourcesProject.setStatus("Active");
+        humanResourcesProject.setStartDate(Date.valueOf("2026-01-01"));
+        humanResourcesProject.setEndDate(Date.valueOf("2026-06-01"));
+        humanResourcesProject.setCompanyId(3);
+        expectedProjects.add(humanResourcesProject);
 
-        List<Project> resultList = postulationManager.retrieveAllAvailableProjects();
-        assertEquals(expectedList, resultList);
+        List<Project> resultProjects = postulationManager.retrieveAllAvailableProjects();
+
+        assertEquals(expectedProjects, resultProjects);
     }
 }

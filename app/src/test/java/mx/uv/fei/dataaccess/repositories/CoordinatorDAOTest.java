@@ -26,136 +26,120 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class CoordinatorDAOTest {
 
+    private static final int STORED_COORDINATOR_ID = 67;
+    private static final int NON_EXISTENT_ID = 9999;
+
     @Inject
     private IDatabaseConnection dbConnection;
 
     @Inject
     private ICoordinatorDAO coordinatorDAO;
 
-    private Coordinator testCoordinator;
+    private Coordinator newCoordinator;
 
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
 
-        testCoordinator = new Coordinator();
-        testCoordinator.setName("Angel");
-        testCoordinator.setLastName("Aguilar");
-        testCoordinator.setUserName("aanguilar");
-        testCoordinator.setEmail("aanguilar@uv.mx");
-        testCoordinator.setPassword("securepass");
-        testCoordinator.setRole("Coordinator");
-        testCoordinator.setStatus(UserStatus.ACTIVE);
-        testCoordinator.setGender(Gender.MALE);
+        newCoordinator = new Coordinator();
+        newCoordinator.setName("Patricia");
+        newCoordinator.setLastName("Luna Mendez");
+        newCoordinator.setUserName("pluna");
+        newCoordinator.setEmail("pluna@uv.mx");
+        newCoordinator.setPassword("CoordUv2026");
+        newCoordinator.setRole("Coordinator");
+        newCoordinator.setStatus(UserStatus.ACTIVE);
+        newCoordinator.setGender(Gender.FEMALE);
+    }
+
+    private Coordinator buildStoredCoordinator() {
+        Coordinator storedCoordinator = new Coordinator();
+        storedCoordinator.setId(STORED_COORDINATOR_ID);
+        storedCoordinator.setUserName("mrodriguez");
+        storedCoordinator.setPassword("CoordFei2026");
+        storedCoordinator.setName("Marco Antonio");
+        storedCoordinator.setLastName("Rodriguez Castillo");
+        storedCoordinator.setEmail("mrodriguez@uv.mx");
+        storedCoordinator.setRole("Coordinator");
+        storedCoordinator.setStatus(UserStatus.ACTIVE);
+        storedCoordinator.setGender(Gender.MALE);
+        return storedCoordinator;
     }
 
     @Test
     void insertCoordinator_ValidCoordinator_ReturnsGeneratedId() throws DAOException {
-        int resultId = coordinatorDAO.insertCoordinator(testCoordinator);
+        int resultId = coordinatorDAO.insertCoordinator(newCoordinator);
+
         assertTrue(resultId > 0);
     }
 
     @Test
     void recoverCoordinator_ExistingId_ReturnsCoordinator() throws DAOException {
-        Coordinator expected = new Coordinator();
-        expected.setId(67);
-        expected.setUserName("coord1");
-        expected.setPassword("12345");
-        expected.setName("Coord");
-        expected.setLastName("Test");
-        expected.setEmail("coord1@uv.mx");
-        expected.setRole("Coordinator");
-        expected.setStatus(UserStatus.ACTIVE);
-        expected.setGender(Gender.MALE);
+        Coordinator expectedCoordinator = buildStoredCoordinator();
 
-        Coordinator recovered = coordinatorDAO.recoverCoordinator(67);
-        assertEquals(expected, recovered);
+        Coordinator recoveredCoordinator = coordinatorDAO.recoverCoordinator(STORED_COORDINATOR_ID);
+
+        assertEquals(expectedCoordinator, recoveredCoordinator);
     }
 
     @Test
     void getCurrentCoordinator_WithActiveCoordinator_ReturnsCoordinator() throws DAOException {
-        Coordinator expected = new Coordinator();
-        expected.setId(67);
-        expected.setUserName("coord1");
-        expected.setPassword("12345");
-        expected.setName("Coord");
-        expected.setLastName("Test");
-        expected.setEmail("coord1@uv.mx");
-        expected.setRole("Coordinator");
-        expected.setStatus(UserStatus.ACTIVE);
-        expected.setGender(Gender.MALE);
+        Coordinator expectedCoordinator = buildStoredCoordinator();
 
-        Coordinator current = coordinatorDAO.getCurrentCoordinator();
-        assertEquals(expected, current);
+        Coordinator currentCoordinator = coordinatorDAO.getCurrentCoordinator();
+
+        assertEquals(expectedCoordinator, currentCoordinator);
     }
 
     @Test
     void getAllCoordinators_WithExistingData_ReturnsExpectedList() throws DAOException {
-        List<Coordinator> expectedList = new ArrayList<>();
-        Coordinator expected = new Coordinator();
-        expected.setId(67);
-        expected.setUserName("coord1");
-        expected.setPassword("12345");
-        expected.setName("Coord");
-        expected.setLastName("Test");
-        expected.setEmail("coord1@uv.mx");
-        expected.setRole("Coordinator");
-        expected.setStatus(UserStatus.ACTIVE);
-        expected.setGender(Gender.MALE);
-        expectedList.add(expected);
+        List<Coordinator> expectedCoordinators = new ArrayList<>();
+        expectedCoordinators.add(buildStoredCoordinator());
 
-        List<Coordinator> resultList = coordinatorDAO.getAllCoordinators();
-        assertEquals(expectedList, resultList);
+        List<Coordinator> resultCoordinators = coordinatorDAO.getAllCoordinators();
+
+        assertEquals(expectedCoordinators, resultCoordinators);
     }
 
     @Test
     void updateCoordinator_ValidModifiedData_ReturnsTrue() throws DAOException {
-        testCoordinator.setName("Angel Gabriel Modificado");
-        testCoordinator.setStatus(UserStatus.INACTIVE);
-        boolean isUpdated = coordinatorDAO.updateCoordinator(testCoordinator, 67);
+        newCoordinator.setName("Patricia Isabel");
+        newCoordinator.setStatus(UserStatus.INACTIVE);
+
+        boolean isUpdated = coordinatorDAO.updateCoordinator(newCoordinator, STORED_COORDINATOR_ID);
+
         assertTrue(isUpdated);
     }
 
     @Test
     void insertCoordinator_DuplicateUsername_ThrowsDAOException() {
-        Coordinator duplicate = new Coordinator();
-        duplicate.setUserName("coord1");
-        duplicate.setPassword("password");
-        duplicate.setName("Clon");
-        duplicate.setLastName("Test");
-        duplicate.setEmail("nuevo_coord@uv.mx");
-        duplicate.setRole("Coordinator");
-        duplicate.setStatus(UserStatus.ACTIVE);
-        duplicate.setGender(Gender.MALE);
+        Coordinator duplicateUserNameCoordinator = buildStoredCoordinator();
+        duplicateUserNameCoordinator.setEmail("correo.disponible@uv.mx");
 
-        assertThrows(DAOException.class, () -> coordinatorDAO.insertCoordinator(duplicate));
+        assertThrows(DAOException.class, () -> coordinatorDAO.insertCoordinator(duplicateUserNameCoordinator));
     }
 
     @Test
     void insertCoordinator_DuplicateEmail_ThrowsDAOException() {
-        Coordinator duplicate = new Coordinator();
-        duplicate.setUserName("nuevoCoord02");
-        duplicate.setPassword("password");
-        duplicate.setName("Clon");
-        duplicate.setLastName("Test");
-        duplicate.setEmail("coord1@uv.mx");
-        duplicate.setRole("Coordinator");
-        duplicate.setStatus(UserStatus.ACTIVE);
-        duplicate.setGender(Gender.MALE);
+        Coordinator duplicateEmailCoordinator = buildStoredCoordinator();
+        duplicateEmailCoordinator.setUserName("usuarioNuevo");
 
-        assertThrows(DAOException.class, () -> coordinatorDAO.insertCoordinator(duplicate));
+        assertThrows(DAOException.class, () -> coordinatorDAO.insertCoordinator(duplicateEmailCoordinator));
     }
 
     @Test
     void recoverCoordinator_NonExistentId_ReturnsEmptyCoordinator() throws DAOException {
-        Coordinator recovered = coordinatorDAO.recoverCoordinator(9999);
-        assertEquals(new Coordinator(), recovered);
+        Coordinator recoveredCoordinator = coordinatorDAO.recoverCoordinator(NON_EXISTENT_ID);
+
+        assertEquals(new Coordinator(), recoveredCoordinator);
     }
 
     @Test
     void updateCoordinator_NonExistentId_ReturnsFalse() throws DAOException {
-        testCoordinator.setName("Fantasma");
-        boolean result = coordinatorDAO.updateCoordinator(testCoordinator, 9999);
+        newCoordinator.setName("Patricia Isabel");
+
+        boolean result = coordinatorDAO.updateCoordinator(newCoordinator, NON_EXISTENT_ID);
+
         assertFalse(result);
     }
 }

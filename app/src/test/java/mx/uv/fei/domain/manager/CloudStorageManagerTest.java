@@ -1,11 +1,12 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
@@ -16,16 +17,18 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class CloudStorageManagerTest {
 
-    @Inject private CloudStorageManager cloudStorageManager;
+    @Inject
+    private CloudStorageManager cloudStorageManager;
 
     @Test
-    void uploadEvidenceFile_ValidFile_ReturnsStringUrl() throws Exception {
-        File tempFile = Files.createTempFile("test_evidence", ".pdf").toFile();
-        tempFile.deleteOnExit();
+    void uploadEvidenceFile_ValidFile_ReturnsStringUrl() throws IOException, ManagerException {
+        File evidenceFile = Files.createTempFile("evidencia_practicas", ".pdf").toFile();
+        evidenceFile.deleteOnExit();
 
-        String url = cloudStorageManager.uploadEvidenceFile(tempFile);
-        assertNotNull(url);
-        }
+        String evidenceUrl = cloudStorageManager.uploadEvidenceFile(evidenceFile);
+
+        assertNotNull(evidenceUrl);
+    }
 
     @Test
     void uploadEvidenceFile_NullFile_ThrowsManagerException() {

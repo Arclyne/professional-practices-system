@@ -1,158 +1,158 @@
 package mx.uv.fei.domain.dto;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class DocumentTemplateTest {
 
-    private DocumentTemplate templateA;
-    private DocumentTemplate templateB;
+    private DocumentTemplate baseTemplate;
+    private DocumentTemplate comparedTemplate;
 
     @BeforeEach
     void setUp() {
-        templateA = new DocumentTemplate();
-        templateA.setTemplateName("Oficio de Aceptación");
-        templateA.setDocumentType("Oficio Oficial");
-        templateA.setBodyContent("Cuerpo A con %NOMBRE_PRACTICANTE%.");
-        templateA.setCreatedByUserName("coordinadora");
+        baseTemplate = new DocumentTemplate();
+        baseTemplate.setTemplateName("Oficio de Aceptacion");
+        baseTemplate.setDocumentType("Oficio Oficial");
+        baseTemplate.setBodyContent("Estimado %NOMBRE_PRACTICANTE%, su proyecto fue aceptado.");
+        baseTemplate.setCreatedByUserName("mrodriguez");
 
-        templateB = new DocumentTemplate();
-        templateB.setTemplateName("Oficio de Aceptación");
-        templateB.setDocumentType("Oficio Oficial");
-        templateB.setBodyContent("Cuerpo B completamente distinto.");
-        templateB.setCreatedByUserName("otro_usuario");
+        comparedTemplate = new DocumentTemplate();
+        comparedTemplate.setTemplateName("Oficio de Aceptacion");
+        comparedTemplate.setDocumentType("Oficio Oficial");
+        comparedTemplate.setBodyContent("Cuerpo alternativo del oficio de aceptacion.");
+        comparedTemplate.setCreatedByUserName("eprior");
     }
 
     @Test
     void constructor_Default_GeneratesNonNullId() {
-        DocumentTemplate template = new DocumentTemplate();
+        DocumentTemplate emptyTemplate = new DocumentTemplate();
 
-        assertNotNull(template.getTemplateId());
+        assertNotNull(emptyTemplate.getTemplateId());
     }
 
     @Test
     void constructor_Default_SetsCreatedAtToToday() {
-        DocumentTemplate template = new DocumentTemplate();
+        DocumentTemplate emptyTemplate = new DocumentTemplate();
 
-        assertNotNull(template.getCreatedAt());
+        assertNotNull(emptyTemplate.getCreatedAt());
     }
 
     @Test
     void constructor_TwoCalls_GenerateDifferentIds() {
-        DocumentTemplate first = new DocumentTemplate();
-        DocumentTemplate second = new DocumentTemplate();
+        DocumentTemplate firstTemplate = new DocumentTemplate();
+        DocumentTemplate secondTemplate = new DocumentTemplate();
 
-        assertNotEquals(first.getTemplateId(), second.getTemplateId());
+        assertNotEquals(firstTemplate.getTemplateId(), secondTemplate.getTemplateId());
     }
 
     @Test
     void equals_SameNameAndType_ReturnsTrue() {
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameInstance_ReturnsTrue() {
-        boolean result = templateA.equals(templateA);
+        boolean isEqual = baseTemplate.equals(baseTemplate);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameNameAndType_DifferentBody_ReturnsTrue() {
-        templateB.setBodyContent("Contenido completamente diferente.");
+        comparedTemplate.setBodyContent("Contenido completamente diferente.");
 
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_SameNameAndType_DifferentCreator_ReturnsTrue() {
-        templateB.setCreatedByUserName("otro_coordinador");
+        comparedTemplate.setCreatedByUserName("pluna");
 
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertTrue(result);
+        assertTrue(isEqual);
     }
 
     @Test
     void equals_DifferentName_ReturnsFalse() {
-        templateB.setTemplateName("Bitácora Mayo 2026");
+        comparedTemplate.setTemplateName("Bitacora Mayo 2026");
 
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_DifferentType_ReturnsFalse() {
-        templateB.setDocumentType("Bitácora de Reporte Mensual");
+        comparedTemplate.setDocumentType("Bitacora de Reporte Mensual");
 
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_NullName_ReturnsFalse() {
-        templateB.setTemplateName(null);
+        comparedTemplate.setTemplateName(null);
 
-        boolean result = templateA.equals(templateB);
+        boolean isEqual = baseTemplate.equals(comparedTemplate);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToNull_ReturnsFalse() {
-        boolean result = templateA.equals(null);
+        boolean isEqual = baseTemplate.equals(null);
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void equals_ComparedToDifferentClass_ReturnsFalse() {
-        boolean result = templateA.equals("Oficio de Aceptación");
+        boolean isEqual = baseTemplate.equals("Oficio de Aceptacion");
 
-        assertFalse(result);
+        assertFalse(isEqual);
     }
 
     @Test
     void hashCode_SameNameAndType_ProducesSameHash() {
-        int hashA = templateA.hashCode();
-        int hashB = templateB.hashCode();
+        int baseHash = baseTemplate.hashCode();
+        int comparedHash = comparedTemplate.hashCode();
 
-        assertEquals(hashA, hashB);
+        assertEquals(baseHash, comparedHash);
     }
 
     @Test
     void hashCode_DifferentName_ProducesDifferentHash() {
-        templateB.setTemplateName("Bitácora Mayo 2026");
+        comparedTemplate.setTemplateName("Bitacora Mayo 2026");
 
-        int hashA = templateA.hashCode();
-        int hashB = templateB.hashCode();
+        int baseHash = baseTemplate.hashCode();
+        int comparedHash = comparedTemplate.hashCode();
 
-        assertNotEquals(hashA, hashB);
+        assertNotEquals(baseHash, comparedHash);
     }
 
     @Test
     void toString_ContainsTemplateName() {
-        String result = templateA.toString();
+        String templateDescription = baseTemplate.toString();
 
-        assertTrue(result.contains("Oficio de Aceptación"));
+        assertTrue(templateDescription.contains("Oficio de Aceptacion"));
     }
 
     @Test
     void toString_ContainsDocumentType() {
-        String result = templateA.toString();
+        String templateDescription = baseTemplate.toString();
 
-        assertTrue(result.contains("Oficio Oficial"));
+        assertTrue(templateDescription.contains("Oficio Oficial"));
     }
 }
