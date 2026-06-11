@@ -88,7 +88,7 @@ public class DependencyInjector {
     }
 
     private Object instantiate(Class<?> implementation) {
-        Constructor<?> constructor = implementation.getDeclaredConstructors()[0];
+        Constructor<?> constructor = selectInjectableConstructor(implementation);
         Object[] resolvedArguments = resolveConstructorArguments(constructor);
         Object instance;
 
@@ -108,6 +108,22 @@ public class DependencyInjector {
         }
 
         return instance;
+    }
+
+    private Constructor<?> selectInjectableConstructor(Class<?> implementation) {
+        Constructor<?>[] declaredConstructors = implementation.getDeclaredConstructors();
+        Constructor<?> selectedConstructor = declaredConstructors[0];
+
+        for (Constructor<?> candidateConstructor : declaredConstructors) {
+            boolean isSelectedAnnotated = selectedConstructor.isAnnotationPresent(Inject.class);
+            if (candidateConstructor.isAnnotationPresent(Inject.class)) {
+                selectedConstructor = candidateConstructor;
+            } else if (candidateConstructor.getParameterCount() == 0 && !isSelectedAnnotated) {
+                selectedConstructor = candidateConstructor;
+            }
+        }
+
+        return selectedConstructor;
     }
 
     private Object[] resolveConstructorArguments(Constructor<?> constructor) {
