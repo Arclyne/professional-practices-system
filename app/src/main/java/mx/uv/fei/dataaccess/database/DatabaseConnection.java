@@ -1,10 +1,10 @@
 package mx.uv.fei.dataaccess.database;
 
+import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 
 public class DatabaseConnection implements IDatabaseConnection {
     private final String url;

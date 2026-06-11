@@ -1,11 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -17,11 +11,17 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+
 @Component
 public class PractitionerGradeViewController {
 
-    private static final String PERIOD_ACTIVE = "Junio-Diciembre 2026";
-    private static final String GRADE_FORMAT  = "%.2f / 10.0";
+    private static final String ACTIVE_PERIOD = "Junio-Diciembre 2026";
+    private static final String GRADE_FORMAT = "%.2f / 10.0";
 
     @FXML private Label labelFinalGrade;
     @FXML private Label labelPeriod;
@@ -39,20 +39,17 @@ public class PractitionerGradeViewController {
 
     @FXML
     public void initialize() {
-        User currentPractitioner = store.getState().sessionState().currentUserInSession();
-        int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
-
-        labelPeriod.setText("Periodo: " + PERIOD_ACTIVE);
-
+        User currentUser = store.getState().sessionState().currentUserInSession();
+        int practitionerId = currentUser != null ? currentUser.getId() : 0;
+        labelPeriod.setText("Periodo: " + ACTIVE_PERIOD);
         loadGrade(practitionerId);
     }
 
     private void loadGrade(int practitionerId) {
         try {
-            PractitionerGrade grade = gradingManager
-                    .getGradeByPractitionerAndPeriod(practitionerId, PERIOD_ACTIVE);
-
-            boolean hasGrade = grade != null && grade.getFinalGrade() != null;
+            PractitionerGrade practitionerGrade = gradingManager
+                    .getGradeByPractitionerAndPeriod(practitionerId, ACTIVE_PERIOD);
+            boolean hasGrade = practitionerGrade != null && practitionerGrade.getFinalGrade() != null;
 
             finalGradeContainer.setVisible(hasGrade);
             finalGradeContainer.setManaged(hasGrade);
@@ -60,7 +57,7 @@ public class PractitionerGradeViewController {
             noGradeYetContainer.setManaged(!hasGrade);
 
             if (hasGrade) {
-                labelFinalGrade.setText(String.format(GRADE_FORMAT, grade.getFinalGrade()));
+                labelFinalGrade.setText(String.format(GRADE_FORMAT, practitionerGrade.getFinalGrade()));
             }
         } catch (ManagerException e) {
             Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
@@ -68,7 +65,7 @@ public class PractitionerGradeViewController {
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent event) {
+    private void handleReturnAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

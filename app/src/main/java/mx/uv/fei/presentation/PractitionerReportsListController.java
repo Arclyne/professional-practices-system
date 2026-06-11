@@ -185,7 +185,7 @@ public class PractitionerReportsListController implements Initializable {
         try {
             User currentPractitioner = store.getState().sessionState().currentUserInSession();
             List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
-            String pdfPath = pdfGenerator.generatePdf(selectedReport, currentPractitioner, reportActivities);
+            String pdfPath = pdfGenerator.generateMonthlyReportPdf(selectedReport, currentPractitioner, reportActivities);
 
             File generatedFile = new File(pdfPath);
             if (generatedFile.exists()) {

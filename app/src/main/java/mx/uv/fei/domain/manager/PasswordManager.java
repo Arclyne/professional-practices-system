@@ -9,8 +9,8 @@ import mx.uv.fei.domain.common.validators.PasswordValidator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.statemachine.SessionFacade;
 import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.domain.statemachine.SessionFacade;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
@@ -20,6 +20,9 @@ import java.util.UUID;
 
 @Component
 public class PasswordManager {
+
+    private static final String TEMPORARY_PASSWORD_PREFIX = "Temp-";
+    private static final int TEMPORARY_PASSWORD_SUFFIX_LENGTH = 8;
 
     private final IUserDAO userDAO;
     private final IDatabaseConnection databaseConnection;
@@ -35,33 +38,27 @@ public class PasswordManager {
     }
 
     public void updatePasswordAndActivate(String newPassword, String confirmPassword) throws ManagerException {
-
-        User userInSession = session.getCurrentUser();
-
-        if (userInSession == null) {
-            throw new ManagerException("Error: No se encontró una sesión activa para actualizar.");
+        User currentUser = session.getCurrentUser();
+        if (currentUser == null) {
+            throw new ManagerException("No se encontró una sesión activa para actualizar.");
         }
 
         PasswordValidator.validatePassword(confirmPassword);
-
-        userInSession.setStatus(UserStatus.ACTIVE);
-        userInSession.setPassword(newPassword);
+        currentUser.setStatus(UserStatus.ACTIVE);
+        currentUser.setPassword(newPassword);
 
         try (Connection sharedConnection = databaseConnection.getConnection()) {
-            boolean isUpdated = userDAO.updateUser(userInSession, sharedConnection);
-
+            boolean isUpdated = userDAO.updateUser(currentUser, sharedConnection);
             if (!isUpdated) {
                 throw new ManagerException("No se pudo actualizar la información en el sistema.");
             }
-
             store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
-
-        } catch (DAOException | SQLException exception) {
-            throw new ManagerException("Ocurrió un error de conexión al intentar actualizar el perfil.", exception);
+        } catch (DAOException | SQLException e) {
+            throw new ManagerException("Ocurrió un error de conexión al intentar actualizar el perfil.", e);
         }
     }
 
     public static String generatePassword() {
-        return "Temp-" + UUID.randomUUID().toString().substring(0, 8);
+        return TEMPORARY_PASSWORD_PREFIX + UUID.randomUUID().toString().substring(0, TEMPORARY_PASSWORD_SUFFIX_LENGTH);
     }
 }

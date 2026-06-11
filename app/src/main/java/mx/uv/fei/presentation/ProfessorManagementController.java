@@ -1,18 +1,5 @@
 package mx.uv.fei.presentation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -24,96 +11,112 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class ProfessorManagementController {
 
-    private static final String LOAD_ERROR_TITLE = "Error de carga";
-    private static final String NO_SELECTION_TITLE = "Sin selección";
-    private static final String NO_SELECTION_MESSAGE = "Debe seleccionar al menos un profesor para inactivar.";
-    private static final String SUCCESS_TITLE = "Proceso Exitoso";
-    private static final String SUCCESS_MESSAGE = "Los profesores seleccionados han sido inactivados.";
-    private static final String OPERATION_ERROR_TITLE = "Error en la Operación";
-    private static final String DISPLAY_ITEM_FORMAT = "%s %s (%s) - %s";
+    private static final String PROFESSOR_DISPLAY_FORMAT = "%s %s (%s) - %s";
 
-    @FXML
-    private ListView<String> professorsListView;
+    @FXML private ListView<String> professorsListView;
 
     private final ProfessorManager professorManager;
-    private final AppStore applicationNavigationStore;
+    private final AppStore store;
 
-    private final Map<String, Integer> itemToIdentifierMap = new HashMap<>();
-    private final Map<String, BooleanProperty> itemSelectionStateMap = new HashMap<>();
+    private final Map<String, Integer> displayToProfessorId = new HashMap<>();
+    private final Map<String, BooleanProperty> displaySelectionState = new HashMap<>();
 
     @Inject
-    public ProfessorManagementController(ProfessorManager professorManager, AppStore applicationNavigationStore) {
+    public ProfessorManagementController(ProfessorManager professorManager, AppStore store) {
         this.professorManager = professorManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
-        Controller.setupCheckBoxListView(professorsListView, itemSelectionStateMap);
+        Controller.setupCheckBoxListView(professorsListView, displaySelectionState);
         loadActiveProfessors();
     }
 
     private void loadActiveProfessors() {
-        itemToIdentifierMap.clear();
-        itemSelectionStateMap.clear();
-        ObservableList<String> displayItemsList = FXCollections.observableArrayList();
+        displayToProfessorId.clear();
+        displaySelectionState.clear();
+        ObservableList<String> displayItems = FXCollections.observableArrayList();
 
         try {
-            List<Professor> registeredProfessorsList = professorManager.getAllProfessors();
-
-            for (Professor currentProfessor : registeredProfessorsList) {
-                if (currentProfessor.getStatus() != null && currentProfessor.getStatus() != UserStatus.INACTIVE) {
-                    String formattedDisplayString = String.format(DISPLAY_ITEM_FORMAT,
-                            currentProfessor.getName(),
-                            currentProfessor.getLastName(),
-                            currentProfessor.getUserName(),
-                            currentProfessor.getStatus().getDatabaseValue());
-
-                    itemToIdentifierMap.put(formattedDisplayString, currentProfessor.getId());
-                    itemSelectionStateMap.put(formattedDisplayString, new SimpleBooleanProperty(false));
-                    displayItemsList.add(formattedDisplayString);
+            List<Professor> professors = professorManager.getAllProfessors();
+            for (Professor professor : professors) {
+                if (isProfessorActive(professor)) {
+                    addProfessorToDisplay(professor, displayItems);
                 }
             }
         } catch (ManagerException e) {
-            Controller.showErrorAlert(LOAD_ERROR_TITLE, e.getMessage());
+            Controller.showErrorAlert("Error de carga", e.getMessage());
         }
 
-        professorsListView.setItems(displayItemsList);
+        professorsListView.setItems(displayItems);
+    }
+
+    private boolean isProfessorActive(Professor professor) {
+        return professor.getStatus() != null && professor.getStatus() != UserStatus.INACTIVE;
+    }
+
+    private void addProfessorToDisplay(Professor professor, ObservableList<String> displayItems) {
+        String displayText = String.format(PROFESSOR_DISPLAY_FORMAT,
+                professor.getName(), professor.getLastName(),
+                professor.getUserName(), professor.getStatus().getDatabaseValue());
+        displayToProfessorId.put(displayText, professor.getId());
+        displaySelectionState.put(displayText, new SimpleBooleanProperty(false));
+        displayItems.add(displayText);
     }
 
     @FXML
     private void handleInactivateSelectedAction() {
-        List<Integer> identifiersToInactivateList = new ArrayList<>();
+        List<Integer> selectedProfessorIds = collectSelectedProfessorIds();
 
-        for (Map.Entry<String, BooleanProperty> currentMapEntry : itemSelectionStateMap.entrySet()) {
-            if (currentMapEntry.getValue().get()) {
-                identifiersToInactivateList.add(itemToIdentifierMap.get(currentMapEntry.getKey()));
-            }
-        }
-
-        if (identifiersToInactivateList.isEmpty()) {
-            Controller.showAlert(NO_SELECTION_TITLE, NO_SELECTION_MESSAGE, AlertType.WARNING);
+        if (selectedProfessorIds.isEmpty()) {
+            Controller.showAlert("Sin selección",
+                    "Debe seleccionar al menos un profesor para inactivar.", AlertType.WARNING);
         } else {
             try {
-                professorManager.inactivateMultipleProfessors(identifiersToInactivateList);
-                Controller.showInfoAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
+                professorManager.inactivateMultipleProfessors(selectedProfessorIds);
+                Controller.showInfoAlert("Proceso Exitoso",
+                        "Los profesores seleccionados han sido inactivados.");
                 loadActiveProfessors();
             } catch (ManagerException e) {
-                Controller.showErrorAlert(OPERATION_ERROR_TITLE, e.getMessage());
+                Controller.showErrorAlert("Error en la Operación", e.getMessage());
             }
         }
+    }
+
+    private List<Integer> collectSelectedProfessorIds() {
+        List<Integer> selectedProfessorIds = new ArrayList<>();
+        for (Map.Entry<String, BooleanProperty> selectionEntry : displaySelectionState.entrySet()) {
+            if (selectionEntry.getValue().get()) {
+                selectedProfessorIds.add(displayToProfessorId.get(selectionEntry.getKey()));
+            }
+        }
+        return selectedProfessorIds;
     }
 
     @FXML
     private void handleRegisterNewProfessorAction() {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
     }
 
     @FXML
     private void handleReturnAction() {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

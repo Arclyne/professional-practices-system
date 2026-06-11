@@ -4,6 +4,13 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Representa una plantilla de documento reutilizable para la generación de reportes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public class DocumentTemplate {
 
     private String templateId;
@@ -67,17 +74,15 @@ public class DocumentTemplate {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(Object obj) {
         boolean isEqual = false;
-
-        if (this == object) {
+        if (this == obj) {
             isEqual = true;
-        } else if (object != null && getClass() == object.getClass()) {
-            DocumentTemplate that = (DocumentTemplate) object;
-            isEqual = Objects.equals(this.templateName, that.templateName)
-                    && Objects.equals(this.documentType, that.documentType);
+        } else if (obj != null && getClass() == obj.getClass()) {
+            DocumentTemplate other = (DocumentTemplate) obj;
+            isEqual = Objects.equals(this.templateName, other.templateName) &&
+                    Objects.equals(this.documentType, other.documentType);
         }
-
         return isEqual;
     }
 

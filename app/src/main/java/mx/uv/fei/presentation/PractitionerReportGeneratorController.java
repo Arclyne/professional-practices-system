@@ -1,16 +1,18 @@
 package mx.uv.fei.presentation;
 
-import java.net.URL;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.ReportStatus;
+import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.ActivityManager;
+import mx.uv.fei.domain.manager.MonthlyReportManager;
+import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.domain.statemachine.actions.NavigationAction;
+import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,27 +34,24 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-import mx.uv.fei.config.annotation.etiquette.Component;
-import mx.uv.fei.config.annotation.etiquette.Inject;
-import mx.uv.fei.domain.common.Controller;
-import mx.uv.fei.domain.dto.Activity;
-import mx.uv.fei.domain.dto.MonthlyReport;
-import mx.uv.fei.domain.dto.User;
-import mx.uv.fei.domain.enums.ReportStatus;
-import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.ActivityManager;
-import mx.uv.fei.domain.manager.MonthlyReportManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import java.net.URL;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 @Component
 public class PractitionerReportGeneratorController implements Initializable {
 
-    private static final String TITLE_SUCCESS = "Reporte Creado";
-    private static final String TITLE_ERROR = "Error al Generar Reporte";
-    private static final String TITLE_VALIDATION = "Datos Incompletos";
-    private static final String MSG_VALIDATION = "Por favor, completa el mes, el año y el rango de fechas.";
+    private static final Locale SPANISH_LOCALE = Locale.of("es", "MX");
+    private static final int GRID_GAP = 10;
+    private static final int DESCRIPTION_ROWS = 3;
 
     private final MonthlyReportManager reportManager;
     private final ActivityManager activityManager;
@@ -62,12 +61,12 @@ public class PractitionerReportGeneratorController implements Initializable {
     @FXML private TextField fieldYear;
     @FXML private DatePicker dateStart;
     @FXML private DatePicker dateEnd;
-
     @FXML private ListView<Activity> freeActivitiesListView;
     @FXML private Button btnQuickEdit;
 
     @Inject
-    public PractitionerReportGeneratorController(MonthlyReportManager reportManager, ActivityManager activityManager, AppStore store) {
+    public PractitionerReportGeneratorController(MonthlyReportManager reportManager,
+                                                 ActivityManager activityManager, AppStore store) {
         this.reportManager = reportManager;
         this.activityManager = activityManager;
         this.store = store;
@@ -82,60 +81,59 @@ public class PractitionerReportGeneratorController implements Initializable {
     }
 
     private void setupMonthComboBox() {
-        Locale spanishLocale = Locale.of("es", "MX");
-
         List<String> translatedMonths = Arrays.stream(Month.values())
-                .map(month -> month.getDisplayName(TextStyle.FULL, spanishLocale))
-                .map(name -> name.substring(0, 1).toUpperCase() + name.substring(1))
+                .map(month -> month.getDisplayName(TextStyle.FULL, SPANISH_LOCALE))
+                .map(this::capitalize)
                 .toList();
-
         comboMonth.setItems(FXCollections.observableArrayList(translatedMonths));
+    }
+
+    private String capitalize(String value) {
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     private void configureListView() {
         freeActivitiesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        freeActivitiesListView.setCellFactory(param -> new ListCell<>() {
+        freeActivitiesListView.setCellFactory(_ -> new ListCell<>() {
             @Override
-            protected void updateItem(Activity activity, boolean empty) {
-                super.updateItem(activity, empty);
-                if (empty || activity == null) {
+            protected void updateItem(Activity activity, boolean isEmpty) {
+                super.updateItem(activity, isEmpty);
+                if (isEmpty || activity == null) {
                     setText(null);
                 } else {
-                    setText("• " + activity.getTitle() + " | Fecha: " + activity.getActivityDate() + " | " + activity.getDurationHours() + " hrs");
+                    setText("• " + activity.getTitle()
+                            + " | Fecha: " + activity.getActivityDate()
+                            + " | " + activity.getDurationHours() + " hrs");
                 }
             }
         });
 
-        freeActivitiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            btnQuickEdit.setDisable(newSelection == null);
-        });
+        freeActivitiesListView.getSelectionModel().selectedItemProperty()
+                .addListener((_, _, selectedActivity) -> btnQuickEdit.setDisable(selectedActivity == null));
     }
 
     private void loadAvailableActivities() {
         try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-            int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
+            User currentUser = store.getState().sessionState().currentUserInSession();
+            int practitionerId = currentUser != null ? currentUser.getId() : 0;
 
             List<Activity> allActivities = activityManager.getPractitionerLogbook(practitionerId);
-
             List<Activity> freeActivities = allActivities.stream()
                     .filter(activity -> activity.getReportId() == null)
                     .toList();
 
-            ObservableList<Activity> observableActivities = FXCollections.observableArrayList(freeActivities);
-            freeActivitiesListView.setItems(observableActivities);
-
+            freeActivitiesListView.setItems(FXCollections.observableArrayList(freeActivities));
         } catch (ManagerException e) {
-            Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error al Generar Reporte", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleQuickEditAction(ActionEvent event) {
-        Activity selected = freeActivitiesListView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            openQuickEditDialog(selected);
+    private void handleQuickEditAction() {
+        Activity selectedActivity = freeActivitiesListView.getSelectionModel().getSelectedItem();
+        if (selectedActivity != null) {
+            openQuickEditDialog(selectedActivity);
         }
     }
 
@@ -145,81 +143,95 @@ public class PractitionerReportGeneratorController implements Initializable {
         dialog.setHeaderText("Modifica los datos de la actividad.");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10); grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
         TextField titleField = new TextField(activity.getTitle());
         DatePicker datePicker = new DatePicker(activity.getActivityDate().toLocalDate());
         TextField hoursField = new TextField(String.valueOf(activity.getDurationHours()));
-        TextArea descArea = new TextArea(activity.getDescription());
-        descArea.setPrefRowCount(3);
+        TextArea descriptionArea = new TextArea(activity.getDescription());
+        descriptionArea.setPrefRowCount(DESCRIPTION_ROWS);
 
-        grid.add(new Label("Título:"), 0, 0); grid.add(titleField, 1, 0);
-        grid.add(new Label("Fecha:"), 0, 1);  grid.add(datePicker, 1, 1);
-        grid.add(new Label("Horas:"), 0, 2);  grid.add(hoursField, 1, 2);
-        grid.add(new Label("Descripción:"), 0, 3); grid.add(descArea, 1, 3);
-
-        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setContent(buildEditGrid(titleField, datePicker, hoursField, descriptionArea));
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                activity.setTitle(titleField.getText().trim());
-                activity.setActivityDate(Date.valueOf(datePicker.getValue()));
-                activity.setDurationHours(Integer.parseInt(hoursField.getText().trim()));
-                activity.setDescription(descArea.getText().trim());
+            applyActivityEdit(activity, titleField, datePicker, hoursField, descriptionArea);
+        }
+    }
 
-                activityManager.modifyActivity(activity, activity.getActivityId());
-                Controller.showAlert("Actualización Exitosa", "Actividad modificada correctamente.", AlertType.INFORMATION);
+    private GridPane buildEditGrid(TextField titleField, DatePicker datePicker,
+                                   TextField hoursField, TextArea descriptionArea) {
+        GridPane grid = new GridPane();
+        grid.setHgap(GRID_GAP);
+        grid.setVgap(GRID_GAP);
+        grid.setPadding(new Insets(20, 150, 10, 10));
 
-                loadAvailableActivities();
+        grid.add(new Label("Título:"), 0, 0);
+        grid.add(titleField, 1, 0);
+        grid.add(new Label("Fecha:"), 0, 1);
+        grid.add(datePicker, 1, 1);
+        grid.add(new Label("Horas:"), 0, 2);
+        grid.add(hoursField, 1, 2);
+        grid.add(new Label("Descripción:"), 0, 3);
+        grid.add(descriptionArea, 1, 3);
 
-            } catch (NumberFormatException e) {
-                Controller.showAlert("Error de Formato", "Las horas deben ser un número.", AlertType.WARNING);
-            } catch (ManagerException e) {
-                Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
-            }
+        return grid;
+    }
+
+    private void applyActivityEdit(Activity activity, TextField titleField, DatePicker datePicker,
+                                   TextField hoursField, TextArea descriptionArea) {
+        try {
+            activity.setTitle(titleField.getText().trim());
+            activity.setActivityDate(Date.valueOf(datePicker.getValue()));
+            activity.setDurationHours(Integer.parseInt(hoursField.getText().trim()));
+            activity.setDescription(descriptionArea.getText().trim());
+
+            activityManager.modifyActivity(activity, activity.getActivityId());
+            Controller.showAlert("Actualización Exitosa",
+                    "Actividad modificada correctamente.", AlertType.INFORMATION);
+            loadAvailableActivities();
+        } catch (NumberFormatException e) {
+            Controller.showAlert("Error de Formato", "Las horas deben ser un número.", AlertType.WARNING);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleCreateReportAction(ActionEvent event) {
+    private void handleCreateReportAction() {
         try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-
-            MonthlyReport newReport = new MonthlyReport();
-            newReport.setPractitionerId(currentPractitioner.getId());
-            newReport.setMonthName(comboMonth.getValue());
-
-            int year = 0;
-            if (!fieldYear.getText().trim().isEmpty()) {
-                year = Integer.parseInt(fieldYear.getText().trim());
-            }
-            newReport.setYear(year);
-
-            if (dateStart.getValue() != null) {
-                newReport.setStartDate(Date.valueOf(dateStart.getValue()));
-            }
-            if (dateEnd.getValue() != null) {
-                newReport.setEndDate(Date.valueOf(dateEnd.getValue()));
-            }
-
-            newReport.setStatus(ReportStatus.PENDING.getDatabaseValue());
-
+            MonthlyReport report = buildReportFromForm();
             List<Activity> selectedActivities = getSelectedActivities();
-            reportManager.createReportAndLinkActivities(newReport, selectedActivities);
+            reportManager.createReportAndLinkActivities(report, selectedActivities);
 
             Controller.showAlert("Reporte Creado", "El reporte se generó con éxito.", AlertType.INFORMATION);
-
             clearForm();
             loadAvailableActivities();
-
         } catch (NumberFormatException e) {
             Controller.showAlert("Formato Inválido", "El año debe ser un número.", AlertType.WARNING);
         } catch (ManagerException e) {
             Controller.showAlert("Datos Inválidos", e.getMessage(), AlertType.WARNING);
         }
+    }
+
+    private MonthlyReport buildReportFromForm() {
+        User currentUser = store.getState().sessionState().currentUserInSession();
+        MonthlyReport report = new MonthlyReport();
+        report.setPractitionerId(currentUser.getId());
+        report.setMonthName(comboMonth.getValue());
+        report.setYear(parseYear());
+
+        if (dateStart.getValue() != null) {
+            report.setStartDate(Date.valueOf(dateStart.getValue()));
+        }
+        if (dateEnd.getValue() != null) {
+            report.setEndDate(Date.valueOf(dateEnd.getValue()));
+        }
+        report.setStatus(ReportStatus.PENDING.getDatabaseValue());
+        return report;
+    }
+
+    private int parseYear() {
+        String yearText = fieldYear.getText().trim();
+        return yearText.isEmpty() ? 0 : Integer.parseInt(yearText);
     }
 
     private List<Activity> getSelectedActivities() {
@@ -233,7 +245,7 @@ public class PractitionerReportGeneratorController implements Initializable {
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent event) {
+    private void handleReturnAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

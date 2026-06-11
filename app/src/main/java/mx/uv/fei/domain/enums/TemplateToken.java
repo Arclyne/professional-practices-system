@@ -1,5 +1,12 @@
 package mx.uv.fei.domain.enums;
 
+/**
+ * Define los tokens de sustitución disponibles para la generación de plantillas de documentos.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 public enum TemplateToken {
 
     NOMBRE_PRACTICANTE("%NOMBRE_PRACTICANTE%", "Nombre completo del practicante"),
@@ -21,13 +28,8 @@ public enum TemplateToken {
         this.description = description;
     }
 
-    public String getPlaceholder() {
-        return placeholder;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    public String getPlaceholder() { return placeholder; }
+    public String getDescription() { return description; }
 
     @Override
     public String toString() {

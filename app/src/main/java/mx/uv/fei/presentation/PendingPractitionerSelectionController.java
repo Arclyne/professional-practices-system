@@ -1,12 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -17,41 +10,48 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+
 import java.util.List;
 
 @Component
 public class PendingPractitionerSelectionController {
 
-    @FXML
-    private ListView<Practitioner> pendingPractitionersListView;
+    @FXML private ListView<Practitioner> pendingPractitionersListView;
 
     private final PractitionerManager practitionerManager;
-    private final AppStore applicationNavigationStore;
-    private final ObservableList<Practitioner> pendingPractitionersObservableList = FXCollections.observableArrayList();
+    private final AppStore store;
+    private final ObservableList<Practitioner> pendingPractitioners = FXCollections.observableArrayList();
 
     @Inject
-    public PendingPractitionerSelectionController(PractitionerManager pendingPractitionerManager, AppStore store) {
-        this.practitionerManager = pendingPractitionerManager;
-        this.applicationNavigationStore = store;
+    public PendingPractitionerSelectionController(PractitionerManager practitionerManager, AppStore store) {
+        this.practitionerManager = practitionerManager;
+        this.store = store;
     }
 
     @FXML
     public void initialize() {
-        configurePractitionerListViewDisplay();
-        pendingPractitionersListView.setItems(pendingPractitionersObservableList);
+        configurePractitionerListView();
+        pendingPractitionersListView.setItems(pendingPractitioners);
         loadPendingPractitioners();
     }
 
-    private void configurePractitionerListViewDisplay() {
-        pendingPractitionersListView.setCellFactory(parameter -> new ListCell<>() {
+    private void configurePractitionerListView() {
+        pendingPractitionersListView.setCellFactory(_ -> new ListCell<>() {
             @Override
-            protected void updateItem(Practitioner currentPractitionerItem, boolean isItemEmpty) {
-                super.updateItem(currentPractitionerItem, isItemEmpty);
-                if (isItemEmpty || currentPractitionerItem == null) {
+            protected void updateItem(Practitioner practitioner, boolean isEmpty) {
+                super.updateItem(practitioner, isEmpty);
+                if (isEmpty || practitioner == null) {
                     setText(null);
                 } else {
-                    String formattedDisplayString = currentPractitionerItem.getEnrollment() + " - " + currentPractitionerItem.getName() + " " + currentPractitionerItem.getLastName();
-                    setText(formattedDisplayString);
+                    setText(practitioner.getEnrollment() + " - "
+                            + practitioner.getName() + " " + practitioner.getLastName());
                 }
             }
         });
@@ -59,28 +59,29 @@ public class PendingPractitionerSelectionController {
 
     private void loadPendingPractitioners() {
         try {
-            pendingPractitionersObservableList.clear();
-            List<Practitioner> retrievedPendingList = practitionerManager.retrievePractitionersPendingAssignment();
-            pendingPractitionersObservableList.addAll(retrievedPendingList);
+            pendingPractitioners.clear();
+            List<Practitioner> retrievedPractitioners = practitionerManager.retrievePractitionersPendingAssignment();
+            pendingPractitioners.addAll(retrievedPractitioners);
         } catch (ManagerException e) {
-            Controller.showAlert("Error de conexion", e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleReviewPractitionerPostulationsAction(ActionEvent userActionEvent) {
-        Practitioner selectedPractitionerToReview = pendingPractitionersListView.getSelectionModel().getSelectedItem();
+    private void handleReviewPractitionerPostulationsAction() {
+        Practitioner selectedPractitioner = pendingPractitionersListView.getSelectionModel().getSelectedItem();
 
-        if (selectedPractitionerToReview != null) {
-            String targetPractitionerIdentifier = String.valueOf(selectedPractitionerToReview.getId());
-            applicationNavigationStore.dispatch(new NavigationAction.ViewEntityDetails( AppSection.ASSIGN_PROJECT, targetPractitionerIdentifier));
+        if (selectedPractitioner != null) {
+            store.dispatch(new NavigationAction.ViewEntityDetails(
+                    AppSection.ASSIGN_PROJECT, String.valueOf(selectedPractitioner.getId())));
         } else {
-            Controller.showAlert("Seleccion requerida", "Seleccione un practicante de la lista para revisar sus postulaciones.", AlertType.WARNING);
+            Controller.showAlert("Selección requerida",
+                    "Seleccione un practicante de la lista para revisar sus postulaciones.", AlertType.WARNING);
         }
     }
 
     @FXML
-    private void handleReturnToCoordinatorMenuAction(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+    private void handleReturnToCoordinatorMenuAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
     }
 }

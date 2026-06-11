@@ -1,15 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert.AlertType;
-
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -24,82 +14,85 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
 @Component
 public class RegisterCoordinatorController implements Initializable {
 
-    @FXML
-    private FormField nameFormField;
-    @FXML
-    private FormField lastNameFormField;
-    @FXML
-    private FormField emailFormField;
-    @FXML
-    private FormField personalNumberFormField;
-    @FXML
-    private FormComboBox genderFormComboBox;
+    @FXML private FormField nameFormField;
+    @FXML private FormField lastNameFormField;
+    @FXML private FormField emailFormField;
+    @FXML private FormField personalNumberFormField;
+    @FXML private FormComboBox genderFormComboBox;
 
     private final CoordinatorManager coordinatorManager;
-    private final AppStore applicationNavigationStore;
+    private final AppStore store;
 
     @Inject
-    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, AppStore applicationNavigationStore) {
+    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, AppStore store) {
         this.coordinatorManager = coordinatorManager;
-        this.applicationNavigationStore = applicationNavigationStore;
+        this.store = store;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ObservableList<String> genderOptionsObservableList = FXCollections.observableArrayList(
+        ObservableList<String> genderOptions = FXCollections.observableArrayList(
                 Gender.MALE.getDisplayValue(),
                 Gender.FEMALE.getDisplayValue(),
-                Gender.OTHER.getDisplayValue()
-        );
-        genderFormComboBox.setItems(genderOptionsObservableList);
+                Gender.OTHER.getDisplayValue());
+        genderFormComboBox.setItems(genderOptions);
     }
 
     @FXML
-    private void handleActionRegisterButton(ActionEvent userActionEvent) {
-        if (nameFormField.getText().isEmpty() || lastNameFormField.getText().isEmpty() ||
-                emailFormField.getText().isEmpty() || personalNumberFormField.getText().isEmpty() ||
-                genderFormComboBox.getValue() == null) {
+    private void handleActionRegisterButton() {
+        if (isFormIncomplete()) {
+            Controller.showAlert("Campos incompletos",
+                    "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
+            return;
+        }
 
-            Controller.showAlert("Campos incompletos", "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-
-        } else {
-            try {
-                Coordinator newCoordinatorInformation = getNewCoordinator();
-                String assignedTemporaryPassword = coordinatorManager.registerNewCoordinator(newCoordinatorInformation);
-
-                Controller.showAlert("Registro Exitoso",
-                        "El coordinador ha sido registrado correctamente en el sistema.\nContraseña temporal generada: " + assignedTemporaryPassword,
-                        AlertType.INFORMATION);
-
-                applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
-
-            } catch (ManagerException e) {
-                Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
-            }
+        try {
+            Coordinator coordinator = buildCoordinatorFromForm();
+            String temporaryPassword = coordinatorManager.registerNewCoordinator(coordinator);
+            Controller.showAlert("Registro Exitoso",
+                    "El coordinador ha sido registrado correctamente en el sistema.\n"
+                            + "Contraseña temporal generada: " + temporaryPassword,
+                    AlertType.INFORMATION);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        } catch (ManagerException e) {
+            Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
     }
 
-    private Coordinator getNewCoordinator() {
-        Coordinator mappedCoordinator = new Coordinator();
+    private boolean isFormIncomplete() {
+        return nameFormField.getText().isEmpty()
+                || lastNameFormField.getText().isEmpty()
+                || emailFormField.getText().isEmpty()
+                || personalNumberFormField.getText().isEmpty()
+                || genderFormComboBox.getValue() == null;
+    }
 
-        mappedCoordinator.setName(nameFormField.getText().trim());
-        mappedCoordinator.setLastName(lastNameFormField.getText().trim());
-        mappedCoordinator.setEmail(emailFormField.getText().trim());
-        mappedCoordinator.setUserName(personalNumberFormField.getText().trim());
-
-        String selectedSex = (String) genderFormComboBox.getValue();
-        mappedCoordinator.setGender(Gender.fromDisplayValue(selectedSex));
-
-        mappedCoordinator.setStatus(UserStatus.PENDING);
-
-        return mappedCoordinator;
+    private Coordinator buildCoordinatorFromForm() {
+        Coordinator coordinator = new Coordinator();
+        coordinator.setName(nameFormField.getText().trim());
+        coordinator.setLastName(lastNameFormField.getText().trim());
+        coordinator.setEmail(emailFormField.getText().trim());
+        coordinator.setUserName(personalNumberFormField.getText().trim());
+        coordinator.setGender(Gender.fromDisplayValue((String) genderFormComboBox.getValue()));
+        coordinator.setStatus(UserStatus.PENDING);
+        return coordinator;
     }
 
     @FXML
-    private void handleActionCancelButton(ActionEvent userActionEvent) {
-        applicationNavigationStore.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+    private void handleActionCancelButton() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

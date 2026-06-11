@@ -16,9 +16,10 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class TokenManager {
 
-    private static final int SIZE_TOKEN = 100000;
-    private static final int BOUND = 900000;
-    private static final int WAIT_TIME = 60;
+    private static final int TOKEN_MINIMUM_VALUE = 100000;
+    private static final int TOKEN_RANDOM_BOUND = 900000;
+    private static final int TOKEN_EXPIRATION_SECONDS = 60;
+
     private final IAuthenticationToken tokenDAO;
     private final SessionFacade session;
 
@@ -30,58 +31,57 @@ public class TokenManager {
 
     public void generateToken() throws ManagerException {
         User currentUser = session.getCurrentUser();
-
         if (currentUser == null) {
-            throw new ManagerException("Violación de estado: Intento de generar token sin una sesión de usuario activa en el Store.");
+            throw new ManagerException("No hay una sesión de usuario activa para generar el token.");
         }
 
-        SecureRandom secureRandom = new SecureRandom();
-        int newToken = SIZE_TOKEN + secureRandom.nextInt(BOUND);
+        int generatedTokenValue = TOKEN_MINIMUM_VALUE + new SecureRandom().nextInt(TOKEN_RANDOM_BOUND);
 
         AuthenticationToken token = new AuthenticationToken();
         token.setUserName(currentUser.getUserName());
-        token.setValueToken(newToken);
+        token.setValueToken(generatedTokenValue);
         token.setTimeCreation(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         try {
             tokenDAO.insertToken(token);
         } catch (DAOException e) {
-            throw new ManagerException("Error de persistencia al intentar registrar el nuevo token para el usuario '" + currentUser.getUserName() + "': " + e.getMessage(), e);
+            throw new ManagerException("Error al registrar el token para el usuario.", e);
         }
     }
 
     public void verifyToken(String tokenInput) throws ManagerException {
         if (tokenInput == null || tokenInput.trim().isEmpty()) {
-            throw new ManagerException("Validación fallida: El campo de código de token se recibió vacío o nulo.");
+            throw new ManagerException("El código de token no puede estar vacío.");
         }
 
-        int parsedToken;
-        try {
-            parsedToken = Integer.parseInt(tokenInput.trim());
-        } catch (NumberFormatException e) {
-            throw new ManagerException(String.format("Validación de formato fallida: Se esperaba un código numérico, pero se recibió '%s'.", tokenInput), e);
-        }
-
+        int parsedTokenValue = parseTokenValue(tokenInput);
         User currentUser = session.getCurrentUser();
+
         if (currentUser == null) {
-            throw new ManagerException("Violación de estado: Intento de verificar un token sin una sesión de usuario activa en el Store.");
+            throw new ManagerException("No hay una sesión de usuario activa para verificar el token.");
         }
 
         try {
-            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedToken, currentUser.getUserName());
+            LocalDateTime tokenCreationTime = tokenDAO.getTokenCreationTime(parsedTokenValue, currentUser.getUserName());
 
             if (tokenCreationTime == null) {
-                throw new ManagerException(String.format("Autenticación denegada: El token [%d] no coincide con los registros del usuario '%s'.", parsedToken, currentUser.getUserName()));
+                throw new ManagerException("El token ingresado no es válido. Verifique el código e intente nuevamente.");
             }
 
-            long secondsElapsed = ChronoUnit.SECONDS.between(tokenCreationTime, LocalDateTime.now());
-
-            if (secondsElapsed > WAIT_TIME) {
-                throw new ManagerException(String.format("Token expirado: El token [%d] del usuario '%s' expiró tras %d segundos de vida útil.", parsedToken, currentUser.getUserName(), secondsElapsed));
+            long elapsedSeconds = ChronoUnit.SECONDS.between(tokenCreationTime, LocalDateTime.now());
+            if (elapsedSeconds > TOKEN_EXPIRATION_SECONDS) {
+                throw new ManagerException("El token ha expirado. Solicite un nuevo código.");
             }
-
         } catch (DAOException e) {
-            throw new ManagerException("Error de base de datos durante el proceso de verificación del token: " + e.getMessage(), e);
+            throw new ManagerException("Error de conexión durante la verificación del token.", e);
+        }
+    }
+
+    private int parseTokenValue(String tokenInput) throws ManagerException {
+        try {
+            return Integer.parseInt(tokenInput.trim());
+        } catch (NumberFormatException e) {
+            throw new ManagerException("El código de token debe ser un valor numérico.", e);
         }
     }
 }

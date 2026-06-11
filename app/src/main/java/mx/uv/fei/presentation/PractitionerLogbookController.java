@@ -1,23 +1,5 @@
 package mx.uv.fei.presentation;
 
-import java.net.URL;
-import java.sql.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.DatePicker;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -29,26 +11,41 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+
+import java.net.URL;
+import java.sql.Date;
+import java.util.List;
+import java.util.ResourceBundle;
+
 @Component
 public class PractitionerLogbookController implements Initializable {
 
-    private static final String TITLE_SUCCESS = "Operación Exitosa";
-    private static final String TITLE_ERROR = "Error en la Bitácora";
-    private static final String TITLE_VALIDATION = "Campos Incompletos";
-    private static final String MSG_VALIDATION = "Por favor, completa los campos obligatorios: Título, Fecha y Descripción.";
-    private static final String MSG_DURATION_ERROR = "La duración debe ser un número entero (ej. 2, 4, 8).";
+    private static final int NO_ACTIVITY_IN_EDITION = -1;
+    private static final String SAVE_BUTTON_DEFAULT_TEXT = "Guardar en Bitácora";
+    private static final String SAVE_BUTTON_EDIT_TEXT = "Actualizar Actividad";
+    private static final String EDIT_BUTTON_STYLE = "-fx-background-color: #F59E0B; -fx-text-fill: white;";
 
     private final ActivityManager activityManager;
     private final AppStore store;
 
-    private int editingActivityId = -1;
+    private int editingActivityId = NO_ACTIVITY_IN_EDITION;
 
     @FXML private TextField fieldTitle;
     @FXML private DatePicker datePickerActivity;
     @FXML private TextField fieldDuration;
     @FXML private TextArea textAreaDescription;
     @FXML private Button btnSaveActivity;
-
     @FXML private ListView<Activity> activitiesListView;
     @FXML private Button btnEditSelected;
 
@@ -65,77 +62,60 @@ public class PractitionerLogbookController implements Initializable {
     }
 
     private void configureListView() {
-        activitiesListView.setCellFactory(param -> new ListCell<>() {
+        activitiesListView.setCellFactory(_ -> new ListCell<>() {
             @Override
-            protected void updateItem(Activity activity, boolean empty) {
-                super.updateItem(activity, empty);
-                if (empty || activity == null) {
+            protected void updateItem(Activity activity, boolean isEmpty) {
+                super.updateItem(activity, isEmpty);
+                if (isEmpty || activity == null) {
                     setText(null);
                 } else {
-                    String status = activity.getReportId() != null ? "Empaquetada" : "Libre";
-                    setText("• " + activity.getTitle() + "\n  Fecha: " + activity.getActivityDate() + " | Horas: " + activity.getDurationHours() + " | Estado: " + status);
+                    setText(buildActivityDisplayText(activity));
                 }
             }
         });
 
-        activitiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null && newSelection.getReportId() == null) {
-                btnEditSelected.setDisable(false);
-            } else {
-                btnEditSelected.setDisable(true);
-            }
-        });
+        activitiesListView.getSelectionModel().selectedItemProperty()
+                .addListener((_, _, selectedActivity) ->
+                        btnEditSelected.setDisable(!isActivityEditable(selectedActivity)));
+    }
+
+    private String buildActivityDisplayText(Activity activity) {
+        String status = activity.getReportId() != null ? "Empaquetada" : "Libre";
+        return "• " + activity.getTitle()
+                + "\n  Fecha: " + activity.getActivityDate()
+                + " | Horas: " + activity.getDurationHours()
+                + " | Estado: " + status;
+    }
+
+    private boolean isActivityEditable(Activity activity) {
+        return activity != null && activity.getReportId() == null;
     }
 
     private void loadActivitiesLog() {
         try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-            int practitionerId = currentPractitioner != null ? currentPractitioner.getId() : 0;
-
+            User currentUser = store.getState().sessionState().currentUserInSession();
+            int practitionerId = currentUser != null ? currentUser.getId() : 0;
             List<Activity> activities = activityManager.getPractitionerLogbook(practitionerId);
-            ObservableList<Activity> observableActivities = FXCollections.observableArrayList(activities);
-            activitiesListView.setItems(observableActivities);
-
+            ObservableList<Activity> activityItems = FXCollections.observableArrayList(activities);
+            activitiesListView.setItems(activityItems);
         } catch (ManagerException e) {
-            Controller.showAlert(TITLE_ERROR, e.getMessage(), AlertType.ERROR);
+            Controller.showAlert("Error en la Bitácora", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
-    private void handleSaveActivity(ActionEvent event) {
+    private void handleSaveActivity() {
         try {
-            User currentPractitioner = store.getState().sessionState().currentUserInSession();
-
-            Activity currentActivity = new Activity();
-            currentActivity.setPractitionerId(currentPractitioner.getId());
-            currentActivity.setTitle(fieldTitle.getText().trim());
-            currentActivity.setDescription(textAreaDescription.getText().trim());
-
-            if (datePickerActivity.getValue() != null) {
-                currentActivity.setActivityDate(Date.valueOf(datePickerActivity.getValue()));
-            }
-
-            int hours = 0;
-            if (!fieldDuration.getText().trim().isEmpty()) {
-                hours = Integer.parseInt(fieldDuration.getText().trim());
-            }
-            currentActivity.setDurationHours(hours);
-
-            if (editingActivityId == -1) {
-                activityManager.registerActivity(currentActivity);
+            Activity activity = buildActivityFromForm();
+            if (editingActivityId == NO_ACTIVITY_IN_EDITION) {
+                activityManager.registerActivity(activity);
                 Controller.showAlert("Éxito", "Actividad guardada.", AlertType.INFORMATION);
             } else {
-                activityManager.modifyActivity(currentActivity, editingActivityId);
+                activityManager.modifyActivity(activity, editingActivityId);
                 Controller.showAlert("Éxito", "Actividad actualizada.", AlertType.INFORMATION);
-
-                editingActivityId = -1;
-                btnSaveActivity.setText("Guardar en Bitácora");
-                btnSaveActivity.setStyle("");
             }
-
             clearForm();
             loadActivitiesLog();
-
         } catch (NumberFormatException e) {
             Controller.showAlert("Formato Inválido", "Las horas deben ser un número.", AlertType.WARNING);
         } catch (ManagerException e) {
@@ -143,18 +123,36 @@ public class PractitionerLogbookController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleEditSelectedAction(ActionEvent event) {
-        Activity selected = activitiesListView.getSelectionModel().getSelectedItem();
-        if (selected != null && selected.getReportId() == null) {
-            editingActivityId = selected.getActivityId();
-            fieldTitle.setText(selected.getTitle());
-            datePickerActivity.setValue(selected.getActivityDate().toLocalDate());
-            fieldDuration.setText(String.valueOf(selected.getDurationHours()));
-            textAreaDescription.setText(selected.getDescription());
+    private Activity buildActivityFromForm() {
+        User currentUser = store.getState().sessionState().currentUserInSession();
+        Activity activity = new Activity();
+        activity.setPractitionerId(currentUser.getId());
+        activity.setTitle(fieldTitle.getText().trim());
+        activity.setDescription(textAreaDescription.getText().trim());
 
-            btnSaveActivity.setText("Actualizar Actividad");
-            btnSaveActivity.setStyle("-fx-background-color: #F59E0B; -fx-text-fill: white;");
+        if (datePickerActivity.getValue() != null) {
+            activity.setActivityDate(Date.valueOf(datePickerActivity.getValue()));
+        }
+        activity.setDurationHours(parseDurationHours());
+        return activity;
+    }
+
+    private int parseDurationHours() {
+        String durationText = fieldDuration.getText().trim();
+        return durationText.isEmpty() ? 0 : Integer.parseInt(durationText);
+    }
+
+    @FXML
+    private void handleEditSelectedAction() {
+        Activity selectedActivity = activitiesListView.getSelectionModel().getSelectedItem();
+        if (isActivityEditable(selectedActivity)) {
+            editingActivityId = selectedActivity.getActivityId();
+            fieldTitle.setText(selectedActivity.getTitle());
+            datePickerActivity.setValue(selectedActivity.getActivityDate().toLocalDate());
+            fieldDuration.setText(String.valueOf(selectedActivity.getDurationHours()));
+            textAreaDescription.setText(selectedActivity.getDescription());
+            btnSaveActivity.setText(SAVE_BUTTON_EDIT_TEXT);
+            btnSaveActivity.setStyle(EDIT_BUTTON_STYLE);
         }
     }
 
@@ -163,14 +161,13 @@ public class PractitionerLogbookController implements Initializable {
         textAreaDescription.clear();
         datePickerActivity.setValue(null);
         fieldDuration.clear();
-
-        editingActivityId = -1;
-        btnSaveActivity.setText("Guardar en Bitácora");
+        editingActivityId = NO_ACTIVITY_IN_EDITION;
+        btnSaveActivity.setText(SAVE_BUTTON_DEFAULT_TEXT);
         btnSaveActivity.setStyle("");
     }
 
     @FXML
-    private void handleReturnAction(ActionEvent event) {
+    private void handleReturnAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }

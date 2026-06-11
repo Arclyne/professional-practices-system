@@ -233,7 +233,7 @@ public class ReviewSelfEvaluationController {
         if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
             try {
                 selfEvaluationManager.updateSelfEvaluation(selectedRow.getSelfEvaluation(), selectedRow.getSelfEvaluation().getSelfEvalId());
-                selfEvaluationManager.updateStatus(selectedRow.getSelfEvaluation().getSelfEvalId(), STATUS_REVIEWED);
+                selfEvaluationManager.updateSelfEvaluationStatus(selectedRow.getSelfEvaluation().getSelfEvalId(), STATUS_REVIEWED);
                 Controller.showAlert("Éxito", "Autoevaluación marcada como 'Revisada' correctamente.", AlertType.INFORMATION);
                 loadStudentsAndEvaluations();
                 clearDetails();

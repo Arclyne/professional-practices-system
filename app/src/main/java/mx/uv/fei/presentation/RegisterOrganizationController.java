@@ -1,9 +1,5 @@
 package mx.uv.fei.presentation;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
@@ -15,11 +11,14 @@ import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormField;
 
-@Component
-public class RegisterOrganizationController{
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 
-    private final OrganizationManager organizationManager;
-    private final AppStore store;
+@Component
+public class RegisterOrganizationController {
+
+    private static final String STATUS_ACTIVE = "Active";
 
     @FXML private FormField fieldName;
     @FXML private FormField fieldAddress;
@@ -27,9 +26,11 @@ public class RegisterOrganizationController{
     @FXML private FormField fieldBusiness;
     @FXML private FormField fieldMail;
     @FXML private FormField fieldCellphone;
-
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
+
+    private final OrganizationManager organizationManager;
+    private final AppStore store;
 
     @Inject
     public RegisterOrganizationController(OrganizationManager organizationManager, AppStore store) {
@@ -38,19 +39,10 @@ public class RegisterOrganizationController{
     }
 
     @FXML
-    private void handleActionSaveButton(ActionEvent event) {
+    private void handleActionSaveButton() {
         try {
-            Organization organizationToRegister = new Organization();
-            organizationToRegister.setNameOrganization(fieldName.getText());
-            organizationToRegister.setAdress(fieldAddress.getText());
-            organizationToRegister.setCity(fieldCity.getText());
-            organizationToRegister.setBusiness(fieldBusiness.getText());
-            organizationToRegister.setMail(fieldMail.getText());
-            organizationToRegister.setCellphone(fieldCellphone.getText());
-            organizationToRegister.setState("Active");
-
-            organizationManager.registerOrganization(organizationToRegister);
-
+            Organization organization = buildOrganizationFromForm();
+            organizationManager.registerOrganization(organization);
             Controller.showSuccessAlert("Registro Exitoso", "La organización ha sido guardada correctamente.");
             store.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
         } catch (ManagerException e) {
@@ -58,8 +50,20 @@ public class RegisterOrganizationController{
         }
     }
 
+    private Organization buildOrganizationFromForm() {
+        Organization organization = new Organization();
+        organization.setNameOrganization(fieldName.getText());
+        organization.setAdress(fieldAddress.getText());
+        organization.setCity(fieldCity.getText());
+        organization.setBusiness(fieldBusiness.getText());
+        organization.setMail(fieldMail.getText());
+        organization.setCellphone(fieldCellphone.getText());
+        organization.setState(STATUS_ACTIVE);
+        return organization;
+    }
+
     @FXML
-    private void handleActionCancelButton(ActionEvent event) {
+    private void handleActionCancelButton() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.ORGANIZATION_MANAGEMENT_MENU));
     }
 }
