@@ -53,7 +53,7 @@ public class ProfessorManagerTest {
         List<Professor> expectedProfessors = new ArrayList<>();
         Professor storedProfessor = new Professor();
         storedProfessor.setId(STORED_PROFESSOR_ID);
-        storedProfessor.setUserName("eprior");
+        storedProfessor.setUserName("30033333");
         storedProfessor.setPassword("ProfeFei2026");
         storedProfessor.setName("Jose Eduardo");
         storedProfessor.setLastName("Prior Hernandez");

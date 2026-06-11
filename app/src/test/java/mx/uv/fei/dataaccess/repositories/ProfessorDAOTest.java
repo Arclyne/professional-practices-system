@@ -55,7 +55,7 @@ public class ProfessorDAOTest {
     private Professor buildStoredProfessor() {
         Professor storedProfessor = new Professor();
         storedProfessor.setId(STORED_PROFESSOR_ID);
-        storedProfessor.setUserName("eprior");
+        storedProfessor.setUserName("30033333");
         storedProfessor.setPassword("ProfeFei2026");
         storedProfessor.setName("Jose Eduardo");
         storedProfessor.setLastName("Prior Hernandez");
@@ -104,7 +104,7 @@ public class ProfessorDAOTest {
 
     @Test
     void insertProfessor_DuplicateUsername_ThrowsDAOException() {
-        newProfessor.setUserName("eprior");
+        newProfessor.setUserName("30033333");
 
         assertThrows(DAOException.class, () -> professorDAO.insertProfessor(newProfessor));
     }
