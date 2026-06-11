@@ -28,7 +28,7 @@ public class Controller {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        Platform.runLater(alert::showAndWait);
+        Platform.runLater(alert::show);
     }
 
     public static <T> void setupCheckBoxListView(ListView<T> listView, Map<T, BooleanProperty> selectionMap) {
