@@ -30,7 +30,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 
 public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
 
-    private static final String FXML_PATH = "/mx/uv/fei/presentation/PractitionerSelfEvaluation.fxml";
+    private static final String FXML_PATH = "/mx/uv/fei/presentation/practitionerSelfEvaluation.fxml";
     private static final int PRACTITIONER_ID = 123;
     private static final int FINAL_REPORT_ID = 2;
 
