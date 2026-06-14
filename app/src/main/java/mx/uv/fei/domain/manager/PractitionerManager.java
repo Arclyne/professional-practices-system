@@ -33,6 +33,7 @@ public class PractitionerManager {
 
     public String registerNewPractitioner(Practitioner practitioner) throws ManagerException {
         UserValidator.validatePractitionerText(practitioner);
+        practitioner.setEnrollment(practitioner.getEnrollment().toUpperCase());
 
         String temporaryPassword = PasswordManager.generatePassword();
         practitioner.setPassword(temporaryPassword);

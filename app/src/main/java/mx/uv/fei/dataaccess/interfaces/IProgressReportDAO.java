@@ -4,12 +4,6 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.dto.ProgressReport;
 import java.util.List;
 
-/**
- * Contrato de acceso a datos para los reportes de avance de prácticas
- * (Intermedios y Finales).
- *
- * @author Sistema de Prácticas Profesionales UV-FEI
- */
 public interface IProgressReportDAO {
 
     int insertProgressReport(ProgressReport report) throws DAOException;

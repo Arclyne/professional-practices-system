@@ -4,12 +4,6 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import java.util.List;
 
-/**
- * Contrato de acceso a datos para las calificaciones de los practicantes
- * asignadas por el profesor.
- *
- * @author Sistema de Prácticas Profesionales UV-FEI
- */
 public interface IPractitionerGradeDAO {
 
     int insertPractitionerGrade(PractitionerGrade grade) throws DAOException;

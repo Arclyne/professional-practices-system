@@ -75,11 +75,10 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         assignedPractitioner.setId(PRACTITIONER_ID);
         assignedPractitioner.setName("Angel Gabriel");
         assignedPractitioner.setLastName("Aguilar Hernandez");
-        assignedPractitioner.setEnrollment("zS24242424");
+        assignedPractitioner.setEnrollment("S24242424");
         return List.of(assignedPractitioner);
     }
 
-    @SuppressWarnings("unchecked")
     private void selectFirstPractitioner() {
         interact(() -> lookup("#practitionersListView").queryAs(ListView.class).getSelectionModel().select(0));
     }

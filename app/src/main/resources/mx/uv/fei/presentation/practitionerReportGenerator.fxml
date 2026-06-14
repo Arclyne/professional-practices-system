@@ -65,7 +65,7 @@
 
             <ListView fx:id="freeActivitiesListView" VBox.vgrow="ALWAYS" style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;" />
 
-            <Button fx:id="btnQuickEdit" disable="true" mnemonicParsing="false" onAction="#handleQuickEditAction" text="✏️ Editar Actividad Seleccionada" style="-fx-background-color: white; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
+            <Button fx:id="btnQuickEdit" disable="true" mnemonicParsing="false" onAction="#handleQuickEditAction" text="Editar Actividad Seleccionada" style="-fx-background-color: white; -fx-border-color: #D1D5DB; -fx-border-radius: 5px; -fx-cursor: hand;" />
         </VBox>
 
     </HBox>

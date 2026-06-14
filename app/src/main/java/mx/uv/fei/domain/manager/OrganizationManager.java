@@ -43,10 +43,7 @@ public class OrganizationManager {
 
     public void inactivateMultipleOrganizations(List<Integer> organizationIds) throws ManagerException {
         try {
-            boolean isDeactivationSuccessful = organizationDAO.deactivateMultipleOrganizations(organizationIds);
-            if (!isDeactivationSuccessful) {
-                throw new ManagerException("No se pudieron inactivar las organizaciones seleccionadas.");
-            }
+            organizationDAO.deactivateMultipleOrganizations(organizationIds);
         } catch (DAOException e) {
             throw new ManagerException("Error de base de datos al inactivar organizaciones.", e);
         }

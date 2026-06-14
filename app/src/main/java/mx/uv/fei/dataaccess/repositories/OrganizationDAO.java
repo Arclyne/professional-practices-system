@@ -86,15 +86,13 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     }
 
     @Override
-    public boolean deactivateMultipleOrganizations(List<Integer> organizationIds) throws DAOException {
-        boolean allDeactivationsSuccessful = false;
+    public void deactivateMultipleOrganizations(List<Integer> organizationIds) throws DAOException {
 
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
                 executeDeactivationBatch(connection, organizationIds);
-                allDeactivationsSuccessful = true;
                 connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
@@ -105,8 +103,6 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación de organizaciones.", e);
         }
-
-        return allDeactivationsSuccessful;
     }
 
     private void executeDeactivationBatch(Connection connection, List<Integer> organizationIds) throws SQLException {
