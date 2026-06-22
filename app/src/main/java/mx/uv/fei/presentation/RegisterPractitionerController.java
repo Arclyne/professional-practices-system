@@ -55,6 +55,8 @@ public class RegisterPractitionerController implements Initializable {
 
     private final Map<String, Integer> groupDisplayToId = new HashMap<>();
 
+    private Practitioner practitionerBeingEdited;
+
     @Inject
     public RegisterPractitionerController(PractitionerManager practitionerManager,
                                           PracticeGroupManager practiceGroupManager, AppStore store) {
@@ -67,6 +69,46 @@ public class RegisterPractitionerController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loadGenderOptions();
         loadPracticeGroups();
+
+        String selectedEntityId = store.getState().navigationState().targetEntityId();
+        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
+            loadPractitionerForEdit(Integer.parseInt(selectedEntityId));
+        }
+    }
+
+    private void loadPractitionerForEdit(int practitionerId) {
+        try {
+            Practitioner practitioner = practitionerManager.getPractitionerById(practitionerId);
+            if (practitioner.getId() <= 0) {
+                Controller.showAlert("Error de Carga",
+                        "No se encontró la información del practicante seleccionado.", AlertType.ERROR);
+                return;
+            }
+            practitionerBeingEdited = practitioner;
+            fieldEnrollment.setText(practitioner.getEnrollment());
+            fieldEnrollment.setDisable(true);
+            fieldName.setText(practitioner.getName());
+            fieldLastName.setText(practitioner.getLastName());
+            fieldEmail.setText(practitioner.getEmail());
+            fieldIndigenousLanguage.setText(practitioner.getIndigenousLanguage());
+            comboBoxGender.valueProperty().set(practitioner.getGender().getDisplayValue());
+            selectGroupForId(practitioner.getGroupId());
+            uploadCsvButton.setVisible(false);
+            uploadCsvButton.setManaged(false);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private void selectGroupForId(Integer groupId) {
+        if (groupId == null) {
+            return;
+        }
+        for (Map.Entry<String, Integer> groupEntry : groupDisplayToId.entrySet()) {
+            if (groupEntry.getValue().equals(groupId)) {
+                comboBoxPracticeGroup.valueProperty().set(groupEntry.getKey());
+            }
+        }
     }
 
     private void loadGenderOptions() {
@@ -103,7 +145,35 @@ public class RegisterPractitionerController implements Initializable {
             return;
         }
 
-        registerSinglePractitioner();
+        if (practitionerBeingEdited != null) {
+            updatePractitioner();
+        } else {
+            registerSinglePractitioner();
+        }
+    }
+
+    private void updatePractitioner() {
+        try {
+            registerButton.setDisable(true);
+            applyEditableFields(practitionerBeingEdited);
+            practitionerManager.updatePractitioner(practitionerBeingEdited, practitionerBeingEdited.getId());
+            Controller.showAlert("Actualización Exitosa",
+                    "La información del practicante se actualizó correctamente.", AlertType.INFORMATION);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_MANAGEMENT_MENU));
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
+        } finally {
+            registerButton.setDisable(false);
+        }
+    }
+
+    private void applyEditableFields(Practitioner practitioner) {
+        practitioner.setName(fieldName.getText().trim());
+        practitioner.setLastName(fieldLastName.getText().trim());
+        practitioner.setEmail(fieldEmail.getText().trim());
+        practitioner.setGender(Gender.fromDisplayValue((String) comboBoxGender.getValue()));
+        practitioner.setGroupId(groupDisplayToId.get((String) comboBoxPracticeGroup.getValue()));
+        practitioner.setIndigenousLanguage(resolveIndigenousLanguage());
     }
 
     private void registerSinglePractitioner() {

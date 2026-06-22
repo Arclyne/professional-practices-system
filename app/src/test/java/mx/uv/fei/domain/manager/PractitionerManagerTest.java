@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 public class PractitionerManagerTest {
 
     private static final String COORDINATOR_USERNAME = "mrodriguez";
+    private static final int STORED_PRACTITIONER_ID = 123;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -92,6 +93,21 @@ public class PractitionerManagerTest {
         BatchRegistrationSummary resultSummary = practitionerManager.registerPractitionerBatch(batchCsvFile, COORDINATOR_USERNAME);
 
         assertEquals(expectedSummary, resultSummary);
+    }
+
+    @Test
+    void getPractitionerById_StoredId_ReturnsMatchingPractitioner() throws ManagerException {
+        Practitioner resultPractitioner = practitionerManager.getPractitionerById(STORED_PRACTITIONER_ID);
+
+        assertEquals(STORED_PRACTITIONER_ID, resultPractitioner.getId());
+    }
+
+    @Test
+    void updatePractitioner_ValidPersonalData_DoesNotThrow() throws ManagerException {
+        Practitioner practitionerToUpdate = practitionerManager.getPractitionerById(STORED_PRACTITIONER_ID);
+        practitionerToUpdate.setName("Angel Gabriel Editado");
+
+        assertDoesNotThrow(() -> practitionerManager.updatePractitioner(practitionerToUpdate, STORED_PRACTITIONER_ID));
     }
 
     @Test

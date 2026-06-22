@@ -66,4 +66,26 @@ public class ProfessorManager {
             throw new ManagerException("Error al obtener la lista de profesores.", e);
         }
     }
+
+    public Professor getProfessorById(int professorId) throws ManagerException {
+        try {
+            return professorDAO.recoverProfessor(professorId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del profesor.", e);
+        }
+    }
+
+    public void updateProfessor(Professor professor, int professorId) throws ManagerException {
+        UserValidator.validateProfessorForUpdate(professor);
+
+        try {
+            boolean isUpdated = professorDAO.updateProfessor(professor, professorId);
+            if (!isUpdated) {
+                throw new ManagerException("No se pudo actualizar la información del profesor.");
+            }
+        } catch (DAOException e) {
+            log.error("Error al actualizar el profesor.", e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+        }
+    }
 }

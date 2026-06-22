@@ -36,6 +36,8 @@ public class RegisterProfessorController implements Initializable {
     private final ProfessorManager professorManager;
     private final AppStore store;
 
+    private Professor professorBeingEdited;
+
     @Inject
     public RegisterProfessorController(ProfessorManager professorManager, AppStore store) {
         this.professorManager = professorManager;
@@ -49,6 +51,31 @@ public class RegisterProfessorController implements Initializable {
                 Gender.FEMALE.getDisplayValue(),
                 Gender.OTHER.getDisplayValue());
         comboBoxGender.setItems(genderOptions);
+
+        String selectedEntityId = store.getState().navigationState().targetEntityId();
+        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
+            loadProfessorForEdit(Integer.parseInt(selectedEntityId));
+        }
+    }
+
+    private void loadProfessorForEdit(int professorId) {
+        try {
+            Professor professor = professorManager.getProfessorById(professorId);
+            if (professor.getId() <= 0) {
+                Controller.showAlert("Error de Carga",
+                        "No se encontró la información del profesor seleccionado.", AlertType.ERROR);
+                return;
+            }
+            professorBeingEdited = professor;
+            fieldName.setText(professor.getName());
+            fieldLastName.setText(professor.getLastName());
+            fieldEmail.setText(professor.getEmail());
+            fieldPersonalNumber.setText(professor.getUserName());
+            fieldPersonalNumber.setDisable(true);
+            comboBoxGender.valueProperty().set(professor.getGender().getDisplayValue());
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
     }
 
     @FXML
@@ -59,6 +86,14 @@ public class RegisterProfessorController implements Initializable {
             return;
         }
 
+        if (professorBeingEdited != null) {
+            updateProfessor();
+        } else {
+            registerProfessor();
+        }
+    }
+
+    private void registerProfessor() {
         try {
             Professor professor = buildProfessorFromForm();
             String generatedPassword = professorManager.registerNewProfessor(professor);
@@ -72,6 +107,18 @@ public class RegisterProfessorController implements Initializable {
         }
     }
 
+    private void updateProfessor() {
+        try {
+            applyEditableFields(professorBeingEdited);
+            professorManager.updateProfessor(professorBeingEdited, professorBeingEdited.getId());
+            Controller.showAlert("Actualización Exitosa",
+                    "La información del profesor se actualizó correctamente.", AlertType.INFORMATION);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_MANAGEMENT_MENU));
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
     private boolean isFormIncomplete() {
         return fieldName.getText().isEmpty()
                 || fieldLastName.getText().isEmpty()
@@ -82,19 +129,22 @@ public class RegisterProfessorController implements Initializable {
 
     private Professor buildProfessorFromForm() {
         Professor professor = new Professor();
-        professor.setName(fieldName.getText().trim());
-        professor.setLastName(fieldLastName.getText().trim());
-        professor.setEmail(fieldEmail.getText().trim());
+        applyEditableFields(professor);
         professor.setUserName(fieldPersonalNumber.getText().trim());
-        professor.setGender(Gender.fromDisplayValue((String) comboBoxGender.getValue()));
         professor.setRole("Professor");
         professor.setStatus(UserStatus.PENDING);
         return professor;
     }
 
+    private void applyEditableFields(Professor professor) {
+        professor.setName(fieldName.getText().trim());
+        professor.setLastName(fieldLastName.getText().trim());
+        professor.setEmail(fieldEmail.getText().trim());
+        professor.setGender(Gender.fromDisplayValue((String) comboBoxGender.getValue()));
+    }
+
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 

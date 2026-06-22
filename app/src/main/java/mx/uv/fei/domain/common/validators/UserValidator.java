@@ -82,6 +82,25 @@ public class UserValidator {
     }
 
     public static void validateUser(User user, String roleLabel) throws ManagerException {
+        validateUserPersonalData(user, roleLabel);
+        PasswordValidator.validatePassword(user.getPassword());
+    }
+
+    public static void validateProfessorForUpdate(Professor professor) throws ManagerException {
+        validateUserPersonalData(professor, "el profesor");
+    }
+
+    public static void validateCoordinatorForUpdate(Coordinator coordinator) throws ManagerException {
+        validateUserPersonalData(coordinator, "el coordinador");
+    }
+
+    public static void validatePractitionerForUpdate(Practitioner practitioner) throws ManagerException {
+        validateUserPersonalData(practitioner, "el practicante");
+        BaseValidator.validateMaxLength(practitioner.getIndigenousLanguage(), FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX,
+                "La lengua indígena no puede exceder " + FieldLengthLimits.INDIGENOUS_LANGUAGE_MAX + " caracteres.");
+    }
+
+    private static void validateUserPersonalData(User user, String roleLabel) throws ManagerException {
         BaseValidator.validateString(user.getName(),
                 "El nombre de " + roleLabel + " es obligatorio.");
         BaseValidator.validateMaxLength(user.getName(), FieldLengthLimits.NAME_MAX,
@@ -90,7 +109,6 @@ public class UserValidator {
                 "El apellido de " + roleLabel + " es obligatorio.");
         BaseValidator.validateMaxLength(user.getLastName(), FieldLengthLimits.LAST_NAME_MAX,
                 "El apellido de " + roleLabel + " no puede exceder " + FieldLengthLimits.LAST_NAME_MAX + " caracteres.");
-        PasswordValidator.validatePassword(user.getPassword());
         if (user.getGender() == null) {
             throw new ManagerException("El género de " + roleLabel + " es obligatorio.");
         }
