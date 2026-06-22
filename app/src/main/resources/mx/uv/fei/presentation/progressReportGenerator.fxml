@@ -20,7 +20,6 @@
           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding><Insets bottom="30.0" left="40.0" right="40.0" top="30.0"/></padding>
 
-        <!-- Cabecera -->
         <HBox alignment="CENTER_LEFT" spacing="15.0">
             <Button mnemonicParsing="false" onAction="#handleReturnAction"
                     styleClass="secondary-button" text="← Volver a Mis Reportes"/>
@@ -34,7 +33,6 @@
 
         <Separator/>
 
-        <!-- Reporte existente (se muestra si ya hay uno generado) -->
         <VBox fx:id="existingReportContainer" spacing="12.0"
               style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 8px; -fx-padding: 16px;">
             <Label text="Tu reporte de avance" style="-fx-font-weight: bold; -fx-text-fill: #1D4ED8;"/>
@@ -48,12 +46,11 @@
                         text="⬆ Subir PDF Firmado"
                         style="-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"/>
                 <Button fx:id="viewSignedButton" onAction="#handleViewSignedReport"
-                        text="📄 Ver Archivo Entregado"
+                        text="Ver Archivo Entregado"
                         style="-fx-background-color: transparent; -fx-text-fill: #3B82F6; -fx-cursor: hand; -fx-underline: true;"/>
             </HBox>
         </VBox>
 
-        <!-- Formulario de generación -->
         <VBox spacing="16.0"
               style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-radius: 8px; -fx-padding: 20px;">
             <Label text="Generar nuevo reporte de avance" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
@@ -81,7 +78,7 @@
 
             <Button fx:id="generateReportButton" onAction="#handleGenerateReport"
                     maxWidth="1.7976931348623157E308"
-                    text="⚡ Generar Reporte de Avance"
+                    text="Generar Reporte de Avance"
                     style="-fx-background-color: #0A0A14; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 10 20 10 20;"/>
         </VBox>
     </VBox>

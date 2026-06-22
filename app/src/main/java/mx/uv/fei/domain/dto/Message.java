@@ -3,13 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Representa un mensaje enviado entre usuarios del sistema.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class Message {
 
     private int messageId;

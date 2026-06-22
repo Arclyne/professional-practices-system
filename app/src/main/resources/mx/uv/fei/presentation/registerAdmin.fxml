@@ -22,17 +22,17 @@
             </VBox.margin>
         </Label>
 
-        <FormField fx:id="fieldNombre" labelText="Nombre(s)" promptText="Ingrese el nombre"/>
+        <FormField fx:id="fieldName" labelText="Nombre(s)" promptText="Ingrese el nombre"/>
 
-        <FormField fx:id="fieldApellido" labelText="Apellidos" promptText="Ingrese los apellidos"/>
+        <FormField fx:id="fieldLastName" labelText="Apellidos" promptText="Ingrese los apellidos"/>
 
-        <FormField fx:id="fieldNoPersonal" labelText="Número de Personal" promptText="Ej. 12345"/>
+        <FormField fx:id="fieldPersonalNumber" labelText="Número de Personal" promptText="Ej. 12345"/>
 
-        <FormField fx:id="fieldCorreo" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
+        <FormField fx:id="fieldEmail" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
 
         <FormField fx:id="fieldPassword" labelText="Contraseña" promptText="Cree una clave segura" />
 
-        <FormComboBox fx:id="comboBoxSexo" labelText="Sexo / Género"/>
+        <FormComboBox fx:id="comboBoxGender" labelText="Sexo / Género"/>
 
         <VBox VBox.vgrow="ALWAYS"/>
 

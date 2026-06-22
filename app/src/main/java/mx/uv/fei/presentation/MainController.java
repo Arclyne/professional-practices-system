@@ -98,7 +98,7 @@ public class MainController {
         paths.put(AppSection.MANAGER_MANAGEMENT_MENU, VIEW_BASE_PATH + "manageManagers.fxml");
         paths.put(AppSection.ORGANIZATION_MANAGEMENT_MENU, VIEW_BASE_PATH + "manageOrganizations.fxml");
         paths.put(AppSection.REGISTER_ORGANIZATION, VIEW_BASE_PATH + "registerOrganization.fxml");
-        paths.put(AppSection.MESSAGES, VIEW_BASE_PATH + "MessageView.fxml");
+        paths.put(AppSection.MESSAGES, VIEW_BASE_PATH + "messageView.fxml");
         paths.put(AppSection.REGISTER_PERIOD, VIEW_BASE_PATH + "registerPeriod.fxml");
         paths.put(AppSection.REGISTER_PRACTICE_GROUP, VIEW_BASE_PATH + "registerPracticeGroup.fxml");
         paths.put(AppSection.TEMPLATE_GENERATOR, VIEW_BASE_PATH + "templateGenerator.fxml");
@@ -109,8 +109,8 @@ public class MainController {
         paths.put(AppSection.PROGRESS_REPORT_GENERATOR, VIEW_BASE_PATH + "progressReportGenerator.fxml");
         paths.put(AppSection.GRADE_PRACTITIONER, VIEW_BASE_PATH + "gradePractitioner.fxml");
         paths.put(AppSection.PRACTITIONER_GRADE_VIEW, VIEW_BASE_PATH + "practitionerGradeView.fxml");
-        paths.put(AppSection.PROFESSOR_REVIEW_SELF_EVALUATION, VIEW_BASE_PATH + "ReviewSelfEvaluation.fxml");
-        paths.put(AppSection.PRACTITIONER_SELF_EVALUATION, VIEW_BASE_PATH + "PractitionerSelfEvaluation.fxml");
+        paths.put(AppSection.PROFESSOR_REVIEW_SELF_EVALUATION, VIEW_BASE_PATH + "reviewSelfEvaluation.fxml");
+        paths.put(AppSection.PRACTITIONER_SELF_EVALUATION, VIEW_BASE_PATH + "practitionerSelfEvaluation.fxml");
         paths.put(AppSection.VIEW_ASSIGNED_PROJECT, VIEW_BASE_PATH + "viewAssignedProject.fxml");
         return paths;
     }
