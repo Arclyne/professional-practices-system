@@ -21,4 +21,7 @@ app/documents/batches/
 app/documents/generated/
 app/app/
 
+# Logs generados en tiempo de ejecucion
+*.log
+
 repomix-output.xml
