@@ -26,6 +26,8 @@ public class DashboardController {
     @FXML private Label systemUserRoleLabel;
 
     @FXML private Button navigateToRegisterCoordinatorButton;
+    @FXML private Button navigateToCoordinatorManagementButton;
+    @FXML private Button navigateToPractitionerManagementListButton;
     @FXML private Button navigateToPractitionerManagementMenuButton;
     @FXML private Button navigateToRegisterProfessorButton;
     @FXML private Button navigateToRegisterProjectButton;
@@ -86,9 +88,11 @@ public class DashboardController {
             } catch (ManagerException e) {
                 navigateToRegisterCoordinatorButton.setText("Gestionar Coordinador");
             }
+            showButton(navigateToCoordinatorManagementButton);
 
         } else if (dashboardManager.isCoordinatorMenuAvailable(userRole)) {
             showButton(navigateToPractitionerManagementMenuButton);
+            showButton(navigateToPractitionerManagementListButton);
             showButton(navigateToRegisterProfessorButton);
             showButton(navigateToRegisterProjectButton);
             showButton(navigateToRegisterManagerButton);
@@ -128,6 +132,8 @@ public class DashboardController {
 
     private void hideAllNavigationButtons() {
         hideButton(navigateToRegisterCoordinatorButton);
+        hideButton(navigateToCoordinatorManagementButton);
+        hideButton(navigateToPractitionerManagementListButton);
         hideButton(navigateToPractitionerManagementMenuButton);
         hideButton(navigateToRegisterProfessorButton);
         hideButton(navigateToRegisterProjectButton);
@@ -165,6 +171,16 @@ public class DashboardController {
     @FXML
     private void handleNavigateToPractitionerManagementAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+    }
+
+    @FXML
+    private void handleNavigateToCoordinatorManagementAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_MANAGEMENT_MENU));
+    }
+
+    @FXML
+    private void handleNavigateToPractitionerManagementListAction() {
+        store.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_MANAGEMENT_MENU));
     }
 
     @FXML

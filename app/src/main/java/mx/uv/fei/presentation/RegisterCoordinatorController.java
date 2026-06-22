@@ -16,7 +16,6 @@ import mx.uv.fei.presentation.components.FormField;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
@@ -36,6 +35,8 @@ public class RegisterCoordinatorController implements Initializable {
     private final CoordinatorManager coordinatorManager;
     private final AppStore store;
 
+    private Coordinator coordinatorBeingEdited;
+
     @Inject
     public RegisterCoordinatorController(CoordinatorManager coordinatorManager, AppStore store) {
         this.coordinatorManager = coordinatorManager;
@@ -49,6 +50,31 @@ public class RegisterCoordinatorController implements Initializable {
                 Gender.FEMALE.getDisplayValue(),
                 Gender.OTHER.getDisplayValue());
         genderFormComboBox.setItems(genderOptions);
+
+        String selectedEntityId = store.getState().navigationState().targetEntityId();
+        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
+            loadCoordinatorForEdit(Integer.parseInt(selectedEntityId));
+        }
+    }
+
+    private void loadCoordinatorForEdit(int coordinatorId) {
+        try {
+            Coordinator coordinator = coordinatorManager.getCoordinatorById(coordinatorId);
+            if (coordinator.getId() <= 0) {
+                Controller.showAlert("Error de Carga",
+                        "No se encontró la información del coordinador seleccionado.", AlertType.ERROR);
+                return;
+            }
+            coordinatorBeingEdited = coordinator;
+            nameFormField.setText(coordinator.getName());
+            lastNameFormField.setText(coordinator.getLastName());
+            emailFormField.setText(coordinator.getEmail());
+            personalNumberFormField.setText(coordinator.getUserName());
+            personalNumberFormField.setDisable(true);
+            genderFormComboBox.valueProperty().set(coordinator.getGender().getDisplayValue());
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
     }
 
     @FXML
@@ -59,6 +85,14 @@ public class RegisterCoordinatorController implements Initializable {
             return;
         }
 
+        if (coordinatorBeingEdited != null) {
+            updateCoordinator();
+        } else {
+            registerCoordinator();
+        }
+    }
+
+    private void registerCoordinator() {
         try {
             Coordinator coordinator = buildCoordinatorFromForm();
             String temporaryPassword = coordinatorManager.registerNewCoordinator(coordinator);
@@ -72,6 +106,18 @@ public class RegisterCoordinatorController implements Initializable {
         }
     }
 
+    private void updateCoordinator() {
+        try {
+            applyEditableFields(coordinatorBeingEdited);
+            coordinatorManager.updateCoordinator(coordinatorBeingEdited, coordinatorBeingEdited.getId());
+            Controller.showAlert("Actualización Exitosa",
+                    "La información del coordinador se actualizó correctamente.", AlertType.INFORMATION);
+            store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_MANAGEMENT_MENU));
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
     private boolean isFormIncomplete() {
         return nameFormField.getText().isEmpty()
                 || lastNameFormField.getText().isEmpty()
@@ -82,13 +128,17 @@ public class RegisterCoordinatorController implements Initializable {
 
     private Coordinator buildCoordinatorFromForm() {
         Coordinator coordinator = new Coordinator();
+        applyEditableFields(coordinator);
+        coordinator.setUserName(personalNumberFormField.getText().trim());
+        coordinator.setStatus(UserStatus.PENDING);
+        return coordinator;
+    }
+
+    private void applyEditableFields(Coordinator coordinator) {
         coordinator.setName(nameFormField.getText().trim());
         coordinator.setLastName(lastNameFormField.getText().trim());
         coordinator.setEmail(emailFormField.getText().trim());
-        coordinator.setUserName(personalNumberFormField.getText().trim());
         coordinator.setGender(Gender.fromDisplayValue((String) genderFormComboBox.getValue()));
-        coordinator.setStatus(UserStatus.PENDING);
-        return coordinator;
     }
 
     @FXML

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -112,10 +113,8 @@ public class OrganizationDAOTest {
     }
 
     @Test
-    void deactivateMultipleOrganizations_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isDeactivated = organizationDAO.deactivateMultipleOrganizations(List.of(1, 2));
-
-        assertTrue(isDeactivated);
+    void deactivateMultipleOrganizations_ValidIds_DoesNotThrow() {
+        assertDoesNotThrow(() -> organizationDAO.deactivateMultipleOrganizations(List.of(1, 2)));
     }
 
     @Test

@@ -13,6 +13,8 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 @Component
 public class CoordinatorManager {
 
@@ -64,6 +66,36 @@ public class CoordinatorManager {
         } catch (DAOException e) {
             log.error("Error al recuperar el coordinador activo.", e);
             throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", e);
+        }
+    }
+
+    public List<Coordinator> getAllCoordinators() throws ManagerException {
+        try {
+            return coordinatorDAO.getAllCoordinators();
+        } catch (DAOException e) {
+            throw new ManagerException("Error al obtener la lista de coordinadores.", e);
+        }
+    }
+
+    public Coordinator getCoordinatorById(int coordinatorId) throws ManagerException {
+        try {
+            return coordinatorDAO.recoverCoordinator(coordinatorId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del coordinador.", e);
+        }
+    }
+
+    public void updateCoordinator(Coordinator coordinator, int coordinatorId) throws ManagerException {
+        UserValidator.validateCoordinatorForUpdate(coordinator);
+
+        try {
+            boolean isUpdated = coordinatorDAO.updateCoordinator(coordinator, coordinatorId);
+            if (!isUpdated) {
+                throw new ManagerException("No se pudo actualizar la información del coordinador.");
+            }
+        } catch (DAOException e) {
+            log.error("Error al actualizar el coordinador.", e);
+            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }
 }

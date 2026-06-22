@@ -112,6 +112,8 @@ public class MainController {
         paths.put(AppSection.PROFESSOR_REVIEW_SELF_EVALUATION, VIEW_BASE_PATH + "reviewSelfEvaluation.fxml");
         paths.put(AppSection.PRACTITIONER_SELF_EVALUATION, VIEW_BASE_PATH + "practitionerSelfEvaluation.fxml");
         paths.put(AppSection.VIEW_ASSIGNED_PROJECT, VIEW_BASE_PATH + "viewAssignedProject.fxml");
+        paths.put(AppSection.COORDINATOR_MANAGEMENT_MENU, VIEW_BASE_PATH + "managerCoordinator.fxml");
+        paths.put(AppSection.PRACTITIONER_MANAGEMENT_MENU, VIEW_BASE_PATH + "managerPractitioner.fxml");
         return paths;
     }
 

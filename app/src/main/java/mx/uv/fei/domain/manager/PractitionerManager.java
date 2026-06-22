@@ -94,4 +94,33 @@ public class PractitionerManager {
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del profesor.", e);
         }
     }
+
+    public List<Practitioner> getAllPractitioners() throws ManagerException {
+        try {
+            return practitionerDAO.getAllPractitioners();
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al recuperar la lista de practicantes.", e);
+        }
+    }
+
+    public Practitioner getPractitionerById(int practitionerId) throws ManagerException {
+        try {
+            return practitionerDAO.recoverPractitioner(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del practicante.", e);
+        }
+    }
+
+    public void updatePractitioner(Practitioner practitioner, int practitionerId) throws ManagerException {
+        UserValidator.validatePractitionerForUpdate(practitioner);
+
+        try {
+            boolean isUpdated = practitionerDAO.updatePractitioner(practitioner, practitionerId);
+            if (!isUpdated) {
+                throw new ManagerException("No se pudo actualizar la información del practicante.");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("Error de conexión con la base de datos.", e);
+        }
+    }
 }

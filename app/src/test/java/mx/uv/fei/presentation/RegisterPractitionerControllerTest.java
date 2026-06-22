@@ -23,6 +23,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.domain.statemachine.state.RootState;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,6 +54,7 @@ public class RegisterPractitionerControllerTest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         when(practiceGroupManager.getAllPracticeGroups()).thenReturn(buildStoredGroups());
         when(practitionerManager.registerNewPractitioner(any(Practitioner.class))).thenReturn(GENERATED_PASSWORD);
+        when(appStore.getState()).thenReturn(RootState.initialState());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->

@@ -72,4 +72,19 @@ public class ProfessorManagerTest {
     void inactivateMultipleProfessors_ValidList_DoesNotThrow() {
         assertDoesNotThrow(() -> professorManager.inactivateMultipleProfessors(List.of(STORED_PROFESSOR_ID)));
     }
+
+    @Test
+    void getProfessorById_StoredId_ReturnsMatchingProfessor() throws ManagerException {
+        Professor resultProfessor = professorManager.getProfessorById(STORED_PROFESSOR_ID);
+
+        assertEquals(STORED_PROFESSOR_ID, resultProfessor.getId());
+    }
+
+    @Test
+    void updateProfessor_ValidPersonalData_DoesNotThrow() throws ManagerException {
+        Professor professorToUpdate = professorManager.getProfessorById(STORED_PROFESSOR_ID);
+        professorToUpdate.setName("Jose Eduardo Editado");
+
+        assertDoesNotThrow(() -> professorManager.updateProfessor(professorToUpdate, STORED_PROFESSOR_ID));
+    }
 }

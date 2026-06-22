@@ -111,6 +111,19 @@ public class ProfessorManagementController {
     }
 
     @FXML
+    private void handleEditSelectedAction() {
+        List<Integer> selectedProfessorIds = collectSelectedProfessorIds();
+
+        if (selectedProfessorIds.size() != 1) {
+            Controller.showAlert("Selección inválida",
+                    "Seleccione exactamente un profesor para editar.", AlertType.WARNING);
+        } else {
+            store.dispatch(new NavigationAction.ViewEntityDetails(
+                    AppSection.REGISTER_PROFESSOR, String.valueOf(selectedProfessorIds.getFirst())));
+        }
+    }
+
+    @FXML
     private void handleRegisterNewProfessorAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
     }

@@ -69,4 +69,19 @@ public class CoordinatorManagerTest {
 
         assertEquals(expectedCoordinator, currentCoordinator);
     }
+
+    @Test
+    void getCoordinatorById_StoredId_ReturnsMatchingCoordinator() throws ManagerException {
+        Coordinator resultCoordinator = coordinatorManager.getCoordinatorById(STORED_COORDINATOR_ID);
+
+        assertEquals(STORED_COORDINATOR_ID, resultCoordinator.getId());
+    }
+
+    @Test
+    void updateCoordinator_ValidPersonalData_DoesNotThrow() throws ManagerException {
+        Coordinator coordinatorToUpdate = coordinatorManager.getCoordinatorById(STORED_COORDINATOR_ID);
+        coordinatorToUpdate.setName("Marco Antonio Editado");
+
+        assertDoesNotThrow(() -> coordinatorManager.updateCoordinator(coordinatorToUpdate, STORED_COORDINATOR_ID));
+    }
 }
