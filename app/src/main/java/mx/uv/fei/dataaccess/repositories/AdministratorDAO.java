@@ -126,17 +126,14 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
     }
 
     @Override
-    public boolean updateAdministrator(Administrator administratorToUpdate, int administratorId) throws DAOException {
-        boolean isUpdated = false;
+    public void updateAdministrator(Administrator administratorToUpdate, int administratorId) throws DAOException {
         administratorToUpdate.setId(administratorId);
 
         try (Connection connection = databaseConnection.getConnection()) {
-            isUpdated = userDAO.updateUser(administratorToUpdate, connection);
+            userDAO.updateUser(administratorToUpdate, connection);
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión al actualizar administrador.", e);
         }
-
-        return isUpdated;
     }
 
     private Administrator mapResultSetToAdministrator(ResultSet resultSet) throws SQLException {

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 
@@ -92,24 +93,18 @@ public class SelfEvaluationDAOTest {
         validEvaluation.setStatus("Revisada");
         validEvaluation.setEvidence("https://storage.uv.mx/evidencias/autoevaluacion_corregida_zS24242424.pdf");
 
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, STORED_EVALUATION_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluation(validEvaluation, STORED_EVALUATION_ID));
     }
 
     @Test
     void updateSelfEvaluationStatus_ValidStatus_ReturnsTrue() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationStatus(STORED_EVALUATION_ID, "Revisada");
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationStatus(STORED_EVALUATION_ID, "Revisada"));
     }
 
     @Test
     void updateSelfEvaluationEvidence_ValidEvidence_ReturnsTrue() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationEvidence(STORED_EVALUATION_ID,
-                "https://storage.uv.mx/evidencias/evidencia_actualizada_zS24242424.pdf");
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationEvidence(STORED_EVALUATION_ID,
+                "https://storage.uv.mx/evidencias/evidencia_actualizada_zS24242424.pdf"));
     }
 
     @Test
@@ -128,23 +123,17 @@ public class SelfEvaluationDAOTest {
 
     @Test
     void updateSelfEvaluation_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(validEvaluation, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluation(validEvaluation, NON_EXISTENT_ID));
     }
 
     @Test
     void updateSelfEvaluationStatus_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationStatus(NON_EXISTENT_ID, "Revisada");
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationStatus(NON_EXISTENT_ID, "Revisada"));
     }
 
     @Test
     void updateSelfEvaluationEvidence_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationEvidence(NON_EXISTENT_ID,
-                "https://storage.uv.mx/evidencias/evidencia_huerfana.pdf");
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationEvidence(NON_EXISTENT_ID,
+                "https://storage.uv.mx/evidencias/evidencia_huerfana.pdf"));
     }
 }

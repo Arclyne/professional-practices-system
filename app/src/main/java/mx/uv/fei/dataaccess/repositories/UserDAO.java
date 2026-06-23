@@ -72,16 +72,16 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     }
 
     @Override
-    public boolean deactivateUser(int userId) throws DAOException {
-        return updateTuple(SQL_DEACTIVATE_USER, statement -> {
+    public void deactivateUser(int userId) throws DAOException {
+        updateTuple(SQL_DEACTIVATE_USER, statement -> {
             statement.setInt(1, userId);
         });
     }
 
     @Override
-    public boolean updateUser(User user, Connection sharedConnection) throws DAOException {
+    public void updateUser(User user, Connection sharedConnection) throws DAOException {
         try {
-            return updateTuple(sharedConnection, SQL_UPDATE_USER, statement -> {
+            updateTuple(sharedConnection, SQL_UPDATE_USER, statement -> {
                 statement.setString(1, user.getUserName());
                 statement.setString(2, user.getPassword());
                 statement.setString(3, user.getName());
@@ -173,20 +173,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     }
 
     @Override
-    public boolean deactivateMultipleUsers(List<Integer> userIds) throws DAOException {
-        boolean allDeactivationsSuccessful = false;
-
+    public void deactivateMultipleUsers(List<Integer> userIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                allDeactivationsSuccessful = executeDeactivationBatch(connection, userIds);
-
-                if (allDeactivationsSuccessful) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
+                executeDeactivationBatch(connection, userIds);
+                connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("Error al ejecutar la inactivación masiva de usuarios.", e);
@@ -196,13 +189,9 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación masiva.", e);
         }
-
-        return allDeactivationsSuccessful;
     }
 
-    private boolean executeDeactivationBatch(Connection connection, List<Integer> userIds) throws SQLException {
-        boolean isSuccessful = true;
-
+    private void executeDeactivationBatch(Connection connection, List<Integer> userIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_USER)) {
             for (Integer userId : userIds) {
                 statement.setInt(1, userId);
@@ -211,14 +200,11 @@ public class UserDAO extends BaseDAO implements IUserDAO {
 
             int[] batchResults = statement.executeBatch();
             for (int result : batchResults) {
-                if (result <= 0) {
-                    isSuccessful = false;
-                    break;
+                if (result <= 0 && result != Statement.SUCCESS_NO_INFO) {
+                    throw new SQLException("La inactivación masiva no afectó a uno de los usuarios seleccionados.");
                 }
             }
         }
-
-        return isSuccessful;
     }
 
     private User extractUserFromQuery(String sqlStatement, String parameter) throws DAOException {

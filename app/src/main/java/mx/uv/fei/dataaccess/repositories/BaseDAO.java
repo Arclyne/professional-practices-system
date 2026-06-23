@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +44,33 @@ abstract class BaseDAO {
         return results;
     }
 
-    protected boolean updateTuple(String sqlStatement, IInsterGeneric statementBinder)
+    protected int insertTuple(String sqlStatement, IInsterGeneric statementBinder)
             throws DAOException {
-        boolean isUpdated = false;
+        int generatedId = -1;
 
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sqlStatement, Statement.RETURN_GENERATED_KEYS)) {
+
+            if (statementBinder != null) {
+                statementBinder.insertGeneric(statement);
+            }
+
+            if (statement.executeUpdate() > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al ejecutar la inserción en la base de datos.", e);
+        }
+
+        return generatedId;
+    }
+
+    protected void updateTuple(String sqlStatement, IInsterGeneric statementBinder)
+            throws DAOException {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlStatement)) {
 
@@ -54,27 +78,21 @@ abstract class BaseDAO {
                 statementBinder.insertGeneric(statement);
             }
 
-            isUpdated = statement.executeUpdate() > 0;
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             throw new DAOException("Error al ejecutar la sentencia de actualización.", e);
         }
-
-        return isUpdated;
     }
 
-    protected boolean updateTuple(Connection sharedConnection, String sqlStatement, IInsterGeneric statementBinder)
+    protected void updateTuple(Connection sharedConnection, String sqlStatement, IInsterGeneric statementBinder)
             throws SQLException {
-        boolean isUpdated = false;
-
         try (PreparedStatement statement = sharedConnection.prepareStatement(sqlStatement)) {
             if (statementBinder != null) {
                 statementBinder.insertGeneric(statement);
             }
-            isUpdated = statement.executeUpdate() > 0;
+            statement.executeUpdate();
         }
-
-        return isUpdated;
     }
 
     private void bindParameters(PreparedStatement statement, Object[] parameters) throws SQLException {

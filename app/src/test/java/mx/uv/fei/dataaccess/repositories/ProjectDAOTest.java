@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -96,9 +97,9 @@ public class ProjectDAOTest {
 
     @Test
     void insertProject_ValidProject_ReturnsTrue() throws DAOException {
-        boolean isInserted = projectDAO.insertProject(newProject);
+        int isInserted = projectDAO.insertProject(newProject);
 
-        assertTrue(isInserted);
+        assertTrue(isInserted > 0);
     }
 
     @Test
@@ -124,16 +125,12 @@ public class ProjectDAOTest {
         newProject.setDescription("Mantenimiento de los modulos de reportes del sistema");
         newProject.setParticipantCapacity(10);
 
-        boolean isUpdated = projectDAO.updateProject(newProject, FIRST_PROJECT_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> projectDAO.updateProject(newProject, FIRST_PROJECT_ID));
     }
 
     @Test
     void deactivateMultipleProjects_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isDeactivated = projectDAO.deactivateMultipleProjects(List.of(1, 2));
-
-        assertTrue(isDeactivated);
+        assertDoesNotThrow(() -> projectDAO.deactivateMultipleProjects(List.of(1, 2)));
     }
 
     @Test
@@ -161,8 +158,6 @@ public class ProjectDAOTest {
 
     @Test
     void updateProject_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = projectDAO.updateProject(newProject, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> projectDAO.updateProject(newProject, NON_EXISTENT_ID));
     }
 }

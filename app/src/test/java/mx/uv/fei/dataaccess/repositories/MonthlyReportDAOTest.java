@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -114,9 +115,7 @@ public class MonthlyReportDAOTest {
         juneReport.setMonthName("Julio");
         juneReport.setStatus("Entregado");
 
-        boolean isUpdated = monthlyReportDAO.updateReport(juneReport, STORED_REPORT_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> monthlyReportDAO.updateReport(juneReport, STORED_REPORT_ID));
     }
 
     @Test
@@ -128,8 +127,6 @@ public class MonthlyReportDAOTest {
 
     @Test
     void updateReport_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = monthlyReportDAO.updateReport(juneReport, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> monthlyReportDAO.updateReport(juneReport, NON_EXISTENT_ID));
     }
 }

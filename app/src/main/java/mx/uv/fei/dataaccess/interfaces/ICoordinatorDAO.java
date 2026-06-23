@@ -14,5 +14,5 @@ public interface ICoordinatorDAO {
 
     List<Coordinator> getAllCoordinators() throws DAOException;
 
-    boolean updateCoordinator(Coordinator coordinatorToUpdate, int id) throws DAOException;
+    void updateCoordinator(Coordinator coordinatorToUpdate, int id) throws DAOException;
 }

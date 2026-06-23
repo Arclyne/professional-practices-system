@@ -42,10 +42,7 @@ public class GradingManager {
         PractitionerGrade existingGrade = getExistingGrade(practitionerId, period);
 
         try {
-            boolean isUpdated = practitionerGradeDAO.updateFinalGrade(existingGrade.getGradeId(), newFinalGrade);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la calificación final.");
-            }
+            practitionerGradeDAO.updateFinalGrade(existingGrade.getGradeId(), newFinalGrade);
         } catch (DAOException e) {
             throw new ManagerException("No se pudo actualizar la calificación final.", e);
         }

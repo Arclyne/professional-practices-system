@@ -123,22 +123,16 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
     }
 
     @Override
-    public boolean updateCoordinator(Coordinator coordinatorToUpdate, int coordinatorId) throws DAOException {
-        boolean isUpdated = false;
+    public void updateCoordinator(Coordinator coordinatorToUpdate, int coordinatorId) throws DAOException {
         coordinatorToUpdate.setId(coordinatorId);
 
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                isUpdated = userDAO.updateUser(coordinatorToUpdate, connection);
-
-                if (isUpdated) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
-            } catch (SQLException e) {
+                userDAO.updateUser(coordinatorToUpdate, connection);
+                connection.commit();
+            } catch (SQLException | DAOException e) {
                 connection.rollback();
                 throw new DAOException("Error SQL al actualizar el coordinador. Los cambios fueron revertidos.", e);
             } finally {
@@ -147,8 +141,6 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
-
-        return isUpdated;
     }
 
     private Coordinator mapResultSetToCoordinator(ResultSet resultSet) throws SQLException {

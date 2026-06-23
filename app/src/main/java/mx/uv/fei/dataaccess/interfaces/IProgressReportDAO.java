@@ -8,7 +8,7 @@ public interface IProgressReportDAO {
 
     int insertProgressReport(ProgressReport report) throws DAOException;
 
-    boolean updateProgressReport(ProgressReport report, int reportId) throws DAOException;
+    void updateProgressReport(ProgressReport report, int reportId) throws DAOException;
 
     ProgressReport getProgressReportByPractitionerAndType(int practitionerId, String reportType) throws DAOException;
 

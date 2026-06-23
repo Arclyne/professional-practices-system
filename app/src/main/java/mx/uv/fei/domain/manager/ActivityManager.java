@@ -35,10 +35,7 @@ public class ActivityManager {
     public void modifyActivity(Activity activity, int activityId) throws ManagerException {
         ReportValidator.validateLogbookActivity(activity);
         try {
-            boolean isUpdated = activityDAO.updateActivity(activity, activityId);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la información de la actividad.");
-            }
+            activityDAO.updateActivity(activity, activityId);
         } catch (DAOException e) {
             throw new ManagerException("No se pudo actualizar la información de la actividad.", e);
         }

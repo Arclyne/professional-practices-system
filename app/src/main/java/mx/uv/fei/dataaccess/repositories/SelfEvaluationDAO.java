@@ -83,23 +83,23 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
     }
 
     @Override
-    public boolean updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException {
-        return updateTuple(SQL_UPDATE_SELF_EVALUATION, statement -> {
+    public void updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException {
+        updateTuple(SQL_UPDATE_SELF_EVALUATION, statement -> {
             statement.setString(1, selfEvaluation.getStatus());
             statement.setString(2, selfEvaluation.getEvidence());
             statement.setInt(3, selfEvaluationId);
         });
     }
 
-    public boolean updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException {
-        return updateTuple(SQL_UPDATE_SELF_EVALUATION_STATUS, statement -> {
+    public void updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException {
+        updateTuple(SQL_UPDATE_SELF_EVALUATION_STATUS, statement -> {
             statement.setString(1, status);
             statement.setInt(2, selfEvaluationId);
         });
     }
 
-    public boolean updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException {
-        return updateTuple(SQL_UPDATE_SELF_EVALUATION_EVIDENCE, statement -> {
+    public void updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException {
+        updateTuple(SQL_UPDATE_SELF_EVALUATION_EVIDENCE, statement -> {
             statement.setString(1, evidence);
             statement.setInt(2, selfEvaluationId);
         });

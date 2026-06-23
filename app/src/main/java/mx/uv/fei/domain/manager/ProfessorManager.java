@@ -50,10 +50,7 @@ public class ProfessorManager {
 
     public void inactivateMultipleProfessors(List<Integer> professorIds) throws ManagerException {
         try {
-            boolean isDeactivationSuccessful = userDAO.deactivateMultipleUsers(professorIds);
-            if (!isDeactivationSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los profesores seleccionados.");
-            }
+            userDAO.deactivateMultipleUsers(professorIds);
         } catch (DAOException e) {
             throw new ManagerException("Error de base de datos al inactivar profesores.", e);
         }
@@ -79,10 +76,7 @@ public class ProfessorManager {
         UserValidator.validateProfessorForUpdate(professor);
 
         try {
-            boolean isUpdated = professorDAO.updateProfessor(professor, professorId);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la información del profesor.");
-            }
+            professorDAO.updateProfessor(professor, professorId);
         } catch (DAOException e) {
             log.error("Error al actualizar el profesor.", e);
             throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);

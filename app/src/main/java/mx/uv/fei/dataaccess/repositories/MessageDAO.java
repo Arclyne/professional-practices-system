@@ -69,8 +69,8 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
     }
 
     @Override
-    public boolean insertParticipant(int messageId, int senderId, int receiverId) throws DAOException {
-        return updateTuple(SQL_INSERT_PARTICIPANT, statement -> {
+    public void insertParticipant(int messageId, int senderId, int receiverId) throws DAOException {
+        updateTuple(SQL_INSERT_PARTICIPANT, statement -> {
             statement.setInt(1, messageId);
             statement.setInt(2, senderId);
             statement.setInt(3, receiverId);

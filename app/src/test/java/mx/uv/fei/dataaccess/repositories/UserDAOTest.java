@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -80,9 +81,7 @@ public class UserDAOTest {
 
     @Test
     void deactivateUser_ExistingId_ReturnsTrue() throws DAOException {
-        boolean result = userDAO.deactivateUser(STORED_ADMINISTRATOR_ID);
-
-        assertTrue(result);
+        assertDoesNotThrow(() -> userDAO.deactivateUser(STORED_ADMINISTRATOR_ID));
     }
 
     @Test
@@ -92,9 +91,7 @@ public class UserDAOTest {
             newUser.setStatus(UserStatus.INACTIVE);
             newUser.setPassword("NuevaClaveUv2026");
 
-            boolean result = userDAO.updateUser(newUser, connection);
-
-            assertTrue(result);
+            assertDoesNotThrow(() -> userDAO.updateUser(newUser, connection));
         }
     }
 
@@ -139,9 +136,7 @@ public class UserDAOTest {
 
     @Test
     void deactivateMultipleUsers_ValidIds_ReturnsTrue() throws DAOException {
-        boolean result = userDAO.deactivateMultipleUsers(List.of(STORED_ADMINISTRATOR_ID, STORED_COORDINATOR_ID));
-
-        assertTrue(result);
+        assertDoesNotThrow(() -> userDAO.deactivateMultipleUsers(List.of(STORED_ADMINISTRATOR_ID, STORED_COORDINATOR_ID)));
     }
 
     @Test

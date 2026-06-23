@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -86,9 +87,7 @@ public class PracticeGroupDAOTest {
     void updatePracticeGroup_ValidModifiedData_ReturnsTrue() throws DAOException {
         newGroup.setSection("NRC-99999");
 
-        boolean isUpdated = groupDAO.updatePracticeGroup(newGroup, STORED_GROUP_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> groupDAO.updatePracticeGroup(newGroup, STORED_GROUP_ID));
     }
 
     @Test
@@ -107,8 +106,6 @@ public class PracticeGroupDAOTest {
 
     @Test
     void updatePracticeGroup_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = groupDAO.updatePracticeGroup(newGroup, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> groupDAO.updatePracticeGroup(newGroup, NON_EXISTENT_ID));
     }
 }

@@ -115,10 +115,7 @@ public class PractitionerManager {
         UserValidator.validatePractitionerForUpdate(practitioner);
 
         try {
-            boolean isUpdated = practitionerDAO.updatePractitioner(practitioner, practitionerId);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la información del practicante.");
-            }
+            practitionerDAO.updatePractitioner(practitioner, practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("Error de conexión con la base de datos.", e);
         }

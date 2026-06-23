@@ -8,7 +8,7 @@ public interface IPractitionerGradeDAO {
 
     int insertPractitionerGrade(PractitionerGrade grade) throws DAOException;
 
-    boolean updateFinalGrade(int gradeId, double finalGrade) throws DAOException;
+    void updateFinalGrade(int gradeId, double finalGrade) throws DAOException;
 
     PractitionerGrade getGradeByPractitionerAndPeriod(int practitionerId, String period) throws DAOException;
 

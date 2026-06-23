@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IManagerDAO {
     List<Manager> getManagersByOrganization(int organizationId) throws DAOException;
-    boolean insertManager(Manager manager) throws DAOException;
+    int insertManager(Manager manager) throws DAOException;
     List<Manager> getAllManagers() throws DAOException;
-    boolean deactivateMultipleManagers(List<Integer> managerIdentifiersList) throws DAOException;
+    void deactivateMultipleManagers(List<Integer> managerIdentifiersList) throws DAOException;
 }

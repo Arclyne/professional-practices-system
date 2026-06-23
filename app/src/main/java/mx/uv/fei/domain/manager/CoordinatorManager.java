@@ -50,10 +50,7 @@ public class CoordinatorManager {
 
     public void inactivateCoordinator(int coordinatorId) throws ManagerException {
         try {
-            boolean isDeactivated = userDAO.deactivateUser(coordinatorId);
-            if (!isDeactivated) {
-                throw new ManagerException("No se pudo inactivar. Verifique que el coordinador exista en el sistema.");
-            }
+            userDAO.deactivateUser(coordinatorId);
         } catch (DAOException e) {
             log.error("Error al inactivar el coordinador con ID: {}.", coordinatorId, e);
             throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", e);
@@ -89,10 +86,7 @@ public class CoordinatorManager {
         UserValidator.validateCoordinatorForUpdate(coordinator);
 
         try {
-            boolean isUpdated = coordinatorDAO.updateCoordinator(coordinator, coordinatorId);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la información del coordinador.");
-            }
+            coordinatorDAO.updateCoordinator(coordinator, coordinatorId);
         } catch (DAOException e) {
             log.error("Error al actualizar el coordinador.", e);
             throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);

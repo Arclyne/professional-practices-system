@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface IActivityDAO {
     int insertActivity(Activity activity) throws DAOException;
-    boolean updateActivity(Activity activity, int activityId) throws DAOException;
+    void updateActivity(Activity activity, int activityId) throws DAOException;
     List<Activity> getActivitiesByPractitioner(int practitionerId) throws DAOException;
     List<Activity> getActivitiesByReport(int reportId) throws DAOException;
 
-    boolean assignActivityToReport(int activityId, int reportId) throws DAOException;
-    boolean removeActivityFromReport(int activityId) throws DAOException;
+    void assignActivityToReport(int activityId, int reportId) throws DAOException;
+    void removeActivityFromReport(int activityId) throws DAOException;
 }

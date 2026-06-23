@@ -10,11 +10,11 @@ public interface IPostulationDAO {
 
     boolean hasPractitionerSubmittedPriorities(int practitionerIdentifier) throws DAOException;
 
-    boolean insertProjectPriorities(int targetPractitionerIdentifier, List<Project> prioritizedProjectList) throws DAOException;
+    void insertProjectPriorities(int targetPractitionerIdentifier, List<Project> prioritizedProjectList) throws DAOException;
 
     List<ProjectPostulation> retrievePractitionerPostulations(int practitionerIdentifier) throws DAOException;
 
-    boolean assignProjectUsingStoredProcedure(int practitionerIdentifier, int projectIdentifier) throws DAOException;
+    void assignProjectUsingStoredProcedure(int practitionerIdentifier, int projectIdentifier) throws DAOException;
 
     boolean hasAssignedProject(int practitionerId) throws DAOException;
 }

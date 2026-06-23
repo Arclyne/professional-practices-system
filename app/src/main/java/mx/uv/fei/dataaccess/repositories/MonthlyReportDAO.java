@@ -66,8 +66,8 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
     }
 
     @Override
-    public boolean updateReport(MonthlyReport report, int reportId) throws DAOException {
-        return updateTuple(SQL_UPDATE_REPORT, statement -> {
+    public void updateReport(MonthlyReport report, int reportId) throws DAOException {
+        updateTuple(SQL_UPDATE_REPORT, statement -> {
             statement.setString(1, report.getMonthName());
             statement.setInt(2, report.getYear());
             statement.setDate(3, report.getStartDate());

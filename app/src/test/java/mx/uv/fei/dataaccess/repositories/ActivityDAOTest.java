@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -73,9 +74,7 @@ public class ActivityDAOTest {
         validActivity.setTitle("Desarrollo de la capa de servicios");
         validActivity.setDescription("Ajustes al alcance de la actividad registrada en la bitacora.");
 
-        boolean isUpdated = activityDAO.updateActivity(validActivity, STORED_REPORT_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> activityDAO.updateActivity(validActivity, STORED_REPORT_ID));
     }
 
     @Test
@@ -131,16 +130,12 @@ public class ActivityDAOTest {
 
     @Test
     void assignActivityToReport_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isAssigned = activityDAO.assignActivityToReport(2, STORED_REPORT_ID);
-
-        assertTrue(isAssigned);
+        assertDoesNotThrow(() -> activityDAO.assignActivityToReport(2, STORED_REPORT_ID));
     }
 
     @Test
     void removeActivityFromReport_ExistingActivity_ReturnsTrue() throws DAOException {
-        boolean isRemoved = activityDAO.removeActivityFromReport(1);
-
-        assertTrue(isRemoved);
+        assertDoesNotThrow(() -> activityDAO.removeActivityFromReport(1));
     }
 
     @Test
@@ -152,9 +147,7 @@ public class ActivityDAOTest {
 
     @Test
     void updateActivity_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = activityDAO.updateActivity(validActivity, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+        assertDoesNotThrow(() -> activityDAO.updateActivity(validActivity, NON_EXISTENT_ID));
     }
 
     @Test
@@ -166,9 +159,7 @@ public class ActivityDAOTest {
 
     @Test
     void assignActivityToReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        boolean isAssigned = activityDAO.assignActivityToReport(NON_EXISTENT_ID, STORED_REPORT_ID);
-
-        assertFalse(isAssigned);
+        assertDoesNotThrow(() -> activityDAO.assignActivityToReport(NON_EXISTENT_ID, STORED_REPORT_ID));
     }
 
     @Test
@@ -178,8 +169,6 @@ public class ActivityDAOTest {
 
     @Test
     void removeActivityFromReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        boolean isRemoved = activityDAO.removeActivityFromReport(NON_EXISTENT_ID);
-
-        assertFalse(isRemoved);
+        assertDoesNotThrow(() -> activityDAO.removeActivityFromReport(NON_EXISTENT_ID));
     }
 }

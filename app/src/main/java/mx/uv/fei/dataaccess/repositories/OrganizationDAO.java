@@ -33,8 +33,8 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     }
 
     @Override
-    public boolean insertOrganization(Organization organization) throws DAOException {
-        return updateTuple(SQL_INSERT_ORGANIZATION, statement -> {
+    public int insertOrganization(Organization organization) throws DAOException {
+        return insertTuple(SQL_INSERT_ORGANIZATION, statement -> {
             statement.setString(1, organization.getNameOrganization());
             statement.setString(2, organization.getState());
             statement.setString(3, organization.getAdress());
@@ -72,8 +72,8 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     }
 
     @Override
-    public boolean updateOrganization(Organization organizationToUpdate, int organizationId) throws DAOException {
-        return updateTuple(SQL_UPDATE_ORGANIZATION, statement -> {
+    public void updateOrganization(Organization organizationToUpdate, int organizationId) throws DAOException {
+        updateTuple(SQL_UPDATE_ORGANIZATION, statement -> {
             statement.setString(1, organizationToUpdate.getNameOrganization());
             statement.setString(2, organizationToUpdate.getState());
             statement.setString(3, organizationToUpdate.getAdress());

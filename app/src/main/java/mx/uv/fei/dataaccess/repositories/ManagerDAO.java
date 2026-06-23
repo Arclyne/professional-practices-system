@@ -38,8 +38,8 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
     }
 
     @Override
-    public boolean insertManager(Manager manager) throws DAOException {
-        return updateTuple(SQL_INSERT_MANAGER, statement -> {
+    public int insertManager(Manager manager) throws DAOException {
+        return insertTuple(SQL_INSERT_MANAGER, statement -> {
             statement.setString(1, manager.getName());
             statement.setString(2, manager.getPhone());
             statement.setString(3, manager.getEmail());
@@ -54,20 +54,13 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
     }
 
     @Override
-    public boolean deactivateMultipleManagers(List<Integer> managerIds) throws DAOException {
-        boolean allDeactivationsSuccessful = false;
-
+    public void deactivateMultipleManagers(List<Integer> managerIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                allDeactivationsSuccessful = executeDeactivationBatch(connection, managerIds);
-
-                if (allDeactivationsSuccessful) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
+                executeDeactivationBatch(connection, managerIds);
+                connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("Error al ejecutar la inactivación masiva de encargados.", e);
@@ -78,13 +71,9 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación de encargados.", e);
         }
-
-        return allDeactivationsSuccessful;
     }
 
-    private boolean executeDeactivationBatch(Connection connection, List<Integer> managerIds) throws SQLException {
-        boolean isSuccessful = true;
-
+    private void executeDeactivationBatch(Connection connection, List<Integer> managerIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_MANAGER)) {
             for (Integer managerId : managerIds) {
                 statement.setInt(1, managerId);
@@ -94,13 +83,10 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             int[] batchResults = statement.executeBatch();
             for (int result : batchResults) {
                 if (result <= 0 && result != Statement.SUCCESS_NO_INFO) {
-                    isSuccessful = false;
-                    break;
+                    throw new SQLException("La inactivación masiva no afectó a uno de los encargados seleccionados.");
                 }
             }
         }
-
-        return isSuccessful;
     }
 
     private Manager mapResultSetToManager(ResultSet resultSet) throws SQLException {

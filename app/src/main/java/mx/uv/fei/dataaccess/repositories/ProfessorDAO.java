@@ -103,17 +103,14 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
     }
 
     @Override
-    public boolean updateProfessor(Professor professorToUpdate, int professorId) throws DAOException {
-        boolean isUpdated = false;
+    public void updateProfessor(Professor professorToUpdate, int professorId) throws DAOException {
         professorToUpdate.setId(professorId);
 
         try (Connection connection = databaseConnection.getConnection()) {
-            isUpdated = userDAO.updateUser(professorToUpdate, connection);
+            userDAO.updateUser(professorToUpdate, connection);
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión al actualizar el profesor.", e);
         }
-
-        return isUpdated;
     }
 
     private Professor mapResultSetToProfessor(ResultSet resultSet) throws SQLException {

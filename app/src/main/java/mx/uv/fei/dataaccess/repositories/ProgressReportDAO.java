@@ -80,8 +80,8 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
     }
 
     @Override
-    public boolean updateProgressReport(ProgressReport progressReport, int reportId) throws DAOException {
-        return updateTuple(SQL_UPDATE_PROGRESS_REPORT, statement -> {
+    public void updateProgressReport(ProgressReport progressReport, int reportId) throws DAOException {
+        updateTuple(SQL_UPDATE_PROGRESS_REPORT, statement -> {
             statement.setString(1, progressReport.getStatus());
             statement.setString(2, progressReport.getSignedFileUrl());
             statement.setObject(3, progressReport.getGrade(), Types.DECIMAL);

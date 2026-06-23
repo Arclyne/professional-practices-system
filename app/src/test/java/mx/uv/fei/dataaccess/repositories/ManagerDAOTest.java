@@ -3,6 +3,7 @@ package mx.uv.fei.dataaccess.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,9 +59,9 @@ public class ManagerDAOTest {
 
     @Test
     void insertManager_ValidManager_ReturnsTrue() throws DAOException {
-        boolean isInserted = managerDAO.insertManager(newManager);
+        int isInserted = managerDAO.insertManager(newManager);
 
-        assertTrue(isInserted);
+        assertTrue(isInserted > 0);
     }
 
     @Test
@@ -99,9 +100,7 @@ public class ManagerDAOTest {
 
     @Test
     void deactivateMultipleManagers_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isDeactivated = managerDAO.deactivateMultipleManagers(List.of(1, 2));
-
-        assertTrue(isDeactivated);
+        assertDoesNotThrow(() -> managerDAO.deactivateMultipleManagers(List.of(1, 2)));
     }
 
     @Test

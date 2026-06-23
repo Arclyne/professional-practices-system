@@ -13,7 +13,7 @@ public interface IPractitionerDAO {
 
     List<Practitioner> getAllPractitioners() throws DAOException;
 
-    boolean updatePractitioner(Practitioner practitionerToUpdate, int ID) throws DAOException;
+    void updatePractitioner(Practitioner practitionerToUpdate, int ID) throws DAOException;
 
     List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException;
 

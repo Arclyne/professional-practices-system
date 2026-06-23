@@ -43,10 +43,7 @@ public class MessageManager {
                 throw new ManagerException("No se pudo registrar el contenido del mensaje.");
             }
 
-            boolean isParticipantInserted = messageDAO.insertParticipant(generatedMessageId, messageRequest.senderId(), receiverId);
-            if (!isParticipantInserted) {
-                throw new ManagerException("El mensaje se creó, pero no se pudo vincular al remitente y destinatario.");
-            }
+            messageDAO.insertParticipant(generatedMessageId, messageRequest.senderId(), receiverId);
         } catch (DAOException e) {
             log.error("Fallo al registrar el mensaje en la base de datos.", e);
             throw new ManagerException("No fue posible procesar el envío del mensaje.", e);

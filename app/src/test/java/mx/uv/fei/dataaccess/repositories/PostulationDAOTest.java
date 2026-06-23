@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,9 +60,7 @@ public class PostulationDAOTest {
 
     @Test
     void insertProjectPriorities_ValidProjects_ReturnsTrue() throws DAOException {
-        boolean isInserted = postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
-
-        assertTrue(isInserted);
+        assertDoesNotThrow(() -> postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects));
     }
 
     @Test
@@ -84,9 +83,7 @@ public class PostulationDAOTest {
     void assignProjectUsingStoredProcedure_ValidIds_ReturnsTrue() throws DAOException {
         postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
 
-        boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, ASSIGNED_PROJECT_ID);
-
-        assertTrue(isAssigned);
+        assertDoesNotThrow(() -> postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, ASSIGNED_PROJECT_ID));
     }
 
     @Test
