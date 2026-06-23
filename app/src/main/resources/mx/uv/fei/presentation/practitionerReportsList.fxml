@@ -18,9 +18,6 @@
         </padding>
 
         <VBox spacing="15.0" prefWidth="450.0" HBox.hgrow="ALWAYS">
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Button mnemonicParsing="false" onAction="#handleReturnAction" styleClass="secondary-button" text="← Volver al Menú" />
-            </HBox>
             <VBox spacing="5.0">
                 <Label styleClass="form-title" text="Mis Reportes Mensuales" />
                 <Label text="Selecciona un reporte de la lista para ver sus detalles y gestionar los archivos PDF." textFill="#6b7280" wrapText="true" />
