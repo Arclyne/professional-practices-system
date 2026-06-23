@@ -27,6 +27,8 @@ public class UserDAO extends BaseDAO implements IUserDAO {
             "UPDATE user SET username = ?, password = ?, name = ?, last_name = ?, email = ?, role_name = ?, status = ?, gender = ? WHERE user_id = ?";
     private static final String SQL_DEACTIVATE_USER =
             "UPDATE user SET status = 'Inactive', discharge_date = NOW() WHERE user_id = ?";
+    private static final String SQL_ACTIVATE_USER =
+            "UPDATE user SET status = 'Active', discharge_date = NULL WHERE user_id = ?";
     private static final String SQL_SELECT_USER_BY_USERNAME =
             "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
     private static final String SQL_SELECT_USER_BY_EMAIL =
@@ -74,6 +76,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     @Override
     public void deactivateUser(int userId) throws DAOException {
         updateTuple(SQL_DEACTIVATE_USER, statement -> {
+            statement.setInt(1, userId);
+        });
+    }
+
+    @Override
+    public void activateUser(int userId) throws DAOException {
+        updateTuple(SQL_ACTIVATE_USER, statement -> {
             statement.setInt(1, userId);
         });
     }

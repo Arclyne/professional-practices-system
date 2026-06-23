@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.core.DependencyInjector;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.AdminManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -44,6 +45,9 @@ public class MainController {
     private static final double FORM_WIDTH = 500;
     private static final double FORM_HEIGHT = 450;
     private static final double SPLASH_DELAY_SECONDS = 2;
+
+    private static final String ADMINISTRATOR_ROLE = "Administrator";
+    private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
 
     @FXML private StackPane contentArea;
 
@@ -133,13 +137,35 @@ public class MainController {
         activeSection = targetSection;
         adjustStageSize(targetSection);
 
-        String viewPath = VIEW_PATHS.get(targetSection);
+        String viewPath = resolveViewPath(targetSection);
         if (viewPath != null) {
             loadView(viewPath);
         } else {
             Controller.showAlert("Error de Navegación",
                     "No se encontró la ruta para la sección solicitada en el sistema.", AlertType.ERROR);
         }
+    }
+
+    private String resolveViewPath(AppSection targetSection) {
+        String viewPath = VIEW_PATHS.get(targetSection);
+        if (targetSection == AppSection.DASHBOARD) {
+            viewPath = resolveDashboardPath();
+        }
+        return viewPath;
+    }
+
+    private String resolveDashboardPath() {
+        String dashboardPath = VIEW_PATHS.get(AppSection.DASHBOARD);
+        RootState currentState = store.getState();
+
+        if (currentState != null && currentState.sessionState() != null) {
+            User currentUser = currentState.sessionState().currentUserInSession();
+            if (currentUser != null && ADMINISTRATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
+                dashboardPath = ADMIN_SHELL_VIEW;
+            }
+        }
+
+        return dashboardPath;
     }
 
     private void adjustStageSize(AppSection targetSection) {

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import mx.uv.fei.presentation.components.FormComboBox?>
+<?import mx.uv.fei.presentation.components.FormField?>
+
+<VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.CoordinationController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="COORDINACIÓN"/>
+    <Label styleClass="content-title" text="Coordinación"/>
+    <Label styleClass="content-subtitle" text="Administra al coordinador en turno y el historial de coordinadores."/>
+
+    <VBox fx:id="listPane" spacing="16.0" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+
+        <VBox fx:id="activeCoordinatorCard" spacing="8.0" styleClass="content-card active-card">
+            <Label styleClass="card-eyebrow" text="COORDINADOR ACTIVO"/>
+            <Label fx:id="activeCoordinatorNameLabel" styleClass="card-title" text="—"/>
+            <Label fx:id="activeCoordinatorMetaLabel" styleClass="card-subtitle" text="—"/>
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <Label fx:id="activeCoordinatorStatusLabel" styleClass="status-pill" text="—"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button onAction="#handleInactivateAction" styleClass="secondary-button" text="Inactivar"/>
+            </HBox>
+        </VBox>
+
+        <Label fx:id="noActiveCoordinatorLabel" managed="false" styleClass="content-card empty-card" visible="false"
+               text="No hay coordinador activo. Registra uno nuevo o activa a uno del historial."/>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label styleClass="section-label" text="Coordinadores"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="activateButton" onAction="#handleActivateSelectedAction" styleClass="secondary-button"
+                    text="Activar seleccionado"/>
+            <Button onAction="#handleEditSelectedAction" styleClass="secondary-button" text="Editar seleccionado"/>
+            <Button fx:id="registerButton" onAction="#handleShowRegisterFormAction" styleClass="primary-button"
+                    text="+ Registrar coordinador"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
+                       promptText="Buscar por nombre, usuario o correo"/>
+            <ComboBox fx:id="statusFilterComboBox" onAction="#handleFilterAction" prefWidth="170.0"/>
+            <Button fx:id="refreshButton" onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
+        </HBox>
+
+        <TableView fx:id="coordinatorsTableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="220.0" text="Nombre"/>
+                <TableColumn fx:id="userNameColumn" prefWidth="140.0" text="Usuario"/>
+                <TableColumn fx:id="emailColumn" prefWidth="240.0" text="Correo"/>
+                <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Estado"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <VBox fx:id="formPane" managed="false" maxWidth="560.0" spacing="14.0" visible="false">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+
+        <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar coordinador"/>
+
+        <FormField fx:id="nameFormField" labelText="Nombre del Coordinador" promptText="Ingrese el nombre"/>
+        <FormField fx:id="lastNameFormField" labelText="Apellidos del Coordinador" promptText="Ingrese los apellidos"/>
+        <FormField fx:id="emailFormField" labelText="Correo Electrónico" promptText="ejemplo@uv.mx"/>
+        <FormField fx:id="personalNumberFormField" labelText="Número de Personal (Usuario)"
+                   promptText="Ingrese el número de personal"/>
+        <FormComboBox fx:id="genderFormComboBox" labelText="Sexo / Género"/>
+
+        <HBox spacing="12.0">
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleCancelFormAction" styleClass="secondary-button"
+                    text="Cancelar" HBox.hgrow="ALWAYS"/>
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleSaveCoordinatorAction" styleClass="primary-button"
+                    text="Guardar" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+</VBox>

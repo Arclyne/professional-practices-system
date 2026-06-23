@@ -1,7 +1,9 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 
@@ -35,16 +37,32 @@ public class CoordinatorManagerTest {
     }
 
     @Test
-    void registerNewCoordinator_ValidData_ReturnsPassword() {
-        Coordinator newCoordinator = new Coordinator();
-        newCoordinator.setName("Patricia");
-        newCoordinator.setLastName("Luna Mendez");
-        newCoordinator.setUserName("30025566");
-        newCoordinator.setPassword("CoordUv2026");
-        newCoordinator.setEmail("pluna@uv.mx");
-        newCoordinator.setGender(Gender.FEMALE);
+    void registerNewCoordinator_ActiveCoordinatorExists_ThrowsManagerException() {
+        Coordinator newCoordinator = buildValidCoordinator();
 
-        assertDoesNotThrow(() -> coordinatorManager.registerNewCoordinator(newCoordinator));
+        assertThrows(ManagerException.class, () -> coordinatorManager.registerNewCoordinator(newCoordinator));
+    }
+
+    @Test
+    void registerNewCoordinator_NoActiveCoordinator_ReturnsPassword() throws ManagerException {
+        coordinatorManager.inactivateCoordinator(STORED_COORDINATOR_ID);
+        Coordinator newCoordinator = buildValidCoordinator();
+
+        String temporaryPassword = coordinatorManager.registerNewCoordinator(newCoordinator);
+
+        assertNotNull(temporaryPassword);
+    }
+
+    @Test
+    void activateCoordinator_ActiveCoordinatorExists_ThrowsManagerException() {
+        assertThrows(ManagerException.class, () -> coordinatorManager.activateCoordinator(STORED_COORDINATOR_ID));
+    }
+
+    @Test
+    void activateCoordinator_NoActiveCoordinator_DoesNotThrow() throws ManagerException {
+        coordinatorManager.inactivateCoordinator(STORED_COORDINATOR_ID);
+
+        assertDoesNotThrow(() -> coordinatorManager.activateCoordinator(STORED_COORDINATOR_ID));
     }
 
     @Test
@@ -83,5 +101,17 @@ public class CoordinatorManagerTest {
         coordinatorToUpdate.setName("Marco Antonio Editado");
 
         assertDoesNotThrow(() -> coordinatorManager.updateCoordinator(coordinatorToUpdate, STORED_COORDINATOR_ID));
+    }
+
+    private Coordinator buildValidCoordinator() {
+        Coordinator coordinator = new Coordinator();
+        coordinator.setName("Patricia");
+        coordinator.setLastName("Luna Mendez");
+        coordinator.setUserName("30025566");
+        coordinator.setPassword("CoordUv2026");
+        coordinator.setEmail("pluna@uv.mx");
+        coordinator.setGender(Gender.FEMALE);
+
+        return coordinator;
     }
 }

@@ -13,6 +13,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Component
@@ -30,6 +31,8 @@ public class CoordinatorManager {
     }
 
     public String registerNewCoordinator(Coordinator coordinator) throws ManagerException {
+        ensureNoActiveCoordinator();
+
         String temporaryPassword = PasswordManager.generatePassword();
         coordinator.setPassword(temporaryPassword);
         coordinator.setStatus(UserStatus.PENDING);
@@ -44,7 +47,7 @@ public class CoordinatorManager {
             return temporaryPassword;
         } catch (DAOException e) {
             log.error("Error al insertar el coordinador.", e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw translatePersistenceFailure(e);
         }
     }
 
@@ -54,6 +57,17 @@ public class CoordinatorManager {
         } catch (DAOException e) {
             log.error("Error al inactivar el coordinador con ID: {}.", coordinatorId, e);
             throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", e);
+        }
+    }
+
+    public void activateCoordinator(int coordinatorId) throws ManagerException {
+        ensureNoActiveCoordinator();
+
+        try {
+            userDAO.activateUser(coordinatorId);
+        } catch (DAOException e) {
+            log.error("Error al activar el coordinador con ID: {}.", coordinatorId, e);
+            throw new ManagerException("Error crítico de conexión al intentar activar el coordinador.", e);
         }
     }
 
@@ -89,7 +103,53 @@ public class CoordinatorManager {
             coordinatorDAO.updateCoordinator(coordinator, coordinatorId);
         } catch (DAOException e) {
             log.error("Error al actualizar el coordinador.", e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw translatePersistenceFailure(e);
         }
+    }
+
+    private void ensureNoActiveCoordinator() throws ManagerException {
+        Coordinator currentCoordinator = retrieveCurrentCoordinator();
+        if (currentCoordinator != null) {
+            throw new ManagerException(
+                    "Ya existe un coordinador activo. Inactívalo antes de registrar o activar a otro.");
+        }
+    }
+
+    private ManagerException translatePersistenceFailure(DAOException e) {
+        String friendlyMessage = "Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.";
+        SQLIntegrityConstraintViolationException duplicateViolation = findIntegrityViolation(e);
+
+        if (duplicateViolation != null) {
+            friendlyMessage = describeDuplicate(duplicateViolation);
+        }
+
+        return new ManagerException(friendlyMessage, e);
+    }
+
+    private SQLIntegrityConstraintViolationException findIntegrityViolation(Throwable error) {
+        SQLIntegrityConstraintViolationException violation = null;
+        Throwable cause = error;
+
+        while (cause != null && violation == null) {
+            if (cause instanceof SQLIntegrityConstraintViolationException integrityViolation) {
+                violation = integrityViolation;
+            }
+            cause = cause.getCause();
+        }
+
+        return violation;
+    }
+
+    private String describeDuplicate(SQLIntegrityConstraintViolationException violation) {
+        String message = "Ya existe un registro con los datos proporcionados.";
+        String detail = violation.getMessage() != null ? violation.getMessage().toLowerCase() : "";
+
+        if (detail.contains("email")) {
+            message = "Este correo ya está registrado en otra cuenta.";
+        } else if (detail.contains("username")) {
+            message = "Este número de personal o usuario ya está en uso.";
+        }
+
+        return message;
     }
 }
