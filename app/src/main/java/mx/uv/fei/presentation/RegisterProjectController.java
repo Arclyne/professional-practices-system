@@ -3,6 +3,7 @@ package mx.uv.fei.presentation;
 import java.net.URL;
 import java.sql.Date;
 import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,9 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.manager.OrganizationManager;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 @Component
 public class RegisterProjectController implements Initializable {
@@ -39,8 +38,9 @@ public class RegisterProjectController implements Initializable {
     private static final String STATUS_ACTIVE = "Active";
     private static final String ERROR_TITLE = "Error";
     private static final String LOAD_ERROR_TITLE = "Error de Carga";
-    private static final String SUCCESS_TITLE = "Registro Exitoso";
-    private static final String SUCCESS_MESSAGE = "El proyecto ha sido guardado correctamente.";
+    private static final String SUCCESS_TITLE = "Operación Exitosa";
+    private static final String SUCCESS_MESSAGE_REGISTER = "El proyecto ha sido guardado correctamente.";
+    private static final String SUCCESS_MESSAGE_UPDATE = "El proyecto se ha actualizado correctamente.";
     private static final String FORMAT_ERROR_TITLE = "Error de formato";
     private static final String FORMAT_ERROR_MESSAGE = "El cupo de participantes debe ser un número entero válido.";
     private static final String DATE_ERROR_TITLE = "Error de fecha";
@@ -52,10 +52,11 @@ public class RegisterProjectController implements Initializable {
     private final ProjectManager projectManager;
     private final OrganizationManager organizationManager;
     private final ManagerManager managerManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
     private final Map<String, Integer> organizationMap = new HashMap<>();
     private final Map<String, Integer> managerMap = new HashMap<>();
+    private Project projectBeingEdited;
 
     @FXML private FormField fieldProjectName;
     @FXML private FormField fieldCapacity;
@@ -68,18 +69,17 @@ public class RegisterProjectController implements Initializable {
     @FXML private TextField textFieldDeadlineMonth;
     @FXML private TextField textFieldDeadlineYear;
     @FXML private TextArea textAreaDescription;
-    @FXML private Button buttonSave;
-    @FXML private Button buttonCancel;
+    @FXML private Button saveButton;
 
     @Inject
     public RegisterProjectController(ProjectManager projectManager,
                                      OrganizationManager organizationManager,
                                      ManagerManager managerManager,
-                                     AppStore store) {
+                                     ShellNavigator shellNavigator) {
         this.projectManager = projectManager;
         this.organizationManager = organizationManager;
         this.managerManager = managerManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
@@ -96,6 +96,54 @@ public class RegisterProjectController implements Initializable {
                 comboBoxManager.getItems().clear();
             }
         });
+
+        Object pendingEntity = shellNavigator.consumePendingEntity();
+        if (pendingEntity instanceof Project) {
+            projectBeingEdited = (Project) pendingEntity;
+            populateForm(projectBeingEdited);
+            saveButton.setText("Guardar cambios");
+        } else {
+            projectBeingEdited = null;
+            saveButton.setText("Guardar");
+        }
+    }
+
+    private void populateForm(Project project) {
+        fieldProjectName.setText(project.getProjectName());
+        fieldCapacity.setText(String.valueOf(project.getParticipantCapacity()));
+        textAreaDescription.setText(project.getDescription());
+
+        if (project.getStartDate() != null) {
+            LocalDate start = project.getStartDate().toLocalDate();
+            textFieldStartDay.setText(String.format("%02d", start.getDayOfMonth()));
+            textFieldStartMonth.setText(String.format("%02d", start.getMonthValue()));
+            textFieldStartYear.setText(String.valueOf(start.getYear()));
+        }
+
+        if (project.getEndDate() != null) {
+            LocalDate end = project.getEndDate().toLocalDate();
+            textFieldDeadlineDay.setText(String.format("%02d", end.getDayOfMonth()));
+            textFieldDeadlineMonth.setText(String.format("%02d", end.getMonthValue()));
+            textFieldDeadlineYear.setText(String.valueOf(end.getYear()));
+        }
+
+        String orgName = organizationMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(project.getCompanyId()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+
+        if (orgName != null) {
+            comboBoxOrganization.setValue(orgName);
+            String mgrName = managerMap.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(project.getManagerId()))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse(null);
+            if (mgrName != null) {
+                comboBoxManager.setValue(mgrName);
+            }
+        }
     }
 
     private void loadOrganizations() {
@@ -165,10 +213,15 @@ public class RegisterProjectController implements Initializable {
             projectInformation.setCompanyId(organizationMap.get(selectedOrg));
             projectInformation.setManagerId(managerMap.get(selectedMgr));
 
-            projectManager.registerNewProject(projectInformation);
+            if (projectBeingEdited != null) {
+                projectManager.updateProject(projectInformation, projectBeingEdited.getProjectId());
+                Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE_UPDATE);
+            } else {
+                projectManager.registerNewProject(projectInformation);
+                Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE_REGISTER);
+            }
 
-            Controller.showSuccessAlert(SUCCESS_TITLE, SUCCESS_MESSAGE);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            shellNavigator.returnToList();
 
         } catch (NumberFormatException _) {
             Controller.showErrorAlert(FORMAT_ERROR_TITLE, FORMAT_ERROR_MESSAGE);
@@ -181,6 +234,6 @@ public class RegisterProjectController implements Initializable {
 
     @FXML
     private void handleActionCancelButton() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.returnToList();
     }
 }

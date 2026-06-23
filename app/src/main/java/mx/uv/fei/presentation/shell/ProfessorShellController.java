@@ -24,8 +24,8 @@ public class ProfessorShellController extends RoleShellController {
     @FXML private Button selfEvaluationsNavButton;
 
     @Inject
-    public ProfessorShellController(AppStore store, DependencyInjector dependencyInjector) {
-        super(store, dependencyInjector);
+    public ProfessorShellController(AppStore store, DependencyInjector dependencyInjector, ShellNavigator shellNavigator) {
+        super(store, dependencyInjector, shellNavigator);
     }
 
     @FXML

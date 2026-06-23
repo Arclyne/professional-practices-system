@@ -43,13 +43,15 @@ public abstract class RoleShellController implements IDisposable {
 
     private final AppStore store;
     private final DependencyInjector dependencyInjector;
+    private final ShellNavigator shellNavigator;
 
     private Button activeNavButton;
     private Object currentSubViewController;
 
-    protected RoleShellController(AppStore store, DependencyInjector dependencyInjector) {
+    protected RoleShellController(AppStore store, DependencyInjector dependencyInjector, ShellNavigator shellNavigator) {
         this.store = store;
         this.dependencyInjector = dependencyInjector;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
@@ -58,10 +60,15 @@ public abstract class RoleShellController implements IDisposable {
     }
 
     protected void initializeShell() {
+        shellNavigator.bind(this::loadSubViewIntoContent);
         populateUserHeader();
     }
 
     protected void showSubView(String fxmlPath) {
+        shellNavigator.showSubView(fxmlPath);
+    }
+
+    private void loadSubViewIntoContent(String fxmlPath) {
         try {
             URL fxmlUrl = getClass().getResource(fxmlPath);
             if (fxmlUrl == null) {

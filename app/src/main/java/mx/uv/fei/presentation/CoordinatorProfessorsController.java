@@ -6,9 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,13 +16,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 @Component
 public class CoordinatorProfessorsController {
 
     private static final String NO_STATUS_LABEL = "—";
-    private static final int DOUBLE_CLICK_COUNT = 2;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerProfessor.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Professor> professorsTableView;
@@ -34,22 +31,21 @@ public class CoordinatorProfessorsController {
     @FXML private TableColumn<Professor, String> statusColumn;
 
     private final ProfessorManager professorManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Professor> allProfessors = FXCollections.observableArrayList();
 
     private FilteredList<Professor> filteredProfessors;
 
     @Inject
-    public CoordinatorProfessorsController(ProfessorManager professorManager, AppStore store) {
+    public CoordinatorProfessorsController(ProfessorManager professorManager, ShellNavigator shellNavigator) {
         this.professorManager = professorManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
         setupColumns();
         bindFilteredTable();
-        setupTableInteraction();
         loadProfessors();
     }
 
@@ -72,17 +68,6 @@ public class CoordinatorProfessorsController {
             applyFilter();
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
-        }
-    }
-
-    private void setupTableInteraction() {
-        professorsTableView.setOnMouseClicked(this::handleProfessorRowClick);
-    }
-
-    private void handleProfessorRowClick(MouseEvent event) {
-        Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
-        if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedProfessor != null) {
-            openForEdit(selectedProfessor);
         }
     }
 
@@ -141,12 +126,11 @@ public class CoordinatorProfessorsController {
 
     @FXML
     private void handleRegisterAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void openForEdit(Professor professor) {
-        store.dispatch(new NavigationAction.ViewEntityDetails(
-                AppSection.REGISTER_PROFESSOR, String.valueOf(professor.getId())));
+        shellNavigator.openForm(REGISTER_FORM_VIEW, professor);
     }
 
     private void applyFilter() {

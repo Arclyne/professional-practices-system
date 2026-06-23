@@ -24,6 +24,7 @@ import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.state.RootState;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +50,7 @@ public class RegisterPractitionerControllerTest extends ApplicationTest {
     private final PractitionerManager practitionerManager = mock(PractitionerManager.class);
     private final PracticeGroupManager practiceGroupManager = mock(PracticeGroupManager.class);
     private final AppStore appStore = mock(AppStore.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -58,7 +60,7 @@ public class RegisterPractitionerControllerTest extends ApplicationTest {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->
-                new RegisterPractitionerController(practitionerManager, practiceGroupManager, appStore));
+                new RegisterPractitionerController(practitionerManager, practiceGroupManager, appStore, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

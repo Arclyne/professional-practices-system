@@ -23,13 +23,6 @@
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
             </padding>
 
-            <Button fx:id="navigateToDashboardButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    style="-fx-background-color: #E5E7EB; -fx-text-fill: #374151; -fx-font-weight: bold; -fx-cursor: hand;" text="← Volver al Panel" />
-
-            <VBox.margin>
-                <Insets bottom="5.0"/>
-            </VBox.margin>
-
             <Label text="Mensajería" style="-fx-font-weight: bold; -fx-text-fill: #374151; -fx-font-size: 14px;" />
             <Separator opacity="0.5" />
 

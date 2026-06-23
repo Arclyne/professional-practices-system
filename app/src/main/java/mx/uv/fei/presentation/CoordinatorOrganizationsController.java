@@ -6,9 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 @Component
 public class CoordinatorOrganizationsController {
@@ -26,7 +23,7 @@ public class CoordinatorOrganizationsController {
     private static final String STATUS_INACTIVE = "Inactive";
     private static final String STATUS_LABEL_ACTIVE = "Activo";
     private static final String STATUS_LABEL_INACTIVE = "Inactivo";
-    private static final int DOUBLE_CLICK_COUNT = 2;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerOrganization.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Organization> organizationsTableView;
@@ -36,22 +33,21 @@ public class CoordinatorOrganizationsController {
     @FXML private TableColumn<Organization, String> statusColumn;
 
     private final OrganizationManager organizationManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Organization> allOrganizations = FXCollections.observableArrayList();
 
     private FilteredList<Organization> filteredOrganizations;
 
     @Inject
-    public CoordinatorOrganizationsController(OrganizationManager organizationManager, AppStore store) {
+    public CoordinatorOrganizationsController(OrganizationManager organizationManager, ShellNavigator shellNavigator) {
         this.organizationManager = organizationManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
         setupColumns();
         bindFilteredTable();
-        setupTableInteraction();
         loadOrganizations();
     }
 
@@ -73,17 +69,6 @@ public class CoordinatorOrganizationsController {
             applyFilter();
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
-        }
-    }
-
-    private void setupTableInteraction() {
-        organizationsTableView.setOnMouseClicked(this::handleOrganizationRowClick);
-    }
-
-    private void handleOrganizationRowClick(MouseEvent event) {
-        Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
-        if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedOrganization != null) {
-            openForEdit(selectedOrganization);
         }
     }
 
@@ -142,12 +127,11 @@ public class CoordinatorOrganizationsController {
 
     @FXML
     private void handleRegisterAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_ORGANIZATION));
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void openForEdit(Organization organization) {
-        store.dispatch(new NavigationAction.ViewEntityDetails(
-                AppSection.REGISTER_ORGANIZATION, String.valueOf(organization.getIdOrganization())));
+        shellNavigator.openForm(REGISTER_FORM_VIEW, organization);
     }
 
     private void applyFilter() {

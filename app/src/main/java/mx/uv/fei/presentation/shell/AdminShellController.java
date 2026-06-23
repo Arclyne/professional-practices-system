@@ -20,8 +20,8 @@ public class AdminShellController extends RoleShellController {
     @FXML private Button messagesNavButton;
 
     @Inject
-    public AdminShellController(AppStore store, DependencyInjector dependencyInjector) {
-        super(store, dependencyInjector);
+    public AdminShellController(AppStore store, DependencyInjector dependencyInjector, ShellNavigator shellNavigator) {
+        super(store, dependencyInjector, shellNavigator);
     }
 
     @FXML

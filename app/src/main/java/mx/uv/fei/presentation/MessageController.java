@@ -9,8 +9,6 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.MessageManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.MessageAction;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.domain.statemachine.state.MessageState;
 import mx.uv.fei.domain.statemachine.state.RootState;
 import mx.uv.fei.presentation.interfaces.IDisposable;
@@ -48,7 +46,6 @@ public class MessageController implements Initializable, IDisposable {
     private static final int MESSAGE_PAGE_SIZE = 50;
     private static final int FIRST_PAGE_OFFSET = 0;
 
-    @FXML private Button navigateToDashboardButton;
     @FXML private Button inboxNavigationButton;
     @FXML private Button composeNavigationButton;
     @FXML private VBox inboxContainer;
@@ -126,7 +123,6 @@ public class MessageController implements Initializable, IDisposable {
 
     private void setupListeners() {
         sentNavigationButton.setOnAction(_ -> showSentView());
-        navigateToDashboardButton.setOnAction(_ -> store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD)));
         refreshButton.setOnAction(_ -> fetchMessages());
         inboxNavigationButton.setOnAction(_ -> showInboxView());
         composeNavigationButton.setOnAction(_ -> showComposeView());

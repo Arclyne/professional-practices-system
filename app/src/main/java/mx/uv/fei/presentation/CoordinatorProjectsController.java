@@ -8,9 +8,7 @@ import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.OrganizationManager;
 import mx.uv.fei.domain.manager.ProjectManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -20,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +30,7 @@ public class CoordinatorProjectsController {
     private static final String STATUS_LABEL_ACTIVE = "Activo";
     private static final String STATUS_LABEL_INACTIVE = "Inactivo";
     private static final String UNKNOWN_ORGANIZATION = "—";
-    private static final int DOUBLE_CLICK_COUNT = 2;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/projectForm.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Project> projectsTableView;
@@ -44,7 +41,7 @@ public class CoordinatorProjectsController {
 
     private final ProjectManager projectManager;
     private final OrganizationManager organizationManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Project> allProjects = FXCollections.observableArrayList();
 
     private FilteredList<Project> filteredProjects;
@@ -52,17 +49,16 @@ public class CoordinatorProjectsController {
 
     @Inject
     public CoordinatorProjectsController(ProjectManager projectManager, OrganizationManager organizationManager,
-            AppStore store) {
+            ShellNavigator shellNavigator) {
         this.projectManager = projectManager;
         this.organizationManager = organizationManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
         setupColumns();
         bindFilteredTable();
-        setupTableInteraction();
         loadProjects();
     }
 
@@ -96,17 +92,6 @@ public class CoordinatorProjectsController {
         }
 
         return namesById;
-    }
-
-    private void setupTableInteraction() {
-        projectsTableView.setOnMouseClicked(this::handleProjectRowClick);
-    }
-
-    private void handleProjectRowClick(MouseEvent event) {
-        Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
-        if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedProject != null) {
-            openForEdit(selectedProject);
-        }
     }
 
     @FXML
@@ -164,12 +149,11 @@ public class CoordinatorProjectsController {
 
     @FXML
     private void handleRegisterAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void openForEdit(Project project) {
-        store.dispatch(new NavigationAction.ViewEntityDetails(
-                AppSection.REGISTER_PROJECT, String.valueOf(project.getProjectId())));
+        shellNavigator.openForm(REGISTER_FORM_VIEW, project);
     }
 
     private void applyFilter() {

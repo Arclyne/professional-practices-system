@@ -35,8 +35,8 @@ public class CoordinatorShellController extends RoleShellController {
     @FXML private Button templatesNavButton;
 
     @Inject
-    public CoordinatorShellController(AppStore store, DependencyInjector dependencyInjector) {
-        super(store, dependencyInjector);
+    public CoordinatorShellController(AppStore store, DependencyInjector dependencyInjector, ShellNavigator shellNavigator) {
+        super(store, dependencyInjector, shellNavigator);
     }
 
     @FXML

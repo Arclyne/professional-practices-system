@@ -6,9 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PractitionerManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 @Component
 public class CoordinatorPractitionersController {
@@ -26,7 +23,7 @@ public class CoordinatorPractitionersController {
     private static final String NO_GROUP_LABEL = "Sin grupo";
     private static final String GROUP_PREFIX = "Grupo ";
     private static final String NO_STATUS_LABEL = "—";
-    private static final int DOUBLE_CLICK_COUNT = 2;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPractitioner.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Practitioner> practitionersTableView;
@@ -36,22 +33,21 @@ public class CoordinatorPractitionersController {
     @FXML private TableColumn<Practitioner, String> statusColumn;
 
     private final PractitionerManager practitionerManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Practitioner> allPractitioners = FXCollections.observableArrayList();
 
     private FilteredList<Practitioner> filteredPractitioners;
 
     @Inject
-    public CoordinatorPractitionersController(PractitionerManager practitionerManager, AppStore store) {
+    public CoordinatorPractitionersController(PractitionerManager practitionerManager, ShellNavigator shellNavigator) {
         this.practitionerManager = practitionerManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
         setupColumns();
         bindFilteredTable();
-        setupTableInteraction();
         loadPractitioners();
     }
 
@@ -61,17 +57,6 @@ public class CoordinatorPractitionersController {
         enrollmentColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEnrollment()));
         groupColumn.setCellValueFactory(data -> new SimpleStringProperty(groupLabelOf(data.getValue())));
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(statusLabelOf(data.getValue())));
-    }
-
-    private void setupTableInteraction() {
-        practitionersTableView.setOnMouseClicked(this::handlePractitionerRowClick);
-    }
-
-    private void handlePractitionerRowClick(MouseEvent event) {
-        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
-        if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedPractitioner != null) {
-            openForEdit(selectedPractitioner);
-        }
     }
 
     private void bindFilteredTable() {
@@ -142,13 +127,12 @@ public class CoordinatorPractitionersController {
     }
 
     private void openForEdit(Practitioner practitioner) {
-        store.dispatch(new NavigationAction.ViewEntityDetails(
-                AppSection.REGISTER_PRACTITIONER, String.valueOf(practitioner.getId())));
+        shellNavigator.openForm(REGISTER_FORM_VIEW, practitioner);
     }
 
     @FXML
     private void handleRegisterAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PRACTITIONER));
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void applyFilter() {
