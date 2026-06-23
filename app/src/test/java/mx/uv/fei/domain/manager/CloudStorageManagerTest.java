@@ -24,6 +24,7 @@ public class CloudStorageManagerTest {
     void uploadEvidenceFile_ValidFile_ReturnsStringUrl() throws IOException, ManagerException {
         File evidenceFile = Files.createTempFile("evidencia_practicas", ".pdf").toFile();
         evidenceFile.deleteOnExit();
+        Files.writeString(evidenceFile.toPath(), "Contenido de evidencia de prueba.");
 
         String evidenceUrl = cloudStorageManager.uploadEvidenceFile(evidenceFile);
 

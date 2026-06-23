@@ -20,6 +20,7 @@ public final class FieldLengthLimits {
     public static final int ACTIVITY_TITLE_MAX = 255;
     public static final int MESSAGE_SUBJECT_MAX = 255;
     public static final int SIGNED_FILE_URL_MAX = 500;
+    public static final int DOCUMENT_NAME_MAX = 255;
     public static final int LONG_TEXT_MAX = 3000;
 
     private FieldLengthLimits() {

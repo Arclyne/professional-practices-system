@@ -4,6 +4,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PractitionerDocument;
 import mx.uv.fei.domain.enums.DocumentStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -24,8 +26,14 @@ public class PractitionerDocumentManager {
     }
 
     public void uploadDocument(int practitionerId, File file) throws ManagerException {
+        BaseValidator.validateId(practitionerId, "El practicante indicado no es válido.");
+
         String storedFileUrl = cloudStorageManager.uploadEvidenceFile(file);
-        PractitionerDocument document = buildPendingDocument(practitionerId, file.getName(), storedFileUrl);
+        String documentName = file.getName();
+        BaseValidator.validateMaxLength(documentName, FieldLengthLimits.DOCUMENT_NAME_MAX,
+                "El nombre del documento no puede exceder " + FieldLengthLimits.DOCUMENT_NAME_MAX + " caracteres.");
+
+        PractitionerDocument document = buildPendingDocument(practitionerId, documentName, storedFileUrl);
 
         try {
             int generatedId = documentDAO.insertDocument(document);
@@ -54,6 +62,7 @@ public class PractitionerDocumentManager {
     }
 
     public void markDocumentAsReviewed(int documentId) throws ManagerException {
+        BaseValidator.validateId(documentId, "El documento indicado no es válido.");
         try {
             documentDAO.markDocumentAsReviewed(documentId);
         } catch (DAOException e) {

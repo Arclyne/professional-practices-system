@@ -18,9 +18,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.net.URI;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 
@@ -31,7 +29,6 @@ public class PractitionerDocumentsController {
     private static final String DOCUMENT_FILTER_LABEL = "Documentos";
     private static final String ALL_FILES_LABEL = "Todos los archivos";
     private static final String NO_DATE_LABEL = "—";
-    private static final String FILE_OPEN_ERROR = "No se pudo abrir el documento.";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML private TableView<PractitionerDocument> documentsTableView;
@@ -102,11 +99,7 @@ public class PractitionerDocumentsController {
             return;
         }
 
-        try {
-            Desktop.getDesktop().browse(new URI(selectedDocument.getStoredFileUrl()));
-        } catch (Exception e) {
-            Controller.showErrorAlert("Error de archivo", FILE_OPEN_ERROR);
-        }
+        Controller.openStoredFile(selectedDocument.getStoredFileUrl());
     }
 
     @FXML
