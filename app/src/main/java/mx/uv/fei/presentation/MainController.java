@@ -48,8 +48,10 @@ public class MainController {
 
     private static final String ADMINISTRATOR_ROLE = "Administrator";
     private static final String PROFESSOR_ROLE = "Professor";
+    private static final String PRACTITIONER_ROLE = "Practitioner";
     private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
     private static final String PROFESSOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/professorShell.fxml";
+    private static final String PRACTITIONER_SHELL_VIEW = VIEW_BASE_PATH + "shell/practitionerShell.fxml";
 
     @FXML private StackPane contentArea;
 
@@ -177,6 +179,8 @@ public class MainController {
             shellPath = ADMIN_SHELL_VIEW;
         } else if (PROFESSOR_ROLE.equalsIgnoreCase(userRole)) {
             shellPath = PROFESSOR_SHELL_VIEW;
+        } else if (PRACTITIONER_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = PRACTITIONER_SHELL_VIEW;
         }
 
         return shellPath;

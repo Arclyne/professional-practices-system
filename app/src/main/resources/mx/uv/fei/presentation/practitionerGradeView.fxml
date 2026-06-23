@@ -17,11 +17,6 @@
           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding><Insets bottom="40.0" left="60.0" right="60.0" top="40.0"/></padding>
 
-        <HBox alignment="CENTER_LEFT">
-            <Button mnemonicParsing="false" onAction="#handleReturnAction"
-                    styleClass="secondary-button" text="← Volver al Menú"/>
-        </HBox>
-
         <Label styleClass="form-title" text="Mi Calificación"/>
         <Label fx:id="labelPeriod" textFill="#6b7280" style="-fx-font-size: 13px;"/>
 

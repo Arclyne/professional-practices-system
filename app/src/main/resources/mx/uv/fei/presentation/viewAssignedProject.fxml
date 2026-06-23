@@ -67,14 +67,5 @@
 
         <Region VBox.vgrow="ALWAYS"/>
 
-        <HBox alignment="CENTER_RIGHT">
-            <children>
-                <Button fx:id="returnButton"
-                        text="Volver al Menú"
-                        onAction="#handleReturnAction"
-                        style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-padding: 10 24 10 24; -fx-cursor: hand;"/>
-            </children>
-        </HBox>
-
     </children>
 </VBox>

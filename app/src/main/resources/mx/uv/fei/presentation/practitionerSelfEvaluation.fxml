@@ -18,9 +18,6 @@
 
     <HBox alignment="CENTER_LEFT" spacing="20.0"
           style="-fx-padding: 20 30 15 30; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
-        <Button mnemonicParsing="false" onAction="#handleReturnToMenu"
-                text="← Regresar"
-                style="-fx-background-color: #E0E0E0; -fx-cursor: hand; -fx-background-radius: 6px;"/>
         <Label text="PRAIS-03: Autoevaluación Final">
             <font><Font name="System Bold" size="20.0"/></font>
         </Label>

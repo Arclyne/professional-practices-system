@@ -89,7 +89,7 @@ public class ProgressReportManager {
         }
     }
 
-    private double getAccumulatedHours(int practitionerId) throws ManagerException {
+    public double getAccumulatedHours(int practitionerId) throws ManagerException {
         try {
             return progressReportDAO.getTotalAccumulatedHours(practitionerId);
         } catch (DAOException e) {
