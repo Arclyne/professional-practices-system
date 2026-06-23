@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="root" stylesheets="@../../styles.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.shell.CoordinatorShellController">
+
+    <left>
+        <VBox prefWidth="248.0" spacing="6.0" styleClass="app-sidebar">
+            <padding>
+                <Insets bottom="18.0" left="16.0" right="16.0" top="22.0"/>
+            </padding>
+
+            <Label styleClass="sidebar-brand" text="Prácticas FEI"/>
+            <Label styleClass="sidebar-brand-sub" text="Universidad Veracruzana"/>
+
+            <Label styleClass="sidebar-group-label" text="GENERAL">
+                <VBox.margin>
+                    <Insets bottom="6.0" top="26.0"/>
+                </VBox.margin>
+            </Label>
+            <Button fx:id="homeNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowHomeAction"
+                    styleClass="sidebar-item" text="Inicio"/>
+            <Button fx:id="messagesNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowMessagesAction"
+                    styleClass="sidebar-item" text="Mensajes"/>
+
+            <Label styleClass="sidebar-group-label" text="GESTIÓN">
+                <VBox.margin>
+                    <Insets bottom="6.0" top="18.0"/>
+                </VBox.margin>
+            </Label>
+            <Button fx:id="practitionersNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowPractitionersAction"
+                    styleClass="sidebar-item" text="Practicantes"/>
+            <Button fx:id="projectsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowProjectsAction"
+                    styleClass="sidebar-item" text="Proyectos"/>
+            <Button fx:id="organizationsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowOrganizationsAction"
+                    styleClass="sidebar-item" text="Organizaciones"/>
+            <Button fx:id="professorsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowProfessorsAction"
+                    styleClass="sidebar-item" text="Profesores"/>
+            <Button fx:id="managersNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowManagersAction"
+                    styleClass="sidebar-item" text="Encargados"/>
+
+            <Label styleClass="sidebar-group-label" text="INSTITUCIONAL">
+                <VBox.margin>
+                    <Insets bottom="6.0" top="18.0"/>
+                </VBox.margin>
+            </Label>
+            <Button fx:id="periodsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowPeriodsAction"
+                    styleClass="sidebar-item" text="Periodos"/>
+            <Button fx:id="groupsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowGroupsAction"
+                    styleClass="sidebar-item" text="Grupos de práctica"/>
+            <Button fx:id="templatesNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowTemplatesAction"
+                    styleClass="sidebar-item" text="Plantillas"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="1.0" styleClass="sidebar-user">
+                <Label fx:id="shellUserNameLabel" styleClass="sidebar-user-name" text="Usuario"/>
+                <Label fx:id="shellUserRoleLabel" styleClass="sidebar-user-role" text="Rol"/>
+            </VBox>
+
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleLogoutAction" styleClass="sidebar-logout"
+                    text="Cerrar sesión">
+                <VBox.margin>
+                    <Insets top="12.0"/>
+                </VBox.margin>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="shellContentArea" styleClass="shell-content"/>
+    </center>
+</BorderPane>

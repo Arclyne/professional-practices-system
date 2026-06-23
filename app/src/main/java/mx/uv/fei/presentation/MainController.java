@@ -47,9 +47,12 @@ public class MainController {
     private static final double SPLASH_DELAY_SECONDS = 2;
 
     private static final String ADMINISTRATOR_ROLE = "Administrator";
+    private static final String COORDINATOR_ROLE = "Coordinator";
     private static final String PROFESSOR_ROLE = "Professor";
     private static final String PRACTITIONER_ROLE = "Practitioner";
+
     private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
+    private static final String COORDINATOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/coordinatorShell.fxml";
     private static final String PROFESSOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/professorShell.fxml";
     private static final String PRACTITIONER_SHELL_VIEW = VIEW_BASE_PATH + "shell/practitionerShell.fxml";
 
@@ -177,6 +180,8 @@ public class MainController {
 
         if (ADMINISTRATOR_ROLE.equalsIgnoreCase(userRole)) {
             shellPath = ADMIN_SHELL_VIEW;
+        } else if (COORDINATOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = COORDINATOR_SHELL_VIEW;
         } else if (PROFESSOR_ROLE.equalsIgnoreCase(userRole)) {
             shellPath = PROFESSOR_SHELL_VIEW;
         } else if (PRACTITIONER_ROLE.equalsIgnoreCase(userRole)) {

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="6.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.CoordinatorHomeController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="COORDINACIÓN"/>
+    <Label styleClass="content-title" text="Panel de coordinación"/>
+    <Label styleClass="content-subtitle" text="Resumen general de las prácticas profesionales."/>
+
+    <HBox spacing="16.0">
+        <VBox.margin>
+            <Insets top="22.0"/>
+        </VBox.margin>
+
+        <VBox maxWidth="1.7976931348623157E308" spacing="6.0" styleClass="content-card stat-card" HBox.hgrow="ALWAYS">
+            <Label styleClass="card-eyebrow" text="PRACTICANTES"/>
+            <Label fx:id="practitionersCountLabel" styleClass="stat-number" text="—"/>
+        </VBox>
+        <VBox maxWidth="1.7976931348623157E308" spacing="6.0" styleClass="content-card stat-card" HBox.hgrow="ALWAYS">
+            <Label styleClass="card-eyebrow" text="PROYECTOS"/>
+            <Label fx:id="projectsCountLabel" styleClass="stat-number" text="—"/>
+        </VBox>
+        <VBox maxWidth="1.7976931348623157E308" spacing="6.0" styleClass="content-card stat-card" HBox.hgrow="ALWAYS">
+            <Label styleClass="card-eyebrow" text="ORGANIZACIONES"/>
+            <Label fx:id="organizationsCountLabel" styleClass="stat-number" text="—"/>
+        </VBox>
+        <VBox maxWidth="1.7976931348623157E308" spacing="6.0" styleClass="content-card stat-card" HBox.hgrow="ALWAYS">
+            <Label styleClass="card-eyebrow" text="PROFESORES"/>
+            <Label fx:id="professorsCountLabel" styleClass="stat-number" text="—"/>
+        </VBox>
+    </HBox>
+
+    <VBox maxWidth="520.0" spacing="14.0" styleClass="content-card">
+        <VBox.margin>
+            <Insets top="16.0"/>
+        </VBox.margin>
+
+        <Label styleClass="content-card-title" text="Practicantes por estado"/>
+
+        <HBox spacing="48.0">
+            <VBox spacing="4.0">
+                <Label styleClass="card-eyebrow" text="ACTIVOS"/>
+                <Label fx:id="activePractitionersLabel" styleClass="stat-number" text="—"/>
+            </VBox>
+            <VBox spacing="4.0">
+                <Label styleClass="card-eyebrow" text="INACTIVOS"/>
+                <Label fx:id="inactivePractitionersLabel" styleClass="stat-number" text="—"/>
+            </VBox>
+            <VBox spacing="4.0">
+                <Label styleClass="card-eyebrow" text="PENDIENTES"/>
+                <Label fx:id="pendingPractitionersLabel" styleClass="stat-number" text="—"/>
+            </VBox>
+        </HBox>
+    </VBox>
+</VBox>
