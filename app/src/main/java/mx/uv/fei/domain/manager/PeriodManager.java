@@ -50,6 +50,43 @@ public class PeriodManager {
         }
     }
 
+    public Period getPeriodById(int periodId) throws ManagerException {
+        try {
+            return periodDAO.recoverPeriod(periodId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del periodo académico.", e);
+        }
+    }
+
+    public void updatePeriod(Period period, int periodId) throws ManagerException {
+        validatePeriodData(period);
+
+        try {
+            periodDAO.updatePeriod(period, periodId);
+        } catch (DAOException e) {
+            log.error("Error al actualizar el periodo académico.", e);
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
+    }
+
+    public void activatePeriod(int periodId) throws ManagerException {
+        try {
+            periodDAO.activatePeriod(periodId);
+        } catch (DAOException e) {
+            log.error("Error al activar el periodo académico con ID: {}.", periodId, e);
+            throw new ManagerException("No se pudo activar el periodo académico.", e);
+        }
+    }
+
+    public void inactivatePeriod(int periodId) throws ManagerException {
+        try {
+            periodDAO.deactivatePeriod(periodId);
+        } catch (DAOException e) {
+            log.error("Error al inactivar el periodo académico con ID: {}.", periodId, e);
+            throw new ManagerException("No se pudo inactivar el periodo académico.", e);
+        }
+    }
+
     private void validatePeriodData(Period period) throws ManagerException {
         BaseValidator.validateString(period.getPeriodName(),
                 "El nombre del periodo es obligatorio.");

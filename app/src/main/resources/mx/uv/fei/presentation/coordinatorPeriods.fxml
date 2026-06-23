@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import mx.uv.fei.presentation.components.FormField?>
+
+<VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.CoordinatorPeriodsController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="INSTITUCIONAL"/>
+    <Label styleClass="content-title" text="Periodos académicos"/>
+
+    <VBox fx:id="listPane" spacing="12.0" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label styleClass="section-label" text="Periodos"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#handleActivateAction" styleClass="secondary-button" text="Activar"/>
+            <Button onAction="#handleInactivateAction" styleClass="secondary-button" text="Inactivar"/>
+            <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
+            <Button onAction="#handleShowRegisterFormAction" styleClass="primary-button" text="+ Registrar periodo"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
+                       promptText="Buscar por nombre del periodo"/>
+            <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
+        </HBox>
+
+        <TableView fx:id="periodsTableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="280.0" text="Periodo"/>
+                <TableColumn fx:id="startColumn" prefWidth="140.0" text="Inicio"/>
+                <TableColumn fx:id="endColumn" prefWidth="140.0" text="Fin"/>
+                <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Estado"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <VBox fx:id="formPane" managed="false" maxWidth="520.0" spacing="14.0" visible="false">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+
+        <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar periodo"/>
+
+        <FormField fx:id="nameFormField" labelText="Nombre del periodo" promptText="Ej. Junio-Diciembre 2026"/>
+
+        <VBox spacing="4.0">
+            <Label styleClass="field-label" text="Fecha de inicio"/>
+            <DatePicker fx:id="startDatePicker" maxWidth="1.7976931348623157E308"/>
+        </VBox>
+        <VBox spacing="4.0">
+            <Label styleClass="field-label" text="Fecha de fin"/>
+            <DatePicker fx:id="endDatePicker" maxWidth="1.7976931348623157E308"/>
+        </VBox>
+
+        <HBox spacing="12.0">
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleCancelFormAction" styleClass="secondary-button"
+                    text="Cancelar" HBox.hgrow="ALWAYS"/>
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleSaveAction" styleClass="primary-button"
+                    text="Guardar" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+</VBox>
