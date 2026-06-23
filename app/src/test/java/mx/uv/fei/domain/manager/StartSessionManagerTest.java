@@ -30,11 +30,11 @@ public class StartSessionManagerTest {
     }
 
     @Test
-    void handleActionConnectButton_InvalidCredentials_ThrowsManagerException() {
+    void processLogin_InvalidCredentials_ThrowsManagerException() {
         Map<String, String> invalidCredentials = Map.of(
                 "Identifier", "cuenta.inexistente@uv.mx",
                 "Password", "ClaveIncorrecta99");
 
-        assertThrows(ManagerException.class, () -> sessionManager.handleActionConnectButton(invalidCredentials));
+        assertThrows(ManagerException.class, () -> sessionManager.processLogin(invalidCredentials));
     }
 }
