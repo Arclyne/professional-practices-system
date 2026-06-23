@@ -52,4 +52,34 @@ public class ManagerManager {
             throw new ManagerException("Error de base de datos al inactivar encargados.", e);
         }
     }
+
+    public void inactivateManager(int managerId) throws ManagerException {
+        inactivateMultipleManagers(List.of(managerId));
+    }
+
+    public void activateManager(int managerId) throws ManagerException {
+        try {
+            managerDAO.activateManager(managerId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al activar el encargado.", e);
+        }
+    }
+
+    public Manager getManagerById(int managerId) throws ManagerException {
+        try {
+            return managerDAO.recoverManager(managerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del encargado.", e);
+        }
+    }
+
+    public void updateManager(Manager manager, int managerId) throws ManagerException {
+        UserValidator.validateManagerData(manager);
+
+        try {
+            managerDAO.updateManager(manager, managerId);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
+    }
 }

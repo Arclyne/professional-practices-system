@@ -94,4 +94,32 @@ public class ManagerManagerTest {
     void inactivateMultipleManagers_ValidList_DoesNotThrow() {
         assertDoesNotThrow(() -> managerManager.inactivateMultipleManagers(List.of(1)));
     }
+
+    @Test
+    void inactivateManager_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> managerManager.inactivateManager(1));
+    }
+
+    @Test
+    void activateManager_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> managerManager.activateManager(1));
+    }
+
+    @Test
+    void getManagerById_StoredId_ReturnsMatchingManager() throws ManagerException {
+        Manager resultManager = managerManager.getManagerById(1);
+
+        assertEquals(1, resultManager.getId());
+    }
+
+    @Test
+    void updateManager_ValidData_DoesNotThrow() {
+        Manager managerToUpdate = new Manager();
+        managerToUpdate.setName("Roberto Sanchez Editado");
+        managerToUpdate.setPhone("2289998877");
+        managerToUpdate.setEmail("rsanchez@tecgolfo.mx");
+        managerToUpdate.setOrganizationId(FIRST_ORGANIZATION_ID);
+
+        assertDoesNotThrow(() -> managerManager.updateManager(managerToUpdate, 1));
+    }
 }

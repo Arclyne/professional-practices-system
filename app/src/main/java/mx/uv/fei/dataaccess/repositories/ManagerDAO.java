@@ -26,6 +26,12 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
             "SELECT manager_id, manager_name, phone, email, status, organization_id FROM project_manager WHERE organization_id = ?";
     private static final String SQL_DEACTIVATE_MANAGER =
             "UPDATE project_manager SET status = 'Inactive' WHERE manager_id = ?";
+    private static final String SQL_ACTIVATE_MANAGER =
+            "UPDATE project_manager SET status = 'Active' WHERE manager_id = ?";
+    private static final String SQL_UPDATE_MANAGER =
+            "UPDATE project_manager SET manager_name = ?, phone = ?, email = ?, organization_id = ? WHERE manager_id = ?";
+    private static final String SQL_SELECT_MANAGER_BY_ID =
+            "SELECT manager_id, manager_name, phone, email, status, organization_id FROM project_manager WHERE manager_id = ?";
 
     @Inject
     public ManagerDAO(IDatabaseConnection databaseConnection) {
@@ -51,6 +57,28 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
     @Override
     public List<Manager> getAllManagers() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_MANAGERS, this::mapResultSetToManager);
+    }
+
+    @Override
+    public Manager recoverManager(int managerId) throws DAOException {
+        List<Manager> managers = recoverALL(SQL_SELECT_MANAGER_BY_ID, this::mapResultSetToManager, managerId);
+        return managers.isEmpty() ? new Manager() : managers.getFirst();
+    }
+
+    @Override
+    public void updateManager(Manager manager, int managerId) throws DAOException {
+        updateTuple(SQL_UPDATE_MANAGER, statement -> {
+            statement.setString(1, manager.getName());
+            statement.setString(2, manager.getPhone());
+            statement.setString(3, manager.getEmail());
+            statement.setInt(4, manager.getOrganizationId());
+            statement.setInt(5, managerId);
+        });
+    }
+
+    @Override
+    public void activateManager(int managerId) throws DAOException {
+        updateTuple(SQL_ACTIVATE_MANAGER, statement -> statement.setInt(1, managerId));
     }
 
     @Override

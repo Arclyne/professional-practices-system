@@ -126,4 +126,14 @@ public class PractitionerManagerTest {
 
         assertEquals(expectedSummary, resultSummary);
     }
+
+    @Test
+    void inactivatePractitioner_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> practitionerManager.inactivatePractitioner(STORED_PRACTITIONER_ID));
+    }
+
+    @Test
+    void activatePractitioner_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> practitionerManager.activatePractitioner(STORED_PRACTITIONER_ID));
+    }
 }

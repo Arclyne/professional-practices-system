@@ -1,7 +1,8 @@
 package mx.uv.fei.domain.manager;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -19,6 +20,8 @@ import org.junit.jupiter.api.Test;
 @StartEtiquetteTest
 @Profile("test")
 public class PeriodManagerTest {
+
+    private static final int STORED_PERIOD_ID = 5;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -66,5 +69,30 @@ public class PeriodManagerTest {
         sameDayPeriod.setEndDate(Date.valueOf("2027-08-01"));
 
         assertThrows(ManagerException.class, () -> periodManager.registerNewPeriod(sameDayPeriod));
+    }
+
+    @Test
+    void getPeriodById_StoredId_ReturnsMatchingPeriod() throws ManagerException {
+        Period storedPeriod = periodManager.getPeriodById(STORED_PERIOD_ID);
+
+        assertEquals(STORED_PERIOD_ID, storedPeriod.getPeriodId());
+    }
+
+    @Test
+    void activatePeriod_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> periodManager.activatePeriod(STORED_PERIOD_ID));
+    }
+
+    @Test
+    void inactivatePeriod_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> periodManager.inactivatePeriod(STORED_PERIOD_ID));
+    }
+
+    @Test
+    void updatePeriod_ValidData_DoesNotThrow() throws ManagerException {
+        Period periodToUpdate = periodManager.getPeriodById(STORED_PERIOD_ID);
+        periodToUpdate.setPeriodName("Junio-Diciembre 2026 (editado)");
+
+        assertDoesNotThrow(() -> periodManager.updatePeriod(periodToUpdate, STORED_PERIOD_ID));
     }
 }

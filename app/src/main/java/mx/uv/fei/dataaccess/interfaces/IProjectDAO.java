@@ -18,6 +18,8 @@ public interface IProjectDAO {
 
     void deactivateMultipleProjects(List<Integer> projectIdentifiersList) throws DAOException;
 
+    void activateProject(int projectId) throws DAOException;
+
     Project getAssignedProjectByPractitioner(int practitionerId) throws DAOException;
 
 }

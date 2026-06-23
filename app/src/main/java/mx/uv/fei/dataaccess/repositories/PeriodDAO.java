@@ -21,6 +21,14 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
             "INSERT INTO school_period (period_name, start_date, end_date, period_status) VALUES (?, ?, ?, ?)";
     private static final String SQL_SELECT_ALL_PERIODS =
             "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period";
+    private static final String SQL_SELECT_PERIOD_BY_ID =
+            "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period WHERE period_id = ?";
+    private static final String SQL_UPDATE_PERIOD =
+            "UPDATE school_period SET period_name = ?, start_date = ?, end_date = ? WHERE period_id = ?";
+    private static final String SQL_ACTIVATE_PERIOD =
+            "UPDATE school_period SET period_status = 'Active' WHERE period_id = ?";
+    private static final String SQL_DEACTIVATE_PERIOD =
+            "UPDATE school_period SET period_status = 'Concluded' WHERE period_id = ?";
 
     @Inject
     public PeriodDAO(IDatabaseConnection databaseConnection) {
@@ -56,6 +64,32 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
     @Override
     public List<Period> getAllPeriods() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PERIODS, this::mapResultSetToPeriod);
+    }
+
+    @Override
+    public Period recoverPeriod(int periodId) throws DAOException {
+        List<Period> periods = recoverALL(SQL_SELECT_PERIOD_BY_ID, this::mapResultSetToPeriod, periodId);
+        return periods.isEmpty() ? new Period() : periods.getFirst();
+    }
+
+    @Override
+    public void updatePeriod(Period period, int periodId) throws DAOException {
+        updateTuple(SQL_UPDATE_PERIOD, statement -> {
+            statement.setString(1, period.getPeriodName());
+            statement.setDate(2, period.getStartDate());
+            statement.setDate(3, period.getEndDate());
+            statement.setInt(4, periodId);
+        });
+    }
+
+    @Override
+    public void activatePeriod(int periodId) throws DAOException {
+        updateTuple(SQL_ACTIVATE_PERIOD, statement -> statement.setInt(1, periodId));
+    }
+
+    @Override
+    public void deactivatePeriod(int periodId) throws DAOException {
+        updateTuple(SQL_DEACTIVATE_PERIOD, statement -> statement.setInt(1, periodId));
     }
 
     private Period mapResultSetToPeriod(ResultSet resultSet) throws SQLException {

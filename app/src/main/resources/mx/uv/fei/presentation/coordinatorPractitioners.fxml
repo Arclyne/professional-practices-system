@@ -30,6 +30,9 @@
         </VBox.margin>
         <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
                    promptText="Buscar por nombre o matrícula"/>
+        <Button onAction="#handleActivateAction" styleClass="secondary-button" text="Activar"/>
+        <Button onAction="#handleInactivateAction" styleClass="secondary-button" text="Inactivar"/>
+        <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
         <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
     </HBox>
 

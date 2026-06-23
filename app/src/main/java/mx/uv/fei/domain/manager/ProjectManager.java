@@ -37,6 +37,18 @@ public class ProjectManager {
         }
     }
 
+    public void inactivateProject(int projectId) throws ManagerException {
+        inactivateMultipleProjects(List.of(projectId));
+    }
+
+    public void activateProject(int projectId) throws ManagerException {
+        try {
+            projectDAO.activateProject(projectId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al activar el proyecto.", e);
+        }
+    }
+
     public List<Project> getAllProjects() throws ManagerException {
         try {
             return projectDAO.getAllProjects();

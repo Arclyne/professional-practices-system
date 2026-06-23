@@ -87,4 +87,14 @@ public class ProfessorManagerTest {
 
         assertDoesNotThrow(() -> professorManager.updateProfessor(professorToUpdate, STORED_PROFESSOR_ID));
     }
+
+    @Test
+    void inactivateProfessor_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> professorManager.inactivateProfessor(STORED_PROFESSOR_ID));
+    }
+
+    @Test
+    void activateProfessor_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> professorManager.activateProfessor(STORED_PROFESSOR_ID));
+    }
 }

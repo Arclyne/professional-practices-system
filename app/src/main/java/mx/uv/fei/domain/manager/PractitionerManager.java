@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
+import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.common.IFileBackup;
 import mx.uv.fei.domain.common.IPractitionerParser;
 import mx.uv.fei.domain.common.validators.UserValidator;
@@ -21,14 +22,33 @@ public class PractitionerManager {
     private static final String ROLE_PRACTITIONER = "Practitioner";
 
     private final IPractitionerDAO practitionerDAO;
+    private final IUserDAO userDAO;
     private final IFileBackup fileBackup;
     private final IPractitionerParser practitionerParser;
 
     @Inject
-    public PractitionerManager(IPractitionerDAO practitionerDAO, IFileBackup fileBackup, IPractitionerParser practitionerParser) {
+    public PractitionerManager(IPractitionerDAO practitionerDAO, IUserDAO userDAO, IFileBackup fileBackup,
+            IPractitionerParser practitionerParser) {
         this.practitionerDAO = practitionerDAO;
+        this.userDAO = userDAO;
         this.fileBackup = fileBackup;
         this.practitionerParser = practitionerParser;
+    }
+
+    public void inactivatePractitioner(int practitionerId) throws ManagerException {
+        try {
+            userDAO.deactivateUser(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al inactivar el practicante.", e);
+        }
+    }
+
+    public void activatePractitioner(int practitionerId) throws ManagerException {
+        try {
+            userDAO.activateUser(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al activar el practicante.", e);
+        }
     }
 
     public String registerNewPractitioner(Practitioner practitioner) throws ManagerException {

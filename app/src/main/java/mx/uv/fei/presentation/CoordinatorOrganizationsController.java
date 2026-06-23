@@ -83,8 +83,7 @@ public class CoordinatorOrganizationsController {
     private void handleOrganizationRowClick(MouseEvent event) {
         Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
         if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedOrganization != null) {
-            store.dispatch(new NavigationAction.ViewEntityDetails(
-                    AppSection.REGISTER_ORGANIZATION, String.valueOf(selectedOrganization.getIdOrganization())));
+            openForEdit(selectedOrganization);
         }
     }
 
@@ -99,8 +98,56 @@ public class CoordinatorOrganizationsController {
     }
 
     @FXML
+    private void handleActivateAction() {
+        Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
+        if (selectedOrganization == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona una organización para activarla.");
+            return;
+        }
+
+        try {
+            organizationManager.activateOrganization(selectedOrganization.getIdOrganization());
+            loadOrganizations();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo activar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleInactivateAction() {
+        Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
+        if (selectedOrganization == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona una organización para inactivarla.");
+            return;
+        }
+
+        try {
+            organizationManager.inactivateOrganization(selectedOrganization.getIdOrganization());
+            loadOrganizations();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditAction() {
+        Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
+        if (selectedOrganization == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona una organización para editarla.");
+            return;
+        }
+
+        openForEdit(selectedOrganization);
+    }
+
+    @FXML
     private void handleRegisterAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_ORGANIZATION));
+    }
+
+    private void openForEdit(Organization organization) {
+        store.dispatch(new NavigationAction.ViewEntityDetails(
+                AppSection.REGISTER_ORGANIZATION, String.valueOf(organization.getIdOrganization())));
     }
 
     private void applyFilter() {

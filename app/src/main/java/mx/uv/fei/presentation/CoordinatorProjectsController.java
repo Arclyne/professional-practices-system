@@ -105,8 +105,7 @@ public class CoordinatorProjectsController {
     private void handleProjectRowClick(MouseEvent event) {
         Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
         if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedProject != null) {
-            store.dispatch(new NavigationAction.ViewEntityDetails(
-                    AppSection.REGISTER_PROJECT, String.valueOf(selectedProject.getProjectId())));
+            openForEdit(selectedProject);
         }
     }
 
@@ -121,8 +120,56 @@ public class CoordinatorProjectsController {
     }
 
     @FXML
+    private void handleActivateAction() {
+        Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProject == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para activarlo.");
+            return;
+        }
+
+        try {
+            projectManager.activateProject(selectedProject.getProjectId());
+            loadProjects();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo activar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleInactivateAction() {
+        Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProject == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para inactivarlo.");
+            return;
+        }
+
+        try {
+            projectManager.inactivateProject(selectedProject.getProjectId());
+            loadProjects();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditAction() {
+        Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProject == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para editarlo.");
+            return;
+        }
+
+        openForEdit(selectedProject);
+    }
+
+    @FXML
     private void handleRegisterAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROJECT));
+    }
+
+    private void openForEdit(Project project) {
+        store.dispatch(new NavigationAction.ViewEntityDetails(
+                AppSection.REGISTER_PROJECT, String.valueOf(project.getProjectId())));
     }
 
     private void applyFilter() {

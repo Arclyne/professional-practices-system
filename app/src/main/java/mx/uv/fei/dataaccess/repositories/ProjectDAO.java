@@ -35,6 +35,8 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                     "))";
     private static final String SQL_DEACTIVATE_PROJECT =
             "UPDATE project SET status = 'Inactive' WHERE project_id = ?";
+    private static final String SQL_ACTIVATE_PROJECT =
+            "UPDATE project SET status = 'Active' WHERE project_id = ?";
 
     private static final String SQL_SELECT_ASSIGNED_PROJECT_BY_PRACTITIONER =
             "SELECT p.project_id, p.project_name, p.description, p.participant_capacity, p.manager_id, p.status, p.start_date, p.end_date, p.organization_id " +
@@ -125,6 +127,11 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación de proyectos.", e);
         }
+    }
+
+    @Override
+    public void activateProject(int projectId) throws DAOException {
+        updateTuple(SQL_ACTIVATE_PROJECT, statement -> statement.setInt(1, projectId));
     }
 
     @Override
