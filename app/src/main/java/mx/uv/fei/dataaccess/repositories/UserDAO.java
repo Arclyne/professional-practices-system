@@ -18,6 +18,13 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Acceso a datos de los usuarios y la verificación de sus credenciales.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class UserDAO extends BaseDAO implements IUserDAO {
 

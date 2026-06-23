@@ -15,6 +15,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+/**
+ * Acceso a datos de los encargados de proyecto de las organizaciones.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class ManagerDAO extends BaseDAO implements IManagerDAO {
 
