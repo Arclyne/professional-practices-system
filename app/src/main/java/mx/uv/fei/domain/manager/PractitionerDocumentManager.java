@@ -13,8 +13,13 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class PractitionerDocumentManager {
+
+    private static final Logger log = LoggerFactory.getLogger(PractitionerDocumentManager.class);
 
     private final IPractitionerDocumentDAO documentDAO;
     private final CloudStorageManager cloudStorageManager;
@@ -41,6 +46,7 @@ public class PractitionerDocumentManager {
                 throw new ManagerException("No se pudo registrar el documento subido.");
             }
         } catch (DAOException e) {
+            log.error("No se pudo guardar el documento del practicante {}.", practitionerId, e);
             throw new ManagerException("Ocurrió un error al guardar el documento.", e);
         }
     }
@@ -49,6 +55,7 @@ public class PractitionerDocumentManager {
         try {
             return documentDAO.getDocumentsByPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error("Error al cargar los documentos del practicante {}.", practitionerId, e);
             throw new ManagerException("Ocurrió un error al cargar los documentos.", e);
         }
     }
@@ -57,6 +64,7 @@ public class PractitionerDocumentManager {
         try {
             return documentDAO.getAllDocuments();
         } catch (DAOException e) {
+            log.error("Error al cargar los documentos de los practicantes.", e);
             throw new ManagerException("Ocurrió un error al cargar los documentos de los practicantes.", e);
         }
     }
@@ -66,6 +74,7 @@ public class PractitionerDocumentManager {
         try {
             documentDAO.markDocumentAsReviewed(documentId);
         } catch (DAOException e) {
+            log.error("Error al marcar el documento {} como revisado.", documentId, e);
             throw new ManagerException("No se pudo marcar el documento como revisado.", e);
         }
     }
