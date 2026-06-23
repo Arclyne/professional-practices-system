@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -30,7 +30,7 @@ public class CoordinatorProfessorsControllerTest extends ApplicationTest {
     private static final String FXML_PATH = "/mx/uv/fei/presentation/coordinatorProfessors.fxml";
 
     private final ProfessorManager professorManager = mock(ProfessorManager.class);
-    private final AppStore store = mock(AppStore.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -43,7 +43,7 @@ public class CoordinatorProfessorsControllerTest extends ApplicationTest {
         when(professorManager.getAllProfessors()).thenReturn(List.of(buildProfessor()));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinatorProfessorsController(professorManager, store));
+        loader.setControllerFactory(controllerType -> new CoordinatorProfessorsController(professorManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

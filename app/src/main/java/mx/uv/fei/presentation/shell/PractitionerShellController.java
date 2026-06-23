@@ -26,8 +26,8 @@ public class PractitionerShellController extends RoleShellController {
     @FXML private Button gradeNavButton;
 
     @Inject
-    public PractitionerShellController(AppStore store, DependencyInjector dependencyInjector) {
-        super(store, dependencyInjector);
+    public PractitionerShellController(AppStore store, DependencyInjector dependencyInjector, ShellNavigator shellNavigator) {
+        super(store, dependencyInjector, shellNavigator);
     }
 
     @FXML

@@ -38,6 +38,15 @@ public class OrganizationManager {
         }
     }
 
+    public void updateOrganization(Organization organization, int id) throws ManagerException {
+        try {
+            OrganizationValidator.validateOrganizationData(organization);
+            organizationDAO.updateOrganization(organization, id);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al actualizar la organización en la base de datos.", e);
+        }
+    }
+
     public void inactivateMultipleOrganizations(List<Integer> organizationIds) throws ManagerException {
         try {
             organizationDAO.deactivateMultipleOrganizations(organizationIds);

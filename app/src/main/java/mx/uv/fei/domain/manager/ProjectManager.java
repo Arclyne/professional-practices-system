@@ -29,6 +29,15 @@ public class ProjectManager {
         }
     }
 
+    public void updateProject(Project project, int id) throws ManagerException {
+        ProjectValidator.validateProjectData(project);
+        try {
+            projectDAO.updateProject(project, id);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al actualizar el proyecto en la base de datos.", e);
+        }
+    }
+
     public void inactivateMultipleProjects(List<Integer> projectIds) throws ManagerException {
         try {
             projectDAO.deactivateMultipleProjects(projectIds);

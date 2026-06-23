@@ -61,4 +61,8 @@ public class FormComboBox extends VBox {
     public void setPromptText(String promptText) {
         comboBox.setPromptText(promptText);
     }
+
+    public void setValue(String value) {
+        comboBox.setValue(value);
+    }
 }

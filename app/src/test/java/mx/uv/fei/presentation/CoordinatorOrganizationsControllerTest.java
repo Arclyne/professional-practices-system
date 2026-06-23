@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -31,7 +31,7 @@ public class CoordinatorOrganizationsControllerTest extends ApplicationTest {
     private static final int STATUS_COLUMN_INDEX = 3;
 
     private final OrganizationManager organizationManager = mock(OrganizationManager.class);
-    private final AppStore store = mock(AppStore.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -44,7 +44,7 @@ public class CoordinatorOrganizationsControllerTest extends ApplicationTest {
         when(organizationManager.getAllOrganizations()).thenReturn(List.of(buildOrganization()));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinatorOrganizationsController(organizationManager, store));
+        loader.setControllerFactory(controllerType -> new CoordinatorOrganizationsController(organizationManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

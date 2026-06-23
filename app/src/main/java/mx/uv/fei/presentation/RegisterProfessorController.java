@@ -8,11 +8,9 @@ import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,16 +31,17 @@ public class RegisterProfessorController implements Initializable {
     @FXML private FormField fieldEmail;
     @FXML private FormField fieldPersonalNumber;
     @FXML private FormComboBox comboBoxGender;
+    @FXML private Button registerButton;
 
     private final ProfessorManager professorManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
     private Professor professorBeingEdited;
 
     @Inject
-    public RegisterProfessorController(ProfessorManager professorManager, AppStore store) {
+    public RegisterProfessorController(ProfessorManager professorManager, ShellNavigator shellNavigator) {
         this.professorManager = professorManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
@@ -52,29 +52,26 @@ public class RegisterProfessorController implements Initializable {
                 Gender.OTHER.getDisplayValue());
         comboBoxGender.setItems(genderOptions);
 
-        String selectedEntityId = store.getState().navigationState().targetEntityId();
-        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
-            loadProfessorForEdit(Integer.parseInt(selectedEntityId));
+        Object pendingEntity = shellNavigator.consumePendingEntity();
+        if (pendingEntity instanceof Professor) {
+            professorBeingEdited = (Professor) pendingEntity;
+            populateFormForEdit(professorBeingEdited);
+        } else {
+            professorBeingEdited = null;
+            registerButton.setText("Registrar");
         }
     }
 
-    private void loadProfessorForEdit(int professorId) {
-        try {
-            Professor professor = professorManager.getProfessorById(professorId);
-            if (professor.getId() <= 0) {
-                Controller.showAlert("Error de Carga",
-                        "No se encontró la información del profesor seleccionado.", AlertType.ERROR);
-                return;
-            }
-            professorBeingEdited = professor;
-            fieldName.setText(professor.getName());
-            fieldLastName.setText(professor.getLastName());
-            fieldEmail.setText(professor.getEmail());
-            fieldPersonalNumber.setText(professor.getUserName());
-            fieldPersonalNumber.setDisable(true);
-            comboBoxGender.valueProperty().set(professor.getGender().getDisplayValue());
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+    private void populateFormForEdit(Professor professor) {
+        registerButton.setText("Guardar cambios");
+        fieldName.setText(professor.getName() != null ? professor.getName() : "");
+        fieldLastName.setText(professor.getLastName() != null ? professor.getLastName() : "");
+        fieldEmail.setText(professor.getEmail() != null ? professor.getEmail() : "");
+        fieldPersonalNumber.setText(professor.getUserName() != null ? professor.getUserName() : "");
+        fieldPersonalNumber.setDisable(true); // Deshabilitar el numero personal en edición
+
+        if (professor.getGender() != null) {
+            comboBoxGender.setValue(professor.getGender().getDisplayValue());
         }
     }
 
@@ -113,7 +110,7 @@ public class RegisterProfessorController implements Initializable {
             professorManager.updateProfessor(professorBeingEdited, professorBeingEdited.getId());
             Controller.showAlert("Actualización Exitosa",
                     "La información del profesor se actualizó correctamente.", AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.PROFESSOR_MANAGEMENT_MENU));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
         }
@@ -145,7 +142,7 @@ public class RegisterProfessorController implements Initializable {
 
     @FXML
     private void handleActionCancelButton(ActionEvent event) {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.returnToList();
     }
 
     private void clearForm() {

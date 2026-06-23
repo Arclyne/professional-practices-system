@@ -12,10 +12,9 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -52,6 +51,7 @@ public class RegisterPractitionerController implements Initializable {
     private final PractitionerManager practitionerManager;
     private final PracticeGroupManager practiceGroupManager;
     private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
     private final Map<String, Integer> groupDisplayToId = new HashMap<>();
 
@@ -59,10 +59,12 @@ public class RegisterPractitionerController implements Initializable {
 
     @Inject
     public RegisterPractitionerController(PractitionerManager practitionerManager,
-                                          PracticeGroupManager practiceGroupManager, AppStore store) {
+                                          PracticeGroupManager practiceGroupManager, AppStore store,
+                                          ShellNavigator shellNavigator) {
         this.practitionerManager = practitionerManager;
         this.practiceGroupManager = practiceGroupManager;
         this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
@@ -70,34 +72,32 @@ public class RegisterPractitionerController implements Initializable {
         loadGenderOptions();
         loadPracticeGroups();
 
-        String selectedEntityId = store.getState().navigationState().targetEntityId();
-        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
-            loadPractitionerForEdit(Integer.parseInt(selectedEntityId));
+        Object pendingEntity = shellNavigator.consumePendingEntity();
+        if (pendingEntity instanceof Practitioner) {
+            practitionerBeingEdited = (Practitioner) pendingEntity;
+            populateFormForEdit(practitionerBeingEdited);
+        } else {
+            practitionerBeingEdited = null;
+            registerButton.setText("Registrar");
         }
     }
 
-    private void loadPractitionerForEdit(int practitionerId) {
-        try {
-            Practitioner practitioner = practitionerManager.getPractitionerById(practitionerId);
-            if (practitioner.getId() <= 0) {
-                Controller.showAlert("Error de Carga",
-                        "No se encontró la información del practicante seleccionado.", AlertType.ERROR);
-                return;
-            }
-            practitionerBeingEdited = practitioner;
-            fieldEnrollment.setText(practitioner.getEnrollment());
-            fieldEnrollment.setDisable(true);
-            fieldName.setText(practitioner.getName());
-            fieldLastName.setText(practitioner.getLastName());
-            fieldEmail.setText(practitioner.getEmail());
-            fieldIndigenousLanguage.setText(practitioner.getIndigenousLanguage());
-            comboBoxGender.valueProperty().set(practitioner.getGender().getDisplayValue());
-            selectGroupForId(practitioner.getGroupId());
-            uploadCsvButton.setVisible(false);
-            uploadCsvButton.setManaged(false);
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+    private void populateFormForEdit(Practitioner practitioner) {
+        registerButton.setText("Guardar cambios");
+        fieldEnrollment.setText(practitioner.getEnrollment() != null ? practitioner.getEnrollment() : "");
+        fieldEnrollment.setDisable(true);
+        fieldName.setText(practitioner.getName() != null ? practitioner.getName() : "");
+        fieldLastName.setText(practitioner.getLastName() != null ? practitioner.getLastName() : "");
+        fieldEmail.setText(practitioner.getEmail() != null ? practitioner.getEmail() : "");
+        fieldIndigenousLanguage.setText(practitioner.getIndigenousLanguage() != null ? practitioner.getIndigenousLanguage() : "");
+
+        if (practitioner.getGender() != null) {
+            comboBoxGender.setValue(practitioner.getGender().getDisplayValue());
         }
+        selectGroupForId(practitioner.getGroupId());
+
+        uploadCsvButton.setVisible(false);
+        uploadCsvButton.setManaged(false);
     }
 
     private void selectGroupForId(Integer groupId) {
@@ -106,7 +106,7 @@ public class RegisterPractitionerController implements Initializable {
         }
         for (Map.Entry<String, Integer> groupEntry : groupDisplayToId.entrySet()) {
             if (groupEntry.getValue().equals(groupId)) {
-                comboBoxPracticeGroup.valueProperty().set(groupEntry.getKey());
+                comboBoxPracticeGroup.setValue(groupEntry.getKey());
             }
         }
     }
@@ -159,7 +159,7 @@ public class RegisterPractitionerController implements Initializable {
             practitionerManager.updatePractitioner(practitionerBeingEdited, practitionerBeingEdited.getId());
             Controller.showAlert("Actualización Exitosa",
                     "La información del practicante se actualizó correctamente.", AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.PRACTITIONER_MANAGEMENT_MENU));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
         } finally {
@@ -240,7 +240,7 @@ public class RegisterPractitionerController implements Initializable {
                     "Exitosos: " + summary.getSuccessfulRegistrations()
                             + "\nFallidos: " + summary.getFailedRegistrations(),
                     AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
@@ -248,7 +248,7 @@ public class RegisterPractitionerController implements Initializable {
 
     @FXML
     private void handleActionCancelButton() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.returnToList();
     }
 
     private void clearForm() {
