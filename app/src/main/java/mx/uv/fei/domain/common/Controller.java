@@ -7,9 +7,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 public class Controller {
+
+    private static final Logger log = LoggerFactory.getLogger(Controller.class);
 
     public static void showSuccessAlert(String alertTitle, String alertMessage) {
         showAlert(alertTitle, alertMessage, AlertType.INFORMATION);
@@ -29,6 +38,23 @@ public class Controller {
         alert.setHeaderText(null);
         alert.setContentText(message);
         Platform.runLater(alert::show);
+    }
+
+    public static void openStoredFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            showErrorAlert("Archivo no disponible", "El documento seleccionado no tiene un archivo asociado.");
+            return;
+        }
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            showErrorAlert("Acción no disponible", "El sistema no permite abrir archivos desde la aplicación.");
+            return;
+        }
+        try {
+            Desktop.getDesktop().browse(new URI(fileUrl));
+        } catch (IOException | URISyntaxException e) {
+            log.error("No se pudo abrir el recurso almacenado: {}", fileUrl, e);
+            showErrorAlert("Error de archivo", "No se pudo abrir el documento solicitado.");
+        }
     }
 
     public static <T> void setupCheckBoxListView(ListView<T> listView, Map<T, BooleanProperty> selectionMap) {

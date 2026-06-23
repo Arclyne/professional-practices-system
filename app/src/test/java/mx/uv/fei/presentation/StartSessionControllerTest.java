@@ -58,18 +58,18 @@ public class StartSessionControllerTest extends ApplicationTest {
     }
 
     @Test
-    void handleActionConnectButton_EmptyCredentials_DoesNotAttemptLogin() throws ManagerException {
+    void processLogin_EmptyCredentials_DoesNotAttemptLogin() throws ManagerException {
         clickConnectButton();
 
-        verify(startSessionManager, never()).handleActionConnectButton(anyMap());
+        verify(startSessionManager, never()).processLogin(anyMap());
     }
 
     @Test
-    void handleActionConnectButton_CompleteCredentials_AttemptsLogin() throws ManagerException {
+    void processLogin_CompleteCredentials_AttemptsLogin() throws ManagerException {
         fillCredentials(VALID_IDENTIFIER, VALID_PASSWORD);
 
         clickConnectButton();
 
-        verify(startSessionManager).handleActionConnectButton(anyMap());
+        verify(startSessionManager).processLogin(anyMap());
     }
 }

@@ -5,6 +5,8 @@ import mx.uv.fei.domain.common.validators.FileValidator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.UUID;
 
 @Component
@@ -26,6 +29,10 @@ public class CloudStorageManager {
     private static final String SIMULATOR_DIRECTORY_NAME = "SimuladorOneDrive_FEI";
     private static final String WHITESPACE_REGEX = "\\s+";
     private static final String UNDERSCORE = "_";
+    private static final int UNIQUE_PREFIX_START = 0;
+    private static final int UNIQUE_PREFIX_LENGTH = 8;
+    private static final int CONNECTION_TIMEOUT_SECONDS = 15;
+    private static final int REQUEST_TIMEOUT_SECONDS = 60;
 
     public String uploadEvidenceFile(File file) throws ManagerException {
         FileValidator.validateFileSize(file);
@@ -37,30 +44,42 @@ public class CloudStorageManager {
     }
 
     private String uploadToMicrosoftGraph(File file) throws ManagerException {
+        String uniqueFileName = buildUniqueFileName(file.getName());
+
         try {
-            String uniqueFileName = buildUniqueFileName(file.getName());
-            String endpoint = ONEDRIVE_UPLOAD_ENDPOINT + uniqueFileName + ":/content";
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(endpoint))
-                    .header("Authorization", "Bearer " + ONEDRIVE_ACCESS_TOKEN)
-                    .header("Content-Type", "application/octet-stream")
-                    .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200 || response.statusCode() == 201) {
-                return ONEDRIVE_VIEW_BASE_URL + uniqueFileName;
-            } else {
-                throw new ManagerException("Microsoft Graph rechazó la subida. Código: " + response.statusCode());
-            }
-        } catch (ManagerException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ManagerException("Falló la conexión con los servidores de Microsoft.", e);
+            HttpResponse<String> response = sendUploadRequest(file, uniqueFileName);
+            return resolveUploadResponse(response, uniqueFileName);
+        } catch (IOException e) {
+            throw new ManagerException("No se pudo subir el documento. Revisa tu conexión a internet e inténtalo de nuevo.", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ManagerException("La subida del documento fue interrumpida. Inténtalo de nuevo.", e);
         }
+    }
+
+    private HttpResponse<String> sendUploadRequest(File file, String uniqueFileName) throws IOException, InterruptedException {
+        String endpoint = ONEDRIVE_UPLOAD_ENDPOINT + uniqueFileName + ":/content";
+
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(CONNECTION_TIMEOUT_SECONDS))
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .timeout(Duration.ofSeconds(REQUEST_TIMEOUT_SECONDS))
+                .header("Authorization", "Bearer " + ONEDRIVE_ACCESS_TOKEN)
+                .header("Content-Type", "application/octet-stream")
+                .PUT(HttpRequest.BodyPublishers.ofFile(file.toPath()))
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private String resolveUploadResponse(HttpResponse<String> response, String uniqueFileName) throws ManagerException {
+        int statusCode = response.statusCode();
+        if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
+            return ONEDRIVE_VIEW_BASE_URL + uniqueFileName;
+        }
+        throw new ManagerException("El servidor de almacenamiento rechazó la subida del documento. Inténtalo más tarde.");
     }
 
     private String simulateOneDriveUpload(File file) throws ManagerException {
@@ -69,12 +88,12 @@ public class CloudStorageManager {
             Path destinationPath = uploadDirectory.resolve(buildUniqueFileName(file.getName()));
             Files.copy(file.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
             return destinationPath.toUri().toString();
-        } catch (Exception e) {
-            throw new ManagerException("Error al simular la subida del archivo al servidor.", e);
+        } catch (IOException e) {
+            throw new ManagerException("No se pudo guardar el documento en el almacenamiento.", e);
         }
     }
 
-    private Path resolveSimulatorDirectory() throws Exception {
+    private Path resolveSimulatorDirectory() throws IOException {
         Path uploadDirectory = Paths.get(System.getProperty("user.home"), SIMULATOR_DIRECTORY_NAME);
         if (!Files.exists(uploadDirectory)) {
             Files.createDirectories(uploadDirectory);
@@ -83,7 +102,7 @@ public class CloudStorageManager {
     }
 
     private String buildUniqueFileName(String originalFileName) {
-        return UUID.randomUUID().toString().substring(0, 8) +
+        return UUID.randomUUID().toString().substring(UNIQUE_PREFIX_START, UNIQUE_PREFIX_LENGTH) +
                 UNDERSCORE +
                 originalFileName.replaceAll(WHITESPACE_REGEX, UNDERSCORE);
     }
