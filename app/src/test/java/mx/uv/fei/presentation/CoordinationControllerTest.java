@@ -116,6 +116,15 @@ public class CoordinationControllerTest extends ApplicationTest {
     }
 
     @Test
+    void search_ByUsername_KeepsCoordinatorInTable() {
+        TableView<Coordinator> coordinatorsTableView = lookup("#coordinatorsTableView").queryAs(TableView.class);
+
+        applySearchQuery("30022222");
+
+        assertEquals(1, coordinatorsTableView.getItems().size());
+    }
+
+    @Test
     void search_NonMatchingQuery_HidesCoordinatorFromTable() {
         TableView<Coordinator> coordinatorsTableView = lookup("#coordinatorsTableView").queryAs(TableView.class);
 

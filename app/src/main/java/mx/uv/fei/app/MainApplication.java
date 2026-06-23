@@ -15,7 +15,7 @@ import java.io.IOException;
 
 
 @StartEtiquette
-@Profile("local2")
+@Profile("net")
 public class MainApplication extends Application {
 
     private static final String MAIN_VIEW_PATH = "/mx/uv/fei/presentation/main.fxml";
