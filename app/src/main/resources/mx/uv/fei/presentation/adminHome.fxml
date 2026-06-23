@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="6.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.AdminHomeController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="ADMINISTRACIÓN"/>
+    <Label styleClass="content-title" text="Panel de administración"/>
+    <Label styleClass="content-subtitle" text="Gestión del coordinador de prácticas profesionales."/>
+
+    <VBox spacing="6.0" styleClass="content-card">
+        <VBox.margin>
+            <Insets top="22.0"/>
+        </VBox.margin>
+        <Label styleClass="card-eyebrow" text="COORDINADOR EN TURNO"/>
+        <Label fx:id="activeCoordinatorNameLabel" styleClass="card-title" text="Cargando..."/>
+        <Label fx:id="activeCoordinatorDetailLabel" styleClass="card-subtitle" text=""/>
+    </VBox>
+</VBox>

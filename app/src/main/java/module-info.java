@@ -20,6 +20,7 @@ module mx.uv.fei {
         opens mx.uv.fei.domain.statemachine.actions ;
         opens mx.uv.fei.domain.manager ;
         opens mx.uv.fei.presentation ;
+        opens mx.uv.fei.presentation.shell;
         opens mx.uv.fei.presentation.components;
 
         requires java.desktop;

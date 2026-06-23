@@ -3,10 +3,8 @@ package mx.uv.fei.presentation;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
-import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.CoordinatorManager;
 import mx.uv.fei.domain.manager.DashboardManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -25,8 +23,6 @@ public class DashboardController {
     @FXML private Label systemUserNameLabel;
     @FXML private Label systemUserRoleLabel;
 
-    @FXML private Button navigateToRegisterCoordinatorButton;
-    @FXML private Button navigateToCoordinatorManagementButton;
     @FXML private Button navigateToPractitionerManagementListButton;
     @FXML private Button navigateToPractitionerManagementMenuButton;
     @FXML private Button navigateToRegisterProfessorButton;
@@ -50,13 +46,11 @@ public class DashboardController {
 
     private final AppStore store;
     private final DashboardManager dashboardManager;
-    private final CoordinatorManager coordinatorManager;
 
     @Inject
-    public DashboardController(AppStore store, DashboardManager dashboardManager, CoordinatorManager coordinatorManager) {
+    public DashboardController(AppStore store, DashboardManager dashboardManager) {
         this.store = store;
         this.dashboardManager = dashboardManager;
-        this.coordinatorManager = coordinatorManager;
     }
 
     @FXML
@@ -79,18 +73,7 @@ public class DashboardController {
     private void adjustButtonVisibilityByRole(String userRole) {
         hideAllNavigationButtons();
 
-        if (dashboardManager.isAdministratorMenuAvailable(userRole)) {
-            showButton(navigateToRegisterCoordinatorButton);
-            try {
-                Coordinator currentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
-                navigateToRegisterCoordinatorButton.setText(
-                        currentCoordinator != null ? "Gestionar Coordinador" : "Registrar Coordinador");
-            } catch (ManagerException e) {
-                navigateToRegisterCoordinatorButton.setText("Gestionar Coordinador");
-            }
-            showButton(navigateToCoordinatorManagementButton);
-
-        } else if (dashboardManager.isCoordinatorMenuAvailable(userRole)) {
+        if (dashboardManager.isCoordinatorMenuAvailable(userRole)) {
             showButton(navigateToPractitionerManagementMenuButton);
             showButton(navigateToPractitionerManagementListButton);
             showButton(navigateToRegisterProfessorButton);
@@ -131,8 +114,6 @@ public class DashboardController {
     }
 
     private void hideAllNavigationButtons() {
-        hideButton(navigateToRegisterCoordinatorButton);
-        hideButton(navigateToCoordinatorManagementButton);
         hideButton(navigateToPractitionerManagementListButton);
         hideButton(navigateToPractitionerManagementMenuButton);
         hideButton(navigateToRegisterProfessorButton);
@@ -154,28 +135,8 @@ public class DashboardController {
     }
 
     @FXML
-    private void handleNavigateToRegisterCoordinatorAction() {
-        try {
-            Coordinator currentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
-            if (currentCoordinator != null) {
-                store.dispatch(new NavigationAction.ViewEntityDetails(
-                        AppSection.COORDINATOR_DETAILS, String.valueOf(currentCoordinator.getId())));
-            } else {
-                store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_COORDINATOR));
-            }
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de Servidor", e.getMessage(), AlertType.ERROR);
-        }
-    }
-
-    @FXML
     private void handleNavigateToPractitionerManagementAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
-    }
-
-    @FXML
-    private void handleNavigateToCoordinatorManagementAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_MANAGEMENT_MENU));
     }
 
     @FXML

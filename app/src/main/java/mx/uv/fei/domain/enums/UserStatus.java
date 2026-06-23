@@ -9,17 +9,21 @@ package mx.uv.fei.domain.enums;
  */
 public enum UserStatus {
 
-    ACTIVE("Active"),
-    INACTIVE("Inactive"),
-    PENDING("Pending");
+    ACTIVE("Active", "Activo"),
+    INACTIVE("Inactive", "Inactivo"),
+    PENDING("Pending", "Pendiente");
 
     private final String databaseValue;
+    private final String displayLabel;
 
-    UserStatus(String databaseValue) {
+    UserStatus(String databaseValue, String displayLabel) {
         this.databaseValue = databaseValue;
+        this.displayLabel = displayLabel;
     }
 
     public String getDatabaseValue() { return databaseValue; }
+
+    public String getDisplayLabel() { return displayLabel; }
 
     public static UserStatus fromString(String databaseValue) {
         for (UserStatus status : values()) {

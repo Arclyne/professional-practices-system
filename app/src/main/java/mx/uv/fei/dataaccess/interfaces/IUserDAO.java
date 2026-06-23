@@ -9,6 +9,7 @@ import mx.uv.fei.domain.dto.User;
 public interface IUserDAO {
     int insertUser(User user, Connection sharedConnection) throws DAOException;
     void deactivateUser(int idUsuario) throws DAOException;
+    void activateUser(int userId) throws DAOException;
     void updateUser(User user, Connection sharedConnection) throws DAOException;
     String getUserRole(String userName) throws DAOException;
     boolean verifyCredentialsByUserName(String userName, String password) throws DAOException;

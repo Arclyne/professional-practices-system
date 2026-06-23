@@ -78,14 +78,6 @@
                 </Label>
 
                 <VBox alignment="CENTER" spacing="15.0" maxWidth="300.0">
-                    <Button fx:id="navigateToRegisterCoordinatorButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToRegisterCoordinatorAction" styleClass="secondary-button" text="Registrar Coordinador"
-                            visible="false" managed="false"/>
-
-                    <Button fx:id="navigateToCoordinatorManagementButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
-                            mnemonicParsing="false" onAction="#handleNavigateToCoordinatorManagementAction" styleClass="secondary-button" text="Gestión de Coordinadores"
-                            visible="false" managed="false"/>
-
                     <Button fx:id="navigateToPractitionerManagementListButton" maxWidth="1.7976931348623157E308" prefHeight="40.0"
                             mnemonicParsing="false" onAction="#handleNavigateToPractitionerManagementListAction" styleClass="secondary-button" text="Editar Practicantes"
                             visible="false" managed="false"/>
