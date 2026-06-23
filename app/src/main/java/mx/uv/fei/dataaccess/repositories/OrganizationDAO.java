@@ -26,6 +26,8 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             "SELECT organization_id, organization_name, status, address, city, sector, email, phone FROM linked_organization";
     private static final String SQL_DEACTIVATE_ORGANIZATION =
             "UPDATE linked_organization SET status = 'Inactive' WHERE organization_id = ?";
+    private static final String SQL_ACTIVATE_ORGANIZATION =
+            "UPDATE linked_organization SET status = 'Active' WHERE organization_id = ?";
 
     @Inject
     public OrganizationDAO(IDatabaseConnection databaseConnection) {
@@ -103,6 +105,11 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación de organizaciones.", e);
         }
+    }
+
+    @Override
+    public void activateOrganization(int organizationId) throws DAOException {
+        updateTuple(SQL_ACTIVATE_ORGANIZATION, statement -> statement.setInt(1, organizationId));
     }
 
     private void executeDeactivationBatch(Connection connection, List<Integer> organizationIds) throws SQLException {

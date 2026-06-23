@@ -56,6 +56,22 @@ public class ProfessorManager {
         }
     }
 
+    public void inactivateProfessor(int professorId) throws ManagerException {
+        try {
+            userDAO.deactivateUser(professorId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al inactivar el profesor.", e);
+        }
+    }
+
+    public void activateProfessor(int professorId) throws ManagerException {
+        try {
+            userDAO.activateUser(professorId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al activar el profesor.", e);
+        }
+    }
+
     public List<Professor> getAllProfessors() throws ManagerException {
         try {
             return professorDAO.getAllProfessors();

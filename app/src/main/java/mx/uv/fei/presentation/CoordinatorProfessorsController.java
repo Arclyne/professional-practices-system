@@ -82,8 +82,7 @@ public class CoordinatorProfessorsController {
     private void handleProfessorRowClick(MouseEvent event) {
         Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
         if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedProfessor != null) {
-            store.dispatch(new NavigationAction.ViewEntityDetails(
-                    AppSection.REGISTER_PROFESSOR, String.valueOf(selectedProfessor.getId())));
+            openForEdit(selectedProfessor);
         }
     }
 
@@ -98,8 +97,56 @@ public class CoordinatorProfessorsController {
     }
 
     @FXML
+    private void handleActivateAction() {
+        Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProfessor == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para activarlo.");
+            return;
+        }
+
+        try {
+            professorManager.activateProfessor(selectedProfessor.getId());
+            loadProfessors();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo activar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleInactivateAction() {
+        Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProfessor == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para inactivarlo.");
+            return;
+        }
+
+        try {
+            professorManager.inactivateProfessor(selectedProfessor.getId());
+            loadProfessors();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditAction() {
+        Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
+        if (selectedProfessor == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para editarlo.");
+            return;
+        }
+
+        openForEdit(selectedProfessor);
+    }
+
+    @FXML
     private void handleRegisterAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.REGISTER_PROFESSOR));
+    }
+
+    private void openForEdit(Professor professor) {
+        store.dispatch(new NavigationAction.ViewEntityDetails(
+                AppSection.REGISTER_PROFESSOR, String.valueOf(professor.getId())));
     }
 
     private void applyFilter() {

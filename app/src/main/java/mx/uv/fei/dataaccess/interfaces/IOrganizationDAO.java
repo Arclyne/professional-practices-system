@@ -16,4 +16,6 @@ public interface IOrganizationDAO {
     void updateOrganization(Organization updateOrganization, int ID) throws DAOException;
 
     void deactivateMultipleOrganizations(List<Integer> organizationIdentifiersList) throws DAOException;
+
+    void activateOrganization(int organizationId) throws DAOException;
 }

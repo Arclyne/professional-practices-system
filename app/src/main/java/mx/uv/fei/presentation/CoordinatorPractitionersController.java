@@ -70,8 +70,7 @@ public class CoordinatorPractitionersController {
     private void handlePractitionerRowClick(MouseEvent event) {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (event.getClickCount() == DOUBLE_CLICK_COUNT && selectedPractitioner != null) {
-            store.dispatch(new NavigationAction.ViewEntityDetails(
-                    AppSection.REGISTER_PRACTITIONER, String.valueOf(selectedPractitioner.getId())));
+            openForEdit(selectedPractitioner);
         }
     }
 
@@ -97,6 +96,54 @@ public class CoordinatorPractitionersController {
     @FXML
     private void handleRefreshAction() {
         loadPractitioners();
+    }
+
+    @FXML
+    private void handleActivateAction() {
+        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
+        if (selectedPractitioner == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para activarlo.");
+            return;
+        }
+
+        try {
+            practitionerManager.activatePractitioner(selectedPractitioner.getId());
+            loadPractitioners();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo activar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleInactivateAction() {
+        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
+        if (selectedPractitioner == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para inactivarlo.");
+            return;
+        }
+
+        try {
+            practitionerManager.inactivatePractitioner(selectedPractitioner.getId());
+            loadPractitioners();
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditAction() {
+        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
+        if (selectedPractitioner == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para editarlo.");
+            return;
+        }
+
+        openForEdit(selectedPractitioner);
+    }
+
+    private void openForEdit(Practitioner practitioner) {
+        store.dispatch(new NavigationAction.ViewEntityDetails(
+                AppSection.REGISTER_PRACTITIONER, String.valueOf(practitioner.getId())));
     }
 
     @FXML

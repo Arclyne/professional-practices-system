@@ -94,4 +94,14 @@ public class ProjectManagerTest {
     void inactivateMultipleProjects_ValidList_DoesNotThrow() {
         assertDoesNotThrow(() -> projectManager.inactivateMultipleProjects(List.of(1)));
     }
+
+    @Test
+    void inactivateProject_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> projectManager.inactivateProject(1));
+    }
+
+    @Test
+    void activateProject_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> projectManager.activateProject(1));
+    }
 }

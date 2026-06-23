@@ -45,4 +45,16 @@ public class OrganizationManager {
             throw new ManagerException("Error de base de datos al inactivar organizaciones.", e);
         }
     }
+
+    public void inactivateOrganization(int organizationId) throws ManagerException {
+        inactivateMultipleOrganizations(List.of(organizationId));
+    }
+
+    public void activateOrganization(int organizationId) throws ManagerException {
+        try {
+            organizationDAO.activateOrganization(organizationId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error de base de datos al activar la organización.", e);
+        }
+    }
 }

@@ -100,4 +100,14 @@ public class OrganizationManagerTest {
     void inactivateMultipleOrganizations_ValidList_DoesNotThrow() {
         assertDoesNotThrow(() -> organizationManager.inactivateMultipleOrganizations(List.of(1)));
     }
+
+    @Test
+    void inactivateOrganization_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> organizationManager.inactivateOrganization(1));
+    }
+
+    @Test
+    void activateOrganization_StoredId_DoesNotThrow() {
+        assertDoesNotThrow(() -> organizationManager.activateOrganization(1));
+    }
 }
