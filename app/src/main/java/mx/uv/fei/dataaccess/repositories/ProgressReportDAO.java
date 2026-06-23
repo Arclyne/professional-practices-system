@@ -14,10 +14,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Component
 public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
-
+    private static final Logger logger = LoggerFactory.getLogger(ProgressReportDAO.class);
     private static final String DEFAULT_REPORT_STATUS = "Pendiente de Firma";
 
     private static final String SQL_INSERT_PROGRESS_REPORT =
@@ -69,6 +72,7 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                 }
             }
         } catch (SQLException e) {
+            logger.error("Error en BD al insertar reporte. SQL State: {}, Error Code: {}", e.getSQLState(), e.getErrorCode(), e);
             throw new DAOException("Error al registrar el reporte de avance.", e);
         }
 
@@ -88,7 +92,7 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
 
     @Override
     public ProgressReport getProgressReportByPractitionerAndType(int practitionerId, String reportType) throws DAOException {
-        ProgressReport recoveredReport = new ProgressReport();
+        ProgressReport recoveredReport = null;
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_PROGRESS_REPORT_BY_PRACTITIONER_AND_TYPE)) {
@@ -102,6 +106,7 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                 }
             }
         } catch (SQLException e) {
+            logger.error("Error en BD al insertar reporte. SQL State: {}, Error Code: {}", e.getSQLState(), e.getErrorCode(), e);
             throw new DAOException("Error al recuperar el reporte de avance.", e);
         }
 
