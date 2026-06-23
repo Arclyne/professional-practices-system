@@ -236,3 +236,13 @@
     -fx-background-radius: 12px;
     -fx-padding: 4px 12px;
 }
+
+.stat-card {
+    -fx-padding: 20px;
+}
+
+.stat-number {
+    -fx-text-fill: #1B3A6B;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}

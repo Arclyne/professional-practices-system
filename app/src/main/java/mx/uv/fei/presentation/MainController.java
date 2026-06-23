@@ -47,7 +47,9 @@ public class MainController {
     private static final double SPLASH_DELAY_SECONDS = 2;
 
     private static final String ADMINISTRATOR_ROLE = "Administrator";
+    private static final String COORDINATOR_ROLE = "Coordinator";
     private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
+    private static final String COORDINATOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/coordinatorShell.fxml";
 
     @FXML private StackPane contentArea;
 
@@ -160,9 +162,19 @@ public class MainController {
 
         if (currentState != null && currentState.sessionState() != null) {
             User currentUser = currentState.sessionState().currentUserInSession();
-            if (currentUser != null && ADMINISTRATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
-                dashboardPath = ADMIN_SHELL_VIEW;
-            }
+            dashboardPath = resolveDashboardPathByRole(currentUser, dashboardPath);
+        }
+
+        return dashboardPath;
+    }
+
+    private String resolveDashboardPathByRole(User currentUser, String defaultPath) {
+        String dashboardPath = defaultPath;
+
+        if (currentUser != null && ADMINISTRATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
+            dashboardPath = ADMIN_SHELL_VIEW;
+        } else if (currentUser != null && COORDINATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
+            dashboardPath = COORDINATOR_SHELL_VIEW;
         }
 
         return dashboardPath;
