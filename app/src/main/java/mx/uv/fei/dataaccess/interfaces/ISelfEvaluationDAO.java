@@ -9,9 +9,9 @@ public interface ISelfEvaluationDAO {
 
     SelfEvaluation getSelfEvaluationByReportId(int reportId) throws DAOException;
 
-    boolean updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException;
+    void updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException;
 
-    boolean updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException;
+    void updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException;
 
-    boolean updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException;
+    void updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException;
 }

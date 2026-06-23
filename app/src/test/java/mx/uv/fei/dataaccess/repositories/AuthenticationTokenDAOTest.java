@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -47,10 +48,9 @@ public class AuthenticationTokenDAOTest {
     }
 
     @Test
-    void insertToken_ValidToken_ReturnsTrue() throws DAOException {
-        boolean result = authenticationTokenDAO.insertToken(validToken);
-
-        assertTrue(result, "La insercion del token deberia retornar true");
+    void insertToken_ValidToken_DoesNotThrow() {
+        assertDoesNotThrow(() -> authenticationTokenDAO.insertToken(validToken),
+                "La insercion del token no deberia lanzar excepcion");
     }
 
     @Test

@@ -229,9 +229,8 @@ public class GradingManagerTest {
         }
 
         @Override
-        public boolean updateFinalGrade(int gradeId, double finalGrade) throws DAOException {
+        public void updateFinalGrade(int gradeId, double finalGrade) throws DAOException {
             lastUpdatedFinalGrade = finalGrade;
-            return true;
         }
 
         @Override

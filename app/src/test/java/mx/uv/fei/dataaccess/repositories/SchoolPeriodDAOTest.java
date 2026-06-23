@@ -3,6 +3,8 @@ package mx.uv.fei.dataaccess.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -83,14 +85,12 @@ public class SchoolPeriodDAOTest {
     }
 
     @Test
-    void updateSchoolPeriod_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateSchoolPeriod_ValidModifiedData_DoesNotThrow() throws DAOException {
         newPeriod.setPeriodName("Agosto 2026 - Enero 2027");
         newPeriod.setStatus("Active");
         newPeriod.setStartDate(LocalDate.of(2026, 8, 15));
 
-        boolean isUpdated = periodDAO.updateSchoolPeriod(newPeriod, STORED_PERIOD_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> periodDAO.updateSchoolPeriod(newPeriod, STORED_PERIOD_ID));
     }
 
     @Test
@@ -101,9 +101,7 @@ public class SchoolPeriodDAOTest {
     }
 
     @Test
-    void updateSchoolPeriod_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = periodDAO.updateSchoolPeriod(newPeriod, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+    void updateSchoolPeriod_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> periodDAO.updateSchoolPeriod(newPeriod, NON_EXISTENT_ID));
     }
 }

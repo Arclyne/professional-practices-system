@@ -62,10 +62,10 @@ public class OrganizationDAOTest {
     }
 
     @Test
-    void insertOrganization_ValidOrganization_ReturnsTrue() throws DAOException {
-        boolean isInserted = organizationDAO.insertOrganization(newOrganization);
+    void insertOrganization_ValidOrganization_ReturnsGeneratedId() throws DAOException {
+        int isInserted = organizationDAO.insertOrganization(newOrganization);
 
-        assertTrue(isInserted);
+        assertTrue(isInserted > 0);
     }
 
     @Test
@@ -104,12 +104,10 @@ public class OrganizationDAOTest {
     }
 
     @Test
-    void updateOrganization_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateOrganization_ValidModifiedData_DoesNotThrow() throws DAOException {
         newOrganization.setNameOrganization("Soluciones Digitales de Veracruz");
 
-        boolean isUpdated = organizationDAO.updateOrganization(newOrganization, FIRST_ORGANIZATION_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> organizationDAO.updateOrganization(newOrganization, FIRST_ORGANIZATION_ID));
     }
 
     @Test
@@ -132,9 +130,7 @@ public class OrganizationDAOTest {
     }
 
     @Test
-    void updateOrganization_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = organizationDAO.updateOrganization(newOrganization, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+    void updateOrganization_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> organizationDAO.updateOrganization(newOrganization, NON_EXISTENT_ID));
     }
 }

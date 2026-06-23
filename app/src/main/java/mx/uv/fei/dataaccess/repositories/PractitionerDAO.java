@@ -134,21 +134,15 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     }
 
     @Override
-    public boolean updatePractitioner(Practitioner practitionerToUpdate, int practitionerId) throws DAOException {
-        boolean isUpdated = false;
+    public void updatePractitioner(Practitioner practitionerToUpdate, int practitionerId) throws DAOException {
         practitionerToUpdate.setId(practitionerId);
 
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                isUpdated = executeUpdateTransaction(connection, practitionerToUpdate, practitionerId);
-
-                if (isUpdated) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
+                executeUpdateTransaction(connection, practitionerToUpdate, practitionerId);
+                connection.commit();
             } catch (SQLException | DAOException e) {
                 connection.rollback();
                 throw new DAOException("Error SQL al actualizar el practicante. Cambios revertidos.", e);
@@ -158,8 +152,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         } catch (SQLException e) {
             throw new DAOException("Error crítico de conexión a la base de datos.", e);
         }
-
-        return isUpdated;
     }
 
     @Override
@@ -177,22 +169,17 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR, this::mapResultSetToMinimalPractitioner, professorId);
     }
 
-    private boolean executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
+    private void executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
             throws SQLException, DAOException {
-        boolean isUpdateSuccessful = false;
-        boolean isUserUpdated = userDAO.updateUser(practitioner, connection);
+        userDAO.updateUser(practitioner, connection);
 
-        if (isUserUpdated) {
-            try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
-                statement.setString(1, practitioner.getIndigenousLanguage());
-                statement.setDouble(2, practitioner.getGrade());
-                statement.setObject(3, practitioner.getGroupId(), Types.INTEGER);
-                statement.setInt(4, practitionerId);
-                isUpdateSuccessful = statement.executeUpdate() > 0;
-            }
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
+            statement.setString(1, practitioner.getIndigenousLanguage());
+            statement.setDouble(2, practitioner.getGrade());
+            statement.setObject(3, practitioner.getGroupId(), Types.INTEGER);
+            statement.setInt(4, practitionerId);
+            statement.executeUpdate();
         }
-
-        return isUpdateSuccessful;
     }
 
     private Practitioner mapResultSetToMinimalPractitioner(ResultSet resultSet) throws SQLException {

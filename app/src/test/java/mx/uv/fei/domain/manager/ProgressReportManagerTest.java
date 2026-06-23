@@ -294,9 +294,8 @@ public class ProgressReportManagerTest {
         }
 
         @Override
-        public boolean updateProgressReport(ProgressReport report, int reportId) throws DAOException {
+        public void updateProgressReport(ProgressReport report, int reportId) throws DAOException {
             lastUpdatedReport = report;
-            return true;
         }
 
         @Override
@@ -357,8 +356,7 @@ public class ProgressReportManagerTest {
         }
 
         @Override
-        public boolean insertProjectPriorities(int practitionerId, List<Project> projects) {
-            return false;
+        public void insertProjectPriorities(int practitionerId, List<Project> projects) {
         }
 
         @Override
@@ -367,8 +365,7 @@ public class ProgressReportManagerTest {
         }
 
         @Override
-        public boolean assignProjectUsingStoredProcedure(int practitionerId, int projectId) {
-            return false;
+        public void assignProjectUsingStoredProcedure(int practitionerId, int projectId) {
         }
     }
 }

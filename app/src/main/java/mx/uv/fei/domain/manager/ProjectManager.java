@@ -23,10 +23,7 @@ public class ProjectManager {
     public void registerNewProject(Project project) throws ManagerException {
         ProjectValidator.validateProjectData(project);
         try {
-            boolean isRegistered = projectDAO.insertProject(project);
-            if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro del proyecto en el sistema.");
-            }
+            projectDAO.insertProject(project);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
@@ -34,10 +31,7 @@ public class ProjectManager {
 
     public void inactivateMultipleProjects(List<Integer> projectIds) throws ManagerException {
         try {
-            boolean isDeactivationSuccessful = projectDAO.deactivateMultipleProjects(projectIds);
-            if (!isDeactivationSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los proyectos seleccionados.");
-            }
+            projectDAO.deactivateMultipleProjects(projectIds);
         } catch (DAOException e) {
             throw new ManagerException("Error de base de datos al inactivar proyectos.", e);
         }

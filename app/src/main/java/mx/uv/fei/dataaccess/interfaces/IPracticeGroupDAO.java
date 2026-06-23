@@ -11,7 +11,7 @@ public interface IPracticeGroupDAO {
 
     PracticeGroup recoverPracticeGroup(int groupIndex) throws DAOException;
 
-    boolean updatePracticeGroup(PracticeGroup group, int groupIndex) throws DAOException;
+    void updatePracticeGroup(PracticeGroup group, int groupIndex) throws DAOException;
 
     List<PracticeGroup> getAllPracticeGroups() throws DAOException;
 }

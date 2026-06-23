@@ -41,10 +41,7 @@ public class SelfEvaluationManager {
     public void submitEvidence(int selfEvaluationId, String fileUrl) throws ManagerException {
         ReportValidator.validateSignedReport(fileUrl);
         try {
-            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationEvidence(selfEvaluationId, fileUrl);
-            if (!isUpdated) {
-                throw new ManagerException("Error al actualizar la autoevaluación.");
-            }
+            selfEvaluationDAO.updateSelfEvaluationEvidence(selfEvaluationId, fileUrl);
         } catch (DAOException e) {
             throw new ManagerException("Error al adjuntar evidencia.", e);
         }
@@ -52,10 +49,7 @@ public class SelfEvaluationManager {
 
     public void updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws ManagerException {
         try {
-            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluation(selfEvaluation, selfEvaluationId);
-            if (!isUpdated) {
-                throw new ManagerException("Error al actualizar la autoevaluación.");
-            }
+            selfEvaluationDAO.updateSelfEvaluation(selfEvaluation, selfEvaluationId);
         } catch (DAOException e) {
             throw new ManagerException("Error al actualizar la autoevaluación.", e);
         }
@@ -63,10 +57,7 @@ public class SelfEvaluationManager {
 
     public void updateSelfEvaluationStatus(int selfEvaluationId, String status) throws ManagerException {
         try {
-            boolean isUpdated = selfEvaluationDAO.updateSelfEvaluationStatus(selfEvaluationId, status);
-            if (!isUpdated) {
-                throw new ManagerException("Error al actualizar la autoevaluación.");
-            }
+            selfEvaluationDAO.updateSelfEvaluationStatus(selfEvaluationId, status);
         } catch (DAOException e) {
             throw new ManagerException("Error al actualizar la autoevaluación.", e);
         }

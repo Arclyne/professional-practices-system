@@ -31,9 +31,7 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
     }
 
     @Override
-    public boolean insertToken(AuthenticationToken tokenToInsert) throws DAOException {
-        boolean isInserted = false;
-
+    public void insertToken(AuthenticationToken tokenToInsert) throws DAOException {
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
 
@@ -41,15 +39,13 @@ public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationTo
             statement.setTimestamp(2, Timestamp.valueOf(tokenToInsert.getTimeCreation()));
             statement.setString(3, tokenToInsert.getUserName());
 
-            isInserted = statement.executeUpdate() > 0;
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             throw new DAOException(buildTokenDebugMessage(
                     "Fallo al insertar token [%d] para el usuario '%s'",
                     tokenToInsert.getValueToken(), tokenToInsert.getUserName(), e), e);
         }
-
-        return isInserted;
     }
 
     @Override

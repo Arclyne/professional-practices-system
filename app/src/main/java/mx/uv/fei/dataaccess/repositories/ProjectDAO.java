@@ -48,8 +48,8 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     }
 
     @Override
-    public boolean insertProject(Project project) throws DAOException {
-        return updateTuple(SQL_INSERT_PROJECT, statement -> {
+    public int insertProject(Project project) throws DAOException {
+        return insertTuple(SQL_INSERT_PROJECT, statement -> {
             statement.setString(1, project.getProjectName());
             statement.setString(2, project.getDescription());
             statement.setInt(3, project.getParticipantCapacity());
@@ -89,8 +89,8 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     }
 
     @Override
-    public boolean updateProject(Project projectToUpdate, int projectId) throws DAOException {
-        return updateTuple(SQL_UPDATE_PROJECT, statement -> {
+    public void updateProject(Project projectToUpdate, int projectId) throws DAOException {
+        updateTuple(SQL_UPDATE_PROJECT, statement -> {
             statement.setString(1, projectToUpdate.getProjectName());
             statement.setString(2, projectToUpdate.getDescription());
             statement.setInt(3, projectToUpdate.getParticipantCapacity());
@@ -109,20 +109,13 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     }
 
     @Override
-    public boolean deactivateMultipleProjects(List<Integer> projectIds) throws DAOException {
-        boolean allDeactivationsSuccessful = false;
-
+    public void deactivateMultipleProjects(List<Integer> projectIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                allDeactivationsSuccessful = executeDeactivationBatch(connection, projectIds);
-
-                if (allDeactivationsSuccessful) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
+                executeDeactivationBatch(connection, projectIds);
+                connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("Error al ejecutar la inactivación masiva de proyectos.", e);
@@ -132,8 +125,6 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         } catch (SQLException e) {
             throw new DAOException("Error de conexión al procesar inactivación de proyectos.", e);
         }
-
-        return allDeactivationsSuccessful;
     }
 
     @Override
@@ -157,9 +148,7 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         return assignedProject;
     }
 
-    private boolean executeDeactivationBatch(Connection connection, List<Integer> projectIds) throws SQLException {
-        boolean isSuccessful = true;
-
+    private void executeDeactivationBatch(Connection connection, List<Integer> projectIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_PROJECT)) {
             for (Integer projectId : projectIds) {
                 statement.setInt(1, projectId);
@@ -169,13 +158,10 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             int[] batchResults = statement.executeBatch();
             for (int result : batchResults) {
                 if (result <= 0 && result != Statement.SUCCESS_NO_INFO) {
-                    isSuccessful = false;
-                    break;
+                    throw new SQLException("La inactivación masiva no afectó a uno de los proyectos seleccionados.");
                 }
             }
         }
-
-        return isSuccessful;
     }
 
     private Project mapResultSetToProject(ResultSet resultSet) throws SQLException {

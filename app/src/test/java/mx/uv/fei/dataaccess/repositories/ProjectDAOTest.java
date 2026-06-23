@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -95,10 +96,10 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void insertProject_ValidProject_ReturnsTrue() throws DAOException {
-        boolean isInserted = projectDAO.insertProject(newProject);
+    void insertProject_ValidProject_ReturnsGeneratedId() throws DAOException {
+        int isInserted = projectDAO.insertProject(newProject);
 
-        assertTrue(isInserted);
+        assertTrue(isInserted > 0);
     }
 
     @Test
@@ -120,20 +121,16 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void updateProject_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateProject_ValidModifiedData_DoesNotThrow() throws DAOException {
         newProject.setDescription("Mantenimiento de los modulos de reportes del sistema");
         newProject.setParticipantCapacity(10);
 
-        boolean isUpdated = projectDAO.updateProject(newProject, FIRST_PROJECT_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> projectDAO.updateProject(newProject, FIRST_PROJECT_ID));
     }
 
     @Test
-    void deactivateMultipleProjects_ValidIds_ReturnsTrue() throws DAOException {
-        boolean isDeactivated = projectDAO.deactivateMultipleProjects(List.of(1, 2));
-
-        assertTrue(isDeactivated);
+    void deactivateMultipleProjects_ValidIds_DoesNotThrow() throws DAOException {
+        assertDoesNotThrow(() -> projectDAO.deactivateMultipleProjects(List.of(1, 2)));
     }
 
     @Test
@@ -160,9 +157,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void updateProject_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = projectDAO.updateProject(newProject, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+    void updateProject_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> projectDAO.updateProject(newProject, NON_EXISTENT_ID));
     }
 }

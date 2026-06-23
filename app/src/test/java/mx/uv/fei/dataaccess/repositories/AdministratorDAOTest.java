@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -100,14 +101,12 @@ public class AdministratorDAOTest {
     }
 
     @Test
-    void updateAdministrator_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateAdministrator_ValidModifiedData_DoesNotThrow() throws DAOException {
         Administrator administratorToUpdate = buildStoredAdministrator();
         administratorToUpdate.setName("Ricardo Alberto");
         administratorToUpdate.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = administratorDAO.updateAdministrator(administratorToUpdate, STORED_ADMINISTRATOR_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> administratorDAO.updateAdministrator(administratorToUpdate, STORED_ADMINISTRATOR_ID));
     }
 
     @Test
@@ -134,11 +133,9 @@ public class AdministratorDAOTest {
     }
 
     @Test
-    void updateAdministrator_NonExistentId_ReturnsFalse() throws DAOException {
+    void updateAdministrator_NonExistentId_ThrowsDAOException() {
         newAdministrator.setName("Guadalupe Maria");
 
-        boolean result = administratorDAO.updateAdministrator(newAdministrator, NON_EXISTENT_ID);
-
-        assertFalse(result);
+        assertThrows(DAOException.class, () -> administratorDAO.updateAdministrator(newAdministrator, NON_EXISTENT_ID));
     }
 }

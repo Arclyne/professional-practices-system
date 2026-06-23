@@ -64,8 +64,8 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
     }
 
     @Override
-    public boolean updateFinalGrade(int gradeId, double finalGrade) throws DAOException {
-        return updateTuple(SQL_UPDATE_FINAL_GRADE, statement -> {
+    public void updateFinalGrade(int gradeId, double finalGrade) throws DAOException {
+        updateTuple(SQL_UPDATE_FINAL_GRADE, statement -> {
             statement.setDouble(1, finalGrade);
             statement.setInt(2, gradeId);
         });

@@ -11,7 +11,7 @@ public interface ISchoolPeriodDAO {
 
     SchoolPeriod recoverSchoolPeriod(int periodId) throws DAOException;
 
-    boolean updateSchoolPeriod(SchoolPeriod period, int id) throws DAOException;
+    void updateSchoolPeriod(SchoolPeriod period, int id) throws DAOException;
 
     List<SchoolPeriod> getAllSchoolPeriods() throws DAOException;
 }

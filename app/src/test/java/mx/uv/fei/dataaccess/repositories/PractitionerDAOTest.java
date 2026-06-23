@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -101,14 +102,12 @@ public class PractitionerDAOTest {
     }
 
     @Test
-    void updatePractitioner_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updatePractitioner_ValidModifiedData_DoesNotThrow() throws DAOException {
         newPractitioner.setGrade(10.0);
         newPractitioner.setIndigenousLanguage("Maya");
         newPractitioner.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = practitionerDAO.updatePractitioner(newPractitioner, STORED_PRACTITIONER_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> practitionerDAO.updatePractitioner(newPractitioner, STORED_PRACTITIONER_ID));
     }
 
     @Test
@@ -152,9 +151,7 @@ public class PractitionerDAOTest {
     }
 
     @Test
-    void updatePractitioner_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = practitionerDAO.updatePractitioner(newPractitioner, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+    void updatePractitioner_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> practitionerDAO.updatePractitioner(newPractitioner, NON_EXISTENT_ID));
     }
 }

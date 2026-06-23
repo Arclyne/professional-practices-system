@@ -48,10 +48,7 @@ public class PasswordManager {
         currentUser.setPassword(newPassword);
 
         try (Connection sharedConnection = databaseConnection.getConnection()) {
-            boolean isUpdated = userDAO.updateUser(currentUser, sharedConnection);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar la información en el sistema.");
-            }
+            userDAO.updateUser(currentUser, sharedConnection);
             store.dispatch(new NavigationAction.GoToSection(AppSection.LOGIN));
         } catch (DAOException | SQLException e) {
             throw new ManagerException("Ocurrió un error de conexión al intentar actualizar el perfil.", e);

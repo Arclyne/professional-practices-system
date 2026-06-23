@@ -86,8 +86,8 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
     }
 
     @Override
-    public boolean updateSchoolPeriod(SchoolPeriod schoolPeriod, int periodId) throws DAOException {
-        return updateTuple(SQL_UPDATE_SCHOOL_PERIOD, statement -> {
+    public void updateSchoolPeriod(SchoolPeriod schoolPeriod, int periodId) throws DAOException {
+        updateTuple(SQL_UPDATE_SCHOOL_PERIOD, statement -> {
             statement.setString(1, schoolPeriod.getPeriodName());
             statement.setDate(2, toSqlDate(schoolPeriod.getStartDate()));
             statement.setDate(3, toSqlDate(schoolPeriod.getEndDate()));

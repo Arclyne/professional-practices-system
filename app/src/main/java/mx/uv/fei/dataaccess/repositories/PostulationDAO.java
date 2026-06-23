@@ -60,20 +60,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     }
 
     @Override
-    public boolean insertProjectPriorities(int practitionerId, List<Project> prioritizedProjects) throws DAOException {
-        boolean isInsertionSuccessful = false;
-
+    public void insertProjectPriorities(int practitionerId, List<Project> prioritizedProjects) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
-                isInsertionSuccessful = executePriorityBatch(connection, practitionerId, prioritizedProjects);
-
-                if (isInsertionSuccessful) {
-                    connection.commit();
-                } else {
-                    connection.rollback();
-                }
+                executePriorityBatch(connection, practitionerId, prioritizedProjects);
+                connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
                 throw new DAOException("Ocurrió un error SQL durante la inserción en lote de las prioridades.", e);
@@ -84,13 +77,9 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         } catch (SQLException e) {
             throw new DAOException("Fallo crítico de conexión con la base de datos al intentar guardar la postulación.", e);
         }
-
-        return isInsertionSuccessful;
     }
 
-    private boolean executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
-        boolean isBatchSuccessful = false;
-
+    private void executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_POSTULATION)) {
             for (int priorityIndex = 0; priorityIndex < projects.size(); priorityIndex++) {
                 statement.setInt(1, practitionerId);
@@ -99,10 +88,10 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                 statement.addBatch();
             }
             int[] batchResults = statement.executeBatch();
-            isBatchSuccessful = batchResults.length == projects.size();
+            if (batchResults.length != projects.size()) {
+                throw new SQLException("No se registraron todas las prioridades de la postulación.");
+            }
         }
-
-        return isBatchSuccessful;
     }
 
     @Override
@@ -111,9 +100,7 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     }
 
     @Override
-    public boolean assignProjectUsingStoredProcedure(int practitionerId, int projectId) throws DAOException {
-        boolean isProcedureSuccessful = false;
-
+    public void assignProjectUsingStoredProcedure(int practitionerId, int projectId) throws DAOException {
         try (Connection connection = databaseConnection.getConnection();
              CallableStatement statement = connection.prepareCall(SQL_CALL_ASSIGNMENT_PROCEDURE)) {
 
@@ -121,13 +108,9 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
             statement.setInt(2, projectId);
             statement.execute();
 
-            isProcedureSuccessful = true;
-
         } catch (SQLException e) {
             throw new DAOException("Ocurrió un error en el servidor al intentar ejecutar la asignación automática.", e);
         }
-
-        return isProcedureSuccessful;
     }
 
     @Override

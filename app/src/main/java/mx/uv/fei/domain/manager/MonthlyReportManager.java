@@ -58,10 +58,7 @@ public class MonthlyReportManager {
         report.setStatus(ReportStatus.SUBMITTED.getDatabaseValue());
 
         try {
-            boolean isUpdated = reportDAO.updateReport(report, report.getReportId());
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar el estado del reporte en la base de datos.");
-            }
+            reportDAO.updateReport(report, report.getReportId());
         } catch (DAOException e) {
             throw new ManagerException("Error al enviar el reporte firmado.", e);
         }
@@ -87,10 +84,7 @@ public class MonthlyReportManager {
             report.setProfessorFeedback(feedback.trim());
             report.setStatus(ReportStatus.EVALUATED.getDatabaseValue());
 
-            boolean isUpdated = reportDAO.updateReport(report, reportId);
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo guardar la evaluación en la base de datos.");
-            }
+            reportDAO.updateReport(report, reportId);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al intentar guardar la evaluación.", e);
         }
@@ -115,15 +109,12 @@ public class MonthlyReportManager {
         }
     }
 
-    private void linkActivitiesToReport(List<Activity> activities, int reportId) throws DAOException, ManagerException {
+    private void linkActivitiesToReport(List<Activity> activities, int reportId) throws DAOException {
         if (activities == null || activities.isEmpty()) {
             return;
         }
         for (Activity activity : activities) {
-            boolean isLinked = activityDAO.assignActivityToReport(activity.getActivityId(), reportId);
-            if (!isLinked) {
-                throw new ManagerException("El reporte se creó, pero hubo un problema al vincular las actividades seleccionadas.");
-            }
+            activityDAO.assignActivityToReport(activity.getActivityId(), reportId);
         }
     }
 }

@@ -38,10 +38,7 @@ public class PostulationManager {
 
     public void assignProjectToPractitioner(int practitionerId, int projectId) throws ManagerException {
         try {
-            boolean isAssigned = postulationDAO.assignProjectUsingStoredProcedure(practitionerId, projectId);
-            if (!isAssigned) {
-                throw new ManagerException("No fue posible asignar el proyecto. Verifique que la postulación exista y se encuentre activa.");
-            }
+            postulationDAO.assignProjectUsingStoredProcedure(practitionerId, projectId);
         } catch (DAOException e) {
             log.error("Error al asignar el proyecto {} al practicante {}.", projectId, practitionerId, e);
             throw new ManagerException("Ocurrió un problema de conexión al intentar registrar la asignación.", e);
@@ -61,10 +58,7 @@ public class PostulationManager {
             throw new ManagerException("La lista de prioridades proporcionada se encuentra vacía.");
         }
         try {
-            boolean arePrioritiesSaved = postulationDAO.insertProjectPriorities(practitionerId, prioritizedProjects);
-            if (!arePrioritiesSaved) {
-                throw new ManagerException("No fue posible registrar las prioridades en el sistema. Intente nuevamente.");
-            }
+            postulationDAO.insertProjectPriorities(practitionerId, prioritizedProjects);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema de conexión al intentar guardar las prioridades.", e);
         }

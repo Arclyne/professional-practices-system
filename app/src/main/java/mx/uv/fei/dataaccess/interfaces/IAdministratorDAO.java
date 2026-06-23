@@ -12,7 +12,7 @@ public interface IAdministratorDAO {
 
     List<Administrator> getAllAdministrators() throws DAOException;
 
-    boolean updateAdministrator(Administrator AdministratorToUpdate, int id) throws DAOException;
+    void updateAdministrator(Administrator AdministratorToUpdate, int id) throws DAOException;
 
     boolean checkIfAdminExists() throws DAOException;
 }

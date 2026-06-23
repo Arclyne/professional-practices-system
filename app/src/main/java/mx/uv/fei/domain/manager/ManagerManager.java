@@ -39,10 +39,7 @@ public class ManagerManager {
     public void registerManager(Manager manager) throws ManagerException {
         UserValidator.validateManagerData(manager);
         try {
-            boolean isRegistered = managerDAO.insertManager(manager);
-            if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro del encargado en el sistema.");
-            }
+            managerDAO.insertManager(manager);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
@@ -50,10 +47,7 @@ public class ManagerManager {
 
     public void inactivateMultipleManagers(List<Integer> managerIds) throws ManagerException {
         try {
-            boolean isDeactivationSuccessful = managerDAO.deactivateMultipleManagers(managerIds);
-            if (!isDeactivationSuccessful) {
-                throw new ManagerException("No se pudieron inactivar los encargados seleccionados.");
-            }
+            managerDAO.deactivateMultipleManagers(managerIds);
         } catch (DAOException e) {
             throw new ManagerException("Error de base de datos al inactivar encargados.", e);
         }

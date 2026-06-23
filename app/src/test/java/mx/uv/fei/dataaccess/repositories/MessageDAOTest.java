@@ -3,6 +3,7 @@ package mx.uv.fei.dataaccess.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,13 +51,11 @@ public class MessageDAOTest {
     }
 
     @Test
-    void insertParticipant_ValidIds_ReturnsTrue() throws DAOException {
+    void insertParticipant_ValidIds_DoesNotThrow() throws DAOException {
         int messageId = messageDAO.insertMessage("Revision de bitacora",
                 "Su bitacora de actividades fue revisada por el academico.");
 
-        boolean isInserted = messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID);
-
-        assertTrue(isInserted);
+        assertDoesNotThrow(() -> messageDAO.insertParticipant(messageId, SENDER_ID, RECEIVER_ID));
     }
 
     @Test

@@ -24,10 +24,7 @@ public class OrganizationManager {
         OrganizationValidator.validateOrganizationData(organization);
 
         try {
-            boolean isRegistered = organizationDAO.insertOrganization(organization);
-            if (!isRegistered) {
-                throw new ManagerException("No se pudo completar el registro de la organización en el sistema.");
-            }
+            organizationDAO.insertOrganization(organization);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }

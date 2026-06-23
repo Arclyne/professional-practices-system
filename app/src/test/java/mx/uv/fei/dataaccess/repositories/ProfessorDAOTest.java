@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -93,13 +94,11 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void updateProfessor_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateProfessor_ValidModifiedData_DoesNotThrow() throws DAOException {
         newProfessor.setName("Norma Leticia");
         newProfessor.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = professorDAO.updateProfessor(newProfessor, STORED_PROFESSOR_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> professorDAO.updateProfessor(newProfessor, STORED_PROFESSOR_ID));
     }
 
     @Test
@@ -117,9 +116,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void updateProfessor_NonExistentId_ReturnsFalse() throws DAOException {
-        boolean isUpdated = professorDAO.updateProfessor(newProfessor, NON_EXISTENT_ID);
-
-        assertFalse(isUpdated);
+    void updateProfessor_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> professorDAO.updateProfessor(newProfessor, NON_EXISTENT_ID));
     }
 }

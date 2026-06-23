@@ -147,10 +147,7 @@ public class ProgressReportManager {
 
     private void updateReport(ProgressReport report) throws ManagerException {
         try {
-            boolean isUpdated = progressReportDAO.updateProgressReport(report, report.getReportId());
-            if (!isUpdated) {
-                throw new ManagerException("No se pudo actualizar el reporte de avance.");
-            }
+            progressReportDAO.updateProgressReport(report, report.getReportId());
         } catch (DAOException e) {
             throw new ManagerException("No se pudo actualizar el reporte de avance.", e);
         }

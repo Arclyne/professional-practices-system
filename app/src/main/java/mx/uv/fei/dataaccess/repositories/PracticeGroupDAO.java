@@ -83,8 +83,8 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     }
 
     @Override
-    public boolean updatePracticeGroup(PracticeGroup practiceGroup, int groupId) throws DAOException {
-        return updateTuple(SQL_UPDATE_PRACTICE_GROUP, statement -> {
+    public void updatePracticeGroup(PracticeGroup practiceGroup, int groupId) throws DAOException {
+        updateTuple(SQL_UPDATE_PRACTICE_GROUP, statement -> {
             statement.setString(1, practiceGroup.getSection());
             statement.setInt(2, practiceGroup.getProfessorId());
             statement.setInt(3, practiceGroup.getPeriodId());

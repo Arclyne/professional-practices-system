@@ -57,8 +57,8 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     }
 
     @Override
-    public boolean updateActivity(Activity activity, int activityId) throws DAOException {
-        return updateTuple(SQL_UPDATE, statement -> {
+    public void updateActivity(Activity activity, int activityId) throws DAOException {
+        updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, activity.getTitle());
             statement.setString(2, activity.getDescription());
             statement.setDate(3, activity.getActivityDate());
@@ -78,16 +78,16 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     }
 
     @Override
-    public boolean assignActivityToReport(int activityId, int reportId) throws DAOException {
-        return updateTuple(SQL_ASSIGN_TO_REPORT, statement -> {
+    public void assignActivityToReport(int activityId, int reportId) throws DAOException {
+        updateTuple(SQL_ASSIGN_TO_REPORT, statement -> {
             statement.setInt(1, reportId);
             statement.setInt(2, activityId);
         });
     }
 
     @Override
-    public boolean removeActivityFromReport(int activityId) throws DAOException {
-        return updateTuple(SQL_REMOVE_FROM_REPORT, statement -> {
+    public void removeActivityFromReport(int activityId) throws DAOException {
+        updateTuple(SQL_REMOVE_FROM_REPORT, statement -> {
             statement.setInt(1, activityId);
         });
     }

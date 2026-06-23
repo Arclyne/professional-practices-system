@@ -12,5 +12,5 @@ public interface IProfessorDAO {
 
    List<Professor> getAllProfessors() throws DAOException;
 
-   boolean updateProfessor(Professor professorToUpdate, int id) throws DAOException;
+   void updateProfessor(Professor professorToUpdate, int id) throws DAOException;
 }

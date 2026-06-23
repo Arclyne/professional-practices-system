@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -102,13 +103,11 @@ public class CoordinatorDAOTest {
     }
 
     @Test
-    void updateCoordinator_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateCoordinator_ValidModifiedData_DoesNotThrow() throws DAOException {
         newCoordinator.setName("Patricia Isabel");
         newCoordinator.setStatus(UserStatus.INACTIVE);
 
-        boolean isUpdated = coordinatorDAO.updateCoordinator(newCoordinator, STORED_COORDINATOR_ID);
-
-        assertTrue(isUpdated);
+        assertDoesNotThrow(() -> coordinatorDAO.updateCoordinator(newCoordinator, STORED_COORDINATOR_ID));
     }
 
     @Test
@@ -135,11 +134,9 @@ public class CoordinatorDAOTest {
     }
 
     @Test
-    void updateCoordinator_NonExistentId_ReturnsFalse() throws DAOException {
+    void updateCoordinator_NonExistentId_ThrowsDAOException() {
         newCoordinator.setName("Patricia Isabel");
 
-        boolean result = coordinatorDAO.updateCoordinator(newCoordinator, NON_EXISTENT_ID);
-
-        assertFalse(result);
+        assertThrows(DAOException.class, () -> coordinatorDAO.updateCoordinator(newCoordinator, NON_EXISTENT_ID));
     }
 }
