@@ -42,6 +42,8 @@
 
             <Button fx:id="reportsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowReportsAction"
                     styleClass="sidebar-item" text="Reportes"/>
+            <Button fx:id="documentsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowDocumentsAction"
+                    styleClass="sidebar-item" text="Documentos"/>
             <Button fx:id="selfEvaluationNavButton" maxWidth="1.7976931348623157E308"
                     onAction="#handleShowSelfEvaluationAction" styleClass="sidebar-item" text="Autoevaluación"/>
             <Button fx:id="gradeNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowGradeAction"
