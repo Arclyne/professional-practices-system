@@ -130,7 +130,7 @@ public class OrganizationDAOTest {
     }
 
     @Test
-    void updateOrganization_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> organizationDAO.updateOrganization(newOrganization, NON_EXISTENT_ID));
+    void updateOrganization_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> organizationDAO.updateOrganization(newOrganization, NON_EXISTENT_ID));
     }
 }

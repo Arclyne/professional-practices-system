@@ -133,9 +133,9 @@ public class AdministratorDAOTest {
     }
 
     @Test
-    void updateAdministrator_NonExistentId_ReturnsFalse() throws DAOException {
+    void updateAdministrator_NonExistentId_ThrowsDAOException() {
         newAdministrator.setName("Guadalupe Maria");
 
-        assertDoesNotThrow(() -> administratorDAO.updateAdministrator(newAdministrator, NON_EXISTENT_ID));
+        assertThrows(DAOException.class, () -> administratorDAO.updateAdministrator(newAdministrator, NON_EXISTENT_ID));
     }
 }

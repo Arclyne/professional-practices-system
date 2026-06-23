@@ -134,9 +134,9 @@ public class CoordinatorDAOTest {
     }
 
     @Test
-    void updateCoordinator_NonExistentId_ReturnsFalse() throws DAOException {
+    void updateCoordinator_NonExistentId_ThrowsDAOException() {
         newCoordinator.setName("Patricia Isabel");
 
-        assertDoesNotThrow(() -> coordinatorDAO.updateCoordinator(newCoordinator, NON_EXISTENT_ID));
+        assertThrows(DAOException.class, () -> coordinatorDAO.updateCoordinator(newCoordinator, NON_EXISTENT_ID));
     }
 }

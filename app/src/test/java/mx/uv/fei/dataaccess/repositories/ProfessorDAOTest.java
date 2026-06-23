@@ -116,7 +116,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void updateProfessor_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> professorDAO.updateProfessor(newProfessor, NON_EXISTENT_ID));
+    void updateProfessor_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> professorDAO.updateProfessor(newProfessor, NON_EXISTENT_ID));
     }
 }

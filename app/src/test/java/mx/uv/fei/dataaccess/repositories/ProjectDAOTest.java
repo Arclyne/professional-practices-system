@@ -157,7 +157,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void updateProject_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> projectDAO.updateProject(newProject, NON_EXISTENT_ID));
+    void updateProject_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> projectDAO.updateProject(newProject, NON_EXISTENT_ID));
     }
 }

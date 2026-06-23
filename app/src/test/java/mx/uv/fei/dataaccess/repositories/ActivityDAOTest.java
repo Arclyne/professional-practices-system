@@ -146,8 +146,8 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void updateActivity_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> activityDAO.updateActivity(validActivity, NON_EXISTENT_ID));
+    void updateActivity_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> activityDAO.updateActivity(validActivity, NON_EXISTENT_ID));
     }
 
     @Test
@@ -158,8 +158,8 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void assignActivityToReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> activityDAO.assignActivityToReport(NON_EXISTENT_ID, STORED_REPORT_ID));
+    void assignActivityToReport_NonExistentActivity_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> activityDAO.assignActivityToReport(NON_EXISTENT_ID, STORED_REPORT_ID));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void removeActivityFromReport_NonExistentActivity_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> activityDAO.removeActivityFromReport(NON_EXISTENT_ID));
+    void removeActivityFromReport_NonExistentActivity_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> activityDAO.removeActivityFromReport(NON_EXISTENT_ID));
     }
 }

@@ -151,7 +151,7 @@ public class PractitionerDAOTest {
     }
 
     @Test
-    void updatePractitioner_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> practitionerDAO.updatePractitioner(newPractitioner, NON_EXISTENT_ID));
+    void updatePractitioner_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> practitionerDAO.updatePractitioner(newPractitioner, NON_EXISTENT_ID));
     }
 }

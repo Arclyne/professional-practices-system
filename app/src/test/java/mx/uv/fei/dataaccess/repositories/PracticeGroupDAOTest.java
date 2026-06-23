@@ -105,7 +105,7 @@ public class PracticeGroupDAOTest {
     }
 
     @Test
-    void updatePracticeGroup_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> groupDAO.updatePracticeGroup(newGroup, NON_EXISTENT_ID));
+    void updatePracticeGroup_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> groupDAO.updatePracticeGroup(newGroup, NON_EXISTENT_ID));
     }
 }

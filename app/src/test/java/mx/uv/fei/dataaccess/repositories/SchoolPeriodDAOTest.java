@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -100,7 +101,7 @@ public class SchoolPeriodDAOTest {
     }
 
     @Test
-    void updateSchoolPeriod_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> periodDAO.updateSchoolPeriod(newPeriod, NON_EXISTENT_ID));
+    void updateSchoolPeriod_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> periodDAO.updateSchoolPeriod(newPeriod, NON_EXISTENT_ID));
     }
 }

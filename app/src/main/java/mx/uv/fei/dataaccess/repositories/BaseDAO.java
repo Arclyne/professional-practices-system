@@ -78,7 +78,9 @@ abstract class BaseDAO {
                 statementBinder.insertGeneric(statement);
             }
 
-            statement.executeUpdate();
+            if (statement.executeUpdate() == 0) {
+                throw new DAOException("No se encontró el registro que se intentó modificar.");
+            }
 
         } catch (SQLException e) {
             throw new DAOException("Error al ejecutar la sentencia de actualización.", e);
@@ -91,7 +93,9 @@ abstract class BaseDAO {
             if (statementBinder != null) {
                 statementBinder.insertGeneric(statement);
             }
-            statement.executeUpdate();
+            if (statement.executeUpdate() == 0) {
+                throw new SQLException("No se encontró el registro que se intentó modificar.");
+            }
         }
     }
 

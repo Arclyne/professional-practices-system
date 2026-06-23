@@ -122,18 +122,18 @@ public class SelfEvaluationDAOTest {
     }
 
     @Test
-    void updateSelfEvaluation_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluation(validEvaluation, NON_EXISTENT_ID));
+    void updateSelfEvaluation_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> selfEvaluationDAO.updateSelfEvaluation(validEvaluation, NON_EXISTENT_ID));
     }
 
     @Test
-    void updateSelfEvaluationStatus_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationStatus(NON_EXISTENT_ID, "Revisada"));
+    void updateSelfEvaluationStatus_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> selfEvaluationDAO.updateSelfEvaluationStatus(NON_EXISTENT_ID, "Revisada"));
     }
 
     @Test
-    void updateSelfEvaluationEvidence_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationEvidence(NON_EXISTENT_ID,
+    void updateSelfEvaluationEvidence_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> selfEvaluationDAO.updateSelfEvaluationEvidence(NON_EXISTENT_ID,
                 "https://storage.uv.mx/evidencias/evidencia_huerfana.pdf"));
     }
 }

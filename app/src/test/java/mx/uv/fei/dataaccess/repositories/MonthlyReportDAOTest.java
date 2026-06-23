@@ -126,7 +126,7 @@ public class MonthlyReportDAOTest {
     }
 
     @Test
-    void updateReport_NonExistentId_ReturnsFalse() throws DAOException {
-        assertDoesNotThrow(() -> monthlyReportDAO.updateReport(juneReport, NON_EXISTENT_ID));
+    void updateReport_NonExistentId_ThrowsDAOException() {
+        assertThrows(DAOException.class, () -> monthlyReportDAO.updateReport(juneReport, NON_EXISTENT_ID));
     }
 }
