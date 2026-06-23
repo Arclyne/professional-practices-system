@@ -47,7 +47,7 @@ public class StartSessionController {
         }
 
         try {
-            startSessionManager.handleActionConnectButton(buildCredential(identifier, password));
+            startSessionManager.processLogin(buildCredential(identifier, password));
         } catch (ManagerException e) {
             Controller.showAlert("Error al Iniciar Sesión", e.getMessage(), AlertType.ERROR);
         }
