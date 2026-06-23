@@ -15,6 +15,7 @@ public class PractitionerShellController extends RoleShellController {
     private static final String PROJECT_VIEW = "/mx/uv/fei/presentation/viewAssignedProject.fxml";
     private static final String MESSAGES_VIEW = "/mx/uv/fei/presentation/messageView.fxml";
     private static final String REPORTS_VIEW = "/mx/uv/fei/presentation/practitionerReportsList.fxml";
+    private static final String DOCUMENTS_VIEW = "/mx/uv/fei/presentation/practitionerDocuments.fxml";
     private static final String SELF_EVALUATION_VIEW = "/mx/uv/fei/presentation/practitionerSelfEvaluation.fxml";
     private static final String GRADE_VIEW = "/mx/uv/fei/presentation/practitionerGradeView.fxml";
 
@@ -22,6 +23,7 @@ public class PractitionerShellController extends RoleShellController {
     @FXML private Button projectNavButton;
     @FXML private Button messagesNavButton;
     @FXML private Button reportsNavButton;
+    @FXML private Button documentsNavButton;
     @FXML private Button selfEvaluationNavButton;
     @FXML private Button gradeNavButton;
 
@@ -59,6 +61,12 @@ public class PractitionerShellController extends RoleShellController {
     private void handleShowReportsAction() {
         showSubView(REPORTS_VIEW);
         selectNavButton(reportsNavButton);
+    }
+
+    @FXML
+    private void handleShowDocumentsAction() {
+        showSubView(DOCUMENTS_VIEW);
+        selectNavButton(documentsNavButton);
     }
 
     @FXML

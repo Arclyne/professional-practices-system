@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS self_evaluation;
 DROP TABLE IF EXISTS message_participant;
 DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS activity;
+DROP TABLE IF EXISTS practitioner_document;
 DROP TABLE IF EXISTS monthly_report;
 DROP TABLE IF EXISTS project_postulation;
 DROP TABLE IF EXISTS project_acceptance;
@@ -50,6 +51,7 @@ CREATE TABLE message (message_id INT NOT NULL AUTO_INCREMENT, send_date DATETIME
 CREATE TABLE message_participant (message_id INT NOT NULL, sender_id INT NOT NULL, receiver_id INT NOT NULL, PRIMARY KEY (message_id), CONSTRAINT fk_participant_message FOREIGN KEY (message_id) REFERENCES message (message_id) ON DELETE CASCADE, CONSTRAINT fk_participant_sender FOREIGN KEY (sender_id) REFERENCES user (user_id) ON DELETE CASCADE, CONSTRAINT fk_participant_receiver FOREIGN KEY (receiver_id) REFERENCES user (user_id) ON DELETE CASCADE);
 
 CREATE TABLE progress_report (report_id INT NOT NULL AUTO_INCREMENT, practitioner_id INT NOT NULL, report_type VARCHAR(20) NOT NULL, generation_date DATE NOT NULL, period_covered_start DATE NOT NULL, period_covered_end DATE NOT NULL, total_hours_at_submission DECIMAL(6,2) NOT NULL, status VARCHAR(50) DEFAULT 'Pendiente de Firma', signed_file_url VARCHAR(500) DEFAULT NULL, grade DECIMAL(5,2) DEFAULT NULL, professor_feedback TEXT, PRIMARY KEY (report_id), CONSTRAINT fk_progress_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE);
+CREATE TABLE practitioner_document (document_id INT NOT NULL AUTO_INCREMENT, practitioner_id INT NOT NULL, document_name VARCHAR(255) NOT NULL, stored_file_url VARCHAR(500) NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'Pendiente', upload_date DATETIME DEFAULT CURRENT_TIMESTAMP, review_date DATETIME DEFAULT NULL, PRIMARY KEY (document_id), CONSTRAINT fk_document_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE);
 CREATE TABLE self_evaluation (
                                  self_eval_id    INT           NOT NULL AUTO_INCREMENT,
                                  q1              INT           NOT NULL,

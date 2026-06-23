@@ -59,3 +59,7 @@ INSERT INTO progress_report (report_id, practitioner_id, report_type, generation
 
 INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES
     (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'https://storage.uv.mx/evidencias/autoevaluacion_zS24242424.pdf', 123, 1, 'Pendiente');
+
+INSERT INTO practitioner_document (document_id, practitioner_id, document_name, stored_file_url, status, upload_date, review_date) VALUES
+    (1, 123, 'carta_aceptacion.pdf', 'file:///SimuladorOneDrive_FEI/a1b2c3d4_carta_aceptacion.pdf', 'Pendiente', '2026-06-10 09:15:00', NULL),
+    (2, 123, 'carta_aceptacion.pdf', 'file:///SimuladorOneDrive_FEI/e5f6a7b8_carta_aceptacion.pdf', 'Revisado',  '2026-06-12 11:30:00', '2026-06-13 08:00:00');
