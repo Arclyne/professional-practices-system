@@ -42,6 +42,24 @@ public class PracticeGroupManager {
         }
     }
 
+    public PracticeGroup getPracticeGroupById(int groupId) throws ManagerException {
+        try {
+            return practiceGroupDAO.recoverPracticeGroup(groupId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar la información del grupo de prácticas.", e);
+        }
+    }
+
+    public void updatePracticeGroup(PracticeGroup practiceGroup, int groupId) throws ManagerException {
+        validatePracticeGroupData(practiceGroup);
+
+        try {
+            practiceGroupDAO.updatePracticeGroup(practiceGroup, groupId);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+        }
+    }
+
     private void validatePracticeGroupData(PracticeGroup practiceGroup) throws ManagerException {
         BaseValidator.validateString(practiceGroup.getSection(),
                 "La sección del grupo de prácticas es obligatoria.");

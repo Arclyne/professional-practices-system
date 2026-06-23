@@ -24,7 +24,6 @@ import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -38,7 +37,6 @@ public class CoordinatorGroupsControllerTest extends ApplicationTest {
     private final PracticeGroupManager practiceGroupManager = mock(PracticeGroupManager.class);
     private final PeriodManager periodManager = mock(PeriodManager.class);
     private final ProfessorManager professorManager = mock(ProfessorManager.class);
-    private final AppStore store = mock(AppStore.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -54,7 +52,7 @@ public class CoordinatorGroupsControllerTest extends ApplicationTest {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType -> new CoordinatorGroupsController(
-                practiceGroupManager, periodManager, professorManager, store));
+                practiceGroupManager, periodManager, professorManager));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

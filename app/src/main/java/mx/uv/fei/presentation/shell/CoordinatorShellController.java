@@ -18,7 +18,7 @@ public class CoordinatorShellController extends RoleShellController {
     private static final String PROJECTS_VIEW = BASE_PATH + "coordinatorProjects.fxml";
     private static final String ORGANIZATIONS_VIEW = BASE_PATH + "coordinatorOrganizations.fxml";
     private static final String PROFESSORS_VIEW = BASE_PATH + "coordinatorProfessors.fxml";
-    private static final String MANAGERS_VIEW = BASE_PATH + "manageManagers.fxml";
+    private static final String MANAGERS_VIEW = BASE_PATH + "coordinatorManagers.fxml";
     private static final String PERIODS_VIEW = BASE_PATH + "coordinatorPeriods.fxml";
     private static final String GROUPS_VIEW = BASE_PATH + "coordinatorGroups.fxml";
     private static final String TEMPLATES_VIEW = BASE_PATH + "templateGenerator.fxml";

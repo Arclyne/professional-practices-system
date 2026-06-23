@@ -14,13 +14,13 @@
 
 <VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
       xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="mx.uv.fei.presentation.CoordinatorGroupsController">
+      fx:controller="mx.uv.fei.presentation.CoordinatorManagersController">
     <padding>
         <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
     </padding>
 
-    <Label styleClass="content-eyebrow" text="INSTITUCIONAL"/>
-    <Label styleClass="content-title" text="Grupos de práctica"/>
+    <Label styleClass="content-eyebrow" text="GESTIÓN"/>
+    <Label styleClass="content-title" text="Encargados de proyecto"/>
 
     <VBox fx:id="listPane" spacing="12.0" VBox.vgrow="ALWAYS">
         <VBox.margin>
@@ -28,23 +28,27 @@
         </VBox.margin>
 
         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <Label styleClass="section-label" text="Grupos"/>
+            <Label styleClass="section-label" text="Encargados"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#handleActivateAction" styleClass="secondary-button" text="Activar"/>
+            <Button onAction="#handleInactivateAction" styleClass="secondary-button" text="Inactivar"/>
             <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
-            <Button onAction="#handleShowRegisterFormAction" styleClass="primary-button" text="+ Registrar grupo"/>
+            <Button onAction="#handleShowRegisterFormAction" styleClass="primary-button" text="+ Registrar encargado"/>
         </HBox>
 
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
-                       promptText="Buscar por sección, periodo o profesor"/>
+                       promptText="Buscar por nombre, correo u organización"/>
             <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
         </HBox>
 
-        <TableView fx:id="groupsTableView" VBox.vgrow="ALWAYS">
+        <TableView fx:id="managersTableView" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="sectionColumn" prefWidth="200.0" text="Sección"/>
-                <TableColumn fx:id="periodColumn" prefWidth="240.0" text="Periodo"/>
-                <TableColumn fx:id="professorColumn" prefWidth="240.0" text="Profesor"/>
+                <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Encargado"/>
+                <TableColumn fx:id="phoneColumn" prefWidth="130.0" text="Teléfono"/>
+                <TableColumn fx:id="emailColumn" prefWidth="210.0" text="Correo"/>
+                <TableColumn fx:id="organizationColumn" prefWidth="200.0" text="Organización"/>
+                <TableColumn fx:id="statusColumn" prefWidth="100.0" text="Estado"/>
             </columns>
         </TableView>
     </VBox>
@@ -54,11 +58,12 @@
             <Insets top="18.0"/>
         </VBox.margin>
 
-        <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar grupo"/>
+        <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar encargado"/>
 
-        <FormField fx:id="sectionFormField" labelText="Sección" promptText="Ej. Grupo 1"/>
-        <FormComboBox fx:id="periodFormComboBox" labelText="Periodo escolar"/>
-        <FormComboBox fx:id="professorFormComboBox" labelText="Profesor responsable"/>
+        <FormField fx:id="nameFormField" labelText="Nombre del encargado" promptText="Nombre completo"/>
+        <FormField fx:id="phoneFormField" labelText="Teléfono" promptText="Número de contacto"/>
+        <FormField fx:id="emailFormField" labelText="Correo electrónico" promptText="ejemplo@empresa.com"/>
+        <FormComboBox fx:id="organizationFormComboBox" labelText="Organización"/>
 
         <HBox spacing="12.0">
             <Button maxWidth="1.7976931348623157E308" onAction="#handleCancelFormAction" styleClass="secondary-button"

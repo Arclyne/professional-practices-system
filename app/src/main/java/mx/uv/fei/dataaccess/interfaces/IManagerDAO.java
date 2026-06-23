@@ -9,5 +9,8 @@ public interface IManagerDAO {
     List<Manager> getManagersByOrganization(int organizationId) throws DAOException;
     int insertManager(Manager manager) throws DAOException;
     List<Manager> getAllManagers() throws DAOException;
+    Manager recoverManager(int managerId) throws DAOException;
+    void updateManager(Manager manager, int managerId) throws DAOException;
     void deactivateMultipleManagers(List<Integer> managerIdentifiersList) throws DAOException;
+    void activateManager(int managerId) throws DAOException;
 }
