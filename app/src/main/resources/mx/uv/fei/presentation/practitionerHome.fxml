@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="6.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.PractitionerHomeController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="PRACTICANTE"/>
+    <Label fx:id="greetingLabel" styleClass="content-title" text="Hola"/>
+    <Label styleClass="content-subtitle" text="Consulta tu avance y entregables desde el menú lateral."/>
+
+    <HBox spacing="16.0">
+        <VBox.margin>
+            <Insets top="22.0"/>
+        </VBox.margin>
+
+        <VBox prefWidth="280.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="HORAS ACUMULADAS"/>
+            <Label fx:id="accumulatedHoursLabel" styleClass="card-title" text="—"/>
+            <Label styleClass="card-subtitle" text="de 420 h requeridas"/>
+        </VBox>
+
+        <VBox prefWidth="320.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="CALIFICACIÓN PARCIAL"/>
+            <Label fx:id="partialGradeLabel" styleClass="card-title" text="—"/>
+            <Label styleClass="card-subtitle" text="La calificación final se emite al concluir las 420 horas."/>
+        </VBox>
+    </HBox>
+</VBox>

@@ -8,7 +8,6 @@
 
     <VBox spacing="15.0" prefWidth="420.0" HBox.hgrow="ALWAYS">
         <HBox alignment="CENTER_LEFT" spacing="15.0">
-            <Button mnemonicParsing="false" onAction="#handleReturnToMenu" text="← Regresar" style="-fx-background-color: #E0E0E0; -fx-cursor: hand;" />
             <Label text="Revisión de Autoevaluaciones">
                 <font><Font name="System Bold" size="18.0" /></font>
             </Label>

@@ -48,8 +48,13 @@ public class MainController {
 
     private static final String ADMINISTRATOR_ROLE = "Administrator";
     private static final String COORDINATOR_ROLE = "Coordinator";
+    private static final String PROFESSOR_ROLE = "Professor";
+    private static final String PRACTITIONER_ROLE = "Practitioner";
+
     private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
     private static final String COORDINATOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/coordinatorShell.fxml";
+    private static final String PROFESSOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/professorShell.fxml";
+    private static final String PRACTITIONER_SHELL_VIEW = VIEW_BASE_PATH + "shell/practitionerShell.fxml";
 
     @FXML private StackPane contentArea;
 
@@ -162,22 +167,28 @@ public class MainController {
 
         if (currentState != null && currentState.sessionState() != null) {
             User currentUser = currentState.sessionState().currentUserInSession();
-            dashboardPath = resolveDashboardPathByRole(currentUser, dashboardPath);
+            if (currentUser != null) {
+                dashboardPath = resolveShellPathForRole(currentUser.getRole(), dashboardPath);
+            }
         }
 
         return dashboardPath;
     }
 
-    private String resolveDashboardPathByRole(User currentUser, String defaultPath) {
-        String dashboardPath = defaultPath;
+    private String resolveShellPathForRole(String userRole, String defaultPath) {
+        String shellPath = defaultPath;
 
-        if (currentUser != null && ADMINISTRATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
-            dashboardPath = ADMIN_SHELL_VIEW;
-        } else if (currentUser != null && COORDINATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
-            dashboardPath = COORDINATOR_SHELL_VIEW;
+        if (ADMINISTRATOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = ADMIN_SHELL_VIEW;
+        } else if (COORDINATOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = COORDINATOR_SHELL_VIEW;
+        } else if (PROFESSOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = PROFESSOR_SHELL_VIEW;
+        } else if (PRACTITIONER_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = PRACTITIONER_SHELL_VIEW;
         }
 
-        return dashboardPath;
+        return shellPath;
     }
 
     private void adjustStageSize(AppSection targetSection) {
