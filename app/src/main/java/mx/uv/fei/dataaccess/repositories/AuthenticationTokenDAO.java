@@ -15,6 +15,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * Acceso a datos de los tokens de autenticación de un solo uso.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class AuthenticationTokenDAO extends BaseDAO implements IAuthenticationToken {
 

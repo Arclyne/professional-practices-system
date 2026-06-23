@@ -17,6 +17,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+/**
+ * Acceso a datos de los practicantes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 

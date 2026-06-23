@@ -14,6 +14,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+/**
+ * Acceso a datos de los mensajes y sus participantes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class MessageDAO extends BaseDAO implements IMessageDAO {
 

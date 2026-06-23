@@ -14,6 +14,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base abstracta de los DAOs con operaciones genéricas de inserción, actualización y consulta.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 abstract class BaseDAO {
 
     protected final IDatabaseConnection databaseConnection;

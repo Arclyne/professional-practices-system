@@ -14,6 +14,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+/**
+ * Acceso a datos de las actividades de la bitácora de los practicantes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 

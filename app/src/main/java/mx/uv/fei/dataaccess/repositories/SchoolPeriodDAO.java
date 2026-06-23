@@ -16,6 +16,13 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Acceso a datos de los periodos escolares y su actualización.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
 

@@ -15,6 +15,13 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
+/**
+ * Acceso a datos de las calificaciones de los practicantes.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeDAO {
 

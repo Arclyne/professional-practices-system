@@ -18,6 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Acceso a datos de los reportes de avance, intermedios y finales.
+ *
+ * @author Angel Gabriel Aguilar Hernandez
+ * @author José Eduardo Prior Hernández
+ * @version 1.0
+ */
 @Component
 public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
     private static final Logger logger = LoggerFactory.getLogger(ProgressReportDAO.class);
