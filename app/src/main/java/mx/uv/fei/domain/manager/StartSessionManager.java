@@ -4,6 +4,8 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.LoginMethod;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -11,19 +13,17 @@ import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
 @Component
 public class StartSessionManager {
 
     private static final Logger log = LoggerFactory.getLogger(StartSessionManager.class);
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(zs)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
     private static final String ROLE_PRACTITIONER = "Practitioner";
     private static final String GENERIC_AUTH_ERROR = "Credenciales incorrectas. Verifique su información.";
     private static final String GENERIC_SYSTEM_ERROR = "Ocurrió un error al procesar la solicitud. Por favor, intente más tarde.";
@@ -54,17 +54,13 @@ public class StartSessionManager {
     }
 
     private LoginMethod determineLoginMethod(String identifier) throws ManagerException {
-        LoginMethod determinedMethod;
-
-        if (ENROLLMENT_PATTERN.matcher(identifier).matches()) {
-            determinedMethod = LoginMethod.ENROLLMENT;
-        } else if (EMAIL_PATTERN.matcher(identifier).matches()) {
-            determinedMethod = LoginMethod.EMAIL;
+        if (BaseValidator.isValidEnrollment(identifier)) {
+            return LoginMethod.ENROLLMENT;
+        } else if (BaseValidator.isValidEmail(identifier)) {
+            return LoginMethod.EMAIL;
         } else {
             throw new ManagerException(GENERIC_AUTH_ERROR);
         }
-
-        return determinedMethod;
     }
 
     private User authenticateAndRetrieveUser(String identifier, String password, LoginMethod loginMethod) throws DAOException, ManagerException {

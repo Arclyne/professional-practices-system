@@ -10,8 +10,11 @@ import mx.uv.fei.domain.common.IPractitionerParser;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
 @Component
 public class PractitionerManager {
 
+    private static final Logger log = LoggerFactory.getLogger(PractitionerManager.class);
     private static final String ROLE_PRACTITIONER = "Practitioner";
 
     private final IPractitionerDAO practitionerDAO;
@@ -28,7 +32,7 @@ public class PractitionerManager {
 
     @Inject
     public PractitionerManager(IPractitionerDAO practitionerDAO, IUserDAO userDAO, IFileBackup fileBackup,
-            IPractitionerParser practitionerParser) {
+                               IPractitionerParser practitionerParser) {
         this.practitionerDAO = practitionerDAO;
         this.userDAO = userDAO;
         this.fileBackup = fileBackup;
@@ -55,6 +59,8 @@ public class PractitionerManager {
         UserValidator.validatePractitionerText(practitioner);
         practitioner.setEnrollment(practitioner.getEnrollment().toUpperCase());
 
+        verifyEnrollmentAvailability(practitioner.getEnrollment());
+
         String temporaryPassword = PasswordManager.generatePassword();
         practitioner.setPassword(temporaryPassword);
         practitioner.setUserName(practitioner.getEnrollment());
@@ -68,6 +74,7 @@ public class PractitionerManager {
                 throw new ManagerException("No se pudo completar el registro del practicante.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error de conexión con la base de datos.", e);
         }
 
@@ -138,6 +145,17 @@ public class PractitionerManager {
             practitionerDAO.updatePractitioner(practitioner, practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("Error de conexión con la base de datos.", e);
+        }
+    }
+
+    private void verifyEnrollmentAvailability(String enrollment) throws ManagerException {
+        try {
+            User existingUser = userDAO.getUserByUserName(enrollment);
+            if (existingUser != null && existingUser.getUserName() != null) {
+                throw new ManagerException("La matrícula " + enrollment + " ya se encuentra registrada en el sistema.");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("Error al verificar la disponibilidad de la matrícula.", e);
         }
     }
 }
