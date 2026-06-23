@@ -39,12 +39,20 @@ public class UserValidator {
     public static void validatePractitionerText(Practitioner practitioner) throws ManagerException {
         BaseValidator.validateString(practitioner.getName(),
                 "El nombre del practicante es obligatorio.");
+        if (!BaseValidator.isValidName(practitioner.getName())) {
+            throw new ManagerException("El nombre del practicante contiene caracteres inválidos.");
+        }
         BaseValidator.validateMaxLength(practitioner.getName(), FieldLengthLimits.NAME_MAX,
                 "El nombre del practicante no puede exceder " + FieldLengthLimits.NAME_MAX + " caracteres.");
+
         BaseValidator.validateString(practitioner.getLastName(),
                 "El apellido del practicante es obligatorio.");
+        if (!BaseValidator.isValidName(practitioner.getLastName())) {
+            throw new ManagerException("El apellido del practicante contiene caracteres inválidos.");
+        }
         BaseValidator.validateMaxLength(practitioner.getLastName(), FieldLengthLimits.LAST_NAME_MAX,
                 "El apellido del practicante no puede exceder " + FieldLengthLimits.LAST_NAME_MAX + " caracteres.");
+
         BaseValidator.validateString(practitioner.getEmail(),
                 "El correo electrónico del practicante es obligatorio.");
         BaseValidator.validateMaxLength(practitioner.getEmail(), FieldLengthLimits.EMAIL_MAX,
@@ -64,12 +72,17 @@ public class UserValidator {
     public static void validateManagerData(Manager manager) throws ManagerException {
         BaseValidator.validateString(manager.getName(),
                 "El nombre del encargado es obligatorio.");
+        if (!BaseValidator.isValidName(manager.getName())) {
+            throw new ManagerException("El nombre del encargado contiene caracteres inválidos.");
+        }
         BaseValidator.validateMaxLength(manager.getName(), FieldLengthLimits.MANAGER_NAME_MAX,
                 "El nombre del encargado no puede exceder " + FieldLengthLimits.MANAGER_NAME_MAX + " caracteres.");
+
         BaseValidator.validateString(manager.getPhone(),
                 "El teléfono del encargado es obligatorio.");
         BaseValidator.validateMaxLength(manager.getPhone(), FieldLengthLimits.PHONE_MAX,
                 "El teléfono del encargado no puede exceder " + FieldLengthLimits.PHONE_MAX + " caracteres.");
+
         BaseValidator.validateString(manager.getEmail(),
                 "El correo electrónico del encargado es obligatorio.");
         BaseValidator.validateMaxLength(manager.getEmail(), FieldLengthLimits.EMAIL_MAX,
@@ -103,12 +116,20 @@ public class UserValidator {
     private static void validateUserPersonalData(User user, String roleLabel) throws ManagerException {
         BaseValidator.validateString(user.getName(),
                 "El nombre de " + roleLabel + " es obligatorio.");
+        if (!BaseValidator.isValidName(user.getName())) {
+            throw new ManagerException("El nombre de " + roleLabel + " contiene caracteres inválidos.");
+        }
         BaseValidator.validateMaxLength(user.getName(), FieldLengthLimits.NAME_MAX,
                 "El nombre de " + roleLabel + " no puede exceder " + FieldLengthLimits.NAME_MAX + " caracteres.");
+
         BaseValidator.validateString(user.getLastName(),
                 "El apellido de " + roleLabel + " es obligatorio.");
+        if (!BaseValidator.isValidName(user.getLastName())) {
+            throw new ManagerException("El apellido de " + roleLabel + " contiene caracteres inválidos.");
+        }
         BaseValidator.validateMaxLength(user.getLastName(), FieldLengthLimits.LAST_NAME_MAX,
                 "El apellido de " + roleLabel + " no puede exceder " + FieldLengthLimits.LAST_NAME_MAX + " caracteres.");
+
         if (user.getGender() == null) {
             throw new ManagerException("El género de " + roleLabel + " es obligatorio.");
         }

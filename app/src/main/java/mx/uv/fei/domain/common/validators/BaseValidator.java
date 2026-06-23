@@ -7,12 +7,10 @@ import java.util.regex.Pattern;
 
 public class BaseValidator {
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-    private static final Pattern ENROLLMENT_PATTERN =
-            Pattern.compile("^(s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
-    private static final Pattern PERSONAL_NUMBER_PATTERN =
-            Pattern.compile("^\\d+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}$");
+    private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PERSONAL_NUMBER_PATTERN = Pattern.compile("^\\d+$");
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$");
 
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
@@ -24,6 +22,10 @@ public class BaseValidator {
 
     public static boolean isValidPersonalNumber(String personalNumber) {
         return personalNumber != null && PERSONAL_NUMBER_PATTERN.matcher(personalNumber).matches();
+    }
+
+    public static boolean isValidName(String name) {
+        return name != null && NAME_PATTERN.matcher(name).matches();
     }
 
     public static void validateString(String value, String errorMessage) throws ManagerException {
