@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="root" stylesheets="@../../styles.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uv.fei.presentation.shell.ProfessorShellController">
+
+    <left>
+        <VBox prefWidth="240.0" spacing="6.0" styleClass="app-sidebar">
+            <padding>
+                <Insets bottom="18.0" left="16.0" right="16.0" top="22.0"/>
+            </padding>
+
+            <Label styleClass="sidebar-brand" text="Prácticas FEI"/>
+            <Label styleClass="sidebar-brand-sub" text="Universidad Veracruzana"/>
+
+            <Label styleClass="sidebar-group-label" text="GENERAL">
+                <VBox.margin>
+                    <Insets bottom="6.0" top="26.0"/>
+                </VBox.margin>
+            </Label>
+
+            <Button fx:id="homeNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowHomeAction"
+                    styleClass="sidebar-item" text="Inicio"/>
+            <Button fx:id="messagesNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowMessagesAction"
+                    styleClass="sidebar-item" text="Mensajes"/>
+
+            <Label styleClass="sidebar-group-label" text="EVALUACIÓN">
+                <VBox.margin>
+                    <Insets bottom="6.0" top="18.0"/>
+                </VBox.margin>
+            </Label>
+
+            <Button fx:id="evaluateReportsNavButton" maxWidth="1.7976931348623157E308"
+                    onAction="#handleShowEvaluateReportsAction" styleClass="sidebar-item" text="Reportes por evaluar"/>
+            <Button fx:id="gradePractitionersNavButton" maxWidth="1.7976931348623157E308"
+                    onAction="#handleShowGradePractitionersAction" styleClass="sidebar-item" text="Calificar practicantes"/>
+            <Button fx:id="selfEvaluationsNavButton" maxWidth="1.7976931348623157E308"
+                    onAction="#handleShowSelfEvaluationsAction" styleClass="sidebar-item" text="Autoevaluaciones"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="1.0" styleClass="sidebar-user">
+                <Label fx:id="shellUserNameLabel" styleClass="sidebar-user-name" text="Usuario"/>
+                <Label fx:id="shellUserRoleLabel" styleClass="sidebar-user-role" text="Rol"/>
+            </VBox>
+
+            <Button maxWidth="1.7976931348623157E308" onAction="#handleLogoutAction" styleClass="sidebar-logout"
+                    text="Cerrar sesión">
+                <VBox.margin>
+                    <Insets top="12.0"/>
+                </VBox.margin>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="shellContentArea" styleClass="shell-content"/>
+    </center>
+</BorderPane>

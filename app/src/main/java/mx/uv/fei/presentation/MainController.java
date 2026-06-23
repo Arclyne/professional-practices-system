@@ -47,7 +47,9 @@ public class MainController {
     private static final double SPLASH_DELAY_SECONDS = 2;
 
     private static final String ADMINISTRATOR_ROLE = "Administrator";
+    private static final String PROFESSOR_ROLE = "Professor";
     private static final String ADMIN_SHELL_VIEW = VIEW_BASE_PATH + "shell/adminShell.fxml";
+    private static final String PROFESSOR_SHELL_VIEW = VIEW_BASE_PATH + "shell/professorShell.fxml";
 
     @FXML private StackPane contentArea;
 
@@ -160,12 +162,24 @@ public class MainController {
 
         if (currentState != null && currentState.sessionState() != null) {
             User currentUser = currentState.sessionState().currentUserInSession();
-            if (currentUser != null && ADMINISTRATOR_ROLE.equalsIgnoreCase(currentUser.getRole())) {
-                dashboardPath = ADMIN_SHELL_VIEW;
+            if (currentUser != null) {
+                dashboardPath = resolveShellPathForRole(currentUser.getRole(), dashboardPath);
             }
         }
 
         return dashboardPath;
+    }
+
+    private String resolveShellPathForRole(String userRole, String defaultPath) {
+        String shellPath = defaultPath;
+
+        if (ADMINISTRATOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = ADMIN_SHELL_VIEW;
+        } else if (PROFESSOR_ROLE.equalsIgnoreCase(userRole)) {
+            shellPath = PROFESSOR_SHELL_VIEW;
+        }
+
+        return shellPath;
     }
 
     private void adjustStageSize(AppSection targetSection) {
