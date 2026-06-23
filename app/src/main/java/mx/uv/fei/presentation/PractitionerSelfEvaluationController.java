@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.common.SelfEvaluationPdfGenerator;
+import mx.uv.fei.domain.common.validators.FileValidator;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.dto.User;
@@ -288,8 +289,18 @@ public class PractitionerSelfEvaluationController {
         FileChooser fileChooser = buildPdfFileChooser("Subir PRAIS-03 Firmado");
         File file = fileChooser.showOpenDialog(currentStage(uploadSignedButton));
         if (file != null) {
-            uploadEvidence(file.getAbsolutePath());
+            submitSelectedEvidence(file);
         }
+    }
+
+    private void submitSelectedEvidence(File file) {
+        try {
+            FileValidator.validateFileSize(file);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+            return;
+        }
+        uploadEvidence(file.getAbsolutePath());
     }
 
     private void uploadEvidence(String filePath) {
