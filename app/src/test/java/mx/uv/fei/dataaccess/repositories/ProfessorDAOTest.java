@@ -94,7 +94,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void updateProfessor_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateProfessor_ValidModifiedData_DoesNotThrow() throws DAOException {
         newProfessor.setName("Norma Leticia");
         newProfessor.setStatus(UserStatus.INACTIVE);
 

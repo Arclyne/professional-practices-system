@@ -96,7 +96,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void insertProject_ValidProject_ReturnsTrue() throws DAOException {
+    void insertProject_ValidProject_ReturnsGeneratedId() throws DAOException {
         int isInserted = projectDAO.insertProject(newProject);
 
         assertTrue(isInserted > 0);
@@ -121,7 +121,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void updateProject_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateProject_ValidModifiedData_DoesNotThrow() throws DAOException {
         newProject.setDescription("Mantenimiento de los modulos de reportes del sistema");
         newProject.setParticipantCapacity(10);
 
@@ -129,7 +129,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void deactivateMultipleProjects_ValidIds_ReturnsTrue() throws DAOException {
+    void deactivateMultipleProjects_ValidIds_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> projectDAO.deactivateMultipleProjects(List.of(1, 2)));
     }
 

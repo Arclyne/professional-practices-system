@@ -89,7 +89,7 @@ public class SelfEvaluationDAOTest {
     }
 
     @Test
-    void updateSelfEvaluation_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateSelfEvaluation_ValidModifiedData_DoesNotThrow() throws DAOException {
         validEvaluation.setStatus("Revisada");
         validEvaluation.setEvidence("https://storage.uv.mx/evidencias/autoevaluacion_corregida_zS24242424.pdf");
 
@@ -97,12 +97,12 @@ public class SelfEvaluationDAOTest {
     }
 
     @Test
-    void updateSelfEvaluationStatus_ValidStatus_ReturnsTrue() throws DAOException {
+    void updateSelfEvaluationStatus_ValidStatus_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationStatus(STORED_EVALUATION_ID, "Revisada"));
     }
 
     @Test
-    void updateSelfEvaluationEvidence_ValidEvidence_ReturnsTrue() throws DAOException {
+    void updateSelfEvaluationEvidence_ValidEvidence_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> selfEvaluationDAO.updateSelfEvaluationEvidence(STORED_EVALUATION_ID,
                 "https://storage.uv.mx/evidencias/evidencia_actualizada_zS24242424.pdf"));
     }

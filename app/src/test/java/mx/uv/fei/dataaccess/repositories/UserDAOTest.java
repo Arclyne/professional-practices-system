@@ -80,12 +80,12 @@ public class UserDAOTest {
     }
 
     @Test
-    void deactivateUser_ExistingId_ReturnsTrue() throws DAOException {
+    void deactivateUser_ExistingId_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> userDAO.deactivateUser(STORED_ADMINISTRATOR_ID));
     }
 
     @Test
-    void updateUser_ValidModifiedData_ReturnsTrue() throws SQLException, DAOException {
+    void updateUser_ValidModifiedData_DoesNotThrow() throws SQLException, DAOException {
         try (Connection connection = dbConnection.getConnection()) {
             newUser.setId(STORED_ADMINISTRATOR_ID);
             newUser.setStatus(UserStatus.INACTIVE);
@@ -135,7 +135,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void deactivateMultipleUsers_ValidIds_ReturnsTrue() throws DAOException {
+    void deactivateMultipleUsers_ValidIds_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> userDAO.deactivateMultipleUsers(List.of(STORED_ADMINISTRATOR_ID, STORED_COORDINATOR_ID)));
     }
 

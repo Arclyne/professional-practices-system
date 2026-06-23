@@ -103,7 +103,7 @@ public class CoordinatorDAOTest {
     }
 
     @Test
-    void updateCoordinator_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateCoordinator_ValidModifiedData_DoesNotThrow() throws DAOException {
         newCoordinator.setName("Patricia Isabel");
         newCoordinator.setStatus(UserStatus.INACTIVE);
 

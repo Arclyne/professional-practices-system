@@ -51,7 +51,7 @@ public class MessageDAOTest {
     }
 
     @Test
-    void insertParticipant_ValidIds_ReturnsTrue() throws DAOException {
+    void insertParticipant_ValidIds_DoesNotThrow() throws DAOException {
         int messageId = messageDAO.insertMessage("Revision de bitacora",
                 "Su bitacora de actividades fue revisada por el academico.");
 

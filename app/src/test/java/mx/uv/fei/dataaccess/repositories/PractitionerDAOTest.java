@@ -102,7 +102,7 @@ public class PractitionerDAOTest {
     }
 
     @Test
-    void updatePractitioner_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updatePractitioner_ValidModifiedData_DoesNotThrow() throws DAOException {
         newPractitioner.setGrade(10.0);
         newPractitioner.setIndigenousLanguage("Maya");
         newPractitioner.setStatus(UserStatus.INACTIVE);

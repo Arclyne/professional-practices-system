@@ -84,7 +84,7 @@ public class PracticeGroupDAOTest {
     }
 
     @Test
-    void updatePracticeGroup_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updatePracticeGroup_ValidModifiedData_DoesNotThrow() throws DAOException {
         newGroup.setSection("NRC-99999");
 
         assertDoesNotThrow(() -> groupDAO.updatePracticeGroup(newGroup, STORED_GROUP_ID));

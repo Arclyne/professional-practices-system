@@ -111,7 +111,7 @@ public class MonthlyReportDAOTest {
     }
 
     @Test
-    void updateReport_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateReport_ValidModifiedData_DoesNotThrow() throws DAOException {
         juneReport.setMonthName("Julio");
         juneReport.setStatus("Entregado");
 

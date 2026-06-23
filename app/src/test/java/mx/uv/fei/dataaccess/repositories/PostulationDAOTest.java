@@ -59,7 +59,7 @@ public class PostulationDAOTest {
     }
 
     @Test
-    void insertProjectPriorities_ValidProjects_ReturnsTrue() throws DAOException {
+    void insertProjectPriorities_ValidProjects_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects));
     }
 
@@ -80,7 +80,7 @@ public class PostulationDAOTest {
     }
 
     @Test
-    void assignProjectUsingStoredProcedure_ValidIds_ReturnsTrue() throws DAOException {
+    void assignProjectUsingStoredProcedure_ValidIds_DoesNotThrow() throws DAOException {
         postulationDAO.insertProjectPriorities(PRACTITIONER_ID, prioritizedProjects);
 
         assertDoesNotThrow(() -> postulationDAO.assignProjectUsingStoredProcedure(PRACTITIONER_ID, ASSIGNED_PROJECT_ID));

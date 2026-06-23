@@ -58,7 +58,7 @@ public class ManagerDAOTest {
     }
 
     @Test
-    void insertManager_ValidManager_ReturnsTrue() throws DAOException {
+    void insertManager_ValidManager_ReturnsGeneratedId() throws DAOException {
         int isInserted = managerDAO.insertManager(newManager);
 
         assertTrue(isInserted > 0);
@@ -99,7 +99,7 @@ public class ManagerDAOTest {
     }
 
     @Test
-    void deactivateMultipleManagers_ValidIds_ReturnsTrue() throws DAOException {
+    void deactivateMultipleManagers_ValidIds_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> managerDAO.deactivateMultipleManagers(List.of(1, 2)));
     }
 

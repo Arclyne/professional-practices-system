@@ -101,7 +101,7 @@ public class AdministratorDAOTest {
     }
 
     @Test
-    void updateAdministrator_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateAdministrator_ValidModifiedData_DoesNotThrow() throws DAOException {
         Administrator administratorToUpdate = buildStoredAdministrator();
         administratorToUpdate.setName("Ricardo Alberto");
         administratorToUpdate.setStatus(UserStatus.INACTIVE);

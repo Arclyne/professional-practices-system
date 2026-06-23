@@ -85,7 +85,7 @@ public class SchoolPeriodDAOTest {
     }
 
     @Test
-    void updateSchoolPeriod_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateSchoolPeriod_ValidModifiedData_DoesNotThrow() throws DAOException {
         newPeriod.setPeriodName("Agosto 2026 - Enero 2027");
         newPeriod.setStatus("Active");
         newPeriod.setStartDate(LocalDate.of(2026, 8, 15));

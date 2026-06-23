@@ -70,7 +70,7 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void updateActivity_ValidModifiedData_ReturnsTrue() throws DAOException {
+    void updateActivity_ValidModifiedData_DoesNotThrow() throws DAOException {
         validActivity.setTitle("Desarrollo de la capa de servicios");
         validActivity.setDescription("Ajustes al alcance de la actividad registrada en la bitacora.");
 
@@ -129,12 +129,12 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void assignActivityToReport_ValidIds_ReturnsTrue() throws DAOException {
+    void assignActivityToReport_ValidIds_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> activityDAO.assignActivityToReport(2, STORED_REPORT_ID));
     }
 
     @Test
-    void removeActivityFromReport_ExistingActivity_ReturnsTrue() throws DAOException {
+    void removeActivityFromReport_ExistingActivity_DoesNotThrow() throws DAOException {
         assertDoesNotThrow(() -> activityDAO.removeActivityFromReport(1));
     }
 
