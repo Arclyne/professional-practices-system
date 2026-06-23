@@ -1,6 +1,7 @@
 package mx.uv.fei.domain.manager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
+import mx.uv.fei.domain.common.validators.FileValidator;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.io.File;
@@ -27,9 +28,7 @@ public class CloudStorageManager {
     private static final String UNDERSCORE = "_";
 
     public String uploadEvidenceFile(File file) throws ManagerException {
-        if (file == null || !file.exists()) {
-            throw new ManagerException("El archivo seleccionado no es válido o no existe.");
-        }
+        FileValidator.validateFileSize(file);
         if (IS_AZURE_CONFIGURED) {
             return uploadToMicrosoftGraph(file);
         } else {

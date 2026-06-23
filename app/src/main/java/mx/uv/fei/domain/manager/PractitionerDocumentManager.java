@@ -24,10 +24,6 @@ public class PractitionerDocumentManager {
     }
 
     public void uploadDocument(int practitionerId, File file) throws ManagerException {
-        if (file == null || !file.exists()) {
-            throw new ManagerException("El archivo seleccionado no es válido o no existe.");
-        }
-
         String storedFileUrl = cloudStorageManager.uploadEvidenceFile(file);
         PractitionerDocument document = buildPendingDocument(practitionerId, file.getName(), storedFileUrl);
 
