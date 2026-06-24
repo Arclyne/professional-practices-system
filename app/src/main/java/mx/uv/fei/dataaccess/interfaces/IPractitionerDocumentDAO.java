@@ -11,7 +11,13 @@ public interface IPractitionerDocumentDAO {
 
     List<PractitionerDocument> getDocumentsByPractitioner(int practitionerId) throws DAOException;
 
-    List<PractitionerDocument> getAllDocuments() throws DAOException;
+    List<PractitionerDocument> getDocumentsByPractitionerAndType(int practitionerId, String documentType) throws DAOException;
 
-    void markDocumentAsReviewed(int documentId) throws DAOException;
+    List<PractitionerDocument> getDocumentsByProfessor(int professorId) throws DAOException;
+
+    void acceptDocument(int documentId) throws DAOException;
+
+    void rejectDocument(int documentId, String reviewComment) throws DAOException;
+
+    boolean areAllDocumentsAccepted(int practitionerId, String documentType) throws DAOException;
 }

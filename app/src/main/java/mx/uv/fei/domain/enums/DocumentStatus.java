@@ -9,7 +9,8 @@ package mx.uv.fei.domain.enums;
 public enum DocumentStatus {
 
     PENDING("Pendiente"),
-    REVIEWED("Revisado");
+    ACCEPTED("Aceptado"),
+    REJECTED("Rechazado");
 
     private final String databaseValue;
 

@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -14,13 +15,16 @@ import java.util.List;
 public class ActivityManager {
 
     private final IActivityDAO activityDAO;
+    private final IPractitionerDAO practitionerDAO;
 
     @Inject
-    public ActivityManager(IActivityDAO activityDAO) {
+    public ActivityManager(IActivityDAO activityDAO, IPractitionerDAO practitionerDAO) {
         this.activityDAO = activityDAO;
+        this.practitionerDAO = practitionerDAO;
     }
 
     public void registerActivity(Activity activity) throws ManagerException {
+        validateReportsAccessGranted(activity.getPractitionerId());
         ReportValidator.validateLogbookActivity(activity);
         try {
             int generatedId = activityDAO.insertActivity(activity);
@@ -54,6 +58,18 @@ public class ActivityManager {
             return activityDAO.getActivitiesByReport(reportId);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al cargar las actividades del reporte.", e);
+        }
+    }
+
+    private void validateReportsAccessGranted(int practitionerId) throws ManagerException {
+        try {
+            boolean isAccessGranted = practitionerDAO.isReportsAccessGranted(practitionerId);
+            if (!isAccessGranted) {
+                throw new ManagerException("Tu profesor aún no habilita el registro de tareas. "
+                        + "Debe aceptar todos tus documentos iniciales primero.");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
         }
     }
 }

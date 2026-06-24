@@ -138,6 +138,22 @@ public class PractitionerManager {
         }
     }
 
+    public void grantReportsAccess(int practitionerId) throws ManagerException {
+        try {
+            practitionerDAO.grantReportsAccess(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo otorgar el acceso a reportes al practicante.", e);
+        }
+    }
+
+    public boolean isReportsAccessGranted(int practitionerId) throws ManagerException {
+        try {
+            return practitionerDAO.isReportsAccessGranted(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
+        }
+    }
+
     public void updatePractitioner(Practitioner practitioner, int practitionerId) throws ManagerException {
         UserValidator.validatePractitionerForUpdate(practitioner);
 

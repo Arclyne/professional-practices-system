@@ -50,7 +50,7 @@ public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
         practitioner.setId(PRACTITIONER_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(practitioner)));
         when(progressReportManager.getProgressReportsByPractitioner(PRACTITIONER_ID))
-                .thenReturn(List.of(buildDeliveredFinalReport()));
+                .thenReturn(List.of(buildAcceptedFinalReport()));
         when(selfEvaluationManager.recoverSelfEvaluation(anyInt())).thenReturn(null);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
@@ -62,11 +62,11 @@ public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
         stage.show();
     }
 
-    private ProgressReport buildDeliveredFinalReport() {
+    private ProgressReport buildAcceptedFinalReport() {
         ProgressReport finalReport = new ProgressReport();
         finalReport.setReportId(FINAL_REPORT_ID);
         finalReport.setReportType("Final");
-        finalReport.setStatus(ReportStatus.SUBMITTED.getDatabaseValue());
+        finalReport.setStatus(ReportStatus.EVALUATED.getDatabaseValue());
         return finalReport;
     }
 
@@ -75,7 +75,7 @@ public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
     }
 
     @Test
-    void handleSaveEvaluation_DeliveredFinalReport_RegistersSelfEvaluation() throws Exception {
+    void handleSaveEvaluation_AcceptedFinalReport_RegistersSelfEvaluation() throws Exception {
         clickSaveButton();
 
         verify(selfEvaluationManager).registerSelfEvaluation(any());

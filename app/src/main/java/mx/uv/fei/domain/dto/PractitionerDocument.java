@@ -17,8 +17,10 @@ public class PractitionerDocument {
     private int documentId;
     private int practitionerId;
     private String documentName;
+    private String documentType;
     private String storedFileUrl;
     private String status;
+    private String reviewComment;
     private Timestamp uploadDate;
     private Timestamp reviewDate;
     private String practitionerName;
@@ -35,11 +37,17 @@ public class PractitionerDocument {
     public String getDocumentName() { return documentName; }
     public void setDocumentName(String documentName) { this.documentName = documentName; }
 
+    public String getDocumentType() { return documentType; }
+    public void setDocumentType(String documentType) { this.documentType = documentType; }
+
     public String getStoredFileUrl() { return storedFileUrl; }
     public void setStoredFileUrl(String storedFileUrl) { this.storedFileUrl = storedFileUrl; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getReviewComment() { return reviewComment; }
+    public void setReviewComment(String reviewComment) { this.reviewComment = reviewComment; }
 
     public Timestamp getUploadDate() { return uploadDate; }
     public void setUploadDate(Timestamp uploadDate) { this.uploadDate = uploadDate; }

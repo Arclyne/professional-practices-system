@@ -6,6 +6,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
@@ -20,16 +21,20 @@ public class MonthlyReportManager {
     private final IMonthlyReportDAO reportDAO;
     private final IActivityDAO activityDAO;
     private final IPostulationDAO postulationDAO;
+    private final IPractitionerDAO practitionerDAO;
 
     @Inject
-    public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO) {
+    public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO,
+                                IPractitionerDAO practitionerDAO) {
         this.reportDAO = reportDAO;
         this.activityDAO = activityDAO;
         this.postulationDAO = postulationDAO;
+        this.practitionerDAO = practitionerDAO;
     }
 
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
         validateHasAssignedProject(report.getPractitionerId());
+        validateReportsAccessGranted(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
 
         try {
@@ -95,6 +100,26 @@ public class MonthlyReportManager {
             return postulationDAO.hasAssignedProject(practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("No se pudo verificar el estado del proyecto asignado.", e);
+        }
+    }
+
+    public boolean verifyReportsAccessGranted(int practitionerId) throws ManagerException {
+        try {
+            return practitionerDAO.isReportsAccessGranted(practitionerId);
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
+        }
+    }
+
+    private void validateReportsAccessGranted(int practitionerId) throws ManagerException {
+        try {
+            boolean isAccessGranted = practitionerDAO.isReportsAccessGranted(practitionerId);
+            if (!isAccessGranted) {
+                throw new ManagerException("Tu profesor aún no habilita el registro de reportes. "
+                        + "Debe aceptar todos tus documentos iniciales primero.");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
         }
     }
 

@@ -137,12 +137,12 @@ public class PractitionerSelfEvaluationController {
     }
 
     private void applyStateForReportStatus() throws ManagerException {
-        if (!isFinalReportDelivered()) {
+        if (!isFinalReportAccepted()) {
             showBlockedState(
-                    "Tu Reporte Final está generado pero aún no ha sido entregado con firma. "
-                            + "Debes descargarlo, firmarlo y subirlo antes de continuar.",
+                    "Tu Reporte Final aún no ha sido aceptado por tu profesor. "
+                            + "Podrás realizar tu autoevaluación cuando el reporte sea evaluado y aceptado.",
                     true);
-            statusLabel.setText("Requisito pendiente: entregar Reporte Final firmado");
+            statusLabel.setText("Requisito pendiente: que tu profesor acepte el Reporte Final");
         } else {
             currentSelfEvaluation = selfEvaluationManager.recoverSelfEvaluation(finalReport.getReportId());
             showFormContainer(true);
@@ -151,10 +151,8 @@ public class PractitionerSelfEvaluationController {
         }
     }
 
-    private boolean isFinalReportDelivered() {
-        String reportStatus = finalReport.getStatus();
-        return ReportStatus.SUBMITTED.getDatabaseValue().equals(reportStatus)
-                || ReportStatus.EVALUATED.getDatabaseValue().equals(reportStatus);
+    private boolean isFinalReportAccepted() {
+        return ReportStatus.EVALUATED.getDatabaseValue().equals(finalReport.getStatus());
     }
 
     private void showBlockedState(String message, boolean showNavigationButton) {

@@ -12,6 +12,7 @@ import java.util.List;
 
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.dto.PractitionerDocument;
+import mx.uv.fei.domain.enums.DocumentType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,32 +39,41 @@ public class PractitionerDocumentManagerTest {
         File anyFile = mock(File.class);
 
         assertThrows(ManagerException.class,
-                () -> documentManager.uploadDocument(INVALID_ID, anyFile));
+                () -> documentManager.uploadDocument(INVALID_ID, anyFile, DocumentType.INITIAL));
 
         verifyNoInteractions(cloudStorageManager);
     }
 
     @Test
-    void markDocumentAsReviewed_InvalidId_ThrowsBeforeQuerying() {
+    void acceptDocument_InvalidId_ThrowsBeforeQuerying() {
         assertThrows(ManagerException.class,
-                () -> documentManager.markDocumentAsReviewed(INVALID_ID));
+                () -> documentManager.acceptDocument(INVALID_ID));
 
         verifyNoInteractions(documentDAO);
     }
 
     @Test
-    void markDocumentAsReviewed_ValidId_DelegatesToDao() throws Exception {
-        documentManager.markDocumentAsReviewed(VALID_DOCUMENT_ID);
+    void acceptDocument_ValidId_DelegatesToDao() throws Exception {
+        documentManager.acceptDocument(VALID_DOCUMENT_ID);
 
-        verify(documentDAO).markDocumentAsReviewed(VALID_DOCUMENT_ID);
+        verify(documentDAO).acceptDocument(VALID_DOCUMENT_ID);
+    }
+
+    @Test
+    void rejectDocument_BlankReason_ThrowsBeforeQuerying() {
+        assertThrows(ManagerException.class,
+                () -> documentManager.rejectDocument(VALID_DOCUMENT_ID, "   "));
+
+        verifyNoInteractions(documentDAO);
     }
 
     @Test
     void getPractitionerDocuments_ValidId_ReturnsDaoResult() throws Exception {
-        when(documentDAO.getDocumentsByPractitioner(VALID_PRACTITIONER_ID))
+        when(documentDAO.getDocumentsByPractitionerAndType(VALID_PRACTITIONER_ID, DocumentType.INITIAL.getDatabaseValue()))
                 .thenReturn(List.of(new PractitionerDocument()));
 
-        List<PractitionerDocument> documents = documentManager.getPractitionerDocuments(VALID_PRACTITIONER_ID);
+        List<PractitionerDocument> documents = documentManager.getPractitionerDocuments(
+                VALID_PRACTITIONER_ID, DocumentType.INITIAL);
 
         assertEquals(1, documents.size());
     }
