@@ -11,10 +11,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CloudStorageManager;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -201,10 +198,5 @@ public class ProgressReportGeneratorController {
             Controller.showAlert("Error de Archivo",
                     "No se pudo abrir el archivo firmado.", AlertType.ERROR);
         }
-    }
-
-    @FXML
-    private void handleReturnAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }
