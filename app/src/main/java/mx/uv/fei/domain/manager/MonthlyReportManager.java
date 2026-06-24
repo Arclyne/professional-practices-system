@@ -37,6 +37,7 @@ public class MonthlyReportManager {
         validateHasAssignedProject(report.getPractitionerId());
         validateAllInitialDocumentsAccepted(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
+        validateNoReportForSameMonth(report);
 
         try {
             int generatedReportId = reportDAO.insertReport(report);
@@ -109,6 +110,23 @@ public class MonthlyReportManager {
             return documentDAO.areAllDocumentsAccepted(practitionerId, DocumentCategory.INITIAL.getDatabaseValue());
         } catch (DAOException e) {
             throw new ManagerException("No se pudieron verificar los documentos iniciales del practicante.", e);
+        }
+    }
+
+    private void validateNoReportForSameMonth(MonthlyReport report) throws ManagerException {
+        try {
+            List<MonthlyReport> existingReports = reportDAO.getReportsByPractitioner(report.getPractitionerId());
+            boolean alreadyHasReportForMonth = existingReports.stream().anyMatch(existingReport ->
+                    existingReport.getYear() == report.getYear()
+                            && existingReport.getMonthName() != null
+                            && existingReport.getMonthName().equalsIgnoreCase(report.getMonthName()));
+
+            if (alreadyHasReportForMonth) {
+                throw new ManagerException("Ya tienes un reporte registrado para "
+                        + report.getMonthName() + " " + report.getYear() + ".");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar si ya existe un reporte para ese mes.", e);
         }
     }
 

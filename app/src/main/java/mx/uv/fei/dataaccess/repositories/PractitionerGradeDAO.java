@@ -80,7 +80,7 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
 
     @Override
     public PractitionerGrade getGradeByPractitionerAndPeriod(int practitionerId, String period) throws DAOException {
-        PractitionerGrade recoveredGrade = new PractitionerGrade();
+        PractitionerGrade recoveredGrade = null;
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_GRADE_BY_PRACTITIONER_AND_PERIOD)) {

@@ -50,13 +50,13 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "AND p.practitioner_id NOT IN " +
                     "(SELECT practitioner_id FROM project_postulation WHERE postulation_status = 'Assigned')";
     private static final String SQL_SELECT_ASSIGNED_PRACTITIONERS =
-            "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+            "SELECT DISTINCT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
                     "WHERE u.status = 'Active' AND pp.postulation_status = 'Assigned'";
     private static final String SQL_SELECT_PRACTITIONERS_BY_PROFESSOR =
-            "SELECT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+            "SELECT DISTINCT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +

@@ -29,8 +29,10 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
             "SELECT COUNT(*) FROM project_postulation WHERE practitioner_id = ?";
     private static final String SQL_INSERT_POSTULATION =
             "INSERT INTO project_postulation (practitioner_id, project_id, priority_level, postulation_status) VALUES (?, ?, ?, 'Pending')";
+    private static final String SQL_DELETE_UNASSIGNED_POSTULATIONS =
+            "DELETE FROM project_postulation WHERE practitioner_id = ? AND postulation_status <> 'Assigned'";
     private static final String SQL_SELECT_POSTULATIONS_BY_PRACTITIONER =
-            "SELECT p.practitioner_id, p.project_id, pr.project_name, p.priority_level, p.postulation_status " +
+            "SELECT DISTINCT p.practitioner_id, p.project_id, pr.project_name, p.priority_level, p.postulation_status " +
                     "FROM project_postulation p INNER JOIN project pr ON p.project_id = pr.project_id " +
                     "WHERE p.practitioner_id = ? AND (p.postulation_status = 'Assigned' OR pr.participant_capacity > " +
                     "(SELECT COUNT(*) FROM project_postulation WHERE project_id = pr.project_id AND postulation_status = 'Assigned')) " +
@@ -87,6 +89,7 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     }
 
     private void executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
+        clearUnassignedPostulations(connection, practitionerId);
         try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_POSTULATION)) {
             for (int priorityIndex = 0; priorityIndex < projects.size(); priorityIndex++) {
                 statement.setInt(1, practitionerId);
@@ -98,6 +101,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
             if (batchResults.length != projects.size()) {
                 throw new SQLException("No se registraron todas las prioridades de la postulación.");
             }
+        }
+    }
+
+    private void clearUnassignedPostulations(Connection connection, int practitionerId) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_DELETE_UNASSIGNED_POSTULATIONS)) {
+            statement.setInt(1, practitionerId);
+            statement.executeUpdate();
         }
     }
 
