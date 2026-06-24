@@ -17,7 +17,9 @@ public class PractitionerDocument {
     private int documentId;
     private int practitionerId;
     private String documentName;
-    private String documentType;
+    private String documentTypeCode;
+    private String documentTypeName;
+    private String category;
     private String storedFileUrl;
     private String status;
     private String reviewComment;
@@ -37,8 +39,14 @@ public class PractitionerDocument {
     public String getDocumentName() { return documentName; }
     public void setDocumentName(String documentName) { this.documentName = documentName; }
 
-    public String getDocumentType() { return documentType; }
-    public void setDocumentType(String documentType) { this.documentType = documentType; }
+    public String getDocumentTypeCode() { return documentTypeCode; }
+    public void setDocumentTypeCode(String documentTypeCode) { this.documentTypeCode = documentTypeCode; }
+
+    public String getDocumentTypeName() { return documentTypeName; }
+    public void setDocumentTypeName(String documentTypeName) { this.documentTypeName = documentTypeName; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
     public String getStoredFileUrl() { return storedFileUrl; }
     public void setStoredFileUrl(String storedFileUrl) { this.storedFileUrl = storedFileUrl; }

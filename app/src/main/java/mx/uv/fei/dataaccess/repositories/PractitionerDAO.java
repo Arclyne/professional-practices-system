@@ -64,10 +64,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "WHERE u.status = 'Active' " +
                     "AND pp.postulation_status = 'Assigned' " +
                     "AND pg.professor_id = ?";
-    private static final String SQL_GRANT_REPORTS_ACCESS =
-            "UPDATE practitioner SET reports_access_granted = TRUE WHERE practitioner_id = ?";
-    private static final String SQL_SELECT_REPORTS_ACCESS =
-            "SELECT reports_access_granted FROM practitioner WHERE practitioner_id = ?";
 
     private final IUserDAO userDAO;
 
@@ -178,32 +174,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     @Override
     public List<Practitioner> retrievePractitionersByProfessor(int professorId) throws DAOException {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR, this::mapResultSetToMinimalPractitioner, professorId);
-    }
-
-    @Override
-    public void grantReportsAccess(int practitionerId) throws DAOException {
-        updateTuple(SQL_GRANT_REPORTS_ACCESS, statement -> statement.setInt(1, practitionerId));
-    }
-
-    @Override
-    public boolean isReportsAccessGranted(int practitionerId) throws DAOException {
-        boolean isGranted = false;
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_REPORTS_ACCESS)) {
-
-            statement.setInt(1, practitionerId);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    isGranted = resultSet.getBoolean("reports_access_granted");
-                }
-            }
-        } catch (SQLException e) {
-            throw new DAOException("Error al verificar el acceso a reportes del practicante.", e);
-        }
-
-        return isGranted;
     }
 
     private void executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)

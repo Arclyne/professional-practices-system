@@ -17,7 +17,7 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.User;
-import mx.uv.fei.domain.enums.DocumentType;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.manager.MonthlyReportManager;
 import mx.uv.fei.domain.manager.PractitionerDocumentManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -48,8 +48,8 @@ public class PractitionerDocumentsControllerTest extends ApplicationTest {
         practitioner.setId(PRACTITIONER_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(practitioner)));
         when(reportManager.verifyHasAssignedProject(PRACTITIONER_ID)).thenReturn(true);
-        when(reportManager.verifyReportsAccessGranted(PRACTITIONER_ID)).thenReturn(true);
-        when(documentManager.getPractitionerDocuments(anyInt(), any(DocumentType.class))).thenReturn(List.of());
+        when(documentManager.areAllInitialDocumentsAccepted(PRACTITIONER_ID)).thenReturn(true);
+        when(documentManager.getPractitionerDocuments(anyInt(), any(DocumentCategory.class))).thenReturn(List.of());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->

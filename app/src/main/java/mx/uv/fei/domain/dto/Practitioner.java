@@ -15,7 +15,6 @@ public class Practitioner extends User {
     private double grade;
     private String enrollment;
     private Integer groupId;
-    private boolean reportsAccessGranted;
 
     public Practitioner() {
         super();
@@ -24,9 +23,6 @@ public class Practitioner extends User {
 
     public String getIndigenousLanguage() { return indigenousLanguage; }
     public void setIndigenousLanguage(String indigenousLanguage) { this.indigenousLanguage = indigenousLanguage; }
-
-    public boolean isReportsAccessGranted() { return reportsAccessGranted; }
-    public void setReportsAccessGranted(boolean reportsAccessGranted) { this.reportsAccessGranted = reportsAccessGranted; }
 
     public double getGrade() { return grade; }
     public void setGrade(double grade) { this.grade = grade; }

@@ -12,6 +12,7 @@ import java.util.List;
 
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.dto.PractitionerDocument;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.DocumentType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,18 @@ public class PractitionerDocumentManagerTest {
         File anyFile = mock(File.class);
 
         assertThrows(ManagerException.class,
-                () -> documentManager.uploadDocument(INVALID_ID, anyFile, DocumentType.INITIAL));
+                () -> documentManager.uploadDocument(INVALID_ID, DocumentType.CURP, anyFile));
+
+        verifyNoInteractions(cloudStorageManager);
+    }
+
+    @Test
+    void uploadDocument_TypeAlreadyUploaded_ThrowsBeforeUploading() throws Exception {
+        File anyFile = mock(File.class);
+        when(documentDAO.documentExistsForType(VALID_PRACTITIONER_ID, DocumentType.CURP.getCode())).thenReturn(true);
+
+        assertThrows(ManagerException.class,
+                () -> documentManager.uploadDocument(VALID_PRACTITIONER_ID, DocumentType.CURP, anyFile));
 
         verifyNoInteractions(cloudStorageManager);
     }
@@ -69,11 +81,11 @@ public class PractitionerDocumentManagerTest {
 
     @Test
     void getPractitionerDocuments_ValidId_ReturnsDaoResult() throws Exception {
-        when(documentDAO.getDocumentsByPractitionerAndType(VALID_PRACTITIONER_ID, DocumentType.INITIAL.getDatabaseValue()))
+        when(documentDAO.getDocumentsByPractitionerAndCategory(VALID_PRACTITIONER_ID, DocumentCategory.INITIAL.getDatabaseValue()))
                 .thenReturn(List.of(new PractitionerDocument()));
 
         List<PractitionerDocument> documents = documentManager.getPractitionerDocuments(
-                VALID_PRACTITIONER_ID, DocumentType.INITIAL);
+                VALID_PRACTITIONER_ID, DocumentCategory.INITIAL);
 
         assertEquals(1, documents.size());
     }

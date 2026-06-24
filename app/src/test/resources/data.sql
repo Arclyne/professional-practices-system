@@ -21,8 +21,8 @@ INSERT INTO school_period (period_id, period_name, start_date, end_date, period_
 INSERT INTO practice_group (group_id, section, period_id, professor_id) VALUES
     (6, 'Seccion 601', 5, 68);
 
-INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id, reports_access_granted) VALUES
-    (123, 'Ninguna', 0.00, 6, TRUE);
+INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id) VALUES
+    (123, 'Ninguna', 0.00, 6);
 
 INSERT INTO linked_organization (organization_id, organization_name, status, sector, email) VALUES
     (1, 'Tecnologias Web del Golfo',  'Active', 'Technology', 'contacto@tecgolfo.mx'),
@@ -60,6 +60,15 @@ INSERT INTO progress_report (report_id, practitioner_id, report_type, generation
 INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES
     (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'https://storage.uv.mx/evidencias/autoevaluacion_zS24242424.pdf', 123, 1, 'Pendiente');
 
-INSERT INTO practitioner_document (document_id, practitioner_id, document_name, document_type, stored_file_url, status, upload_date, review_date) VALUES
-    (1, 123, 'carta_aceptacion.pdf', 'Inicial', 'file:///SimuladorOneDrive_FEI/a1b2c3d4_carta_aceptacion.pdf', 'Pendiente', '2026-06-10 09:15:00', NULL),
-    (2, 123, 'carta_aceptacion.pdf', 'Inicial', 'file:///SimuladorOneDrive_FEI/e5f6a7b8_carta_aceptacion.pdf', 'Aceptado',  '2026-06-12 11:30:00', '2026-06-13 08:00:00');
+INSERT INTO document_type (document_type_id, type_code, type_name, category) VALUES
+    (1, 'CURP',              'CURP',                 'Initial'),
+    (2, 'SCHEDULE',          'Horario',              'Initial'),
+    (3, 'INE',               'INE',                  'Initial'),
+    (4, 'ACCEPTANCE_LETTER', 'Carta de aceptacion',  'Initial'),
+    (5, 'RELEASE_LETTER',    'Carta de liberacion',  'Final');
+
+INSERT INTO practitioner_document (document_id, practitioner_id, document_type_id, document_name, stored_file_url, status, upload_date, review_date) VALUES
+    (1, 123, 1, 'curp.pdf',             'file:///SimuladorOneDrive_FEI/a1_curp.pdf',             'Accepted', '2026-06-10 09:15:00', '2026-06-11 08:00:00'),
+    (2, 123, 2, 'horario.pdf',          'file:///SimuladorOneDrive_FEI/b2_horario.pdf',          'Accepted', '2026-06-10 09:16:00', '2026-06-11 08:00:00'),
+    (3, 123, 3, 'ine.pdf',              'file:///SimuladorOneDrive_FEI/c3_ine.pdf',              'Accepted', '2026-06-10 09:17:00', '2026-06-11 08:00:00'),
+    (4, 123, 4, 'carta_aceptacion.pdf', 'file:///SimuladorOneDrive_FEI/d4_carta_aceptacion.pdf', 'Accepted', '2026-06-10 09:18:00', '2026-06-11 08:00:00');

@@ -5,6 +5,8 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.PractitionerDocument;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.DocumentCategory;
+import mx.uv.fei.domain.enums.DocumentStatus;
 import mx.uv.fei.domain.enums.DocumentType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.MonthlyReportManager;
@@ -15,11 +17,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -36,12 +40,14 @@ public class PractitionerDocumentsController {
     private static final String INITIAL_LOCKED_MESSAGE =
             "Esta sección estará disponible cuando tengas un proyecto asignado.";
     private static final String FINAL_LOCKED_MESSAGE =
-            "Tus documentos finales se habilitarán cuando tu profesor apruebe tus documentos iniciales.";
+            "Tus documentos finales se habilitarán cuando tu profesor acepte todos tus documentos iniciales.";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML private Label initialLockedLabel;
     @FXML private HBox initialActionsBox;
+    @FXML private ComboBox<DocumentType> initialTypeComboBox;
     @FXML private TableView<PractitionerDocument> initialDocumentsTableView;
+    @FXML private TableColumn<PractitionerDocument, String> initialTypeColumn;
     @FXML private TableColumn<PractitionerDocument, String> initialNameColumn;
     @FXML private TableColumn<PractitionerDocument, String> initialStatusColumn;
     @FXML private TableColumn<PractitionerDocument, String> initialCommentColumn;
@@ -49,7 +55,9 @@ public class PractitionerDocumentsController {
 
     @FXML private Label finalLockedLabel;
     @FXML private HBox finalActionsBox;
+    @FXML private ComboBox<DocumentType> finalTypeComboBox;
     @FXML private TableView<PractitionerDocument> finalDocumentsTableView;
+    @FXML private TableColumn<PractitionerDocument, String> finalTypeColumn;
     @FXML private TableColumn<PractitionerDocument, String> finalNameColumn;
     @FXML private TableColumn<PractitionerDocument, String> finalStatusColumn;
     @FXML private TableColumn<PractitionerDocument, String> finalCommentColumn;
@@ -71,8 +79,10 @@ public class PractitionerDocumentsController {
 
     @FXML
     public void initialize() {
-        setupColumns(initialNameColumn, initialStatusColumn, initialCommentColumn, initialDateColumn);
-        setupColumns(finalNameColumn, finalStatusColumn, finalCommentColumn, finalDateColumn);
+        setupTypeComboBox(initialTypeComboBox, DocumentCategory.INITIAL);
+        setupTypeComboBox(finalTypeComboBox, DocumentCategory.FINAL);
+        setupColumns(initialTypeColumn, initialNameColumn, initialStatusColumn, initialCommentColumn, initialDateColumn);
+        setupColumns(finalTypeColumn, finalNameColumn, finalStatusColumn, finalCommentColumn, finalDateColumn);
         initialDocumentsTableView.setItems(initialDocuments);
         finalDocumentsTableView.setItems(finalDocuments);
 
@@ -80,12 +90,29 @@ public class PractitionerDocumentsController {
         applyFinalTabAccess();
     }
 
-    private void setupColumns(TableColumn<PractitionerDocument, String> nameColumn,
+    private void setupTypeComboBox(ComboBox<DocumentType> comboBox, DocumentCategory category) {
+        comboBox.setItems(FXCollections.observableArrayList(DocumentType.valuesForCategory(category)));
+        comboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(DocumentType documentType) {
+                return documentType != null ? documentType.getDisplayName() : "";
+            }
+
+            @Override
+            public DocumentType fromString(String displayName) {
+                return null;
+            }
+        });
+    }
+
+    private void setupColumns(TableColumn<PractitionerDocument, String> typeColumn,
+                              TableColumn<PractitionerDocument, String> nameColumn,
                               TableColumn<PractitionerDocument, String> statusColumn,
                               TableColumn<PractitionerDocument, String> commentColumn,
                               TableColumn<PractitionerDocument, String> dateColumn) {
+        typeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDocumentTypeName()));
         nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDocumentName()));
-        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(statusDisplay(data.getValue().getStatus())));
         commentColumn.setCellValueFactory(data -> new SimpleStringProperty(safeComment(data.getValue().getReviewComment())));
         dateColumn.setCellValueFactory(data -> new SimpleStringProperty(formatDate(data.getValue().getUploadDate())));
     }
@@ -94,15 +121,15 @@ public class PractitionerDocumentsController {
         boolean hasProject = checkAccess(this::hasAssignedProject);
         toggleTabAccess(hasProject, initialLockedLabel, INITIAL_LOCKED_MESSAGE, initialActionsBox);
         if (hasProject) {
-            loadDocuments(DocumentType.INITIAL, initialDocuments);
+            loadDocuments(DocumentCategory.INITIAL, initialDocuments);
         }
     }
 
     private void applyFinalTabAccess() {
-        boolean isAccessGranted = checkAccess(this::hasReportsAccess);
-        toggleTabAccess(isAccessGranted, finalLockedLabel, FINAL_LOCKED_MESSAGE, finalActionsBox);
-        if (isAccessGranted) {
-            loadDocuments(DocumentType.FINAL, finalDocuments);
+        boolean areInitialsAccepted = checkAccess(this::areInitialDocumentsAccepted);
+        toggleTabAccess(areInitialsAccepted, finalLockedLabel, FINAL_LOCKED_MESSAGE, finalActionsBox);
+        if (areInitialsAccepted) {
+            loadDocuments(DocumentCategory.FINAL, finalDocuments);
         }
     }
 
@@ -118,8 +145,8 @@ public class PractitionerDocumentsController {
         return reportManager.verifyHasAssignedProject(currentPractitionerId());
     }
 
-    private boolean hasReportsAccess() throws ManagerException {
-        return reportManager.verifyReportsAccessGranted(currentPractitionerId());
+    private boolean areInitialDocumentsAccepted() throws ManagerException {
+        return documentManager.areAllInitialDocumentsAccepted(currentPractitionerId());
     }
 
     private boolean checkAccess(AccessCheck accessCheck) {
@@ -132,9 +159,9 @@ public class PractitionerDocumentsController {
         return isAllowed;
     }
 
-    private void loadDocuments(DocumentType documentType, ObservableList<PractitionerDocument> target) {
+    private void loadDocuments(DocumentCategory category, ObservableList<PractitionerDocument> target) {
         try {
-            target.setAll(documentManager.getPractitionerDocuments(currentPractitionerId(), documentType));
+            target.setAll(documentManager.getPractitionerDocuments(currentPractitionerId(), category));
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
         }
@@ -142,25 +169,61 @@ public class PractitionerDocumentsController {
 
     @FXML
     private void handleUploadInitialAction() {
-        uploadDocument(DocumentType.INITIAL, initialDocuments);
+        uploadDocument(initialTypeComboBox, DocumentCategory.INITIAL, initialDocuments);
     }
 
     @FXML
     private void handleUploadFinalAction() {
-        uploadDocument(DocumentType.FINAL, finalDocuments);
+        uploadDocument(finalTypeComboBox, DocumentCategory.FINAL, finalDocuments);
     }
 
-    private void uploadDocument(DocumentType documentType, ObservableList<PractitionerDocument> target) {
+    private void uploadDocument(ComboBox<DocumentType> typeComboBox, DocumentCategory category,
+                                ObservableList<PractitionerDocument> target) {
+        DocumentType selectedType = typeComboBox.getValue();
+        if (selectedType == null) {
+            Controller.showInfoAlert("Tipo requerido", "Selecciona el tipo de documento que vas a subir.");
+            return;
+        }
         File selectedFile = chooseFile();
         if (selectedFile == null) {
             return;
         }
         try {
-            documentManager.uploadDocument(currentPractitionerId(), selectedFile, documentType);
+            documentManager.uploadDocument(currentPractitionerId(), selectedType, selectedFile);
             Controller.showInfoAlert("Documento subido", "El documento se subió correctamente.");
-            loadDocuments(documentType, target);
+            loadDocuments(category, target);
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error al subir", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEditInitialAction() {
+        editDocument(initialDocumentsTableView, DocumentCategory.INITIAL, initialDocuments);
+    }
+
+    @FXML
+    private void handleEditFinalAction() {
+        editDocument(finalDocumentsTableView, DocumentCategory.FINAL, finalDocuments);
+    }
+
+    private void editDocument(TableView<PractitionerDocument> tableView, DocumentCategory category,
+                              ObservableList<PractitionerDocument> target) {
+        PractitionerDocument selectedDocument = tableView.getSelectionModel().getSelectedItem();
+        if (selectedDocument == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un documento de la tabla para editarlo.");
+            return;
+        }
+        File selectedFile = chooseFile();
+        if (selectedFile == null) {
+            return;
+        }
+        try {
+            documentManager.editDocument(selectedDocument.getDocumentId(), selectedFile);
+            Controller.showInfoAlert("Documento actualizado", "El documento se actualizó y quedó pendiente de revisión.");
+            loadDocuments(category, target);
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("Error al editar", e.getMessage());
         }
     }
 
@@ -194,6 +257,10 @@ public class PractitionerDocumentsController {
     private int currentPractitionerId() {
         User currentUser = store.getState().sessionState().currentUserInSession();
         return currentUser != null ? currentUser.getId() : 0;
+    }
+
+    private String statusDisplay(String databaseStatus) {
+        return databaseStatus != null ? DocumentStatus.fromString(databaseStatus).getDisplayName() : "";
     }
 
     private String safeComment(String comment) {

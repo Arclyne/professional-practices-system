@@ -112,9 +112,9 @@ public class PractitionerReportsListController implements Initializable {
         try {
             if (!reportManager.verifyHasAssignedProject(practitionerId)) {
                 blockingMessage = "Necesitas un proyecto asignado para registrar reportes.";
-            } else if (!reportManager.verifyReportsAccessGranted(practitionerId)) {
-                blockingMessage = "Tu profesor aún no habilita el registro de reportes. "
-                        + "Debe aceptar todos tus documentos iniciales primero.";
+            } else if (!reportManager.verifyAllInitialDocumentsAccepted(practitionerId)) {
+                blockingMessage = "Aún no puedes registrar reportes. "
+                        + "Tu profesor debe aceptar todos tus documentos iniciales primero.";
             }
         } catch (ManagerException e) {
             Controller.showAlert("Error de verificación", e.getMessage(), AlertType.ERROR);

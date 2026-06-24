@@ -6,6 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.PractitionerDocument;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.DocumentStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PractitionerDocumentManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
@@ -15,7 +16,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -32,12 +32,6 @@ import java.util.List;
 public class ProfessorDocumentsController {
 
     private static final String NO_DATE_LABEL = "—";
-    private static final String ACCESS_ALREADY_GRANTED =
-            "Este practicante ya tiene acceso al registro de reportes.";
-    private static final String ACCESS_READY =
-            "Todos los documentos iniciales están aceptados. Puedes otorgar el acceso a reportes.";
-    private static final String ACCESS_PENDING =
-            "Aún hay documentos iniciales sin aceptar. No puedes otorgar el acceso todavía.";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML private ListView<Practitioner> practitionersListView;
@@ -50,8 +44,6 @@ public class ProfessorDocumentsController {
     @FXML private TableColumn<PractitionerDocument, String> statusColumn;
     @FXML private TableColumn<PractitionerDocument, String> dateColumn;
     @FXML private TextField rejectReasonTextField;
-    @FXML private Label accessStatusLabel;
-    @FXML private Button grantAccessButton;
 
     private final PractitionerDocumentManager documentManager;
     private final PractitionerManager practitionerManager;
@@ -82,9 +74,9 @@ public class ProfessorDocumentsController {
     }
 
     private void setupColumns() {
-        typeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDocumentType()));
+        typeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDocumentTypeName()));
         nameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDocumentName()));
-        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(statusDisplay(data.getValue().getStatus())));
         dateColumn.setCellValueFactory(data -> new SimpleStringProperty(formatDate(data.getValue().getUploadDate())));
     }
 
@@ -138,26 +130,8 @@ public class ProfessorDocumentsController {
             documents.setAll(professorDocuments.stream()
                     .filter(document -> document.getPractitionerId() == selectedPractitioner.getId())
                     .toList());
-            updateAccessStatus();
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
-        }
-    }
-
-    private void updateAccessStatus() {
-        try {
-            if (practitionerManager.isReportsAccessGranted(selectedPractitioner.getId())) {
-                accessStatusLabel.setText(ACCESS_ALREADY_GRANTED);
-                grantAccessButton.setDisable(true);
-            } else if (documentManager.areAllInitialDocumentsAccepted(selectedPractitioner.getId())) {
-                accessStatusLabel.setText(ACCESS_READY);
-                grantAccessButton.setDisable(false);
-            } else {
-                accessStatusLabel.setText(ACCESS_PENDING);
-                grantAccessButton.setDisable(true);
-            }
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error de verificación", e.getMessage());
         }
     }
 
@@ -200,25 +174,6 @@ public class ProfessorDocumentsController {
         }
     }
 
-    @FXML
-    private void handleGrantAccessAction() {
-        if (selectedPractitioner == null) {
-            return;
-        }
-        try {
-            if (!documentManager.areAllInitialDocumentsAccepted(selectedPractitioner.getId())) {
-                Controller.showInfoAlert("Documentos pendientes", ACCESS_PENDING);
-                return;
-            }
-            practitionerManager.grantReportsAccess(selectedPractitioner.getId());
-            Controller.showInfoAlert("Acceso otorgado",
-                    "El practicante ya puede registrar tareas y reportes.");
-            updateAccessStatus();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("No se pudo otorgar el acceso", e.getMessage());
-        }
-    }
-
     private PractitionerDocument requireSelectedDocument() {
         PractitionerDocument selectedDocument = documentsTableView.getSelectionModel().getSelectedItem();
         if (selectedDocument == null) {
@@ -230,6 +185,10 @@ public class ProfessorDocumentsController {
     private void showReviewContainer(boolean isVisible) {
         reviewContainer.setVisible(isVisible);
         reviewContainer.setManaged(isVisible);
+    }
+
+    private String statusDisplay(String databaseStatus) {
+        return databaseStatus != null ? DocumentStatus.fromString(databaseStatus).getDisplayName() : "";
     }
 
     private String formatDate(Timestamp date) {

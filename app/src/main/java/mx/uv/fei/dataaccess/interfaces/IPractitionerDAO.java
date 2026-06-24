@@ -20,8 +20,4 @@ public interface IPractitionerDAO {
     List<Practitioner> retrieveAssignedPractitioners() throws DAOException;
 
     List<Practitioner> retrievePractitionersByProfessor(int professorId) throws DAOException;
-
-    void grantReportsAccess(int practitionerId) throws DAOException;
-
-    boolean isReportsAccessGranted(int practitionerId) throws DAOException;
 }

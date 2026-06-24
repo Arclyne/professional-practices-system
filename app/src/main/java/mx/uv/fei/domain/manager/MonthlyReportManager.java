@@ -6,10 +6,11 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
-import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -21,20 +22,20 @@ public class MonthlyReportManager {
     private final IMonthlyReportDAO reportDAO;
     private final IActivityDAO activityDAO;
     private final IPostulationDAO postulationDAO;
-    private final IPractitionerDAO practitionerDAO;
+    private final IPractitionerDocumentDAO documentDAO;
 
     @Inject
     public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO,
-                                IPractitionerDAO practitionerDAO) {
+                                IPractitionerDocumentDAO documentDAO) {
         this.reportDAO = reportDAO;
         this.activityDAO = activityDAO;
         this.postulationDAO = postulationDAO;
-        this.practitionerDAO = practitionerDAO;
+        this.documentDAO = documentDAO;
     }
 
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
         validateHasAssignedProject(report.getPractitionerId());
-        validateReportsAccessGranted(report.getPractitionerId());
+        validateAllInitialDocumentsAccepted(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
 
         try {
@@ -103,23 +104,18 @@ public class MonthlyReportManager {
         }
     }
 
-    public boolean verifyReportsAccessGranted(int practitionerId) throws ManagerException {
+    public boolean verifyAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
         try {
-            return practitionerDAO.isReportsAccessGranted(practitionerId);
+            return documentDAO.areAllDocumentsAccepted(practitionerId, DocumentCategory.INITIAL.getDatabaseValue());
         } catch (DAOException e) {
-            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
+            throw new ManagerException("No se pudieron verificar los documentos iniciales del practicante.", e);
         }
     }
 
-    private void validateReportsAccessGranted(int practitionerId) throws ManagerException {
-        try {
-            boolean isAccessGranted = practitionerDAO.isReportsAccessGranted(practitionerId);
-            if (!isAccessGranted) {
-                throw new ManagerException("Tu profesor aún no habilita el registro de reportes. "
-                        + "Debe aceptar todos tus documentos iniciales primero.");
-            }
-        } catch (DAOException e) {
-            throw new ManagerException("No se pudo verificar el acceso a reportes del practicante.", e);
+    private void validateAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
+        if (!verifyAllInitialDocumentsAccepted(practitionerId)) {
+            throw new ManagerException("Aún no puedes registrar reportes. "
+                    + "Tu profesor debe aceptar todos tus documentos iniciales primero.");
         }
     }
 

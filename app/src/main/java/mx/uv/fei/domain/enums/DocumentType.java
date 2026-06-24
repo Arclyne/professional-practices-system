@@ -1,33 +1,51 @@
 package mx.uv.fei.domain.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * Distingue la etapa a la que pertenece un documento del expediente del practicante.
+ * Catálogo de los tipos de documento que un practicante debe entregar.
  *
- * Los documentos iniciales habilitan el arranque de prácticas, mientras que los finales
- * (carta de liberación y similares) corresponden al cierre del proceso.
+ * Cada tipo se identifica por un código estable (almacenado en la tabla {@code document_type})
+ * y pertenece a una etapa ({@link DocumentCategory}). El nombre visible se muestra en la interfaz.
  *
  * @author Angel Gabriel Aguilar Hernandez
  * @version 1.0
  */
 public enum DocumentType {
 
-    INITIAL("Inicial"),
-    FINAL("Final");
+    CURP("CURP", "CURP", DocumentCategory.INITIAL),
+    SCHEDULE("SCHEDULE", "Horario", DocumentCategory.INITIAL),
+    INE("INE", "INE", DocumentCategory.INITIAL),
+    ACCEPTANCE_LETTER("ACCEPTANCE_LETTER", "Carta de aceptación", DocumentCategory.INITIAL),
+    RELEASE_LETTER("RELEASE_LETTER", "Carta de liberación", DocumentCategory.FINAL);
 
-    private final String databaseValue;
+    private final String code;
+    private final String displayName;
+    private final DocumentCategory category;
 
-    DocumentType(String databaseValue) {
-        this.databaseValue = databaseValue;
+    DocumentType(String code, String displayName, DocumentCategory category) {
+        this.code = code;
+        this.displayName = displayName;
+        this.category = category;
     }
 
-    public String getDatabaseValue() { return databaseValue; }
+    public String getCode() { return code; }
+    public String getDisplayName() { return displayName; }
+    public DocumentCategory getCategory() { return category; }
 
-    public static DocumentType fromString(String databaseValue) {
+    public static List<DocumentType> valuesForCategory(DocumentCategory category) {
+        return Arrays.stream(values())
+                .filter(type -> type.category == category)
+                .toList();
+    }
+
+    public static DocumentType fromCode(String code) {
         for (DocumentType type : values()) {
-            if (type.databaseValue.equalsIgnoreCase(databaseValue)) {
+            if (type.code.equalsIgnoreCase(code)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Tipo de documento no válido: " + databaseValue);
+        throw new IllegalArgumentException("Tipo de documento no válido: " + code);
     }
 }

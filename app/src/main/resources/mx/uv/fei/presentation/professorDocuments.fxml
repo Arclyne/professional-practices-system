@@ -9,7 +9,6 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <HBox stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
@@ -39,8 +38,8 @@
 
         <TableView fx:id="documentsTableView" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="typeColumn" prefWidth="90.0" text="Etapa"/>
-                <TableColumn fx:id="nameColumn" prefWidth="260.0" text="Documento"/>
+                <TableColumn fx:id="typeColumn" prefWidth="180.0" text="Tipo"/>
+                <TableColumn fx:id="nameColumn" prefWidth="220.0" text="Archivo"/>
                 <TableColumn fx:id="statusColumn" prefWidth="110.0" text="Estado"/>
                 <TableColumn fx:id="dateColumn" prefWidth="150.0" text="Subido"/>
             </columns>
@@ -52,15 +51,6 @@
             <Button onAction="#handleViewFileAction" styleClass="secondary-button" text="Ver archivo"/>
             <Button onAction="#handleAcceptAction" styleClass="primary-button" text="Aceptar"/>
             <Button onAction="#handleRejectAction" styleClass="secondary-button" text="Rechazar"/>
-        </HBox>
-
-        <Separator/>
-
-        <HBox alignment="CENTER_LEFT" spacing="12.0">
-            <Label fx:id="accessStatusLabel" textFill="#6b7280" wrapText="true" HBox.hgrow="ALWAYS"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="grantAccessButton" onAction="#handleGrantAccessAction" styleClass="primary-button"
-                    text="Otorgar acceso a reportes"/>
         </HBox>
     </VBox>
 </HBox>

@@ -9,7 +9,7 @@ import mx.uv.fei.dataaccess.interfaces.ISelfEvaluationDAO;
 import mx.uv.fei.domain.dto.GradingEligibility;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.SelfEvaluation;
-import mx.uv.fei.domain.enums.DocumentType;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -46,7 +46,7 @@ public class GradingEligibilityManager {
     public GradingEligibility evaluateEligibility(int practitionerId) throws ManagerException {
         try {
             boolean finalDocumentsAccepted = documentDAO.areAllDocumentsAccepted(
-                    practitionerId, DocumentType.FINAL.getDatabaseValue());
+                    practitionerId, DocumentCategory.FINAL.getDatabaseValue());
             ProgressReport finalReport = progressReportDAO.getProgressReportByPractitionerAndType(
                     practitionerId, ProgressReportType.FINAL.getDatabaseValue());
             boolean finalReportAccepted = isReportEvaluated(finalReport);
