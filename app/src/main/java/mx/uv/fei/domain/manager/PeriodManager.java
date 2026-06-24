@@ -50,6 +50,14 @@ public class PeriodManager {
         }
     }
 
+    public Period getActivePeriod() throws ManagerException {
+        try {
+            return periodDAO.getActivePeriod();
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo recuperar el periodo académico activo.", e);
+        }
+    }
+
     public Period getPeriodById(int periodId) throws ManagerException {
         try {
             return periodDAO.recoverPeriod(periodId);

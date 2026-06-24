@@ -35,6 +35,7 @@ public class ProgressReportManager {
         double accumulatedHours = getAccumulatedHours(practitionerId);
         validateHoursRequirement(reportType, accumulatedHours);
         validateReportDoesNotExist(practitionerId, reportType);
+        validateIntermediateReportSubmittedBeforeFinal(practitionerId, reportType);
 
         ProgressReport report = buildProgressReport(practitionerId, reportType, periodStart, periodEnd, accumulatedHours);
 
@@ -116,6 +117,29 @@ public class ProgressReportManager {
         } catch (DAOException e) {
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
+    }
+
+    private void validateIntermediateReportSubmittedBeforeFinal(int practitionerId, ProgressReportType reportType)
+            throws ManagerException {
+        if (reportType == ProgressReportType.FINAL && !isIntermediateReportSubmitted(practitionerId)) {
+            throw new ManagerException(
+                    "Debes generar y entregar tu reporte Intermedio antes de generar el reporte Final.");
+        }
+    }
+
+    private boolean isIntermediateReportSubmitted(int practitionerId) throws ManagerException {
+        boolean isSubmitted = false;
+
+        try {
+            ProgressReport intermediateReport = progressReportDAO
+                    .getProgressReportByPractitionerAndType(practitionerId, ProgressReportType.INTERMEDIO.getDatabaseValue());
+            isSubmitted = intermediateReport != null
+                    && !ReportStatus.PENDING.getDatabaseValue().equals(intermediateReport.getStatus());
+        } catch (DAOException e) {
+            throw new ManagerException("Error al recuperar los reportes de avance.", e);
+        }
+
+        return isSubmitted;
     }
 
     private ProgressReport buildProgressReport(int practitionerId, ProgressReportType reportType,

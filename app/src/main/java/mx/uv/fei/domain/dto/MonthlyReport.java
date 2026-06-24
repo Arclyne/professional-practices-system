@@ -62,13 +62,15 @@ public class MonthlyReport {
             isEqual = true;
         } else if (obj != null && getClass() == obj.getClass()) {
             MonthlyReport other = (MonthlyReport) obj;
-            isEqual = this.reportId == other.reportId;
+            isEqual = this.practitionerId == other.practitionerId &&
+                    this.year == other.year &&
+                    Objects.equals(this.monthName, other.monthName);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reportId);
+        return Objects.hash(practitionerId, monthName, year);
     }
 }

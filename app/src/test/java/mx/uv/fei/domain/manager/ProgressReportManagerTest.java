@@ -103,11 +103,31 @@ public class ProgressReportManagerTest {
     void generateProgressReport_FinalWithEnoughHours_ReturnsReport() throws ManagerException {
         stubProgressReportDAO.setAccumulatedHours(VALID_FINAL_HOURS);
         stubProgressReportDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setIntermediateStatus("Entregado");
 
         ProgressReport generatedReport = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END);
 
         assertNotNull(generatedReport);
+    }
+
+    @Test
+    void generateProgressReport_FinalWithoutIntermediate_ThrowsManagerException() {
+        stubProgressReportDAO.setAccumulatedHours(VALID_FINAL_HOURS);
+        stubProgressReportDAO.setExistingIntermediate(false);
+
+        assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
+                PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END));
+    }
+
+    @Test
+    void generateProgressReport_FinalWithPendingIntermediate_ThrowsManagerException() {
+        stubProgressReportDAO.setAccumulatedHours(VALID_FINAL_HOURS);
+        stubProgressReportDAO.setExistingIntermediate(true);
+        stubProgressReportDAO.setIntermediateStatus("Pendiente de Firma");
+
+        assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
+                PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END));
     }
 
     @Test
@@ -268,6 +288,7 @@ public class ProgressReportManagerTest {
 
         private double accumulatedHours = 0.0;
         private boolean existingIntermediate = false;
+        private String intermediateStatus = "Pendiente de Firma";
         private ProgressReport lastUpdatedReport;
         private final List<ProgressReport> submittedReports = new ArrayList<>();
         private int nextId = 1;
@@ -278,6 +299,10 @@ public class ProgressReportManagerTest {
 
         void setExistingIntermediate(boolean exists) {
             this.existingIntermediate = exists;
+        }
+
+        void setIntermediateStatus(String intermediateStatus) {
+            this.intermediateStatus = intermediateStatus;
         }
 
         void addSubmittedReport(ProgressReport report) {
@@ -307,7 +332,7 @@ public class ProgressReportManagerTest {
                 foundReport.setReportId(1);
                 foundReport.setPractitionerId(practitionerId);
                 foundReport.setReportType("Intermedio");
-                foundReport.setStatus("Pendiente de Firma");
+                foundReport.setStatus(intermediateStatus);
             }
 
             return foundReport;

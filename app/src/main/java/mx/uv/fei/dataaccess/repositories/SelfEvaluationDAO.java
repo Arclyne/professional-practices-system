@@ -70,7 +70,7 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
 
     @Override
     public SelfEvaluation getSelfEvaluationByReportId(int reportId) throws DAOException {
-        SelfEvaluation recoveredSelfEvaluation = new SelfEvaluation();
+        SelfEvaluation recoveredSelfEvaluation = null;
 
         try (Connection connection = databaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_SELECT_SELF_EVALUATION_BY_REPORT)) {

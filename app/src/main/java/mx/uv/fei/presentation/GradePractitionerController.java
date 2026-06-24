@@ -4,11 +4,13 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.GradingEligibility;
+import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.GradingEligibilityManager;
 import mx.uv.fei.domain.manager.GradingManager;
+import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -32,7 +34,8 @@ import java.util.ResourceBundle;
 @Component
 public class GradePractitionerController implements Initializable {
 
-    private static final String ACTIVE_PERIOD = "Junio-Diciembre 2026";
+    private static final String NO_ACTIVE_PERIOD_MESSAGE =
+            "No hay un periodo académico activo. Solicita al coordinador que active uno.";
 
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private VBox gradeContainer;
@@ -46,18 +49,22 @@ public class GradePractitionerController implements Initializable {
     private final GradingManager gradingManager;
     private final GradingEligibilityManager eligibilityManager;
     private final PractitionerManager practitionerManager;
+    private final PeriodManager periodManager;
     private final AppStore store;
 
     private Practitioner selectedPractitioner;
     private boolean selectedPractitionerEligible;
     private int professorId;
+    private String activePeriod;
 
     @Inject
     public GradePractitionerController(GradingManager gradingManager, GradingEligibilityManager eligibilityManager,
-                                       PractitionerManager practitionerManager, AppStore store) {
+                                       PractitionerManager practitionerManager, PeriodManager periodManager,
+                                       AppStore store) {
         this.gradingManager = gradingManager;
         this.eligibilityManager = eligibilityManager;
         this.practitionerManager = practitionerManager;
+        this.periodManager = periodManager;
         this.store = store;
     }
 
@@ -71,8 +78,25 @@ public class GradePractitionerController implements Initializable {
         labelNoPractitioners.setVisible(false);
         labelNoPractitioners.setManaged(false);
 
-        configurePractitionerList();
-        loadPractitionersForProfessor();
+        resolveActivePeriod();
+        if (activePeriod != null) {
+            configurePractitionerList();
+            loadPractitionersForProfessor();
+        }
+    }
+
+    private void resolveActivePeriod() {
+        try {
+            Period period = periodManager.getActivePeriod();
+            activePeriod = period != null ? period.getPeriodName() : null;
+            if (activePeriod == null) {
+                labelNoPractitioners.setVisible(true);
+                labelNoPractitioners.setManaged(true);
+                labelNoPractitioners.setText(NO_ACTIVE_PERIOD_MESSAGE);
+            }
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
     }
 
     private void configurePractitionerList() {
@@ -162,7 +186,7 @@ public class GradePractitionerController implements Initializable {
     private void checkIfAlreadyGraded(int practitionerId) {
         try {
             boolean isAlreadyGraded = gradingManager
-                    .getGradeByPractitionerAndPeriod(practitionerId, ACTIVE_PERIOD) != null;
+                    .getGradeByPractitionerAndPeriod(practitionerId, activePeriod) != null;
             if (isAlreadyGraded) {
                 labelAlreadyGraded.setVisible(true);
                 labelAlreadyGraded.setManaged(true);
@@ -193,7 +217,7 @@ public class GradePractitionerController implements Initializable {
         }
         try {
             double finalGrade = Double.parseDouble(rawGrade);
-            gradingManager.registerGrade(selectedPractitioner.getId(), professorId, ACTIVE_PERIOD, finalGrade);
+            gradingManager.registerGrade(selectedPractitioner.getId(), professorId, activePeriod, finalGrade);
             Controller.showAlert("Calificación Guardada",
                     "Se registró la calificación de " + selectedPractitioner.getName()
                             + " " + selectedPractitioner.getLastName() + " como " + finalGrade + ".",
@@ -222,7 +246,7 @@ public class GradePractitionerController implements Initializable {
         }
         try {
             double newGrade = Double.parseDouble(rawGrade);
-            gradingManager.updateFinalGrade(selectedPractitioner.getId(), ACTIVE_PERIOD, newGrade);
+            gradingManager.updateFinalGrade(selectedPractitioner.getId(), activePeriod, newGrade);
             Controller.showAlert("Calificación Actualizada",
                     "La calificación de " + selectedPractitioner.getName()
                             + " " + selectedPractitioner.getLastName() + " fue actualizada a " + newGrade + ".",

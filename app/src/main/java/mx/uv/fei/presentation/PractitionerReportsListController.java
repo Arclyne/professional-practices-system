@@ -138,13 +138,14 @@ public class PractitionerReportsListController implements Initializable {
             }
         });
 
-        reportsListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    if (newValue != null) {
-                        showReportDetails(newValue);
-                    }
-                }
-        );
+        reportsListView.getSelectionModel().selectedIndexProperty().addListener(
+                (_, _, selectedIndex) -> showSelectedReportDetails(selectedIndex.intValue()));
+    }
+
+    private void showSelectedReportDetails(int selectedIndex) {
+        if (selectedIndex >= 0 && selectedIndex < reportsListView.getItems().size()) {
+            showReportDetails(reportsListView.getItems().get(selectedIndex));
+        }
     }
 
     private void loadReportsList(int practitionerId) {
