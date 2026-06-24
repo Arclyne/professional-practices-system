@@ -4,12 +4,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 public class FormField extends VBox {
     @FXML private Label label;
     @FXML private TextField textField;
+
+    private boolean numericOnly;
 
     public FormField() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FormField.fxml"));
@@ -43,5 +46,19 @@ public class FormField extends VBox {
 
     public void setText(String text) {
         textField.setText(text);
+    }
+
+    public boolean isNumericOnly() {
+        return numericOnly;
+    }
+
+    public void setNumericOnly(boolean numericOnly) {
+        this.numericOnly = numericOnly;
+        if (numericOnly) {
+            textField.setTextFormatter(new TextFormatter<>(change ->
+                    change.getControlNewText().matches("\\d*") ? change : null));
+        } else {
+            textField.setTextFormatter(null);
+        }
     }
 }

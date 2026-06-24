@@ -33,6 +33,7 @@
         <Button onAction="#handleActivateAction" styleClass="secondary-button" text="Activar"/>
         <Button onAction="#handleInactivateAction" styleClass="secondary-button" text="Inactivar"/>
         <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
+        <Button onAction="#handleReEnrollAction" styleClass="secondary-button" text="Reinscribir"/>
         <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
     </HBox>
 

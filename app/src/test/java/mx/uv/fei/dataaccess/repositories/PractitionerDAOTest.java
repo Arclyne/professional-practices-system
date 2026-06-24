@@ -29,6 +29,8 @@ public class PractitionerDAOTest {
 
     private static final int STORED_PRACTITIONER_ID = 123;
     private static final int STORED_GROUP_ID = 6;
+    private static final int STORED_PROFESSOR_ID = 68;
+    private static final int STORED_PERIOD_ID = 5;
     private static final int NON_EXISTENT_ID = 9999;
 
     @Inject
@@ -134,6 +136,31 @@ public class PractitionerDAOTest {
         List<Practitioner> resultPractitioners = practitionerDAO.retrieveAssignedPractitioners();
 
         assertEquals(expectedPractitioners, resultPractitioners);
+    }
+
+    @Test
+    void retrievePractitionersByProfessorAndPeriod_AssignedPractitioner_ReturnsPractitioner() throws DAOException {
+        List<Practitioner> resultPractitioners = practitionerDAO
+                .retrievePractitionersByProfessorAndPeriod(STORED_PROFESSOR_ID, STORED_PERIOD_ID);
+
+        assertEquals(1, resultPractitioners.size());
+        assertEquals(STORED_PRACTITIONER_ID, resultPractitioners.get(0).getId());
+    }
+
+    @Test
+    void retrievePractitionersByProfessorAndPeriod_OtherPeriod_ReturnsEmptyList() throws DAOException {
+        List<Practitioner> resultPractitioners = practitionerDAO
+                .retrievePractitionersByProfessorAndPeriod(STORED_PROFESSOR_ID, NON_EXISTENT_ID);
+
+        assertTrue(resultPractitioners.isEmpty());
+    }
+
+    @Test
+    void retrievePractitionersByGroup_ExistingGroup_ReturnsPractitioner() throws DAOException {
+        List<Practitioner> resultPractitioners = practitionerDAO.retrievePractitionersByGroup(STORED_GROUP_ID);
+
+        assertEquals(1, resultPractitioners.size());
+        assertEquals(STORED_PRACTITIONER_ID, resultPractitioners.get(0).getId());
     }
 
     @Test

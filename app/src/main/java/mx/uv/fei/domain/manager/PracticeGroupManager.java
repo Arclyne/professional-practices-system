@@ -62,9 +62,11 @@ public class PracticeGroupManager {
 
     private void validatePracticeGroupData(PracticeGroup practiceGroup) throws ManagerException {
         BaseValidator.validateString(practiceGroup.getSection(),
-                "La sección del grupo de prácticas es obligatoria.");
+                "El NRC del grupo de prácticas es obligatorio.");
+        BaseValidator.validateNumeric(practiceGroup.getSection(),
+                "El NRC del grupo de prácticas debe contener únicamente números.");
         BaseValidator.validateMaxLength(practiceGroup.getSection(), FieldLengthLimits.SECTION_MAX,
-                "La sección no puede exceder " + FieldLengthLimits.SECTION_MAX + " caracteres.");
+                "El NRC no puede exceder " + FieldLengthLimits.SECTION_MAX + " caracteres.");
         BaseValidator.validateId(practiceGroup.getPeriodId(),
                 "Debe seleccionar el periodo escolar del grupo.");
         BaseValidator.validateId(practiceGroup.getProfessorId(),

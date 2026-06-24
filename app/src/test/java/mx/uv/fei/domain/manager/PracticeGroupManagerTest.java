@@ -39,7 +39,7 @@ public class PracticeGroupManagerTest {
     @Test
     void registerNewPracticeGroup_ValidGroup_DoesNotThrow() {
         PracticeGroup newGroup = new PracticeGroup();
-        newGroup.setSection("NRC-12345");
+        newGroup.setSection("12345");
         newGroup.setProfessorId(STORED_PROFESSOR_ID);
         newGroup.setPeriodId(STORED_PERIOD_ID);
 
@@ -51,7 +51,7 @@ public class PracticeGroupManagerTest {
         List<PracticeGroup> expectedGroups = new ArrayList<>();
         PracticeGroup storedGroup = new PracticeGroup();
         storedGroup.setGroupId(STORED_GROUP_ID);
-        storedGroup.setSection("Seccion 601");
+        storedGroup.setSection("60123");
         storedGroup.setPeriodId(STORED_PERIOD_ID);
         storedGroup.setProfessorId(STORED_PROFESSOR_ID);
         expectedGroups.add(storedGroup);

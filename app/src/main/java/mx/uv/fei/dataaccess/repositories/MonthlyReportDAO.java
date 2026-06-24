@@ -37,6 +37,14 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
             "SELECT * FROM monthly_report WHERE practitioner_id = ? ORDER BY year DESC, start_date DESC";
     private static final String SQL_SELECT_SUBMITTED_REPORTS =
             "SELECT * FROM monthly_report WHERE status IN ('Entregado', 'Evaluado') ORDER BY year DESC, start_date DESC";
+    private static final String SQL_SELECT_SUBMITTED_REPORTS_BY_PROFESSOR =
+            "SELECT mr.* FROM monthly_report mr " +
+                    "INNER JOIN group_enrollment ge ON mr.practitioner_id = ge.practitioner_id " +
+                    "INNER JOIN practice_group pg ON ge.group_id = pg.group_id " +
+                    "WHERE mr.status IN ('Entregado', 'Evaluado') " +
+                    "AND pg.professor_id = ? " +
+                    "AND pg.period_id = ? " +
+                    "ORDER BY mr.year DESC, mr.start_date DESC";
 
     @Inject
     public MonthlyReportDAO(IDatabaseConnection databaseConnection) {
@@ -116,6 +124,12 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
     @Override
     public List<MonthlyReport> getSubmittedReports() throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_REPORTS, this::mapResultSetToMonthlyReport);
+    }
+
+    @Override
+    public List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException {
+        return recoverALL(SQL_SELECT_SUBMITTED_REPORTS_BY_PROFESSOR, this::mapResultSetToMonthlyReport,
+                professorId, periodId);
     }
 
     private MonthlyReport mapResultSetToMonthlyReport(ResultSet resultSet) throws SQLException {

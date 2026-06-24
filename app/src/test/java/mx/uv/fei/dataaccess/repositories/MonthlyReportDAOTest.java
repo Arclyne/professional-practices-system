@@ -28,6 +28,8 @@ public class MonthlyReportDAOTest {
 
     private static final int PRACTITIONER_ID = 123;
     private static final int STORED_REPORT_ID = 1;
+    private static final int PROFESSOR_ID = 68;
+    private static final int PERIOD_ID = 5;
     private static final int NON_EXISTENT_ID = 9999;
 
     @Inject
@@ -116,6 +118,27 @@ public class MonthlyReportDAOTest {
         juneReport.setStatus("Entregado");
 
         assertDoesNotThrow(() -> monthlyReportDAO.updateReport(juneReport, STORED_REPORT_ID));
+    }
+
+    @Test
+    void getSubmittedReportsByProfessor_OwnPractitioner_ReturnsReport() throws DAOException {
+        juneReport.setStatus("Entregado");
+        monthlyReportDAO.insertReport(juneReport);
+
+        List<MonthlyReport> resultReports = monthlyReportDAO.getSubmittedReportsByProfessor(PROFESSOR_ID, PERIOD_ID);
+
+        assertEquals(1, resultReports.size());
+        assertEquals(PRACTITIONER_ID, resultReports.get(0).getPractitionerId());
+    }
+
+    @Test
+    void getSubmittedReportsByProfessor_OtherProfessor_ReturnsEmptyList() throws DAOException {
+        juneReport.setStatus("Entregado");
+        monthlyReportDAO.insertReport(juneReport);
+
+        List<MonthlyReport> resultReports = monthlyReportDAO.getSubmittedReportsByProfessor(NON_EXISTENT_ID, PERIOD_ID);
+
+        assertTrue(resultReports.isEmpty());
     }
 
     @Test

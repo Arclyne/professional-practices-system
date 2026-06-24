@@ -46,6 +46,12 @@ public class BaseValidator {
         }
     }
 
+    public static void validateNumeric(String value, String errorMessage) throws ManagerException {
+        if (!isValidPersonalNumber(value)) {
+            throw new ManagerException(errorMessage);
+        }
+    }
+
     public static void validateDateRange(Date startDate, Date endDate, String errorMessage) throws ManagerException {
         if (startDate != null && endDate != null && endDate.before(startDate)) {
             throw new ManagerException(errorMessage);

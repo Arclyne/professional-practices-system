@@ -7,10 +7,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import mx.uv.fei.presentation.components.FormComboBox?>
-<?import mx.uv.fei.presentation.components.FormField?>
 
 <AnchorPane prefHeight="500.0" prefWidth="450.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterPracticeGroupController">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterEnrollmentController">
     <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
 
@@ -18,29 +17,32 @@
             <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
         </padding>
 
-        <Label styleClass="form-title" text="Registro de Grupo de Prácticas"/>
+        <Label styleClass="form-title" text="Reinscribir Practicante"/>
 
-        <Label text="Llene los campos para asignar un profesor a un bloque." textFill="#6b7280">
+        <Label text="Inscribe al practicante en un grupo de otro periodo. No puede repetir el mismo periodo."
+               textFill="#6b7280" wrapText="true">
             <VBox.margin>
-                <Insets bottom="5.0" />
+                <Insets bottom="5.0"/>
             </VBox.margin>
         </Label>
 
-        <FormField fx:id="fieldSection" labelText="NRC:" promptText="Ej. 60123" numericOnly="true"/>
+        <VBox spacing="6.0">
+            <Label text="Practicante:" styleClass="field-label"/>
+            <Label fx:id="practitionerNameLabel" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        </VBox>
 
-        <FormComboBox fx:id="comboBoxProfessor" labelText="Asignar Profesor Titular:"/>
-
-        <FormComboBox fx:id="comboBoxPeriod" labelText="Asignar Periodo Académico:"/>
+        <FormComboBox fx:id="groupFormComboBox" labelText="Grupo (NRC) y periodo:"/>
 
         <HBox spacing="15.0">
             <VBox.margin>
                 <Insets top="20.0"/>
             </VBox.margin>
             <Button fx:id="cancelButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#handleActionCancelButton" styleClass="secondary-button" text="Cancelar" HBox.hgrow="ALWAYS"/>
-
+                    onAction="#handleActionCancelButton" styleClass="secondary-button" text="Cancelar"
+                    HBox.hgrow="ALWAYS"/>
             <Button fx:id="saveButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#handleActionSaveButton" styleClass="primary-button" text="Guardar Grupo" HBox.hgrow="ALWAYS"/>
+                    onAction="#handleActionSaveButton" styleClass="primary-button" text="Reinscribir"
+                    HBox.hgrow="ALWAYS"/>
         </HBox>
 
     </VBox>

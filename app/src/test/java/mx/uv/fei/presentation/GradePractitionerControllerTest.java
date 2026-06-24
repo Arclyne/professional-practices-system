@@ -28,6 +28,7 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.manager.GradingEligibilityManager;
 import mx.uv.fei.domain.manager.GradingManager;
 import mx.uv.fei.domain.manager.PeriodManager;
+import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.state.RootState;
@@ -42,6 +43,7 @@ public class GradePractitionerControllerTest extends ApplicationTest {
     private static final String ACTIVE_PERIOD = "Junio-Diciembre 2026";
     private static final String SAVE_BUTTON_TEXT = "Guardar Calificación";
     private static final int PROFESSOR_ID = 68;
+    private static final int ACTIVE_PERIOD_ID = 5;
     private static final int PRACTITIONER_ID = 123;
     private static final double TENTATIVE_GRADE = 7.5;
     private static final double FINAL_GRADE = 9.5;
@@ -49,6 +51,7 @@ public class GradePractitionerControllerTest extends ApplicationTest {
     private final GradingManager gradingManager = mock(GradingManager.class);
     private final GradingEligibilityManager eligibilityManager = mock(GradingEligibilityManager.class);
     private final PractitionerManager practitionerManager = mock(PractitionerManager.class);
+    private final PracticeGroupManager practiceGroupManager = mock(PracticeGroupManager.class);
     private final PeriodManager periodManager = mock(PeriodManager.class);
     private final AppStore appStore = mock(AppStore.class);
 
@@ -64,7 +67,9 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         professor.setId(PROFESSOR_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(professor)));
         when(periodManager.getActivePeriod()).thenReturn(buildActivePeriod());
-        when(practitionerManager.retrievePractitionersByProfessor(PROFESSOR_ID)).thenReturn(buildAssignedPractitioners());
+        when(practiceGroupManager.getAllPracticeGroups()).thenReturn(List.of());
+        when(practitionerManager.retrievePractitionersByProfessorAndPeriod(PROFESSOR_ID, ACTIVE_PERIOD_ID))
+                .thenReturn(buildAssignedPractitioners());
         when(gradingManager.previewTentativeGrade(PRACTITIONER_ID)).thenReturn(TENTATIVE_GRADE);
         when(gradingManager.getGradeByPractitionerAndPeriod(PRACTITIONER_ID, ACTIVE_PERIOD)).thenReturn(null);
         when(eligibilityManager.evaluateEligibility(PRACTITIONER_ID))
@@ -73,7 +78,7 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->
                 new GradePractitionerController(gradingManager, eligibilityManager, practitionerManager,
-                        periodManager, appStore));
+                        practiceGroupManager, periodManager, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
@@ -82,6 +87,7 @@ public class GradePractitionerControllerTest extends ApplicationTest {
 
     private Period buildActivePeriod() {
         Period activePeriod = new Period();
+        activePeriod.setPeriodId(ACTIVE_PERIOD_ID);
         activePeriod.setPeriodName(ACTIVE_PERIOD);
         return activePeriod;
     }

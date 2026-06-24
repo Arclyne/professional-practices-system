@@ -5,11 +5,14 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.EvaluableReport;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.ProgressReport;
+import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.MonthlyReportManager;
+import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
@@ -52,23 +55,42 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     private final MonthlyReportManager monthlyReportManager;
     private final ProgressReportManager progressReportManager;
+    private final PeriodManager periodManager;
     private final AppStore store;
 
     private EvaluableReport selectedReport;
+    private int professorId;
+    private int activePeriodId;
 
     @Inject
     public ProfessorEvaluateReportController(MonthlyReportManager monthlyReportManager,
-                                             ProgressReportManager progressReportManager, AppStore store) {
+                                             ProgressReportManager progressReportManager, PeriodManager periodManager,
+                                             AppStore store) {
         this.monthlyReportManager = monthlyReportManager;
         this.progressReportManager = progressReportManager;
+        this.periodManager = periodManager;
         this.store = store;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         showEvaluationContainer(false);
+        resolveProfessorContext();
         configureListView();
         loadAllSubmittedReports();
+    }
+
+    private void resolveProfessorContext() {
+        User currentUser = store.getState().sessionState().currentUserInSession();
+        professorId = currentUser != null ? currentUser.getId() : 0;
+
+        try {
+            Period activePeriod = periodManager.getActivePeriod();
+            activePeriodId = activePeriod != null ? activePeriod.getPeriodId() : 0;
+        } catch (ManagerException e) {
+            activePeriodId = 0;
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.WARNING);
+        }
     }
 
     private void configureListView() {
@@ -107,7 +129,8 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     private void loadMonthlyReports(List<EvaluableReport> targetReports) {
         try {
-            List<MonthlyReport> monthlyReports = monthlyReportManager.getReportsForEvaluation();
+            List<MonthlyReport> monthlyReports = monthlyReportManager
+                    .getReportsForEvaluation(professorId, activePeriodId);
             for (MonthlyReport report : monthlyReports) {
                 targetReports.add(EvaluableReport.fromMonthlyReport(report));
             }
@@ -118,7 +141,8 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     private void loadProgressReports(List<EvaluableReport> targetReports) {
         try {
-            List<ProgressReport> progressReports = progressReportManager.getSubmittedProgressReports();
+            List<ProgressReport> progressReports = progressReportManager
+                    .getSubmittedProgressReports(professorId, activePeriodId);
             for (ProgressReport report : progressReports) {
                 targetReports.add(EvaluableReport.fromProgressReport(report));
             }

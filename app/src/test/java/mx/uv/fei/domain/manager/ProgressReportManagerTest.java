@@ -349,6 +349,12 @@ public class ProgressReportManagerTest {
         }
 
         @Override
+        public List<ProgressReport> getSubmittedProgressReportsByProfessor(int professorId, int periodId)
+                throws DAOException {
+            return new ArrayList<>(submittedReports);
+        }
+
+        @Override
         public double getTotalAccumulatedHours(int practitionerId) throws DAOException {
             return accumulatedHours;
         }

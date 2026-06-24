@@ -24,6 +24,7 @@ public class CoordinatorPractitionersController {
     private static final String GROUP_PREFIX = "Grupo ";
     private static final String NO_STATUS_LABEL = "—";
     private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPractitioner.fxml";
+    private static final String ENROLLMENT_FORM_VIEW = "/mx/uv/fei/presentation/registerEnrollment.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Practitioner> practitionersTableView;
@@ -128,6 +129,17 @@ public class CoordinatorPractitionersController {
 
     private void openForEdit(Practitioner practitioner) {
         shellNavigator.openForm(REGISTER_FORM_VIEW, practitioner);
+    }
+
+    @FXML
+    private void handleReEnrollAction() {
+        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
+        if (selectedPractitioner == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para reinscribirlo.");
+            return;
+        }
+
+        shellNavigator.openForm(ENROLLMENT_FORM_VIEW, selectedPractitioner);
     }
 
     @FXML
