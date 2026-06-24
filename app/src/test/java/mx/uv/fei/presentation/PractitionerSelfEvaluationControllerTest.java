@@ -22,6 +22,7 @@ import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.manager.SelfEvaluationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import mx.uv.fei.domain.statemachine.state.RootState;
 import mx.uv.fei.domain.statemachine.state.SessionState;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,6 +37,7 @@ public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
 
     private final SelfEvaluationManager selfEvaluationManager = mock(SelfEvaluationManager.class);
     private final ProgressReportManager progressReportManager = mock(ProgressReportManager.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
     private final AppStore appStore = mock(AppStore.class);
 
     @BeforeAll
@@ -55,7 +57,8 @@ public class PractitionerSelfEvaluationControllerTest extends ApplicationTest {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->
-                new PractitionerSelfEvaluationController(selfEvaluationManager, progressReportManager, appStore));
+                new PractitionerSelfEvaluationController(selfEvaluationManager, progressReportManager,
+                        shellNavigator, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
