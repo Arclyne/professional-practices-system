@@ -6,13 +6,10 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PractitionerManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListCell;
@@ -23,16 +20,18 @@ import java.util.List;
 @Component
 public class PendingPractitionerSelectionController {
 
+    private static final String ASSIGN_PROJECT_VIEW = "/mx/uv/fei/presentation/assignProject.fxml";
+
     @FXML private ListView<Practitioner> pendingPractitionersListView;
 
     private final PractitionerManager practitionerManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Practitioner> pendingPractitioners = FXCollections.observableArrayList();
 
     @Inject
-    public PendingPractitionerSelectionController(PractitionerManager practitionerManager, AppStore store) {
+    public PendingPractitionerSelectionController(PractitionerManager practitionerManager, ShellNavigator shellNavigator) {
         this.practitionerManager = practitionerManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
@@ -72,8 +71,7 @@ public class PendingPractitionerSelectionController {
         Practitioner selectedPractitioner = pendingPractitionersListView.getSelectionModel().getSelectedItem();
 
         if (selectedPractitioner != null) {
-            store.dispatch(new NavigationAction.ViewEntityDetails(
-                    AppSection.ASSIGN_PROJECT, String.valueOf(selectedPractitioner.getId())));
+            shellNavigator.openForm(ASSIGN_PROJECT_VIEW, selectedPractitioner);
         } else {
             Controller.showAlert("Selección requerida",
                     "Seleccione un practicante de la lista para revisar sus postulaciones.", AlertType.WARNING);
@@ -81,7 +79,7 @@ public class PendingPractitionerSelectionController {
     }
 
     @FXML
-    private void handleReturnToCoordinatorMenuAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+    private void handleRefreshAction() {
+        loadPendingPractitioners();
     }
 }

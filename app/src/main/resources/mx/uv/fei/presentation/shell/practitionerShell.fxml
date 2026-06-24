@@ -29,6 +29,8 @@
 
             <Button fx:id="homeNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowHomeAction"
                     styleClass="sidebar-item" text="Inicio"/>
+            <Button fx:id="postulationsNavButton" maxWidth="1.7976931348623157E308"
+                    onAction="#handleShowPostulationsAction" styleClass="sidebar-item" text="Postulaciones"/>
             <Button fx:id="projectNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowProjectAction"
                     styleClass="sidebar-item" text="Mi proyecto"/>
             <Button fx:id="messagesNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowMessagesAction"

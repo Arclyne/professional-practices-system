@@ -3,17 +3,14 @@ package mx.uv.fei.presentation;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PostulationManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
-import mx.uv.fei.domain.statemachine.state.RootState;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -32,36 +29,31 @@ public class AssignProjectController {
     @FXML private Button returnToDashboardButton;
 
     private final PostulationManager postulationManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<ProjectPostulation> postulations = FXCollections.observableArrayList();
 
     private int targetPractitionerId;
 
     @Inject
-    public AssignProjectController(PostulationManager postulationManager, AppStore store) {
+    public AssignProjectController(PostulationManager postulationManager, ShellNavigator shellNavigator) {
         this.postulationManager = postulationManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
-        try {
-            RootState currentState = store.getState();
-            String entityId = currentState.navigationState().targetEntityId();
+        Object pendingEntity = shellNavigator.consumePendingEntity();
 
-            if (entityId != null && !entityId.isEmpty()) {
-                targetPractitionerId = Integer.parseInt(entityId);
-                practitionerInformationLabel.setText("Practicante Seleccionado (ID): " + targetPractitionerId);
-                configurePostulationListView();
-                practitionerPostulationsListView.setItems(postulations);
-                loadPractitionerPostulations();
-            } else {
-                Controller.showAlert("Información faltante",
-                        "No se pudo recuperar la información del practicante seleccionado.", AlertType.WARNING);
-            }
-        } catch (Exception e) {
-            Controller.showAlert("Error de carga",
-                    "Ocurrió un problema al inicializar la pantalla de asignación.", AlertType.ERROR);
+        if (pendingEntity instanceof Practitioner selectedPractitioner) {
+            targetPractitionerId = selectedPractitioner.getId();
+            practitionerInformationLabel.setText("Practicante: " + selectedPractitioner.getName() + " "
+                    + selectedPractitioner.getLastName() + " (" + selectedPractitioner.getEnrollment() + ")");
+            configurePostulationListView();
+            practitionerPostulationsListView.setItems(postulations);
+            loadPractitionerPostulations();
+        } else {
+            Controller.showAlert("Información faltante",
+                    "No se pudo recuperar la información del practicante seleccionado.", AlertType.WARNING);
         }
     }
 
@@ -103,7 +95,7 @@ public class AssignProjectController {
                         targetPractitionerId, selectedPostulation.getProjectId());
                 Controller.showAlert("Asignación Exitosa",
                         "El proyecto ha sido asignado al practicante correctamente.", AlertType.INFORMATION);
-                store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+                shellNavigator.returnToList();
             } catch (ManagerException e) {
                 Controller.showAlert("Error en la asignación", e.getMessage(), AlertType.ERROR);
             }
@@ -114,7 +106,7 @@ public class AssignProjectController {
     }
 
     @FXML
-    private void handleReturnToDashboardAction(ActionEvent e) {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_PRACTITIONER_MENU));
+    private void handleReturnToDashboardAction() {
+        shellNavigator.returnToList();
     }
 }

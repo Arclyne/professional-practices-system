@@ -15,6 +15,7 @@ public class CoordinatorShellController extends RoleShellController {
     private static final String HOME_VIEW = BASE_PATH + "coordinatorHome.fxml";
     private static final String MESSAGES_VIEW = BASE_PATH + "messageView.fxml";
     private static final String PRACTITIONERS_VIEW = BASE_PATH + "coordinatorPractitioners.fxml";
+    private static final String ASSIGNMENTS_VIEW = BASE_PATH + "pendingPractitionerSelection.fxml";
     private static final String PROJECTS_VIEW = BASE_PATH + "coordinatorProjects.fxml";
     private static final String ORGANIZATIONS_VIEW = BASE_PATH + "coordinatorOrganizations.fxml";
     private static final String PROFESSORS_VIEW = BASE_PATH + "coordinatorProfessors.fxml";
@@ -26,6 +27,7 @@ public class CoordinatorShellController extends RoleShellController {
     @FXML private Button homeNavButton;
     @FXML private Button messagesNavButton;
     @FXML private Button practitionersNavButton;
+    @FXML private Button assignmentsNavButton;
     @FXML private Button projectsNavButton;
     @FXML private Button organizationsNavButton;
     @FXML private Button professorsNavButton;
@@ -62,6 +64,12 @@ public class CoordinatorShellController extends RoleShellController {
     private void handleShowPractitionersAction() {
         showSubView(PRACTITIONERS_VIEW);
         selectNavButton(practitionersNavButton);
+    }
+
+    @FXML
+    private void handleShowAssignmentsAction() {
+        showSubView(ASSIGNMENTS_VIEW);
+        selectNavButton(assignmentsNavButton);
     }
 
     @FXML
