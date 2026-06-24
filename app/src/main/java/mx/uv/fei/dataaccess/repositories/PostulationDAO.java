@@ -26,15 +26,15 @@ import java.util.List;
 public class PostulationDAO extends BaseDAO implements IPostulationDAO {
 
     private static final String SQL_CHECK_EXISTING_POSTULATIONS =
-            "SELECT COUNT(*) FROM project_postulation WHERE practitioner_id = ?";
+            "SELECT COUNT(*) FROM project_postulation WHERE practitioner_id = ? AND postulation_status <> 'Cancelled'";
     private static final String SQL_INSERT_POSTULATION =
             "INSERT INTO project_postulation (practitioner_id, project_id, priority_level, postulation_status) VALUES (?, ?, ?, 'Pending')";
-    private static final String SQL_DELETE_UNASSIGNED_POSTULATIONS =
-            "DELETE FROM project_postulation WHERE practitioner_id = ? AND postulation_status <> 'Assigned'";
+    private static final String SQL_CANCEL_PENDING_POSTULATIONS =
+            "UPDATE project_postulation SET postulation_status = 'Cancelled' WHERE practitioner_id = ? AND postulation_status = 'Pending'";
     private static final String SQL_SELECT_POSTULATIONS_BY_PRACTITIONER =
             "SELECT DISTINCT p.practitioner_id, p.project_id, pr.project_name, p.priority_level, p.postulation_status " +
                     "FROM project_postulation p INNER JOIN project pr ON p.project_id = pr.project_id " +
-                    "WHERE p.practitioner_id = ? AND (p.postulation_status = 'Assigned' OR pr.participant_capacity > " +
+                    "WHERE p.practitioner_id = ? AND p.postulation_status <> 'Cancelled' AND (p.postulation_status = 'Assigned' OR pr.participant_capacity > " +
                     "(SELECT COUNT(*) FROM project_postulation WHERE project_id = pr.project_id AND postulation_status = 'Assigned')) " +
                     "ORDER BY p.priority_level ASC";
     private static final String SQL_CHECK_ASSIGNED_PROJECT =
@@ -89,7 +89,7 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     }
 
     private void executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
-        clearUnassignedPostulations(connection, practitionerId);
+        cancelPendingPostulations(connection, practitionerId);
         try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_POSTULATION)) {
             for (int priorityIndex = 0; priorityIndex < projects.size(); priorityIndex++) {
                 statement.setInt(1, practitionerId);
@@ -98,14 +98,16 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
                 statement.addBatch();
             }
             int[] batchResults = statement.executeBatch();
-            if (batchResults.length != projects.size()) {
-                throw new SQLException("No se registraron todas las prioridades de la postulación.");
+            for (int result : batchResults) {
+                if (result == java.sql.Statement.EXECUTE_FAILED) {
+                    throw new SQLException("No se registraron todas las prioridades de la postulación.");
+                }
             }
         }
     }
 
-    private void clearUnassignedPostulations(Connection connection, int practitionerId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(SQL_DELETE_UNASSIGNED_POSTULATIONS)) {
+    private void cancelPendingPostulations(Connection connection, int practitionerId) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_CANCEL_PENDING_POSTULATIONS)) {
             statement.setInt(1, practitionerId);
             statement.executeUpdate();
         }

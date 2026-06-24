@@ -60,6 +60,7 @@ public class PostulationManager {
         try {
             postulationDAO.insertProjectPriorities(practitionerId, prioritizedProjects);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión al intentar guardar las prioridades.", e);
         }
     }

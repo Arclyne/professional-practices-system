@@ -12,7 +12,7 @@ public class ReportValidator {
 
     private static final double MINIMUM_GRADE = 0.0;
     private static final double MAXIMUM_GRADE = 10.0;
-    private static final double MAX_ACTIVITY_HOURS = 24.0;
+    private static final double MAX_ACTIVITY_HOURS = 400.0;
 
     public static void validateSignedReport(String signedFileUrl) throws ManagerException {
         BaseValidator.validateString(signedFileUrl,

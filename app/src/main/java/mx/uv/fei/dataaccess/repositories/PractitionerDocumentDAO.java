@@ -41,7 +41,7 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
                     "ORDER BY t.document_type_id";
     private static final String SQL_SELECT_DOCUMENTS_BY_PROFESSOR =
             "SELECT DISTINCT d.document_id, d.practitioner_id, d.document_name, d.stored_file_url, d.status, " +
-                    "d.review_comment, d.upload_date, d.review_date, t.type_code, t.type_name, t.category, " +
+                    "d.review_comment, d.upload_date, d.review_date, t.type_code, t.type_name, t.category, t.document_type_id, " +
                     "u.name, u.last_name, u.username AS matricula " +
                     "FROM practitioner_document d " +
                     "INNER JOIN document_type t ON d.document_type_id = t.document_type_id " +
