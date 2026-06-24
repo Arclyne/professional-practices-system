@@ -5,22 +5,26 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.GradingEligibility;
 import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.GradingEligibilityManager;
 import mx.uv.fei.domain.manager.GradingManager;
 import mx.uv.fei.domain.manager.PeriodManager;
+import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.actions.NavigationAction;
 import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -28,7 +32,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @Component
@@ -36,7 +43,10 @@ public class GradePractitionerController implements Initializable {
 
     private static final String NO_ACTIVE_PERIOD_MESSAGE =
             "No hay un periodo académico activo. Solicita al coordinador que active uno.";
+    private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
+    private static final String GROUP_LABEL_PREFIX = "NRC ";
 
+    @FXML private ComboBox<String> groupFilterComboBox;
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private VBox gradeContainer;
     @FXML private Label labelPractitionerName;
@@ -49,21 +59,26 @@ public class GradePractitionerController implements Initializable {
     private final GradingManager gradingManager;
     private final GradingEligibilityManager eligibilityManager;
     private final PractitionerManager practitionerManager;
+    private final PracticeGroupManager practiceGroupManager;
     private final PeriodManager periodManager;
     private final AppStore store;
+
+    private final Map<String, Integer> groupLabelToId = new HashMap<>();
 
     private Practitioner selectedPractitioner;
     private boolean selectedPractitionerEligible;
     private int professorId;
     private String activePeriod;
+    private int activePeriodId;
 
     @Inject
     public GradePractitionerController(GradingManager gradingManager, GradingEligibilityManager eligibilityManager,
-                                       PractitionerManager practitionerManager, PeriodManager periodManager,
-                                       AppStore store) {
+                                       PractitionerManager practitionerManager, PracticeGroupManager practiceGroupManager,
+                                       PeriodManager periodManager, AppStore store) {
         this.gradingManager = gradingManager;
         this.eligibilityManager = eligibilityManager;
         this.practitionerManager = practitionerManager;
+        this.practiceGroupManager = practiceGroupManager;
         this.periodManager = periodManager;
         this.store = store;
     }
@@ -81,7 +96,7 @@ public class GradePractitionerController implements Initializable {
         resolveActivePeriod();
         if (activePeriod != null) {
             configurePractitionerList();
-            loadPractitionersForProfessor();
+            loadProfessorGroups();
         }
     }
 
@@ -89,6 +104,7 @@ public class GradePractitionerController implements Initializable {
         try {
             Period period = periodManager.getActivePeriod();
             activePeriod = period != null ? period.getPeriodName() : null;
+            activePeriodId = period != null ? period.getPeriodId() : 0;
             if (activePeriod == null) {
                 labelNoPractitioners.setVisible(true);
                 labelNoPractitioners.setManaged(true);
@@ -119,23 +135,69 @@ public class GradePractitionerController implements Initializable {
                         loadGradePanelForPractitioner(selectedPractitioner);
                     }
                 });
+
+        groupFilterComboBox.valueProperty().addListener((_, _, _) -> loadPractitionersForProfessor());
+    }
+
+    private void loadProfessorGroups() {
+        try {
+            List<PracticeGroup> professorGroups = filterProfessorGroupsForActivePeriod(
+                    practiceGroupManager.getAllPracticeGroups());
+            ObservableList<String> groupOptions = FXCollections.observableArrayList(ALL_GROUPS_OPTION);
+
+            for (PracticeGroup professorGroup : professorGroups) {
+                String groupLabel = GROUP_LABEL_PREFIX + professorGroup.getSection();
+                groupOptions.add(groupLabel);
+                groupLabelToId.put(groupLabel, professorGroup.getGroupId());
+            }
+
+            groupFilterComboBox.setItems(groupOptions);
+            groupFilterComboBox.setValue(ALL_GROUPS_OPTION);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private List<PracticeGroup> filterProfessorGroupsForActivePeriod(List<PracticeGroup> allGroups) {
+        List<PracticeGroup> professorGroups = new ArrayList<>();
+
+        for (PracticeGroup group : allGroups) {
+            if (group.getProfessorId() == professorId && group.getPeriodId() == activePeriodId) {
+                professorGroups.add(group);
+            }
+        }
+
+        return professorGroups;
     }
 
     private void loadPractitionersForProfessor() {
         try {
-            List<Practitioner> practitioners = practitionerManager
-                    .retrievePractitionersByProfessor(professorId);
-
-            if (practitioners.isEmpty()) {
-                labelNoPractitioners.setVisible(true);
-                labelNoPractitioners.setManaged(true);
-                labelNoPractitioners.setText("No tienes practicantes asignados en este periodo.");
-            } else {
-                practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
-            }
+            updatePractitionerList(retrievePractitionersForSelectedFilter());
         } catch (ManagerException e) {
             Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private List<Practitioner> retrievePractitionersForSelectedFilter() throws ManagerException {
+        String selectedGroup = groupFilterComboBox.getValue();
+        List<Practitioner> practitioners;
+
+        if (selectedGroup == null || ALL_GROUPS_OPTION.equals(selectedGroup)) {
+            practitioners = practitionerManager.retrievePractitionersByProfessorAndPeriod(professorId, activePeriodId);
+        } else {
+            practitioners = practitionerManager.retrievePractitionersByGroup(groupLabelToId.get(selectedGroup));
+        }
+
+        return practitioners;
+    }
+
+    private void updatePractitionerList(List<Practitioner> practitioners) {
+        boolean hasPractitioners = !practitioners.isEmpty();
+
+        practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
+        labelNoPractitioners.setText("No hay practicantes asignados para el filtro seleccionado.");
+        labelNoPractitioners.setVisible(!hasPractitioners);
+        labelNoPractitioners.setManaged(!hasPractitioners);
     }
 
     private void loadGradePanelForPractitioner(Practitioner practitioner) {

@@ -43,7 +43,7 @@ public class PracticeGroupDAOTest {
         TestDatabaseSetup.initialize(dbConnection);
 
         newGroup = new PracticeGroup();
-        newGroup.setSection("NRC-84932");
+        newGroup.setSection("84932");
         newGroup.setProfessorId(STORED_PROFESSOR_ID);
         newGroup.setPeriodId(STORED_PERIOD_ID);
     }
@@ -51,7 +51,7 @@ public class PracticeGroupDAOTest {
     private PracticeGroup buildStoredGroup() {
         PracticeGroup storedGroup = new PracticeGroup();
         storedGroup.setGroupId(STORED_GROUP_ID);
-        storedGroup.setSection("Seccion 601");
+        storedGroup.setSection("60123");
         storedGroup.setPeriodId(STORED_PERIOD_ID);
         storedGroup.setProfessorId(STORED_PROFESSOR_ID);
         return storedGroup;
@@ -85,7 +85,7 @@ public class PracticeGroupDAOTest {
 
     @Test
     void updatePracticeGroup_ValidModifiedData_DoesNotThrow() throws DAOException {
-        newGroup.setSection("NRC-99999");
+        newGroup.setSection("99999");
 
         assertDoesNotThrow(() -> groupDAO.updatePracticeGroup(newGroup, STORED_GROUP_ID));
     }

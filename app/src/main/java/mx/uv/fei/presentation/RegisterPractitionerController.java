@@ -95,6 +95,8 @@ public class RegisterPractitionerController implements Initializable {
             comboBoxGender.setValue(practitioner.getGender().getDisplayValue());
         }
         selectGroupForId(practitioner.getGroupId());
+        comboBoxPracticeGroup.setVisible(false);
+        comboBoxPracticeGroup.setManaged(false);
 
         uploadCsvButton.setVisible(false);
         uploadCsvButton.setManaged(false);

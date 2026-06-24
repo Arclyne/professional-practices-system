@@ -29,14 +29,16 @@ public class PractitionerManager {
     private final IUserDAO userDAO;
     private final IFileBackup fileBackup;
     private final IPractitionerParser practitionerParser;
+    private final GroupEnrollmentManager groupEnrollmentManager;
 
     @Inject
     public PractitionerManager(IPractitionerDAO practitionerDAO, IUserDAO userDAO, IFileBackup fileBackup,
-                               IPractitionerParser practitionerParser) {
+                               IPractitionerParser practitionerParser, GroupEnrollmentManager groupEnrollmentManager) {
         this.practitionerDAO = practitionerDAO;
         this.userDAO = userDAO;
         this.fileBackup = fileBackup;
         this.practitionerParser = practitionerParser;
+        this.groupEnrollmentManager = groupEnrollmentManager;
     }
 
     public void inactivatePractitioner(int practitionerId) throws ManagerException {
@@ -73,12 +75,19 @@ public class PractitionerManager {
             if (generatedId <= 0) {
                 throw new ManagerException("No se pudo completar el registro del practicante.");
             }
+            enrollPractitionerIfGroupSelected(generatedId, practitioner.getGroupId());
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
             throw new ManagerException("Error de conexión con la base de datos.", e);
         }
 
         return temporaryPassword;
+    }
+
+    private void enrollPractitionerIfGroupSelected(int practitionerId, Integer groupId) throws ManagerException {
+        if (groupId != null && groupId > 0) {
+            groupEnrollmentManager.enrollPractitionerInGroup(practitionerId, groupId);
+        }
     }
 
     public BatchRegistrationSummary registerPractitionerBatch(File batchFile, String coordinatorName) throws ManagerException {
@@ -119,6 +128,23 @@ public class PractitionerManager {
             return practitionerDAO.retrievePractitionersByProfessor(professorId);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del profesor.", e);
+        }
+    }
+
+    public List<Practitioner> retrievePractitionersByProfessorAndPeriod(int professorId, int periodId)
+            throws ManagerException {
+        try {
+            return practitionerDAO.retrievePractitionersByProfessorAndPeriod(professorId, periodId);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al recuperar los practicantes del profesor.", e);
+        }
+    }
+
+    public List<Practitioner> retrievePractitionersByGroup(int groupId) throws ManagerException {
+        try {
+            return practitionerDAO.retrievePractitionersByGroup(groupId);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al recuperar los practicantes del grupo.", e);
         }
     }
 

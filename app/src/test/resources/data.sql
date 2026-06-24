@@ -19,10 +19,13 @@ INSERT INTO school_period (period_id, period_name, start_date, end_date, period_
     (5, 'Junio-Diciembre 2026', '2026-06-01', '2026-12-12', 'Active');
 
 INSERT INTO practice_group (group_id, section, period_id, professor_id) VALUES
-    (6, 'Seccion 601', 5, 68);
+    (6, '60123', 5, 68);
 
-INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id) VALUES
-    (123, 'Ninguna', 0.00, 6);
+INSERT INTO practitioner (practitioner_id, indigenous_language, grade) VALUES
+    (123, 'Ninguna', 0.00);
+
+INSERT INTO group_enrollment (enrollment_id, practitioner_id, group_id, period_id, status) VALUES
+    (1, 123, 6, 5, 'Active');
 
 INSERT INTO linked_organization (organization_id, organization_name, status, sector, email) VALUES
     (1, 'Tecnologias Web del Golfo',  'Active', 'Technology', 'contacto@tecgolfo.mx'),

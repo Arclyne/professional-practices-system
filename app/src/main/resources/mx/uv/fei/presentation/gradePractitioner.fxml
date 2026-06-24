@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
@@ -26,6 +27,10 @@
             <Label styleClass="form-title" text="Calificar Practicantes"/>
             <Label textFill="#6b7280" wrapText="true"
                    text="Practicantes asignados a tu grupo. Selecciona uno para ver su calificación tentativa y asignar la definitiva."/>
+
+            <Label text="Filtrar por grupo (NRC):" styleClass="field-label"/>
+            <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"
+                      promptText="Todos mis grupos"/>
 
             <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                       style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>

@@ -90,6 +90,14 @@ public class ProgressReportManager {
         }
     }
 
+    public List<ProgressReport> getSubmittedProgressReports(int professorId, int periodId) throws ManagerException {
+        try {
+            return progressReportDAO.getSubmittedProgressReportsByProfessor(professorId, periodId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al recuperar los reportes de avance.", e);
+        }
+    }
+
     public double getAccumulatedHours(int practitionerId) throws ManagerException {
         try {
             return progressReportDAO.getTotalAccumulatedHours(practitionerId);

@@ -79,6 +79,14 @@ public class MonthlyReportManager {
         }
     }
 
+    public List<MonthlyReport> getReportsForEvaluation(int professorId, int periodId) throws ManagerException {
+        try {
+            return reportDAO.getSubmittedReportsByProfessor(professorId, periodId);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al cargar los reportes para evaluar.", e);
+        }
+    }
+
     public void evaluateReport(int reportId, Double grade, String feedback) throws ManagerException {
         ReportValidator.validateReportEvaluation(grade, feedback);
 

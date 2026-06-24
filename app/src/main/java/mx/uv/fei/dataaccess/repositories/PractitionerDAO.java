@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 /**
@@ -27,19 +26,24 @@ import java.util.List;
 @Component
 public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
+    private static final String CURRENT_GROUP_SUBQUERY =
+            "(SELECT ge.group_id FROM group_enrollment ge WHERE ge.practitioner_id = p.practitioner_id " +
+                    "ORDER BY ge.enrollment_id DESC LIMIT 1) AS group_id ";
     private static final String SQL_INSERT_PRACTITIONER =
-            "INSERT INTO practitioner (practitioner_id, indigenous_language, grade, group_id) VALUES (?, ?, ?, ?)";
+            "INSERT INTO practitioner (practitioner_id, indigenous_language, grade) VALUES (?, ?, ?)";
     private static final String SQL_UPDATE_PRACTITIONER =
-            "UPDATE practitioner SET indigenous_language = ?, grade = ?, group_id = ? WHERE practitioner_id = ?";
+            "UPDATE practitioner SET indigenous_language = ?, grade = ? WHERE practitioner_id = ?";
     private static final String SQL_SELECT_PRACTITIONER_BY_ID =
             "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
-                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
+                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, " +
+                    CURRENT_GROUP_SUBQUERY +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "WHERE p.practitioner_id = ?";
     private static final String SQL_SELECT_ALL_PRACTITIONERS =
             "SELECT u.user_id, u.username AS matricula, u.password, u.name, u.last_name, " +
-                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, p.group_id " +
+                    "u.email, u.status, u.gender, p.indigenous_language, p.grade, " +
+                    CURRENT_GROUP_SUBQUERY +
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id";
     private static final String SQL_SELECT_PRACTITIONERS_PENDING_ASSIGNMENT =
@@ -60,10 +64,31 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "FROM practitioner p " +
                     "INNER JOIN user u ON p.practitioner_id = u.user_id " +
                     "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
-                    "INNER JOIN practice_group pg ON p.group_id = pg.group_id " +
+                    "INNER JOIN group_enrollment ge ON p.practitioner_id = ge.practitioner_id " +
+                    "INNER JOIN practice_group pg ON ge.group_id = pg.group_id " +
                     "WHERE u.status = 'Active' " +
                     "AND pp.postulation_status = 'Assigned' " +
                     "AND pg.professor_id = ?";
+    private static final String SQL_SELECT_PRACTITIONERS_BY_PROFESSOR_AND_PERIOD =
+            "SELECT DISTINCT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
+                    "INNER JOIN group_enrollment ge ON p.practitioner_id = ge.practitioner_id " +
+                    "INNER JOIN practice_group pg ON ge.group_id = pg.group_id " +
+                    "WHERE u.status = 'Active' " +
+                    "AND pp.postulation_status = 'Assigned' " +
+                    "AND pg.professor_id = ? " +
+                    "AND pg.period_id = ?";
+    private static final String SQL_SELECT_PRACTITIONERS_BY_GROUP =
+            "SELECT DISTINCT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "INNER JOIN project_postulation pp ON p.practitioner_id = pp.practitioner_id " +
+                    "INNER JOIN group_enrollment ge ON p.practitioner_id = ge.practitioner_id " +
+                    "WHERE u.status = 'Active' " +
+                    "AND pp.postulation_status = 'Assigned' " +
+                    "AND ge.group_id = ?";
 
     private final IUserDAO userDAO;
 
@@ -88,7 +113,6 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                         statement.setInt(1, generatedUserId);
                         statement.setString(2, practitioner.getIndigenousLanguage());
                         statement.setDouble(3, practitioner.getGrade());
-                        statement.setObject(4, practitioner.getGroupId(), Types.INTEGER);
 
                         if (statement.executeUpdate() > 0) {
                             generatedId = generatedUserId;
@@ -176,6 +200,18 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR, this::mapResultSetToMinimalPractitioner, professorId);
     }
 
+    @Override
+    public List<Practitioner> retrievePractitionersByProfessorAndPeriod(int professorId, int periodId)
+            throws DAOException {
+        return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR_AND_PERIOD, this::mapResultSetToMinimalPractitioner,
+                professorId, periodId);
+    }
+
+    @Override
+    public List<Practitioner> retrievePractitionersByGroup(int groupId) throws DAOException {
+        return recoverALL(SQL_SELECT_PRACTITIONERS_BY_GROUP, this::mapResultSetToMinimalPractitioner, groupId);
+    }
+
     private void executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
             throws SQLException, DAOException {
         userDAO.updateUser(practitioner, connection);
@@ -183,8 +219,7 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PRACTITIONER)) {
             statement.setString(1, practitioner.getIndigenousLanguage());
             statement.setDouble(2, practitioner.getGrade());
-            statement.setObject(3, practitioner.getGroupId(), Types.INTEGER);
-            statement.setInt(4, practitionerId);
+            statement.setInt(3, practitionerId);
             statement.executeUpdate();
         }
     }

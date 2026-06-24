@@ -44,6 +44,14 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
     private static final String SQL_SELECT_SUBMITTED_PROGRESS_REPORTS =
             "SELECT * FROM progress_report WHERE status IN ('Entregado', 'Evaluado') " +
                     "ORDER BY generation_date DESC";
+    private static final String SQL_SELECT_SUBMITTED_PROGRESS_REPORTS_BY_PROFESSOR =
+            "SELECT pr.* FROM progress_report pr " +
+                    "INNER JOIN group_enrollment ge ON pr.practitioner_id = ge.practitioner_id " +
+                    "INNER JOIN practice_group pg ON ge.group_id = pg.group_id " +
+                    "WHERE pr.status IN ('Entregado', 'Evaluado') " +
+                    "AND pg.professor_id = ? " +
+                    "AND pg.period_id = ? " +
+                    "ORDER BY pr.generation_date DESC";
     private static final String SQL_SUM_ACCUMULATED_HOURS =
             "SELECT COALESCE(SUM(a.duration_hours), 0) " +
                     "FROM activity a " +
@@ -128,6 +136,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
     @Override
     public List<ProgressReport> getSubmittedProgressReports() throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_PROGRESS_REPORTS, this::mapResultSetToProgressReport);
+    }
+
+    @Override
+    public List<ProgressReport> getSubmittedProgressReportsByProfessor(int professorId, int periodId)
+            throws DAOException {
+        return recoverALL(SQL_SELECT_SUBMITTED_PROGRESS_REPORTS_BY_PROFESSOR, this::mapResultSetToProgressReport,
+                professorId, periodId);
     }
 
     @Override

@@ -40,14 +40,14 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
                     "WHERE d.practitioner_id = ? AND t.category = ? " +
                     "ORDER BY t.document_type_id";
     private static final String SQL_SELECT_DOCUMENTS_BY_PROFESSOR =
-            "SELECT d.document_id, d.practitioner_id, d.document_name, d.stored_file_url, d.status, d.review_comment, " +
-                    "d.upload_date, d.review_date, t.type_code, t.type_name, t.category, " +
+            "SELECT DISTINCT d.document_id, d.practitioner_id, d.document_name, d.stored_file_url, d.status, " +
+                    "d.review_comment, d.upload_date, d.review_date, t.type_code, t.type_name, t.category, " +
                     "u.name, u.last_name, u.username AS matricula " +
                     "FROM practitioner_document d " +
                     "INNER JOIN document_type t ON d.document_type_id = t.document_type_id " +
                     "INNER JOIN user u ON d.practitioner_id = u.user_id " +
-                    "INNER JOIN practitioner p ON d.practitioner_id = p.practitioner_id " +
-                    "INNER JOIN practice_group pg ON p.group_id = pg.group_id " +
+                    "INNER JOIN group_enrollment ge ON d.practitioner_id = ge.practitioner_id " +
+                    "INNER JOIN practice_group pg ON ge.group_id = pg.group_id " +
                     "WHERE pg.professor_id = ? " +
                     "ORDER BY u.last_name, t.category, t.document_type_id";
     private static final String SQL_UPDATE_DOCUMENT_ACCEPTED =

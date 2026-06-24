@@ -10,4 +10,5 @@ public interface IMonthlyReportDAO {
     List<MonthlyReport> getReportsByPractitioner(int practitionerId) throws DAOException;
     MonthlyReport getReportById(int reportId) throws DAOException;
     List<MonthlyReport> getSubmittedReports() throws DAOException;
+    List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException;
 }

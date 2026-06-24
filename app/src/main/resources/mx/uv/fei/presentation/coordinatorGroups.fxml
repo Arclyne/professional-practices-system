@@ -42,7 +42,7 @@
 
         <TableView fx:id="groupsTableView" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="sectionColumn" prefWidth="200.0" text="Sección"/>
+                <TableColumn fx:id="sectionColumn" prefWidth="200.0" text="NRC"/>
                 <TableColumn fx:id="periodColumn" prefWidth="240.0" text="Periodo"/>
                 <TableColumn fx:id="professorColumn" prefWidth="240.0" text="Profesor"/>
             </columns>
@@ -56,7 +56,7 @@
 
         <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar grupo"/>
 
-        <FormField fx:id="sectionFormField" labelText="Sección" promptText="Ej. Grupo 1"/>
+        <FormField fx:id="sectionFormField" labelText="NRC" promptText="Ej. 60123" numericOnly="true"/>
         <FormComboBox fx:id="periodFormComboBox" labelText="Periodo escolar"/>
         <FormComboBox fx:id="professorFormComboBox" labelText="Profesor responsable"/>
 
