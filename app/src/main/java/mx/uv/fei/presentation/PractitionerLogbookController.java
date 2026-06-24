@@ -8,8 +8,6 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ActivityManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,8 +30,8 @@ import java.util.ResourceBundle;
 public class PractitionerLogbookController implements Initializable {
 
     private static final int NO_ACTIVITY_IN_EDITION = -1;
-    private static final String SAVE_BUTTON_DEFAULT_TEXT = "Guardar en Bitácora";
-    private static final String SAVE_BUTTON_EDIT_TEXT = "Actualizar Actividad";
+    private static final String SAVE_BUTTON_DEFAULT_TEXT = "Guardar en bitácora";
+    private static final String SAVE_BUTTON_EDIT_TEXT = "Actualizar actividad";
     private static final String EDIT_BUTTON_STYLE = "-fx-background-color: #F59E0B; -fx-text-fill: white;";
 
     private final ActivityManager activityManager;
@@ -164,10 +162,5 @@ public class PractitionerLogbookController implements Initializable {
         editingActivityId = NO_ACTIVITY_IN_EDITION;
         btnSaveActivity.setText(SAVE_BUTTON_DEFAULT_TEXT);
         btnSaveActivity.setStyle("");
-    }
-
-    @FXML
-    private void handleReturnAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }
 }
