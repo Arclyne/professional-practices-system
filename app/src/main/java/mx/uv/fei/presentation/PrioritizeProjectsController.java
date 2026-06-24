@@ -8,16 +8,17 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PostulationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,11 @@ import java.util.List;
 @Component
 public class PrioritizeProjectsController {
 
+    private static final String ASSIGNED_PROJECT_VIEW = "/mx/uv/fei/presentation/viewAssignedProject.fxml";
+
+    @FXML private VBox assignedStateContainer;
+    @FXML private VBox prioritizationContainer;
+    @FXML private Label assignedProjectNameLabel;
     @FXML private ListView<Project> availableProjectsListView;
     @FXML private ListView<Project> prioritizedProjectsListView;
     @FXML private Button assignProjectButton;
@@ -36,14 +42,17 @@ public class PrioritizeProjectsController {
 
     private final PostulationManager postulationManager;
     private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
     private final ObservableList<Project> availableProjects = FXCollections.observableArrayList();
     private final ObservableList<Project> prioritizedProjects = FXCollections.observableArrayList();
 
     @Inject
-    public PrioritizeProjectsController(PostulationManager postulationManager, AppStore store) {
+    public PrioritizeProjectsController(PostulationManager postulationManager, AppStore store,
+                                        ShellNavigator shellNavigator) {
         this.postulationManager = postulationManager;
         this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
@@ -52,7 +61,38 @@ public class PrioritizeProjectsController {
         configureProjectListView(prioritizedProjectsListView);
         availableProjectsListView.setItems(availableProjects);
         prioritizedProjectsListView.setItems(prioritizedProjects);
-        loadAvailableProjects();
+        if (!showAssignedProjectStateIfAny()) {
+            loadAvailableProjects();
+        }
+    }
+
+    private boolean showAssignedProjectStateIfAny() {
+        try {
+            User currentUser = store.getState().sessionState().currentUserInSession();
+            Project assignedProject = postulationManager.getAssignedProject(currentUser.getId());
+            boolean hasAssignedProject = assignedProject != null && assignedProject.getProjectId() > 0;
+            if (hasAssignedProject) {
+                assignedProjectNameLabel.setText(assignedProject.getProjectName());
+            }
+            displayAssignedState(hasAssignedProject);
+            return hasAssignedProject;
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
+            displayAssignedState(false);
+            return false;
+        }
+    }
+
+    private void displayAssignedState(boolean hasAssignedProject) {
+        assignedStateContainer.setVisible(hasAssignedProject);
+        assignedStateContainer.setManaged(hasAssignedProject);
+        prioritizationContainer.setVisible(!hasAssignedProject);
+        prioritizationContainer.setManaged(!hasAssignedProject);
+    }
+
+    @FXML
+    private void handleGoToAssignedProjectAction() {
+        shellNavigator.showSubView(ASSIGNED_PROJECT_VIEW);
     }
 
     private void configureProjectListView(ListView<Project> projectListView) {
@@ -147,7 +187,7 @@ public class PrioritizeProjectsController {
             postulationManager.registerPractitionerPriorities(currentUser.getId(), priorities);
             Controller.showAlert("Postulación Exitosa",
                     "Sus prioridades han sido registradas en el sistema correctamente.", AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            loadAvailableProjects();
         } catch (ManagerException e) {
             Controller.showAlert("Error al guardar", e.getMessage(), AlertType.ERROR);
         }
@@ -155,6 +195,6 @@ public class PrioritizeProjectsController {
 
     @FXML
     private void handleCancelPostulationAction() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        loadAvailableProjects();
     }
 }

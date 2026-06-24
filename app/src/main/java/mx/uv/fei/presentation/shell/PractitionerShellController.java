@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 public class PractitionerShellController extends RoleShellController {
 
     private static final String HOME_VIEW = "/mx/uv/fei/presentation/practitionerHome.fxml";
+    private static final String POSTULATIONS_VIEW = "/mx/uv/fei/presentation/prioritizeProjects.fxml";
     private static final String PROJECT_VIEW = "/mx/uv/fei/presentation/viewAssignedProject.fxml";
     private static final String MESSAGES_VIEW = "/mx/uv/fei/presentation/messageView.fxml";
     private static final String REPORTS_VIEW = "/mx/uv/fei/presentation/practitionerReportsList.fxml";
@@ -20,6 +21,7 @@ public class PractitionerShellController extends RoleShellController {
     private static final String GRADE_VIEW = "/mx/uv/fei/presentation/practitionerGradeView.fxml";
 
     @FXML private Button homeNavButton;
+    @FXML private Button postulationsNavButton;
     @FXML private Button projectNavButton;
     @FXML private Button messagesNavButton;
     @FXML private Button reportsNavButton;
@@ -43,6 +45,12 @@ public class PractitionerShellController extends RoleShellController {
     private void handleShowHomeAction() {
         showSubView(HOME_VIEW);
         selectNavButton(homeNavButton);
+    }
+
+    @FXML
+    private void handleShowPostulationsAction() {
+        showSubView(POSTULATIONS_VIEW);
+        selectNavButton(postulationsNavButton);
     }
 
     @FXML
