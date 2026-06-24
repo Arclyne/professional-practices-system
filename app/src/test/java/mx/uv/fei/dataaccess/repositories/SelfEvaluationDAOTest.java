@@ -1,6 +1,7 @@
 package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -115,10 +116,10 @@ public class SelfEvaluationDAOTest {
     }
 
     @Test
-    void getSelfEvaluationByReportId_NonExistentReport_ReturnsEmptyEvaluation() throws DAOException {
+    void getSelfEvaluationByReportId_NonExistentReport_ReturnsNull() throws DAOException {
         SelfEvaluation recoveredEvaluation = selfEvaluationDAO.getSelfEvaluationByReportId(NON_EXISTENT_ID);
 
-        assertEquals(new SelfEvaluation(), recoveredEvaluation);
+        assertNull(recoveredEvaluation);
     }
 
     @Test

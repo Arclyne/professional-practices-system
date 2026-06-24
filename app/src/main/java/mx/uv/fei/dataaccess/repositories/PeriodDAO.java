@@ -28,6 +28,9 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
             "INSERT INTO school_period (period_name, start_date, end_date, period_status) VALUES (?, ?, ?, ?)";
     private static final String SQL_SELECT_ALL_PERIODS =
             "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period";
+    private static final String SQL_SELECT_ACTIVE_PERIOD =
+            "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period " +
+                    "WHERE period_status = 'Active' ORDER BY start_date DESC";
     private static final String SQL_SELECT_PERIOD_BY_ID =
             "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period WHERE period_id = ?";
     private static final String SQL_UPDATE_PERIOD =
@@ -71,6 +74,12 @@ public class PeriodDAO extends BaseDAO implements IPeriodDAO {
     @Override
     public List<Period> getAllPeriods() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PERIODS, this::mapResultSetToPeriod);
+    }
+
+    @Override
+    public Period getActivePeriod() throws DAOException {
+        List<Period> activePeriods = recoverALL(SQL_SELECT_ACTIVE_PERIOD, this::mapResultSetToPeriod);
+        return activePeriods.isEmpty() ? null : activePeriods.getFirst();
     }
 
     @Override

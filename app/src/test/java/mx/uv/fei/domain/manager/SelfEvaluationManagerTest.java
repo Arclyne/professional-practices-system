@@ -2,6 +2,7 @@ package mx.uv.fei.domain.manager;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
@@ -151,9 +152,9 @@ public class SelfEvaluationManagerTest {
     }
 
     @Test
-    void recoverSelfEvaluation_NonExistentReportId_ReturnsEmptyObject() throws ManagerException {
+    void recoverSelfEvaluation_NonExistentReportId_ReturnsNull() throws ManagerException {
         SelfEvaluation recoveredEvaluation = selfEvaluationManager.recoverSelfEvaluation(999);
 
-        assertEquals(new SelfEvaluation(), recoveredEvaluation);
+        assertNull(recoveredEvaluation);
     }
 }
