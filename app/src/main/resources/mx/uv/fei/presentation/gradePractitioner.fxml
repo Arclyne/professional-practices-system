@@ -59,6 +59,10 @@
                    style="-fx-text-fill: #10B981; -fx-font-weight: bold;"
                    visible="false" managed="false" wrapText="true"/>
 
+            <Label fx:id="labelGradingRequirements"
+                   style="-fx-text-fill: #B91C1C; -fx-font-weight: bold;"
+                   visible="false" managed="false" wrapText="true"/>
+
             <Separator/>
 
             <VBox spacing="6.0">

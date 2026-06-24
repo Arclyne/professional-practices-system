@@ -85,30 +85,43 @@ public class PractitionerReportsListController implements Initializable {
         User currentUser = store.getState().sessionState().currentUserInSession();
         int practitionerId = currentUser != null ? currentUser.getId() : 0;
 
-        boolean hasProject = checkAndEnforceProjectAssignment(practitionerId);
+        boolean canRegisterReports = checkAndEnforceReportsAccess(practitionerId);
 
-        if (hasProject) {
+        if (canRegisterReports) {
             configureListView();
             loadReportsList(practitionerId);
         }
     }
 
-    private boolean checkAndEnforceProjectAssignment(int practitionerId) {
-        boolean hasProject = false;
+    private boolean checkAndEnforceReportsAccess(int practitionerId) {
+        String blockingMessage = resolveBlockingMessage(practitionerId);
 
-        try {
-            hasProject = reportManager.verifyHasAssignedProject(practitionerId);
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de verificación", e.getMessage(), AlertType.ERROR);
-        }
-
-        if (!hasProject) {
+        if (blockingMessage != null) {
+            labelNoProject.setText(blockingMessage);
             labelNoProject.setVisible(true);
             labelNoProject.setManaged(true);
             btnCreateNewReport.setDisable(true);
         }
 
-        return hasProject;
+        return blockingMessage == null;
+    }
+
+    private String resolveBlockingMessage(int practitionerId) {
+        String blockingMessage = null;
+
+        try {
+            if (!reportManager.verifyHasAssignedProject(practitionerId)) {
+                blockingMessage = "Necesitas un proyecto asignado para registrar reportes.";
+            } else if (!reportManager.verifyAllInitialDocumentsAccepted(practitionerId)) {
+                blockingMessage = "Aún no puedes registrar reportes. "
+                        + "Tu profesor debe aceptar todos tus documentos iniciales primero.";
+            }
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de verificación", e.getMessage(), AlertType.ERROR);
+            blockingMessage = "No se pudo verificar tu acceso a los reportes.";
+        }
+
+        return blockingMessage;
     }
 
     private void configureListView() {

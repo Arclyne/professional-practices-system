@@ -13,12 +13,14 @@ public class ProfessorShellController extends RoleShellController {
 
     private static final String HOME_VIEW = "/mx/uv/fei/presentation/professorHome.fxml";
     private static final String MESSAGES_VIEW = "/mx/uv/fei/presentation/messageView.fxml";
+    private static final String DOCUMENTS_VIEW = "/mx/uv/fei/presentation/professorDocuments.fxml";
     private static final String EVALUATE_REPORTS_VIEW = "/mx/uv/fei/presentation/professorEvaluateReport.fxml";
     private static final String GRADE_PRACTITIONERS_VIEW = "/mx/uv/fei/presentation/gradePractitioner.fxml";
     private static final String SELF_EVALUATIONS_VIEW = "/mx/uv/fei/presentation/reviewSelfEvaluation.fxml";
 
     @FXML private Button homeNavButton;
     @FXML private Button messagesNavButton;
+    @FXML private Button documentsNavButton;
     @FXML private Button evaluateReportsNavButton;
     @FXML private Button gradePractitionersNavButton;
     @FXML private Button selfEvaluationsNavButton;
@@ -45,6 +47,12 @@ public class ProfessorShellController extends RoleShellController {
     private void handleShowMessagesAction() {
         showSubView(MESSAGES_VIEW);
         selectNavButton(messagesNavButton);
+    }
+
+    @FXML
+    private void handleShowDocumentsAction() {
+        showSubView(DOCUMENTS_VIEW);
+        selectNavButton(documentsNavButton);
     }
 
     @FXML

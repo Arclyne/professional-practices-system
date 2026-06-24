@@ -6,9 +6,11 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
@@ -20,16 +22,20 @@ public class MonthlyReportManager {
     private final IMonthlyReportDAO reportDAO;
     private final IActivityDAO activityDAO;
     private final IPostulationDAO postulationDAO;
+    private final IPractitionerDocumentDAO documentDAO;
 
     @Inject
-    public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO) {
+    public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO,
+                                IPractitionerDocumentDAO documentDAO) {
         this.reportDAO = reportDAO;
         this.activityDAO = activityDAO;
         this.postulationDAO = postulationDAO;
+        this.documentDAO = documentDAO;
     }
 
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
         validateHasAssignedProject(report.getPractitionerId());
+        validateAllInitialDocumentsAccepted(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
 
         try {
@@ -95,6 +101,21 @@ public class MonthlyReportManager {
             return postulationDAO.hasAssignedProject(practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("No se pudo verificar el estado del proyecto asignado.", e);
+        }
+    }
+
+    public boolean verifyAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
+        try {
+            return documentDAO.areAllDocumentsAccepted(practitionerId, DocumentCategory.INITIAL.getDatabaseValue());
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudieron verificar los documentos iniciales del practicante.", e);
+        }
+    }
+
+    private void validateAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
+        if (!verifyAllInitialDocumentsAccepted(practitionerId)) {
+            throw new ManagerException("Aún no puedes registrar reportes. "
+                    + "Tu profesor debe aceptar todos tus documentos iniciales primero.");
         }
     }
 

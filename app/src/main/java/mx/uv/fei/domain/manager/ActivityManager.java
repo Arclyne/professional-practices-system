@@ -4,8 +4,10 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
+import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.List;
@@ -14,13 +16,16 @@ import java.util.List;
 public class ActivityManager {
 
     private final IActivityDAO activityDAO;
+    private final IPractitionerDocumentDAO documentDAO;
 
     @Inject
-    public ActivityManager(IActivityDAO activityDAO) {
+    public ActivityManager(IActivityDAO activityDAO, IPractitionerDocumentDAO documentDAO) {
         this.activityDAO = activityDAO;
+        this.documentDAO = documentDAO;
     }
 
     public void registerActivity(Activity activity) throws ManagerException {
+        validateAllInitialDocumentsAccepted(activity.getPractitionerId());
         ReportValidator.validateLogbookActivity(activity);
         try {
             int generatedId = activityDAO.insertActivity(activity);
@@ -54,6 +59,19 @@ public class ActivityManager {
             return activityDAO.getActivitiesByReport(reportId);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al cargar las actividades del reporte.", e);
+        }
+    }
+
+    private void validateAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
+        try {
+            boolean areInitialDocumentsAccepted = documentDAO.areAllDocumentsAccepted(
+                    practitionerId, DocumentCategory.INITIAL.getDatabaseValue());
+            if (!areInitialDocumentsAccepted) {
+                throw new ManagerException("Aún no puedes registrar tareas. "
+                        + "Tu profesor debe aceptar todos tus documentos iniciales primero.");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudieron verificar los documentos iniciales del practicante.", e);
         }
     }
 }

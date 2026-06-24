@@ -9,9 +9,17 @@ public interface IPractitionerDocumentDAO {
 
     int insertDocument(PractitionerDocument document) throws DAOException;
 
-    List<PractitionerDocument> getDocumentsByPractitioner(int practitionerId) throws DAOException;
+    void editDocument(int documentId, String documentName, String storedFileUrl) throws DAOException;
 
-    List<PractitionerDocument> getAllDocuments() throws DAOException;
+    List<PractitionerDocument> getDocumentsByPractitionerAndCategory(int practitionerId, String category) throws DAOException;
 
-    void markDocumentAsReviewed(int documentId) throws DAOException;
+    List<PractitionerDocument> getDocumentsByProfessor(int professorId) throws DAOException;
+
+    void acceptDocument(int documentId) throws DAOException;
+
+    void rejectDocument(int documentId, String reviewComment) throws DAOException;
+
+    boolean documentExistsForType(int practitionerId, String typeCode) throws DAOException;
+
+    boolean areAllDocumentsAccepted(int practitionerId, String category) throws DAOException;
 }

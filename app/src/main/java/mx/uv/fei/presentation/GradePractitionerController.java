@@ -3,9 +3,11 @@ package mx.uv.fei.presentation;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.GradingEligibility;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.GradingEligibilityManager;
 import mx.uv.fei.domain.manager.GradingManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -38,19 +40,23 @@ public class GradePractitionerController implements Initializable {
     @FXML private Label labelTentativeGrade;
     @FXML private TextField fieldFinalGrade;
     @FXML private Label labelAlreadyGraded;
+    @FXML private Label labelGradingRequirements;
     @FXML private Label labelNoPractitioners;
 
     private final GradingManager gradingManager;
+    private final GradingEligibilityManager eligibilityManager;
     private final PractitionerManager practitionerManager;
     private final AppStore store;
 
     private Practitioner selectedPractitioner;
+    private boolean selectedPractitionerEligible;
     private int professorId;
 
     @Inject
-    public GradePractitionerController(GradingManager gradingManager,
+    public GradePractitionerController(GradingManager gradingManager, GradingEligibilityManager eligibilityManager,
                                        PractitionerManager practitionerManager, AppStore store) {
         this.gradingManager = gradingManager;
+        this.eligibilityManager = eligibilityManager;
         this.practitionerManager = practitionerManager;
         this.store = store;
     }
@@ -120,6 +126,27 @@ public class GradePractitionerController implements Initializable {
 
         loadTentativeGrade(practitioner.getId());
         checkIfAlreadyGraded(practitioner.getId());
+        checkGradingEligibility(practitioner.getId());
+    }
+
+    private void checkGradingEligibility(int practitionerId) {
+        try {
+            GradingEligibility eligibility = eligibilityManager.evaluateEligibility(practitionerId);
+            selectedPractitionerEligible = eligibility.isEligible();
+
+            if (selectedPractitionerEligible) {
+                labelGradingRequirements.setVisible(false);
+                labelGradingRequirements.setManaged(false);
+            } else {
+                labelGradingRequirements.setText(eligibilityManager.buildPendingRequirementsMessage(eligibility));
+                labelGradingRequirements.setVisible(true);
+                labelGradingRequirements.setManaged(true);
+                fieldFinalGrade.setDisable(true);
+            }
+        } catch (ManagerException e) {
+            selectedPractitionerEligible = false;
+            Controller.showAlert("Error de verificación", e.getMessage(), AlertType.ERROR);
+        }
     }
 
     private void loadTentativeGrade(int practitionerId) {
@@ -151,6 +178,11 @@ public class GradePractitionerController implements Initializable {
         if (selectedPractitioner == null) {
             Controller.showAlert("Selección requerida",
                     "Selecciona un practicante de la lista para calificarlo.", AlertType.WARNING);
+            return;
+        }
+        if (!selectedPractitionerEligible) {
+            Controller.showAlert("Requisitos pendientes",
+                    "El practicante aún no cumple los requisitos para ser calificado.", AlertType.WARNING);
             return;
         }
         String rawGrade = fieldFinalGrade.getText().trim();

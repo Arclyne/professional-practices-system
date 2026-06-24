@@ -21,8 +21,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import mx.uv.fei.domain.dto.GradingEligibility;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.manager.GradingEligibilityManager;
 import mx.uv.fei.domain.manager.GradingManager;
 import mx.uv.fei.domain.manager.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -43,6 +45,7 @@ public class GradePractitionerControllerTest extends ApplicationTest {
     private static final double FINAL_GRADE = 9.5;
 
     private final GradingManager gradingManager = mock(GradingManager.class);
+    private final GradingEligibilityManager eligibilityManager = mock(GradingEligibilityManager.class);
     private final PractitionerManager practitionerManager = mock(PractitionerManager.class);
     private final AppStore appStore = mock(AppStore.class);
 
@@ -60,10 +63,12 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         when(practitionerManager.retrievePractitionersByProfessor(PROFESSOR_ID)).thenReturn(buildAssignedPractitioners());
         when(gradingManager.previewTentativeGrade(PRACTITIONER_ID)).thenReturn(TENTATIVE_GRADE);
         when(gradingManager.getGradeByPractitionerAndPeriod(PRACTITIONER_ID, ACTIVE_PERIOD)).thenReturn(null);
+        when(eligibilityManager.evaluateEligibility(PRACTITIONER_ID))
+                .thenReturn(new GradingEligibility(true, true, true));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->
-                new GradePractitionerController(gradingManager, practitionerManager, appStore));
+                new GradePractitionerController(gradingManager, eligibilityManager, practitionerManager, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

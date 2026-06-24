@@ -2,7 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
@@ -19,35 +22,87 @@
     <HBox alignment="CENTER_LEFT">
         <VBox spacing="2.0" HBox.hgrow="ALWAYS">
             <Label styleClass="content-eyebrow" text="ENTREGABLES"/>
-            <Label styleClass="content-title" text="Mis documentos"/>
+            <Label styleClass="content-title" text="Documentos"/>
         </VBox>
-        <Button onAction="#handleUploadAction" styleClass="primary-button" text="+ Subir documento"/>
     </HBox>
 
-    <Label text="Sube los documentos requeridos para tu expediente. Puedes subir varios archivos aunque tengan el mismo nombre."
-           textFill="#6b7280" wrapText="true">
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <VBox.margin>
-            <Insets top="6.0"/>
+            <Insets top="14.0"/>
         </VBox.margin>
-    </Label>
+        <tabs>
+            <Tab text="Iniciales">
+                <VBox spacing="4.0">
+                    <padding>
+                        <Insets bottom="8.0" left="4.0" right="4.0" top="16.0"/>
+                    </padding>
 
-    <HBox alignment="CENTER_LEFT" spacing="10.0">
-        <VBox.margin>
-            <Insets top="18.0"/>
-        </VBox.margin>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button onAction="#handleViewFileAction" styleClass="secondary-button" text="Ver archivo"/>
-        <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
-    </HBox>
+                    <Label fx:id="initialLockedLabel" managed="false" textFill="#b91c1c" visible="false" wrapText="true"/>
 
-    <TableView fx:id="documentsTableView" VBox.vgrow="ALWAYS">
-        <VBox.margin>
-            <Insets top="12.0"/>
-        </VBox.margin>
-        <columns>
-            <TableColumn fx:id="nameColumn" prefWidth="360.0" text="Documento"/>
-            <TableColumn fx:id="statusColumn" prefWidth="140.0" text="Estado"/>
-            <TableColumn fx:id="dateColumn" prefWidth="180.0" text="Subido"/>
-        </columns>
-    </TableView>
+                    <Label text="Selecciona el tipo de documento y súbelo. Si un documento fue rechazado, edítalo para volver a enviarlo."
+                           textFill="#6b7280" wrapText="true"/>
+
+                    <HBox fx:id="initialActionsBox" alignment="CENTER_LEFT" spacing="10.0">
+                        <VBox.margin>
+                            <Insets top="10.0"/>
+                        </VBox.margin>
+                        <ComboBox fx:id="initialTypeComboBox" prefWidth="240.0" promptText="Tipo de documento"/>
+                        <Button onAction="#handleUploadInitialAction" styleClass="primary-button" text="+ Subir"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button onAction="#handleEditInitialAction" styleClass="secondary-button" text="Editar"/>
+                        <Button onAction="#handleViewInitialFileAction" styleClass="secondary-button" text="Ver archivo"/>
+                    </HBox>
+
+                    <TableView fx:id="initialDocumentsTableView" VBox.vgrow="ALWAYS">
+                        <VBox.margin>
+                            <Insets top="12.0"/>
+                        </VBox.margin>
+                        <columns>
+                            <TableColumn fx:id="initialTypeColumn" prefWidth="200.0" text="Tipo"/>
+                            <TableColumn fx:id="initialNameColumn" prefWidth="220.0" text="Archivo"/>
+                            <TableColumn fx:id="initialStatusColumn" prefWidth="110.0" text="Estado"/>
+                            <TableColumn fx:id="initialCommentColumn" prefWidth="220.0" text="Observaciones"/>
+                            <TableColumn fx:id="initialDateColumn" prefWidth="150.0" text="Subido"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+            <Tab text="Finales">
+                <VBox spacing="4.0">
+                    <padding>
+                        <Insets bottom="8.0" left="4.0" right="4.0" top="16.0"/>
+                    </padding>
+
+                    <Label fx:id="finalLockedLabel" managed="false" textFill="#b91c1c" visible="false" wrapText="true"/>
+
+                    <Label text="Sube tu carta de liberación. Si fue rechazada, edítala para volver a enviarla."
+                           textFill="#6b7280" wrapText="true"/>
+
+                    <HBox fx:id="finalActionsBox" alignment="CENTER_LEFT" spacing="10.0">
+                        <VBox.margin>
+                            <Insets top="10.0"/>
+                        </VBox.margin>
+                        <ComboBox fx:id="finalTypeComboBox" prefWidth="240.0" promptText="Tipo de documento"/>
+                        <Button onAction="#handleUploadFinalAction" styleClass="primary-button" text="+ Subir"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button onAction="#handleEditFinalAction" styleClass="secondary-button" text="Editar"/>
+                        <Button onAction="#handleViewFinalFileAction" styleClass="secondary-button" text="Ver archivo"/>
+                    </HBox>
+
+                    <TableView fx:id="finalDocumentsTableView" VBox.vgrow="ALWAYS">
+                        <VBox.margin>
+                            <Insets top="12.0"/>
+                        </VBox.margin>
+                        <columns>
+                            <TableColumn fx:id="finalTypeColumn" prefWidth="200.0" text="Tipo"/>
+                            <TableColumn fx:id="finalNameColumn" prefWidth="220.0" text="Archivo"/>
+                            <TableColumn fx:id="finalStatusColumn" prefWidth="110.0" text="Estado"/>
+                            <TableColumn fx:id="finalCommentColumn" prefWidth="220.0" text="Observaciones"/>
+                            <TableColumn fx:id="finalDateColumn" prefWidth="150.0" text="Subido"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
 </VBox>
