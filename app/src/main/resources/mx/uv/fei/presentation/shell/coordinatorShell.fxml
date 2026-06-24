@@ -38,6 +38,8 @@
             </Label>
             <Button fx:id="practitionersNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowPractitionersAction"
                     styleClass="sidebar-item" text="Practicantes"/>
+            <Button fx:id="assignmentsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowAssignmentsAction"
+                    styleClass="sidebar-item" text="Asignar proyectos"/>
             <Button fx:id="projectsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowProjectsAction"
                     styleClass="sidebar-item" text="Proyectos"/>
             <Button fx:id="organizationsNavButton" maxWidth="1.7976931348623157E308" onAction="#handleShowOrganizationsAction"
