@@ -51,18 +51,12 @@
             <ComboBox fx:id="reportTypeComboBox" maxWidth="300.0"/>
         </VBox>
 
-        <HBox spacing="20.0">
-            <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-label" text="Inicio del periodo"/>
-                <DatePicker fx:id="periodStartDatePicker" maxWidth="1.7976931348623157E308"/>
-            </VBox>
-            <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-label" text="Fin del periodo"/>
-                <DatePicker fx:id="periodEndDatePicker" maxWidth="1.7976931348623157E308"/>
-            </VBox>
-        </HBox>
+        <VBox fx:id="intermediateDateContainer" spacing="6.0">
+            <Label styleClass="section-label" text="Fecha de corte del reporte intermedio"/>
+            <DatePicker fx:id="periodEndDatePicker" maxWidth="300.0"/>
+        </VBox>
 
-        <Label fx:id="hoursInfoLabel" styleClass="content-subtitle" text=""/>
+        <Label fx:id="hoursInfoLabel" styleClass="content-subtitle" wrapText="true" text=""/>
 
         <Button fx:id="generateReportButton" onAction="#handleGenerateReport" maxWidth="1.7976931348623157E308"
                 styleClass="primary-button" text="Generar reporte"/>
