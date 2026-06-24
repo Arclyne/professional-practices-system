@@ -55,6 +55,8 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
                         generatedId = generatedKeys.getInt(1);
                     }
                 }
+            } else {
+                throw new DAOException("Duplicate entry");
             }
         } catch (SQLException e) {
             throw new DAOException("Error al guardar el grupo de prácticas en la base de datos.", e);

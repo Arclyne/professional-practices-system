@@ -8,12 +8,15 @@ import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class PracticeGroupManager {
 
+    private static final Logger log = LoggerFactory.getLogger(PracticeGroupManager.class);
     private final IPracticeGroupDAO practiceGroupDAO;
 
     @Inject
@@ -30,6 +33,10 @@ public class PracticeGroupManager {
                 throw new ManagerException("No se pudo registrar el grupo de prácticas en el sistema.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
+            if (e.getCause().getMessage().contains("Duplicate entry")) {
+                throw new ManagerException("El grupo de practicas ya esta registrado en este periodo");
+            }
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
@@ -38,6 +45,7 @@ public class PracticeGroupManager {
         try {
             return practiceGroupDAO.getAllPracticeGroups();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar los grupos de prácticas.", e);
         }
     }
@@ -46,6 +54,7 @@ public class PracticeGroupManager {
         try {
             return practiceGroupDAO.recoverPracticeGroup(groupId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar la información del grupo de prácticas.", e);
         }
     }
@@ -56,6 +65,7 @@ public class PracticeGroupManager {
         try {
             practiceGroupDAO.updatePracticeGroup(practiceGroup, groupId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }

@@ -6,6 +6,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Administrator;
+
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -13,6 +14,9 @@ import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 
 @Component
 public class AdminManager {
@@ -41,6 +45,8 @@ public class AdminManager {
         administrator.setRole("Administrator");
         UserValidator.validateAdministratorData(administrator);
 
+        verifyIfAdminExist();
+
         try {
             int generatedId = administratorDAO.insertAdministrator(administrator);
             if (generatedId <= 0) {
@@ -49,7 +55,26 @@ public class AdminManager {
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
         } catch (DAOException e) {
             log.error("Error al insertar el administrador inicial.", e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor o los datos ya existen. Por favor, verifique la información.", e);
+
+            String errorMessage = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+            String username = administrator.getUserName() != null ? administrator.getUserName().toLowerCase() : "";
+
+            if (errorMessage.contains("duplicate entry") && errorMessage.contains(username)) {
+                throw new ManagerException("Error ya existe un administrador registrado", e);
+            }
+
+            throw new ManagerException("Ocurrió un problema al interactuar con la base de datos.", e);
+        }
+    }
+
+    private void verifyIfAdminExist() throws ManagerException {
+        try {
+            List<Administrator> administratorsList = administratorDAO.getAllAdministrators();
+            if (!administratorsList.isEmpty()) {
+                throw new ManagerException("Error ya existe un administrador registrado");
+            }
+        } catch (DAOException e) {
+            throw new ManagerException("Error al verificar la existencia de un administrador.", e);
         }
     }
 }

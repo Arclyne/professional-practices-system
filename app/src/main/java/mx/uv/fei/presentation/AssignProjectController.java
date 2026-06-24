@@ -25,8 +25,6 @@ public class AssignProjectController {
 
     @FXML private Label practitionerInformationLabel;
     @FXML private ListView<ProjectPostulation> practitionerPostulationsListView;
-    @FXML private Button confirmAssignmentButton;
-    @FXML private Button returnToDashboardButton;
 
     private final PostulationManager postulationManager;
     private final ShellNavigator shellNavigator;
