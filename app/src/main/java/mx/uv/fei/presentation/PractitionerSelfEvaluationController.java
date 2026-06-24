@@ -13,8 +13,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.manager.SelfEvaluationManager;
 import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,6 +34,7 @@ import java.util.List;
 public class PractitionerSelfEvaluationController {
 
     private static final String REPORT_TYPE_FINAL = "Final";
+    private static final String PROGRESS_REPORT_VIEW = "/mx/uv/fei/presentation/progressReportGenerator.fxml";
     private static final String SELF_EVALUATION_STATUS_REVIEWED = "Revisada";
     private static final String EVIDENCE_PENDING = "pendiente";
     private static final String PDF_INITIAL_NAME = "PRAIS-03_Autoevaluacion.pdf";
@@ -62,6 +62,7 @@ public class PractitionerSelfEvaluationController {
 
     private final SelfEvaluationManager selfEvaluationManager;
     private final ProgressReportManager progressReportManager;
+    private final ShellNavigator shellNavigator;
     private final AppStore store;
 
     private SelfEvaluation currentSelfEvaluation;
@@ -69,9 +70,11 @@ public class PractitionerSelfEvaluationController {
 
     @Inject
     public PractitionerSelfEvaluationController(SelfEvaluationManager selfEvaluationManager,
-                                                ProgressReportManager progressReportManager, AppStore store) {
+                                                ProgressReportManager progressReportManager,
+                                                ShellNavigator shellNavigator, AppStore store) {
         this.selfEvaluationManager = selfEvaluationManager;
         this.progressReportManager = progressReportManager;
+        this.shellNavigator = shellNavigator;
         this.store = store;
     }
 
@@ -328,11 +331,6 @@ public class PractitionerSelfEvaluationController {
 
     @FXML
     private void handleGoToReport() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.PROGRESS_REPORT_GENERATOR));
-    }
-
-    @FXML
-    private void handleReturnToMenu() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.showSubView(PROGRESS_REPORT_VIEW);
     }
 }
