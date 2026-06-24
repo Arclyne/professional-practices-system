@@ -4,11 +4,13 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.common.ReportPdfGenerator;
+import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CloudStorageManager;
+import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 
@@ -35,7 +37,7 @@ public class ProgressReportGeneratorController {
     private static final String STATUS_PENDING_SIGNATURE = "Pendiente de Firma";
 
     @FXML private ComboBox<String> reportTypeComboBox;
-    @FXML private DatePicker periodStartDatePicker;
+    @FXML private VBox intermediateDateContainer;
     @FXML private DatePicker periodEndDatePicker;
     @FXML private Label hoursInfoLabel;
     @FXML private Button generateReportButton;
@@ -49,17 +51,21 @@ public class ProgressReportGeneratorController {
     private final ProgressReportManager progressReportManager;
     private final CloudStorageManager cloudStorageManager;
     private final ReportPdfGenerator pdfGenerator;
+    private final PeriodManager periodManager;
     private final AppStore store;
 
     private ProgressReport currentProgressReport;
+    private Period activePeriod;
     private int practitionerId;
 
     @Inject
     public ProgressReportGeneratorController(ProgressReportManager progressReportManager,
-                                             CloudStorageManager cloudStorageManager, ReportPdfGenerator pdfGenerator, AppStore store) {
+                                             CloudStorageManager cloudStorageManager, ReportPdfGenerator pdfGenerator,
+                                             PeriodManager periodManager, AppStore store) {
         this.progressReportManager = progressReportManager;
         this.cloudStorageManager = cloudStorageManager;
         this.pdfGenerator = pdfGenerator;
+        this.periodManager = periodManager;
         this.store = store;
     }
 
@@ -68,10 +74,42 @@ public class ProgressReportGeneratorController {
         User currentUser = store.getState().sessionState().currentUserInSession();
         practitionerId = currentUser != null ? currentUser.getId() : 0;
 
+        resolveActivePeriod();
         reportTypeComboBox.getItems().addAll(TYPE_INTERMEDIATE_LABEL, TYPE_FINAL_LABEL);
+        reportTypeComboBox.valueProperty().addListener((_, _, selectedType) -> applyGenerationFieldsForType(selectedType));
         reportTypeComboBox.getSelectionModel().selectFirst();
         showExistingReportContainer(false);
         loadExistingReports();
+    }
+
+    private void resolveActivePeriod() {
+        try {
+            activePeriod = periodManager.getActivePeriod();
+            generateReportButton.setDisable(activePeriod == null);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private void applyGenerationFieldsForType(String selectedType) {
+        boolean isIntermediate = TYPE_INTERMEDIATE_LABEL.equals(selectedType);
+        intermediateDateContainer.setVisible(isIntermediate);
+        intermediateDateContainer.setManaged(isIntermediate);
+        hoursInfoLabel.setText(buildPeriodInfo(isIntermediate));
+    }
+
+    private String buildPeriodInfo(boolean isIntermediate) {
+        String periodInfo;
+        if (activePeriod == null) {
+            periodInfo = "No hay un periodo académico activo. Solicita al coordinador que active uno.";
+        } else if (isIntermediate) {
+            periodInfo = "El reporte intermedio cubre desde el inicio del periodo ("
+                    + activePeriod.getStartDate() + ") hasta la fecha de corte que selecciones.";
+        } else {
+            periodInfo = "El reporte final cubre todo el periodo: "
+                    + activePeriod.getStartDate() + " al " + activePeriod.getEndDate() + ".";
+        }
+        return periodInfo;
     }
 
     private void loadExistingReports() {
@@ -108,16 +146,36 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleGenerateReport() {
-        if (periodStartDatePicker.getValue() == null || periodEndDatePicker.getValue() == null) {
-            Controller.showAlert("Fechas requeridas",
-                    "Selecciona las fechas de inicio y fin del periodo cubierto.", AlertType.WARNING);
+        if (activePeriod == null) {
+            Controller.showAlert("Periodo no disponible",
+                    "No hay un periodo académico activo para cubrir el reporte.", AlertType.WARNING);
             return;
         }
 
         ProgressReportType reportType = resolveSelectedType();
-        Date periodStart = Date.valueOf(periodStartDatePicker.getValue());
-        Date periodEnd = Date.valueOf(periodEndDatePicker.getValue());
+        Date periodEnd = resolvePeriodEnd(reportType);
+        if (periodEnd == null) {
+            Controller.showAlert("Fecha requerida",
+                    "Selecciona la fecha de corte del reporte intermedio.", AlertType.WARNING);
+            return;
+        }
 
+        generateReport(reportType, activePeriod.getStartDate(), periodEnd);
+    }
+
+    private Date resolvePeriodEnd(ProgressReportType reportType) {
+        Date periodEnd;
+        if (reportType == ProgressReportType.FINAL) {
+            periodEnd = activePeriod.getEndDate();
+        } else {
+            periodEnd = periodEndDatePicker.getValue() != null
+                    ? Date.valueOf(periodEndDatePicker.getValue())
+                    : null;
+        }
+        return periodEnd;
+    }
+
+    private void generateReport(ProgressReportType reportType, Date periodStart, Date periodEnd) {
         try {
             ProgressReport generatedReport = progressReportManager.generateProgressReport(
                     practitionerId, reportType, periodStart, periodEnd);

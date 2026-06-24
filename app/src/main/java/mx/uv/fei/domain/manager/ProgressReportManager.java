@@ -35,7 +35,7 @@ public class ProgressReportManager {
         double accumulatedHours = getAccumulatedHours(practitionerId);
         validateHoursRequirement(reportType, accumulatedHours);
         validateReportDoesNotExist(practitionerId, reportType);
-        validateIntermediateReportSubmittedBeforeFinal(practitionerId, reportType);
+        validateIntermediateReportApprovedBeforeFinal(practitionerId, reportType);
 
         ProgressReport report = buildProgressReport(practitionerId, reportType, periodStart, periodEnd, accumulatedHours);
 
@@ -119,27 +119,27 @@ public class ProgressReportManager {
         }
     }
 
-    private void validateIntermediateReportSubmittedBeforeFinal(int practitionerId, ProgressReportType reportType)
+    private void validateIntermediateReportApprovedBeforeFinal(int practitionerId, ProgressReportType reportType)
             throws ManagerException {
-        if (reportType == ProgressReportType.FINAL && !isIntermediateReportSubmitted(practitionerId)) {
+        if (reportType == ProgressReportType.FINAL && !isIntermediateReportApproved(practitionerId)) {
             throw new ManagerException(
-                    "Debes generar y entregar tu reporte Intermedio antes de generar el reporte Final.");
+                    "Debes tener tu reporte Intermedio aprobado por el profesor antes de generar el reporte Final.");
         }
     }
 
-    private boolean isIntermediateReportSubmitted(int practitionerId) throws ManagerException {
-        boolean isSubmitted = false;
+    private boolean isIntermediateReportApproved(int practitionerId) throws ManagerException {
+        boolean isApproved = false;
 
         try {
             ProgressReport intermediateReport = progressReportDAO
                     .getProgressReportByPractitionerAndType(practitionerId, ProgressReportType.INTERMEDIO.getDatabaseValue());
-            isSubmitted = intermediateReport != null
-                    && !ReportStatus.PENDING.getDatabaseValue().equals(intermediateReport.getStatus());
+            isApproved = intermediateReport != null
+                    && ReportStatus.EVALUATED.getDatabaseValue().equals(intermediateReport.getStatus());
         } catch (DAOException e) {
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
 
-        return isSubmitted;
+        return isApproved;
     }
 
     private ProgressReport buildProgressReport(int practitionerId, ProgressReportType reportType,

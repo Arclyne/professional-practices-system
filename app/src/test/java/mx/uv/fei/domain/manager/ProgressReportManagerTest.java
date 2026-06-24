@@ -100,10 +100,10 @@ public class ProgressReportManagerTest {
     }
 
     @Test
-    void generateProgressReport_FinalWithEnoughHours_ReturnsReport() throws ManagerException {
+    void generateProgressReport_FinalWithApprovedIntermediate_ReturnsReport() throws ManagerException {
         stubProgressReportDAO.setAccumulatedHours(VALID_FINAL_HOURS);
         stubProgressReportDAO.setExistingIntermediate(true);
-        stubProgressReportDAO.setIntermediateStatus("Entregado");
+        stubProgressReportDAO.setIntermediateStatus("Evaluado");
 
         ProgressReport generatedReport = progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END);
@@ -121,10 +121,10 @@ public class ProgressReportManagerTest {
     }
 
     @Test
-    void generateProgressReport_FinalWithPendingIntermediate_ThrowsManagerException() {
+    void generateProgressReport_FinalWithUnapprovedIntermediate_ThrowsManagerException() {
         stubProgressReportDAO.setAccumulatedHours(VALID_FINAL_HOURS);
         stubProgressReportDAO.setExistingIntermediate(true);
-        stubProgressReportDAO.setIntermediateStatus("Pendiente de Firma");
+        stubProgressReportDAO.setIntermediateStatus("Entregado");
 
         assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.FINAL, PERIOD_START, PERIOD_END));

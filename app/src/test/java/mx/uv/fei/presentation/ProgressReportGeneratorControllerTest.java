@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.GraphicsEnvironment;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -21,10 +22,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 
+import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.manager.CloudStorageManager;
+import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.ProgressReportManager;
 import mx.uv.fei.domain.common.ReportPdfGenerator;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -45,6 +48,7 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
     private final ProgressReportManager progressReportManager = mock(ProgressReportManager.class);
     private final CloudStorageManager cloudStorageManager = mock(CloudStorageManager.class);
     private final ReportPdfGenerator pdfGenerator = mock(ReportPdfGenerator.class);
+    private final PeriodManager periodManager = mock(PeriodManager.class);
     private final AppStore appStore = mock(AppStore.class);
 
     @BeforeAll
@@ -58,17 +62,25 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
         User practitioner = new User();
         practitioner.setId(PRACTITIONER_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(practitioner)));
+        when(periodManager.getActivePeriod()).thenReturn(buildActivePeriod());
         when(progressReportManager.getProgressReportsByPractitioner(PRACTITIONER_ID)).thenReturn(new ArrayList<>());
         when(progressReportManager.generateProgressReport(anyInt(), any(), any(), any()))
                 .thenReturn(buildGeneratedReport());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType -> new ProgressReportGeneratorController(
-                progressReportManager, cloudStorageManager, pdfGenerator, appStore));
+                progressReportManager, cloudStorageManager, pdfGenerator, periodManager, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
         stage.show();
+    }
+
+    private Period buildActivePeriod() {
+        Period activePeriod = new Period();
+        activePeriod.setStartDate(Date.valueOf(PERIOD_START));
+        activePeriod.setEndDate(Date.valueOf(PERIOD_END));
+        return activePeriod;
     }
 
     private ProgressReport buildGeneratedReport() {
@@ -79,11 +91,8 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
         return generatedReport;
     }
 
-    private void selectPeriod() {
-        interact(() -> {
-            lookup("#periodStartDatePicker").queryAs(DatePicker.class).setValue(PERIOD_START);
-            lookup("#periodEndDatePicker").queryAs(DatePicker.class).setValue(PERIOD_END);
-        });
+    private void selectIntermediateCutoffDate() {
+        interact(() -> lookup("#periodEndDatePicker").queryAs(DatePicker.class).setValue(PERIOD_END));
     }
 
     private void clickGenerateButton() {
@@ -92,7 +101,7 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
 
     @Test
     void handleGenerateReport_IntermediateTypeSelected_GeneratesIntermediateReport() throws Exception {
-        selectPeriod();
+        selectIntermediateCutoffDate();
 
         clickGenerateButton();
 
@@ -104,7 +113,6 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
     @SuppressWarnings("unchecked")
     void handleGenerateReport_FinalTypeSelected_GeneratesFinalReport() throws Exception {
         interact(() -> lookup("#reportTypeComboBox").queryAs(ComboBox.class).setValue(TYPE_FINAL_LABEL));
-        selectPeriod();
 
         clickGenerateButton();
 
@@ -113,7 +121,7 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
     }
 
     @Test
-    void handleGenerateReport_WithoutPeriodDates_DoesNotGenerateReport() throws Exception {
+    void handleGenerateReport_IntermediateWithoutCutoffDate_DoesNotGenerateReport() throws Exception {
         clickGenerateButton();
 
         verify(progressReportManager, never()).generateProgressReport(anyInt(), any(), any(), any());
