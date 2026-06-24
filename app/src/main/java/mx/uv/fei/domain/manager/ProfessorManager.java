@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IProfessorDAO;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -13,6 +14,7 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Component
@@ -44,7 +46,14 @@ public class ProfessorManager {
             return temporaryPassword;
         } catch (DAOException e) {
             log.error("Error al insertar el profesor.", e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            String rootError= Controller.getRootError(e);
+            if (rootError.contains(professor.getEmail())){
+                throw new ManagerException("El correo ya está registrado.", e);
+            }else if(rootError.contains(String.valueOf(professor.getId()))) {
+                throw new ManagerException("Ya existe un registro con ese numero de personal", e);
+            }else{
+                throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            }
         }
     }
 

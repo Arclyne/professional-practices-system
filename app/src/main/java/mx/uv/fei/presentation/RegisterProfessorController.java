@@ -68,7 +68,7 @@ public class RegisterProfessorController implements Initializable {
         fieldLastName.setText(professor.getLastName() != null ? professor.getLastName() : "");
         fieldEmail.setText(professor.getEmail() != null ? professor.getEmail() : "");
         fieldPersonalNumber.setText(professor.getUserName() != null ? professor.getUserName() : "");
-        fieldPersonalNumber.setDisable(true); // Deshabilitar el numero personal en edición
+        fieldPersonalNumber.setDisable(true);
 
         if (professor.getGender() != null) {
             comboBoxGender.setValue(professor.getGender().getDisplayValue());
