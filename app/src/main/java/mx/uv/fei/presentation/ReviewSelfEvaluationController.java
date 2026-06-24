@@ -107,7 +107,9 @@ public class ReviewSelfEvaluationController {
 
             for (Practitioner student : students) {
                 SelfEvaluationRow evaluationRow = createSelfEvaluationRow(student);
-                rows.add(evaluationRow);
+                if (evaluationRow.getSelfEvaluation() != null) {
+                    rows.add(evaluationRow);
+                }
             }
 
             ObservableList<SelfEvaluationRow> data = FXCollections.observableArrayList(rows);
