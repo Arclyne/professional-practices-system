@@ -86,9 +86,12 @@ public class CoordinatorProfessorsController {
         Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
         if (selectedProfessor == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para activarlo.");
-            return;
+        } else {
+            activateSelectedProfessor(selectedProfessor);
         }
+    }
 
+    private void activateSelectedProfessor(Professor selectedProfessor) {
         try {
             professorManager.activateProfessor(selectedProfessor.getId());
             loadProfessors();
@@ -102,9 +105,12 @@ public class CoordinatorProfessorsController {
         Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
         if (selectedProfessor == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para inactivarlo.");
-            return;
+        } else {
+            inactivateSelectedProfessor(selectedProfessor);
         }
+    }
 
+    private void inactivateSelectedProfessor(Professor selectedProfessor) {
         try {
             professorManager.inactivateProfessor(selectedProfessor.getId());
             loadProfessors();
@@ -118,10 +124,9 @@ public class CoordinatorProfessorsController {
         Professor selectedProfessor = professorsTableView.getSelectionModel().getSelectedItem();
         if (selectedProfessor == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un profesor para editarlo.");
-            return;
+        } else {
+            openForEdit(selectedProfessor);
         }
-
-        openForEdit(selectedProfessor);
     }
 
     @FXML

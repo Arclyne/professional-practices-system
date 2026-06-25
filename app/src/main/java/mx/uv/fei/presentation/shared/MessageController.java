@@ -173,10 +173,12 @@ public class MessageController implements Initializable, IDisposable {
         var currentUser = store.getState().sessionState().currentUserInSession();
         if (currentUser == null) {
             log.warn("Se intentó cargar mensajes sin una sesión activa.");
-            return;
+        } else {
+            fetchMessagesForUser(currentUser.getId());
         }
+    }
 
-        int currentUserId = currentUser.getId();
+    private void fetchMessagesForUser(int currentUserId) {
         store.dispatch(new MessageAction.FetchMessages(currentUserId, FIRST_PAGE_OFFSET));
 
         Task<List<Message>> fetchTask = buildFetchTask(currentUserId);
@@ -213,9 +215,12 @@ public class MessageController implements Initializable, IDisposable {
         if (receiverEmail.isEmpty() || subject.isEmpty() || body.isEmpty()) {
             Controller.showAlert("Campos Incompletos",
                     "Por favor, complete todos los campos requeridos para enviar el correo.", AlertType.WARNING);
-            return;
+        } else {
+            sendComposedMessage(receiverEmail, subject, body);
         }
+    }
 
+    private void sendComposedMessage(String receiverEmail, String subject, String body) {
         try {
             int senderId = store.getState().sessionState().currentUserInSession().getId();
             messageManager.sendMessage(new MessageRequest(senderId, receiverEmail, subject, body));

@@ -271,24 +271,34 @@ public class GradePractitionerController implements Initializable {
 
     @FXML
     private void handleSaveGrade() {
+        if (canRegisterGrade()) {
+            registerGradeFromForm();
+        }
+    }
+
+    private boolean canRegisterGrade() {
+        boolean canRegister = true;
+
         if (selectedPractitioner == null) {
             Controller.showAlert("Selección requerida",
                     "Selecciona un practicante de la lista para calificarlo.", AlertType.WARNING);
-            return;
-        }
-        if (!selectedPractitionerEligible) {
+            canRegister = false;
+        } else if (!selectedPractitionerEligible) {
             Controller.showAlert("Requisitos pendientes",
                     "El practicante aún no cumple los requisitos para ser calificado.", AlertType.WARNING);
-            return;
-        }
-        String rawGrade = fieldFinalGrade.getText().trim();
-        if (rawGrade.isEmpty()) {
+            canRegister = false;
+        } else if (fieldFinalGrade.getText().trim().isEmpty()) {
             Controller.showAlert("Campo requerido",
                     "Ingresa la calificación antes de continuar.", AlertType.WARNING);
-            return;
+            canRegister = false;
         }
+
+        return canRegister;
+    }
+
+    private void registerGradeFromForm() {
         try {
-            double finalGrade = Double.parseDouble(rawGrade);
+            double finalGrade = Double.parseDouble(fieldFinalGrade.getText().trim());
             gradingManager.registerGrade(selectedPractitioner.getId(), professorId, activePeriod, finalGrade);
             Controller.showAlert("Calificación Guardada",
                     "Se registró la calificación de " + selectedPractitioner.getName()
@@ -305,19 +315,30 @@ public class GradePractitionerController implements Initializable {
 
     @FXML
     private void handleUpdateGrade() {
+        if (canUpdateGrade()) {
+            updateGradeFromForm();
+        }
+    }
+
+    private boolean canUpdateGrade() {
+        boolean canUpdate = true;
+
         if (selectedPractitioner == null) {
             Controller.showAlert("Selección requerida",
                     "Selecciona un practicante de la lista para calificarlo.", AlertType.WARNING);
-            return;
-        }
-        String rawGrade = fieldFinalGrade.getText().trim();
-        if (rawGrade.isEmpty()) {
+            canUpdate = false;
+        } else if (fieldFinalGrade.getText().trim().isEmpty()) {
             Controller.showAlert("Campo requerido",
                     "Ingresa la calificación antes de continuar.", AlertType.WARNING);
-            return;
+            canUpdate = false;
         }
+
+        return canUpdate;
+    }
+
+    private void updateGradeFromForm() {
         try {
-            double newGrade = Double.parseDouble(rawGrade);
+            double newGrade = Double.parseDouble(fieldFinalGrade.getText().trim());
             gradingManager.updateFinalGrade(selectedPractitioner.getId(), activePeriod, newGrade);
             Controller.showAlert("Calificación Actualizada",
                     "La calificación de " + selectedPractitioner.getName()

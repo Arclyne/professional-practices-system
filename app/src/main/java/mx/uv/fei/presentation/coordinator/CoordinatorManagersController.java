@@ -105,9 +105,12 @@ public class CoordinatorManagersController {
         Manager selectedManager = managersTableView.getSelectionModel().getSelectedItem();
         if (selectedManager == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un encargado para activarlo.");
-            return;
+        } else {
+            activateSelectedManager(selectedManager);
         }
+    }
 
+    private void activateSelectedManager(Manager selectedManager) {
         try {
             managerManager.activateManager(selectedManager.getId());
             loadManagers();
@@ -121,9 +124,12 @@ public class CoordinatorManagersController {
         Manager selectedManager = managersTableView.getSelectionModel().getSelectedItem();
         if (selectedManager == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un encargado para inactivarlo.");
-            return;
+        } else {
+            inactivateSelectedManager(selectedManager);
         }
+    }
 
+    private void inactivateSelectedManager(Manager selectedManager) {
         try {
             managerManager.inactivateManager(selectedManager.getId());
             loadManagers();
@@ -137,10 +143,9 @@ public class CoordinatorManagersController {
         Manager selectedManager = managersTableView.getSelectionModel().getSelectedItem();
         if (selectedManager == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un encargado para editarlo.");
-            return;
+        } else {
+            shellNavigator.openForm(REGISTER_FORM_VIEW, selectedManager);
         }
-
-        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedManager);
     }
 
     @FXML

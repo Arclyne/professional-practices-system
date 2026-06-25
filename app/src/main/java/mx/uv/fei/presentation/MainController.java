@@ -107,9 +107,12 @@ public class MainController {
     }
 
     private void renderSection(AppSection targetSection) {
-        if (activeSection == targetSection) {
-            return;
+        if (activeSection != targetSection) {
+            applySection(targetSection);
         }
+    }
+
+    private void applySection(AppSection targetSection) {
         activeSection = targetSection;
         adjustStageSize(targetSection);
 

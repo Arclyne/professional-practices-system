@@ -114,10 +114,9 @@ public class CoordinatorGroupsController {
         PracticeGroup selectedGroup = groupsTableView.getSelectionModel().getSelectedItem();
         if (selectedGroup == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un grupo de la lista para editarlo.");
-            return;
+        } else {
+            shellNavigator.openForm(REGISTER_FORM_VIEW, selectedGroup);
         }
-
-        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedGroup);
     }
 
     @FXML

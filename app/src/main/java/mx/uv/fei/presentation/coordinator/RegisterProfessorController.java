@@ -80,10 +80,7 @@ public class RegisterProfessorController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos incompletos",
                     "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-            return;
-        }
-
-        if (professorBeingEdited != null) {
+        } else if (professorBeingEdited != null) {
             updateProfessor();
         } else {
             registerProfessor();

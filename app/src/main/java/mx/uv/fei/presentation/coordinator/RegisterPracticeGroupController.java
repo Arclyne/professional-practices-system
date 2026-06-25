@@ -141,10 +141,7 @@ public class RegisterPracticeGroupController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos Incompletos",
                     "Por favor, complete todos los campos para registrar el grupo.", AlertType.WARNING);
-            return;
-        }
-
-        if (groupBeingEdited != null) {
+        } else if (groupBeingEdited != null) {
             updatePracticeGroup();
         } else {
             registerPracticeGroup();

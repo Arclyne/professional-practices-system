@@ -105,9 +105,12 @@ public class RegisterEnrollmentController implements Initializable {
         if (practitionerToEnroll == null || groupFormComboBox.getValue() == null) {
             Controller.showAlert("Datos incompletos",
                     "Selecciona un practicante y un grupo para reinscribir.", AlertType.WARNING);
-            return;
+        } else {
+            enrollSelectedPractitioner();
         }
+    }
 
+    private void enrollSelectedPractitioner() {
         try {
             int groupId = groupLabelToId.get((String) groupFormComboBox.getValue());
             groupEnrollmentManager.enrollPractitionerInGroup(practitionerToEnroll.getId(), groupId);

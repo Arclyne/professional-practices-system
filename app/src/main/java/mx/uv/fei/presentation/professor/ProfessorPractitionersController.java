@@ -112,10 +112,12 @@ public class ProfessorPractitionersController {
         boolean hasActivePeriod = activePeriodId > 0;
         setNodeVisible(noActivePeriodLabel, !hasActivePeriod);
 
-        if (!hasActivePeriod) {
-            return;
+        if (hasActivePeriod) {
+            loadPractitionersForActivePeriod();
         }
+    }
 
+    private void loadPractitionersForActivePeriod() {
         clearCaches();
         ObservableList<String> groupOptions = FXCollections.observableArrayList(GROUP_FILTER_ALL);
 
@@ -179,18 +181,20 @@ public class ProfessorPractitionersController {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para ver su proyecto.");
-            return;
+        } else {
+            showProjectForPractitioner(selectedPractitioner);
         }
+    }
 
+    private void showProjectForPractitioner(Practitioner selectedPractitioner) {
         Project assignedProject = projectByPractitionerId.get(selectedPractitioner.getId());
         if (assignedProject == null) {
             Controller.showInfoAlert("Sin proyecto",
                     "El practicante no tiene un proyecto asignado en este periodo.");
-            return;
+        } else {
+            Controller.showInfoAlert("Proyecto de " + selectedPractitioner.getEnrollment(),
+                    buildProjectDetail(assignedProject));
         }
-
-        Controller.showInfoAlert("Proyecto de " + selectedPractitioner.getEnrollment(),
-                buildProjectDetail(assignedProject));
     }
 
     private String buildProjectDetail(Project project) {

@@ -171,14 +171,18 @@ public class CoordinationController {
             Coordinator currentCoordinator = coordinatorManager.retrieveCurrentCoordinator();
             if (currentCoordinator == null) {
                 Controller.showInfoAlert("Sin coordinador activo", "No hay un coordinador en turno para inactivar.");
-                return;
+            } else {
+                inactivateCurrentCoordinator(currentCoordinator);
             }
-            coordinatorManager.inactivateCoordinator(currentCoordinator.getId());
-            Controller.showSuccessAlert("Coordinador inactivado", "El coordinador en turno fue inactivado.");
-            loadCoordinators();
         } catch (ManagerException e) {
             Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
         }
+    }
+
+    private void inactivateCurrentCoordinator(Coordinator currentCoordinator) throws ManagerException {
+        coordinatorManager.inactivateCoordinator(currentCoordinator.getId());
+        Controller.showSuccessAlert("Coordinador inactivado", "El coordinador en turno fue inactivado.");
+        loadCoordinators();
     }
 
     @FXML
@@ -186,9 +190,12 @@ public class CoordinationController {
         Coordinator selectedCoordinator = coordinatorsTableView.getSelectionModel().getSelectedItem();
         if (selectedCoordinator == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un coordinador de la lista para activarlo.");
-            return;
+        } else {
+            activateSelectedCoordinator(selectedCoordinator);
         }
+    }
 
+    private void activateSelectedCoordinator(Coordinator selectedCoordinator) {
         try {
             coordinatorManager.activateCoordinator(selectedCoordinator.getId());
             Controller.showSuccessAlert("Coordinador activado", "El coordinador fue activado correctamente.");
@@ -203,10 +210,9 @@ public class CoordinationController {
         Coordinator selectedCoordinator = coordinatorsTableView.getSelectionModel().getSelectedItem();
         if (selectedCoordinator == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un coordinador de la lista para editarlo.");
-            return;
+        } else {
+            shellNavigator.openForm(REGISTER_FORM_VIEW, selectedCoordinator);
         }
-
-        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedCoordinator);
     }
 
     @FXML

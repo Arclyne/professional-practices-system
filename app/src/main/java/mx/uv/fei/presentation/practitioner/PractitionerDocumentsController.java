@@ -180,14 +180,16 @@ public class PractitionerDocumentsController {
     private void uploadDocument(ComboBox<DocumentType> typeComboBox, DocumentCategory category,
                                 ObservableList<PractitionerDocument> target) {
         DocumentType selectedType = typeComboBox.getValue();
+        File selectedFile = selectedType != null ? chooseFile() : null;
         if (selectedType == null) {
             Controller.showInfoAlert("Tipo requerido", "Selecciona el tipo de documento que vas a subir.");
-            return;
+        } else if (selectedFile != null) {
+            persistUploadedDocument(selectedType, selectedFile, category, target);
         }
-        File selectedFile = chooseFile();
-        if (selectedFile == null) {
-            return;
-        }
+    }
+
+    private void persistUploadedDocument(DocumentType selectedType, File selectedFile, DocumentCategory category,
+                                         ObservableList<PractitionerDocument> target) {
         try {
             documentManager.uploadDocument(currentPractitionerId(), selectedType, selectedFile);
             Controller.showInfoAlert("Documento subido", "El documento se subió correctamente.");
@@ -210,14 +212,16 @@ public class PractitionerDocumentsController {
     private void editDocument(TableView<PractitionerDocument> tableView, DocumentCategory category,
                               ObservableList<PractitionerDocument> target) {
         PractitionerDocument selectedDocument = tableView.getSelectionModel().getSelectedItem();
+        File selectedFile = selectedDocument != null ? chooseFile() : null;
         if (selectedDocument == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un documento de la tabla para editarlo.");
-            return;
+        } else if (selectedFile != null) {
+            persistEditedDocument(selectedDocument, selectedFile, category, target);
         }
-        File selectedFile = chooseFile();
-        if (selectedFile == null) {
-            return;
-        }
+    }
+
+    private void persistEditedDocument(PractitionerDocument selectedDocument, File selectedFile,
+                                       DocumentCategory category, ObservableList<PractitionerDocument> target) {
         try {
             documentManager.editDocument(selectedDocument.getDocumentId(), selectedFile);
             Controller.showInfoAlert("Documento actualizado", "El documento se actualizó y quedó pendiente de revisión.");
@@ -249,9 +253,9 @@ public class PractitionerDocumentsController {
     private void openSelectedFile(PractitionerDocument selectedDocument) {
         if (selectedDocument == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un documento para abrirlo.");
-            return;
+        } else {
+            Controller.openStoredFile(selectedDocument.getStoredFileUrl());
         }
-        Controller.openStoredFile(selectedDocument.getStoredFileUrl());
     }
 
     private int currentPractitionerId() {

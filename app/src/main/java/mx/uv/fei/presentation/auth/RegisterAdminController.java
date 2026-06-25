@@ -59,9 +59,12 @@ public class RegisterAdminController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos incompletos",
                     "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-            return;
+        } else {
+            registerInitialAdmin();
         }
+    }
 
+    private void registerInitialAdmin() {
         try {
             adminManager.registerInitialAdmin(buildAdministratorFromForm());
             Controller.showAlert("Configuración Exitosa",

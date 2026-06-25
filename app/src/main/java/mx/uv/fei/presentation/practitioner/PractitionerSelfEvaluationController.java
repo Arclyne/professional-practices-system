@@ -236,9 +236,12 @@ public class PractitionerSelfEvaluationController {
 
     @FXML
     private void handleSaveEvaluation() {
-        if (finalReport == null) {
-            return;
+        if (finalReport != null) {
+            saveCurrentEvaluation();
         }
+    }
+
+    private void saveCurrentEvaluation() {
         try {
             if (currentSelfEvaluation == null) {
                 currentSelfEvaluation = buildEvaluationFromForm();
@@ -259,9 +262,12 @@ public class PractitionerSelfEvaluationController {
     private void handleDownloadPdf() {
         if (isSelfEvaluationUnsaved()) {
             Controller.showAlert("Aviso", "Primero debe guardar su evaluación.", AlertType.WARNING);
-            return;
+        } else {
+            chooseAndGeneratePdf();
         }
+    }
 
+    private void chooseAndGeneratePdf() {
         FileChooser fileChooser = buildPdfFileChooser("Guardar PRAIS-03 Autoevaluación");
         fileChooser.setInitialFileName(PDF_INITIAL_NAME);
         File file = fileChooser.showSaveDialog(currentStage(saveButton));
@@ -284,9 +290,12 @@ public class PractitionerSelfEvaluationController {
     private void handleUploadSignedPdf() {
         if (isSelfEvaluationUnsaved()) {
             Controller.showAlert("Aviso", "Primero debe guardar su evaluación.", AlertType.WARNING);
-            return;
+        } else {
+            chooseAndSubmitSignedPdf();
         }
+    }
 
+    private void chooseAndSubmitSignedPdf() {
         FileChooser fileChooser = buildPdfFileChooser("Subir PRAIS-03 Firmado");
         File file = fileChooser.showOpenDialog(currentStage(uploadSignedButton));
         if (file != null) {
@@ -295,13 +304,22 @@ public class PractitionerSelfEvaluationController {
     }
 
     private void submitSelectedEvidence(File file) {
+        if (isFileSizeValid(file)) {
+            uploadEvidence(file.getAbsolutePath());
+        }
+    }
+
+    private boolean isFileSizeValid(File file) {
+        boolean isValid = false;
+
         try {
             FileValidator.validateFileSize(file);
+            isValid = true;
         } catch (ManagerException e) {
             Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
-            return;
         }
-        uploadEvidence(file.getAbsolutePath());
+
+        return isValid;
     }
 
     private void uploadEvidence(String filePath) {

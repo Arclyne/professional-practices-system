@@ -292,9 +292,13 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     @FXML
     private void handleViewPdfAction() {
-        if (selectedReport == null || selectedReport.getSignedFileUrl() == null) {
-            return;
+        boolean hasSignedFile = selectedReport != null && selectedReport.getSignedFileUrl() != null;
+        if (hasSignedFile) {
+            openReportEvidence();
         }
+    }
+
+    private void openReportEvidence() {
         try {
             Desktop.getDesktop().browse(new URI(selectedReport.getSignedFileUrl()));
         } catch (Exception e) {
@@ -305,20 +309,29 @@ public class ProfessorEvaluateReportController implements Initializable {
 
     @FXML
     private void handleSaveEvaluationAction() {
-        if (selectedReport == null) {
-            return;
+        if (canSaveEvaluation()) {
+            parseAndSaveEvaluation();
         }
+    }
 
-        String rawGrade = fieldGrade.getText().trim();
-        if (rawGrade.isEmpty()) {
+    private boolean canSaveEvaluation() {
+        boolean canSave = true;
+
+        if (selectedReport == null) {
+            canSave = false;
+        } else if (fieldGrade.getText().trim().isEmpty()) {
             Controller.showAlert("Campo requerido",
                     "Ingresa la calificación antes de guardar.", AlertType.WARNING);
-            return;
+            canSave = false;
         }
 
+        return canSave;
+    }
+
+    private void parseAndSaveEvaluation() {
         String feedback = areaFeedback.getText().trim();
         try {
-            double grade = Double.parseDouble(rawGrade);
+            double grade = Double.parseDouble(fieldGrade.getText().trim());
             saveEvaluation(selectedReport, grade, feedback);
         } catch (NumberFormatException e) {
             Controller.showAlert("Formato inválido",
