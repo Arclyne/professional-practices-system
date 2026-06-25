@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPeriodDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.Period;
@@ -18,7 +19,7 @@ import java.util.List;
 public class PeriodManager {
 
     private static final Logger log = LoggerFactory.getLogger(PeriodManager.class);
-    private static final String PERIOD_STATUS_ACTIVE = "Active";
+    private static final String PERIOD_STATUS_UPCOMING = "Upcoming";
 
     private final IPeriodDAO periodDAO;
 
@@ -29,7 +30,7 @@ public class PeriodManager {
 
     public void registerNewPeriod(Period period) throws ManagerException {
         validatePeriodData(period);
-        period.setPeriodStatus(PERIOD_STATUS_ACTIVE);
+        period.setPeriodStatus(PERIOD_STATUS_UPCOMING);
 
         try {
             int generatedId = periodDAO.insertPeriod(period);
@@ -78,11 +79,20 @@ public class PeriodManager {
     }
 
     public void activatePeriod(int periodId) throws ManagerException {
+        ensureNoOtherActivePeriod(periodId);
+
         try {
             periodDAO.activatePeriod(periodId);
         } catch (DAOException e) {
             log.error("Error al activar el periodo académico con ID: {}.", periodId, e);
-            throw new ManagerException("No se pudo activar el periodo académico.", e);
+            throw PersistenceErrorTranslator.translate(e);
+        }
+    }
+
+    private void ensureNoOtherActivePeriod(int periodId) throws ManagerException {
+        Period activePeriod = getActivePeriod();
+        if (activePeriod != null && activePeriod.getPeriodId() != periodId) {
+            throw new ManagerException("Ya existe un periodo activo. Conclúyelo antes de activar otro.");
         }
     }
 
