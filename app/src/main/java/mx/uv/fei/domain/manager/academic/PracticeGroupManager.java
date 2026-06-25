@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PracticeGroup;
@@ -33,11 +34,8 @@ public class PracticeGroupManager {
                 throw new ManagerException("No se pudo registrar el grupo de prácticas en el sistema.");
             }
         } catch (DAOException e) {
-            log.error(e.getMessage(), e);
-            if (e.getCause().getMessage().contains("Duplicate entry")) {
-                throw new ManagerException("El grupo de practicas ya esta registrado en este periodo");
-            }
-            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+            log.error("Error al insertar el grupo de prácticas.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

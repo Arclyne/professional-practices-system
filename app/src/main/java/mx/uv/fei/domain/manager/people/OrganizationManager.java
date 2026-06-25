@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IOrganizationDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.OrganizationValidator;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
@@ -26,7 +27,7 @@ public class OrganizationManager {
         try {
             organizationDAO.insertOrganization(organization);
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

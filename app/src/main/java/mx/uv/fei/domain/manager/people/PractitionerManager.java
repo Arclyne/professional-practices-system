@@ -9,6 +9,7 @@ import mx.uv.fei.dataaccess.interfaces.IPractitionerDAO;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.common.IFileBackup;
 import mx.uv.fei.domain.common.IPractitionerParser;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
@@ -79,8 +80,8 @@ public class PractitionerManager {
             }
             enrollPractitionerIfGroupSelected(generatedId, practitioner.getGroupId());
         } catch (DAOException e) {
-            log.error(e.getMessage(), e);
-            throw new ManagerException("Error de conexión con la base de datos.", e);
+            log.error("Error al insertar el practicante.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
 
         return temporaryPassword;

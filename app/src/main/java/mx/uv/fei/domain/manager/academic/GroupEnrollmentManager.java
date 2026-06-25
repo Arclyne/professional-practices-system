@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IGroupEnrollmentDAO;
 import mx.uv.fei.dataaccess.interfaces.IPracticeGroupDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.dto.GroupEnrollment;
 import mx.uv.fei.domain.dto.PracticeGroup;
@@ -48,7 +49,7 @@ public class GroupEnrollmentManager {
             }
             generatedId = groupEnrollmentDAO.insertEnrollment(enrollment);
         } catch (DAOException e) {
-            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
 
         if (generatedId <= 0) {
