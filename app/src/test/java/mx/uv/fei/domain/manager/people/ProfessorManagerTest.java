@@ -2,6 +2,9 @@ package mx.uv.fei.domain.manager.people;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -86,6 +89,27 @@ public class ProfessorManagerTest {
         professorToUpdate.setName("Jose Eduardo Editado");
 
         assertDoesNotThrow(() -> professorManager.updateProfessor(professorToUpdate, STORED_PROFESSOR_ID));
+    }
+
+    @Test
+    void updateProfessor_DuplicateEmail_ThrowsFriendlyMessageWithoutTechnicism() throws ManagerException {
+        Professor professorToUpdate = professorManager.getProfessorById(STORED_PROFESSOR_ID);
+        professorToUpdate.setEmail("mrodriguez@uv.mx");
+
+        ManagerException thrownException = assertThrows(ManagerException.class,
+                () -> professorManager.updateProfessor(professorToUpdate, STORED_PROFESSOR_ID));
+
+        String message = thrownException.getMessage().toLowerCase();
+        assertTrue(message.contains("correo"),
+                "El mensaje debe indicar que el correo ya está en uso: " + thrownException.getMessage());
+        assertFalse(leaksTechnicism(message),
+                "El mensaje no debe filtrar tecnicismos de base de datos: " + thrownException.getMessage());
+    }
+
+    private boolean leaksTechnicism(String message) {
+        return message.contains("duplicate") || message.contains("constraint")
+                || message.contains("sql") || message.contains("exception")
+                || message.contains("mysql") || message.contains(".java");
     }
 
     @Test

@@ -73,7 +73,7 @@ public class PracticeGroupManager {
             practiceGroupDAO.updatePracticeGroup(practiceGroup, groupId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

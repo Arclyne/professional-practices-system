@@ -55,7 +55,7 @@ public class ProfessorManager {
             userDAO.deactivateMultipleUsers(professorIds);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al inactivar profesores.", e);
+            throw new ManagerException("No se pudo inactivar el profesor. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class ProfessorManager {
             userDAO.deactivateUser(professorId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al inactivar el profesor.", e);
+            throw new ManagerException("No se pudo inactivar el profesor. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -73,7 +73,7 @@ public class ProfessorManager {
             userDAO.activateUser(professorId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al activar el profesor.", e);
+            throw new ManagerException("No se pudo activar el profesor. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -102,7 +102,7 @@ public class ProfessorManager {
             professorDAO.updateProfessor(professor, professorId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 }

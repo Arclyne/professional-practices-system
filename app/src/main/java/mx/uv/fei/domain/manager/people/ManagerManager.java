@@ -58,7 +58,7 @@ public class ManagerManager {
             managerDAO.deactivateMultipleManagers(managerIds);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al inactivar encargados.", e);
+            throw new ManagerException("No se pudo inactivar el encargado. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -71,7 +71,7 @@ public class ManagerManager {
             managerDAO.activateManager(managerId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al activar el encargado.", e);
+            throw new ManagerException("No se pudo activar el encargado. Intenta de nuevo en unos momentos.", e);
         }
     }
 

@@ -49,7 +49,7 @@ public class ProjectManager {
             projectDAO.deactivateMultipleProjects(projectIds);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al inactivar proyectos.", e);
+            throw new ManagerException("No se pudo inactivar el proyecto. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -62,7 +62,7 @@ public class ProjectManager {
             projectDAO.activateProject(projectId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al activar el proyecto.", e);
+            throw new ManagerException("No se pudo activar el proyecto. Intenta de nuevo en unos momentos.", e);
         }
     }
 

@@ -47,12 +47,13 @@ public class OrganizationManager {
     }
 
     public void updateOrganization(Organization organization, int id) throws ManagerException {
+        OrganizationValidator.validateOrganizationData(organization);
+
         try {
-            OrganizationValidator.validateOrganizationData(organization);
             organizationDAO.updateOrganization(organization, id);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error al actualizar la organización en la base de datos.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 
@@ -60,8 +61,8 @@ public class OrganizationManager {
         try {
             organizationDAO.deactivateMultipleOrganizations(organizationIds);
         } catch (DAOException e) {
-            log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al inactivar organizaciones.", e);
+             log.error(e.getMessage(), e);
+            throw new ManagerException("No se pudo inactivar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -74,7 +75,7 @@ public class OrganizationManager {
             organizationDAO.activateOrganization(organizationId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("Error de base de datos al activar la organización.", e);
+            throw new ManagerException("No se pudo activar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }
 }
