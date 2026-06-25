@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Administrator;
 
@@ -55,15 +56,7 @@ public class AdminManager {
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
         } catch (DAOException e) {
             log.error("Error al insertar el administrador inicial.", e);
-
-            String errorMessage = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
-            String username = administrator.getUserName() != null ? administrator.getUserName().toLowerCase() : "";
-
-            if (errorMessage.contains("duplicate entry") && errorMessage.contains(username)) {
-                throw new ManagerException("Error ya existe un administrador registrado", e);
-            }
-
-            throw new ManagerException("Ocurrió un problema al interactuar con la base de datos.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

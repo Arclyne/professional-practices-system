@@ -1,0 +1,62 @@
+package mx.uv.fei.domain.common;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+
+import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.domain.exceptions.ManagerException;
+import org.junit.jupiter.api.Test;
+
+class PersistenceErrorTranslatorTest {
+
+    private static DAOException wrapInChain(SQLException sqlCause) {
+        // Imita el envoltorio real: BaseDAO/DAO anidan la SQLException dentro de varias DAOException.
+        return new DAOException("Error al insertar (rollback).", new DAOException("Error al insertar el usuario.", sqlCause));
+    }
+
+    @Test
+    void translate_DuplicateUsernameDeepInChain_ReturnsInUseMessage() {
+        DAOException failure = wrapInChain(
+                new SQLIntegrityConstraintViolationException("Duplicate entry '30011111' for key 'user.username'"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        assertTrue(result.getMessage().toLowerCase().contains("uso"), result.getMessage());
+    }
+
+    @Test
+    void translate_DuplicateEmail_ReturnsEmailMessage() {
+        DAOException failure = wrapInChain(
+                new SQLIntegrityConstraintViolationException("Unique index violation on PUBLIC.USER(EMAIL)"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        assertTrue(result.getMessage().toLowerCase().contains("correo"), result.getMessage());
+    }
+
+    @Test
+    void translate_NonIntegrityFailure_ReturnsGenericConnectionMessage() {
+        DAOException failure = new DAOException("Fallo de red.", new SQLException("Connection reset"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        assertTrue(result.getMessage().toLowerCase().contains("conexión"), result.getMessage());
+    }
+
+    @Test
+    void isDuplicateEntry_IntegrityViolationInChain_ReturnsTrue() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException("Duplicate entry"));
+
+        assertTrue(PersistenceErrorTranslator.isDuplicateEntry(failure));
+    }
+
+    @Test
+    void isDuplicateEntry_PlainSqlException_ReturnsFalse() {
+        DAOException failure = new DAOException("Fallo de red.", new SQLException("timeout"));
+
+        assertFalse(PersistenceErrorTranslator.isDuplicateEntry(failure));
+    }
+}
