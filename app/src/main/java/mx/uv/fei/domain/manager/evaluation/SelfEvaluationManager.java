@@ -37,7 +37,7 @@ public class SelfEvaluationManager {
                 throw new ManagerException("No se pudo registrar la autoevaluación.");
             }
         } catch (DAOException e) {
-            log.error("Error al insertar la autoevaluación.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo registrar la autoevaluación.", e);
         }
     }
@@ -47,6 +47,7 @@ public class SelfEvaluationManager {
         try {
             selfEvaluationDAO.updateSelfEvaluationEvidence(selfEvaluationId, fileUrl);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al adjuntar evidencia.", e);
         }
     }
@@ -55,6 +56,7 @@ public class SelfEvaluationManager {
         try {
             selfEvaluationDAO.updateSelfEvaluation(selfEvaluation, selfEvaluationId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al actualizar la autoevaluación.", e);
         }
     }
@@ -63,6 +65,7 @@ public class SelfEvaluationManager {
         try {
             selfEvaluationDAO.updateSelfEvaluationStatus(selfEvaluationId, status);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al actualizar la autoevaluación.", e);
         }
     }
@@ -75,6 +78,7 @@ public class SelfEvaluationManager {
         try {
             return selfEvaluationDAO.getSelfEvaluationByReportId(reportId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar la autoevaluación.", e);
         }
     }

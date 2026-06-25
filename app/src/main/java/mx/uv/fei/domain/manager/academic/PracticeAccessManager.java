@@ -12,12 +12,16 @@ import mx.uv.fei.domain.dto.PracticeStatus;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class PracticeAccessManager {
+
+    private static final Logger log = LoggerFactory.getLogger(PracticeAccessManager.class);
 
     private static final int SECOND_OPPORTUNITY = 2;
     private static final String PERIOD_CONCLUDED_MESSAGE =
@@ -45,6 +49,7 @@ public class PracticeAccessManager {
             GroupEnrollment latestEnrollment = groupEnrollmentDAO.recoverLatestEnrollment(practitionerId);
             return latestEnrollment == null ? buildNotEnrolledStatus() : buildStatus(practitionerId, latestEnrollment);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo determinar el estado de prácticas del practicante.", e);
         }
     }

@@ -8,11 +8,16 @@ import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PractitionerGrade;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class GradingManager {
+
+    private static final Logger log = LoggerFactory.getLogger(GradingManager.class);
 
     private static final double MINIMUM_GRADE = 0.0;
     private static final double MAXIMUM_GRADE = 10.0;
@@ -44,6 +49,7 @@ public class GradingManager {
         try {
             practitionerGradeDAO.updateFinalGrade(existingGrade.getGradeId(), newFinalGrade);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo actualizar la calificación final.", e);
         }
     }
@@ -52,6 +58,7 @@ public class GradingManager {
         try {
             return practitionerGradeDAO.getGradesByProfessor(professorId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar las calificaciones.", e);
         }
     }
@@ -64,6 +71,7 @@ public class GradingManager {
         try {
             return practitionerGradeDAO.getGradeByPractitionerAndPeriod(practitionerId, period);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar las calificaciones.", e);
         }
     }
@@ -72,6 +80,7 @@ public class GradingManager {
         try {
             return practitionerGradeDAO.calculateTentativeGrade(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar las calificaciones.", e);
         }
     }
@@ -84,6 +93,7 @@ public class GradingManager {
                         "Este practicante ya tiene una calificación registrada para el periodo '%s'.", period));
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar las calificaciones.", e);
         }
     }
@@ -106,6 +116,7 @@ public class GradingManager {
             }
             return generatedId;
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo registrar la calificación en el sistema.", e);
         }
     }
@@ -118,6 +129,7 @@ public class GradingManager {
             }
             return existingGrade;
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar las calificaciones.", e);
         }
     }

@@ -47,7 +47,7 @@ public class CoordinatorManager {
             }
             return temporaryPassword;
         } catch (DAOException e) {
-            log.error("Error al insertar el coordinador.", e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -56,7 +56,7 @@ public class CoordinatorManager {
         try {
             userDAO.deactivateUser(coordinatorId);
         } catch (DAOException e) {
-            log.error("Error al inactivar el coordinador con ID: {}.", coordinatorId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error crítico de conexión al intentar cambiar el estado del coordinador.", e);
         }
     }
@@ -67,7 +67,7 @@ public class CoordinatorManager {
         try {
             userDAO.activateUser(coordinatorId);
         } catch (DAOException e) {
-            log.error("Error al activar el coordinador con ID: {}.", coordinatorId, e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -76,7 +76,7 @@ public class CoordinatorManager {
         try {
             return coordinatorDAO.getCurrentCoordinator();
         } catch (DAOException e) {
-            log.error("Error al recuperar el coordinador activo.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al consultar el coordinador en turno en el sistema.", e);
         }
     }
@@ -85,6 +85,7 @@ public class CoordinatorManager {
         try {
             return coordinatorDAO.getAllCoordinators();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al obtener la lista de coordinadores.", e);
         }
     }
@@ -93,6 +94,7 @@ public class CoordinatorManager {
         try {
             return coordinatorDAO.recoverCoordinator(coordinatorId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar la información del coordinador.", e);
         }
     }
@@ -103,7 +105,7 @@ public class CoordinatorManager {
         try {
             coordinatorDAO.updateCoordinator(coordinator, coordinatorId);
         } catch (DAOException e) {
-            log.error("Error al actualizar el coordinador.", e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
