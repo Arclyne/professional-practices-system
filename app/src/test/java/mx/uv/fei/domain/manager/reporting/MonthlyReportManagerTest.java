@@ -49,7 +49,8 @@ public class MonthlyReportManagerTest {
         Activity manualActivity = new Activity();
         manualActivity.setActivityId(4);
         manualActivity.setTitle("Manual de usuario del sistema");
-        manualActivity.setActivityDate(Date.valueOf("2026-06-15"));
+        manualActivity.setStartDate(Date.valueOf("2026-06-15"));
+        manualActivity.setEndDate(Date.valueOf("2026-06-15"));
 
         List<Activity> juneActivities = List.of(manualActivity);
 

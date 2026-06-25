@@ -11,4 +11,6 @@ public interface IMonthlyReportDAO {
     MonthlyReport getReportById(int reportId) throws DAOException;
     List<MonthlyReport> getSubmittedReports() throws DAOException;
     List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException;
+    List<MonthlyReport> getReportsByPractitionerInRange(int practitionerId, java.sql.Date startDate,
+                                                        java.sql.Date endDate) throws DAOException;
 }

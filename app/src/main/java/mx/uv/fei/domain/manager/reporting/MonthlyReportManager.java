@@ -9,11 +9,14 @@ import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.CoveredReport;
 import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -55,6 +58,28 @@ public class MonthlyReportManager {
             return reportDAO.getReportsByPractitioner(practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("Ocurrió un error al cargar los reportes.", e);
+        }
+    }
+
+    public List<CoveredReport> getEvaluatedReportsWithActivitiesInRange(int practitionerId, Date startDate,
+                                                                        Date endDate) throws ManagerException {
+        try {
+            List<MonthlyReport> reportsInRange = reportDAO.getReportsByPractitionerInRange(practitionerId, startDate, endDate);
+            List<CoveredReport> coveredReports = new ArrayList<>();
+            for (MonthlyReport report : reportsInRange) {
+                addEvaluatedReportWithActivities(coveredReports, report);
+            }
+            return coveredReports;
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al cargar los reportes del periodo cubierto.", e);
+        }
+    }
+
+    private void addEvaluatedReportWithActivities(List<CoveredReport> coveredReports, MonthlyReport report)
+            throws DAOException {
+        if (ReportStatus.EVALUATED.getDatabaseValue().equals(report.getStatus())) {
+            List<Activity> activities = activityDAO.getActivitiesByReport(report.getReportId());
+            coveredReports.add(new CoveredReport(report, activities));
         }
     }
 

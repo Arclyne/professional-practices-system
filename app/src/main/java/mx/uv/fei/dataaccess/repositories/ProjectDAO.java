@@ -12,7 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Acceso a datos de los proyectos de prácticas profesionales.
@@ -50,6 +52,9 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
                     "FROM project p " +
                     "INNER JOIN project_postulation pp ON p.project_id = pp.project_id " +
                     "WHERE pp.practitioner_id = ? AND pp.postulation_status = 'Assigned'";
+    private static final String SQL_SELECT_ASSIGNED_COUNTS_BY_PROJECT =
+            "SELECT project_id, COUNT(*) AS assigned_count FROM project_postulation " +
+                    "WHERE postulation_status = 'Assigned' GROUP BY project_id";
 
     @Inject
     public ProjectDAO(IDatabaseConnection databaseConnection) {
@@ -139,6 +144,24 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
     @Override
     public void activateProject(int projectId) throws DAOException {
         updateTuple(SQL_ACTIVATE_PROJECT, statement -> statement.setInt(1, projectId));
+    }
+
+    @Override
+    public Map<Integer, Integer> getAssignedCountsByProject() throws DAOException {
+        Map<Integer, Integer> assignedCountsByProject = new HashMap<>();
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ASSIGNED_COUNTS_BY_PROJECT);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                assignedCountsByProject.put(resultSet.getInt("project_id"), resultSet.getInt("assigned_count"));
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al recuperar el conteo de practicantes asignados por proyecto.", e);
+        }
+
+        return assignedCountsByProject;
     }
 
     @Override

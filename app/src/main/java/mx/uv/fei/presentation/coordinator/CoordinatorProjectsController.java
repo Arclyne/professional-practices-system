@@ -37,6 +37,7 @@ public class CoordinatorProjectsController {
     @FXML private TableColumn<Project, String> nameColumn;
     @FXML private TableColumn<Project, String> organizationColumn;
     @FXML private TableColumn<Project, String> capacityColumn;
+    @FXML private TableColumn<Project, String> availableColumn;
     @FXML private TableColumn<Project, String> statusColumn;
 
     private final ProjectManager projectManager;
@@ -46,6 +47,7 @@ public class CoordinatorProjectsController {
 
     private FilteredList<Project> filteredProjects;
     private Map<Integer, String> organizationNamesById = new HashMap<>();
+    private Map<Integer, Integer> assignedCountsByProjectId = new HashMap<>();
 
     @Inject
     public CoordinatorProjectsController(ProjectManager projectManager, OrganizationManager organizationManager,
@@ -67,6 +69,8 @@ public class CoordinatorProjectsController {
         organizationColumn.setCellValueFactory(data -> new SimpleStringProperty(organizationNameOf(data.getValue())));
         capacityColumn.setCellValueFactory(data -> new SimpleStringProperty(
                 String.valueOf(data.getValue().getParticipantCapacity())));
+        availableColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                String.valueOf(availableSlotsOf(data.getValue()))));
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(statusLabelOf(data.getValue())));
     }
 
@@ -78,6 +82,7 @@ public class CoordinatorProjectsController {
     private void loadProjects() {
         try {
             organizationNamesById = mapOrganizationNames(organizationManager.getAllOrganizations());
+            assignedCountsByProjectId = projectManager.getAssignedCountsByProject();
             allProjects.setAll(projectManager.getAllProjects());
             applyFilter();
         } catch (ManagerException e) {
@@ -169,6 +174,12 @@ public class CoordinatorProjectsController {
 
     private String organizationNameOf(Project project) {
         return organizationNamesById.getOrDefault(project.getCompanyId(), UNKNOWN_ORGANIZATION);
+    }
+
+    private int availableSlotsOf(Project project) {
+        int assignedCount = assignedCountsByProjectId.getOrDefault(project.getProjectId(), 0);
+        int availableSlots = project.getParticipantCapacity() - assignedCount;
+        return Math.max(availableSlots, 0);
     }
 
     private String statusLabelOf(Project project) {

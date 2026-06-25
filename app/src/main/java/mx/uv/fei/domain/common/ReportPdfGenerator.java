@@ -2,6 +2,7 @@ package mx.uv.fei.domain.common;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.CoveredReport;
 import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
@@ -64,7 +65,8 @@ public class ReportPdfGenerator {
         }
     }
 
-    public String generateProgressReportPdf(ProgressReport report, User practitioner) throws ManagerException {
+    public String generateProgressReportPdf(ProgressReport report, User practitioner,
+                                            List<CoveredReport> coveredReports) throws ManagerException {
         try (PDDocument document = new PDDocument()) {
             PDPageContentStream contentStream = createDocumentPage(document);
 
@@ -75,6 +77,7 @@ public class ReportPdfGenerator {
                 cursorY = writePractitionerInfo(contentStream, cursorY, practitioner,
                         "Periodo cubierto: " + report.getPeriodCoveredStart() + " al " + report.getPeriodCoveredEnd(),
                         "Total de horas acumuladas: " + report.getTotalHoursAtSubmission() + " hrs");
+                cursorY = writeCoveredReports(contentStream, cursorY, coveredReports);
                 cursorY = writeProfessorFeedback(contentStream, cursorY, report);
                 writeProgressReportSignatures(contentStream, cursorY);
             }
@@ -84,6 +87,50 @@ public class ReportPdfGenerator {
         } catch (IOException e) {
             throw new ManagerException("Error al generar el documento PDF de avance.", e);
         }
+    }
+
+    private float writeCoveredReports(PDPageContentStream contentStream, float cursorY,
+                                      List<CoveredReport> coveredReports) throws IOException {
+        if (coveredReports == null || coveredReports.isEmpty()) {
+            return cursorY;
+        }
+        PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        writeTextLine(contentStream, fontBold, BODY_FONT_SIZE, PAGE_MARGIN, cursorY,
+                "Reportes mensuales cubiertos y sus actividades:");
+        cursorY -= LINE_HEIGHT_NORMAL;
+
+        for (CoveredReport coveredReport : coveredReports) {
+            cursorY = writeCoveredReport(contentStream, cursorY, coveredReport);
+            if (cursorY < MINIMUM_PAGE_CURSOR) {
+                break;
+            }
+        }
+
+        return cursorY - SECTION_SPACING;
+    }
+
+    private float writeCoveredReport(PDPageContentStream contentStream, float cursorY,
+                                     CoveredReport coveredReport) throws IOException {
+        PDType1Font fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        PDType1Font fontNormal = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        MonthlyReport report = coveredReport.getReport();
+
+        writeTextLine(contentStream, fontBold, DETAIL_FONT_SIZE, PAGE_MARGIN, cursorY,
+                report.getMonthName() + " " + report.getYear()
+                        + " (" + report.getStartDate() + " al " + report.getEndDate() + ")");
+        cursorY -= LINE_HEIGHT_NORMAL;
+
+        for (Activity activity : coveredReport.getActivities()) {
+            writeTextLine(contentStream, fontNormal, SMALL_FONT_SIZE, PAGE_MARGIN + 15, cursorY,
+                    "- " + formatDateRange(activity) + ": " + truncateTitle(activity.getTitle())
+                            + " (" + activity.getDurationHours() + " hrs)");
+            cursorY -= LINE_HEIGHT_NORMAL;
+            if (cursorY < MINIMUM_PAGE_CURSOR) {
+                break;
+            }
+        }
+
+        return cursorY;
     }
 
     private PDPageContentStream createDocumentPage(PDDocument document) throws IOException {
@@ -141,10 +188,10 @@ public class ReportPdfGenerator {
         for (Activity activity : activities) {
             contentStream.beginText();
             contentStream.newLineAtOffset(PAGE_MARGIN, cursorY);
-            contentStream.showText(activity.getActivityDate().toString());
-            contentStream.newLineAtOffset(100, 0);
+            contentStream.showText(formatDateRange(activity));
+            contentStream.newLineAtOffset(150, 0);
             contentStream.showText(truncateTitle(activity.getTitle()));
-            contentStream.newLineAtOffset(320, 0);
+            contentStream.newLineAtOffset(290, 0);
             contentStream.showText(String.valueOf(activity.getDurationHours()));
             contentStream.endText();
 
@@ -167,10 +214,10 @@ public class ReportPdfGenerator {
         contentStream.beginText();
         contentStream.setFont(fontBold, BODY_FONT_SIZE);
         contentStream.newLineAtOffset(PAGE_MARGIN, cursorY);
-        contentStream.showText("Fecha");
-        contentStream.newLineAtOffset(100, 0);
+        contentStream.showText("Fechas");
+        contentStream.newLineAtOffset(150, 0);
         contentStream.showText("Actividad y Descripción");
-        contentStream.newLineAtOffset(320, 0);
+        contentStream.newLineAtOffset(290, 0);
         contentStream.showText("Horas");
         contentStream.endText();
     }
@@ -257,6 +304,10 @@ public class ReportPdfGenerator {
         contentStream.moveTo(x, y);
         contentStream.lineTo(x + SIGNATURE_LINE_WIDTH, y);
         contentStream.stroke();
+    }
+
+    private String formatDateRange(Activity activity) {
+        return activity.getStartDate() + " al " + activity.getEndDate();
     }
 
     private String truncateTitle(String title) {

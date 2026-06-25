@@ -103,7 +103,7 @@ public class PractitionerReportGeneratorController implements Initializable {
                     setText(null);
                 } else {
                     setText("• " + activity.getTitle()
-                            + " | Fecha: " + activity.getActivityDate()
+                            + " | Fechas: " + activity.getStartDate() + " al " + activity.getEndDate()
                             + " | " + activity.getDurationHours() + " hrs");
                 }
             }
@@ -144,20 +144,21 @@ public class PractitionerReportGeneratorController implements Initializable {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         TextField titleField = new TextField(activity.getTitle());
-        DatePicker datePicker = new DatePicker(activity.getActivityDate().toLocalDate());
+        DatePicker startDatePicker = new DatePicker(activity.getStartDate().toLocalDate());
+        DatePicker endDatePicker = new DatePicker(activity.getEndDate().toLocalDate());
         TextField hoursField = new TextField(String.valueOf(activity.getDurationHours()));
         TextArea descriptionArea = new TextArea(activity.getDescription());
         descriptionArea.setPrefRowCount(DESCRIPTION_ROWS);
 
-        dialog.getDialogPane().setContent(buildEditGrid(titleField, datePicker, hoursField, descriptionArea));
+        dialog.getDialogPane().setContent(buildEditGrid(titleField, startDatePicker, endDatePicker, hoursField, descriptionArea));
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            applyActivityEdit(activity, titleField, datePicker, hoursField, descriptionArea);
+            applyActivityEdit(activity, titleField, startDatePicker, endDatePicker, hoursField, descriptionArea);
         }
     }
 
-    private GridPane buildEditGrid(TextField titleField, DatePicker datePicker,
+    private GridPane buildEditGrid(TextField titleField, DatePicker startDatePicker, DatePicker endDatePicker,
                                    TextField hoursField, TextArea descriptionArea) {
         GridPane grid = new GridPane();
         grid.setHgap(GRID_GAP);
@@ -166,21 +167,24 @@ public class PractitionerReportGeneratorController implements Initializable {
 
         grid.add(new Label("Título:"), 0, 0);
         grid.add(titleField, 1, 0);
-        grid.add(new Label("Fecha:"), 0, 1);
-        grid.add(datePicker, 1, 1);
-        grid.add(new Label("Horas:"), 0, 2);
-        grid.add(hoursField, 1, 2);
-        grid.add(new Label("Descripción:"), 0, 3);
-        grid.add(descriptionArea, 1, 3);
+        grid.add(new Label("Fecha de inicio:"), 0, 1);
+        grid.add(startDatePicker, 1, 1);
+        grid.add(new Label("Fecha de fin:"), 0, 2);
+        grid.add(endDatePicker, 1, 2);
+        grid.add(new Label("Horas:"), 0, 3);
+        grid.add(hoursField, 1, 3);
+        grid.add(new Label("Descripción:"), 0, 4);
+        grid.add(descriptionArea, 1, 4);
 
         return grid;
     }
 
-    private void applyActivityEdit(Activity activity, TextField titleField, DatePicker datePicker,
-                                   TextField hoursField, TextArea descriptionArea) {
+    private void applyActivityEdit(Activity activity, TextField titleField, DatePicker startDatePicker,
+                                   DatePicker endDatePicker, TextField hoursField, TextArea descriptionArea) {
         try {
             activity.setTitle(titleField.getText().trim());
-            activity.setActivityDate(Date.valueOf(datePicker.getValue()));
+            activity.setStartDate(Date.valueOf(startDatePicker.getValue()));
+            activity.setEndDate(Date.valueOf(endDatePicker.getValue()));
             activity.setDurationHours(Integer.parseInt(hoursField.getText().trim()));
             activity.setDescription(descriptionArea.getText().trim());
 

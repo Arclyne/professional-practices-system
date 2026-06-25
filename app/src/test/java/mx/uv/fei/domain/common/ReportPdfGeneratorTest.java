@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.domain.dto.Activity;
+import mx.uv.fei.domain.dto.CoveredReport;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.Gender;
 import org.junit.jupiter.api.AfterEach;
@@ -56,12 +58,44 @@ public class ReportPdfGeneratorTest {
 
         Activity testingActivity = new Activity();
         testingActivity.setTitle("Desarrollo de pruebas unitarias");
-        testingActivity.setActivityDate(Date.valueOf("2026-06-15"));
+        testingActivity.setStartDate(Date.valueOf("2026-06-15"));
+        testingActivity.setEndDate(Date.valueOf("2026-06-18"));
         testingActivity.setDurationHours(5);
 
         List<Activity> juneActivities = new ArrayList<>();
         juneActivities.add(testingActivity);
 
         assertDoesNotThrow(() -> pdfGenerator.generateMonthlyReportPdf(juneReport, practitioner, juneActivities));
+    }
+
+    @Test
+    void generateProgressReportPdf_WithCoveredReports_CreatesPdfSuccessfully() {
+        User practitioner = new User();
+        practitioner.setName("Angel Gabriel");
+        practitioner.setLastName("Aguilar Hernandez");
+        practitioner.setGender(Gender.MALE);
+
+        ProgressReport intermediateReport = new ProgressReport();
+        intermediateReport.setReportType("Intermedio");
+        intermediateReport.setPeriodCoveredStart(Date.valueOf("2026-05-01"));
+        intermediateReport.setPeriodCoveredEnd(Date.valueOf("2026-06-30"));
+        intermediateReport.setTotalHoursAtSubmission(215.0);
+
+        MonthlyReport mayReport = new MonthlyReport();
+        mayReport.setMonthName("Mayo");
+        mayReport.setYear(2026);
+        mayReport.setStartDate(Date.valueOf("2026-05-01"));
+        mayReport.setEndDate(Date.valueOf("2026-05-31"));
+
+        Activity mayActivity = new Activity();
+        mayActivity.setTitle("Levantamiento de requisitos");
+        mayActivity.setStartDate(Date.valueOf("2026-05-01"));
+        mayActivity.setEndDate(Date.valueOf("2026-05-03"));
+        mayActivity.setDurationHours(8);
+
+        List<CoveredReport> coveredReports = new ArrayList<>();
+        coveredReports.add(new CoveredReport(mayReport, List.of(mayActivity)));
+
+        assertDoesNotThrow(() -> pdfGenerator.generateProgressReportPdf(intermediateReport, practitioner, coveredReports));
     }
 }

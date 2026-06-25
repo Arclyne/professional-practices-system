@@ -1,6 +1,7 @@
 package mx.uv.fei.dataaccess.interfaces;
 
 import java.util.List;
+import java.util.Map;
 
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.domain.dto.Project;
@@ -21,5 +22,7 @@ public interface IProjectDAO {
     void activateProject(int projectId) throws DAOException;
 
     Project getAssignedProjectByPractitioner(int practitionerId) throws DAOException;
+
+    Map<Integer, Integer> getAssignedCountsByProject() throws DAOException;
 
 }

@@ -29,9 +29,34 @@ public class ReportValidatorTest {
         Activity zeroDurationActivity = new Activity();
         zeroDurationActivity.setTitle("Levantamiento de requisitos");
         zeroDurationActivity.setDescription("Entrevistas con el personal del area de sistemas.");
-        zeroDurationActivity.setActivityDate(Date.valueOf("2026-06-01"));
+        zeroDurationActivity.setStartDate(Date.valueOf("2026-06-01"));
+        zeroDurationActivity.setEndDate(Date.valueOf("2026-06-01"));
         zeroDurationActivity.setDurationHours(0);
 
         assertThrows(ManagerException.class, () -> ReportValidator.validateLogbookActivity(zeroDurationActivity));
+    }
+
+    @Test
+    void validateLogbookActivity_HoursExceedDailyLimit_ThrowsManagerException() {
+        Activity overloadedActivity = new Activity();
+        overloadedActivity.setTitle("Maraton de desarrollo");
+        overloadedActivity.setDescription("Jornada de desarrollo del sistema de inventario.");
+        overloadedActivity.setStartDate(Date.valueOf("2026-06-01"));
+        overloadedActivity.setEndDate(Date.valueOf("2026-06-01"));
+        overloadedActivity.setDurationHours(13);
+
+        assertThrows(ManagerException.class, () -> ReportValidator.validateLogbookActivity(overloadedActivity));
+    }
+
+    @Test
+    void validateLogbookActivity_StartDateAfterEndDate_ThrowsManagerException() {
+        Activity invertedActivity = new Activity();
+        invertedActivity.setTitle("Pruebas de integracion");
+        invertedActivity.setDescription("Pruebas de integracion sobre los modulos del sistema.");
+        invertedActivity.setStartDate(Date.valueOf("2026-06-05"));
+        invertedActivity.setEndDate(Date.valueOf("2026-06-01"));
+        invertedActivity.setDurationHours(4);
+
+        assertThrows(ManagerException.class, () -> ReportValidator.validateLogbookActivity(invertedActivity));
     }
 }

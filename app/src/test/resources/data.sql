@@ -47,11 +47,11 @@ INSERT INTO project (project_id, project_name, description, participant_capacity
 INSERT INTO monthly_report (report_id, practitioner_id, month_name, "year", start_date, end_date, status) VALUES
     (1, 123, 'Mayo', 2026, '2026-05-01', '2026-05-31', 'Borrador');
 
-INSERT INTO activity (activity_id, practitioner_id, report_id, title, description, activity_date, duration_hours) VALUES
-    (1, 123, 1,    'Levantamiento de requisitos',          'Entrevistas con el personal del area de sistemas',             '2026-05-01', 5),
-    (2, 123, NULL, 'Desarrollo de pantallas de inventario', 'Maquetado de las pantallas del sistema de inventario',        '2026-05-02', 4),
-    (3, 123, NULL, 'Pruebas de formularios de inventario',  'Pruebas funcionales sobre los formularios de captura',        '2026-05-03', 3),
-    (4, 123, NULL, 'Manual de usuario del sistema',         'Avance del manual de usuario para el personal de la empresa', '2026-06-15', 5);
+INSERT INTO activity (activity_id, practitioner_id, report_id, title, description, start_date, end_date, duration_hours) VALUES
+    (1, 123, 1,    'Levantamiento de requisitos',          'Entrevistas con el personal del area de sistemas',             '2026-05-01', '2026-05-01', 5),
+    (2, 123, NULL, 'Desarrollo de pantallas de inventario', 'Maquetado de las pantallas del sistema de inventario',        '2026-05-02', '2026-05-02', 4),
+    (3, 123, NULL, 'Pruebas de formularios de inventario',  'Pruebas funcionales sobre los formularios de captura',        '2026-05-03', '2026-05-03', 3),
+    (4, 123, NULL, 'Manual de usuario del sistema',         'Avance del manual de usuario para el personal de la empresa', '2026-06-15', '2026-06-15', 5);
 
 INSERT INTO project_postulation (practitioner_id, project_id, postulation_status, priority_level) VALUES
     (123, 1, 'Assigned', 1);

@@ -19,4 +19,6 @@ public interface IProgressReportDAO {
     List<ProgressReport> getSubmittedProgressReportsByProfessor(int professorId, int periodId) throws DAOException;
 
     double getTotalAccumulatedHours(int practitionerId) throws DAOException;
+
+    double getAccumulatedHoursInRange(int practitionerId, java.sql.Date startDate, java.sql.Date endDate) throws DAOException;
 }

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.awt.GraphicsEnvironment;
 import java.util.List;
+import java.util.Map;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -31,7 +32,11 @@ public class CoordinatorProjectsControllerTest extends ApplicationTest {
 
     private static final String FXML_PATH = "/mx/uv/fei/presentation/coordinatorProjects.fxml";
     private static final int ORGANIZATION_COLUMN_INDEX = 1;
-    private static final int STATUS_COLUMN_INDEX = 3;
+    private static final int AVAILABLE_COLUMN_INDEX = 3;
+    private static final int STATUS_COLUMN_INDEX = 4;
+    private static final int PROJECT_ID = 7;
+    private static final int PARTICIPANT_CAPACITY = 2;
+    private static final int ASSIGNED_COUNT = 1;
 
     private final ProjectManager projectManager = mock(ProjectManager.class);
     private final OrganizationManager organizationManager = mock(OrganizationManager.class);
@@ -46,6 +51,7 @@ public class CoordinatorProjectsControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         when(projectManager.getAllProjects()).thenReturn(List.of(buildProject()));
+        when(projectManager.getAssignedCountsByProject()).thenReturn(Map.of(PROJECT_ID, ASSIGNED_COUNT));
         when(organizationManager.getAllOrganizations()).thenReturn(List.of(buildOrganization()));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
@@ -59,9 +65,10 @@ public class CoordinatorProjectsControllerTest extends ApplicationTest {
 
     private Project buildProject() {
         Project project = new Project();
+        project.setProjectId(PROJECT_ID);
         project.setProjectName("Sistema de Inventario");
         project.setCompanyId(1);
-        project.setParticipantCapacity(2);
+        project.setParticipantCapacity(PARTICIPANT_CAPACITY);
         project.setStatus("Active");
 
         return project;
@@ -93,6 +100,14 @@ public class CoordinatorProjectsControllerTest extends ApplicationTest {
                 (TableColumn<Project, String>) projectsTable().getColumns().get(ORGANIZATION_COLUMN_INDEX);
 
         assertEquals("Tecnologias Web del Golfo", organizationColumn.getCellData(0));
+    }
+
+    @Test
+    void initialize_ProjectWithAssignedPractitioners_ShowsAvailableSlots() {
+        TableColumn<Project, String> availableColumn =
+                (TableColumn<Project, String>) projectsTable().getColumns().get(AVAILABLE_COLUMN_INDEX);
+
+        assertEquals(String.valueOf(PARTICIPANT_CAPACITY - ASSIGNED_COUNT), availableColumn.getCellData(0));
     }
 
     @Test

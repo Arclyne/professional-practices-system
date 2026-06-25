@@ -6,13 +6,14 @@ import mx.uv.fei.domain.enums.Month;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class ReportValidator {
 
     private static final double MINIMUM_GRADE = 0.0;
     private static final double MAXIMUM_GRADE = 10.0;
-    private static final double MAX_ACTIVITY_HOURS = 400.0;
+    private static final int MAX_HOURS_PER_DAY = 12;
 
     public static void validateSignedReport(String signedFileUrl) throws ManagerException {
         BaseValidator.validateString(signedFileUrl,
@@ -30,14 +31,29 @@ public class ReportValidator {
                 "La descripción es obligatoria.");
         BaseValidator.validateMaxLength(activity.getDescription(), FieldLengthLimits.LONG_TEXT_MAX,
                 "La descripción de la actividad no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
-        if (activity.getActivityDate() == null) {
-            throw new ManagerException("Debe seleccionar la fecha de la actividad.");
-        }
+        validateActivityDateRange(activity);
         if (activity.getDurationHours() <= 0) {
             throw new ManagerException("La duración de la actividad debe ser mayor a 0 horas.");
         }
-        if (activity.getDurationHours() > MAX_ACTIVITY_HOURS) {
-            throw new ManagerException("La duración de la actividad no puede exceder " + MAX_ACTIVITY_HOURS + " horas.");
+        validateActivityDurationWithinDailyLimit(activity);
+    }
+
+    private static void validateActivityDateRange(Activity activity) throws ManagerException {
+        if (activity.getStartDate() == null || activity.getEndDate() == null) {
+            throw new ManagerException("Debe seleccionar la fecha de inicio y la fecha de fin de la actividad.");
+        }
+        if (activity.getStartDate().after(activity.getEndDate())) {
+            throw new ManagerException("La fecha de inicio de la actividad no puede ser posterior a la fecha de fin.");
+        }
+    }
+
+    private static void validateActivityDurationWithinDailyLimit(Activity activity) throws ManagerException {
+        long coveredDays = ChronoUnit.DAYS.between(
+                activity.getStartDate().toLocalDate(), activity.getEndDate().toLocalDate()) + 1;
+        long maximumHours = coveredDays * MAX_HOURS_PER_DAY;
+        if (activity.getDurationHours() > maximumHours) {
+            throw new ManagerException("La duración de la actividad no puede exceder " + maximumHours
+                    + " horas para el rango de fechas seleccionado (" + MAX_HOURS_PER_DAY + " horas por día).");
         }
     }
 
@@ -74,8 +90,9 @@ public class ReportValidator {
             throw new ManagerException("Debe seleccionar al menos una actividad libre para generar el reporte.");
         }
         for (Activity activity : activities) {
-            if (activity.getActivityDate().before(report.getStartDate()) || activity.getActivityDate().after(report.getEndDate())) {
-                throw new ManagerException("La actividad '" + activity.getTitle() + "' (" + activity.getActivityDate() + ") está fuera del rango de fechas del reporte.");
+            if (activity.getStartDate().before(report.getStartDate()) || activity.getEndDate().after(report.getEndDate())) {
+                throw new ManagerException("La actividad '" + activity.getTitle() + "' (" + activity.getStartDate()
+                        + " al " + activity.getEndDate() + ") está fuera del rango de fechas del reporte.");
             }
         }
     }

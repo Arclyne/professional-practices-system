@@ -9,6 +9,7 @@ import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ProjectManager {
@@ -63,6 +64,14 @@ public class ProjectManager {
             return projectDAO.getAllProjects();
         } catch (DAOException e) {
             throw new ManagerException("Error al obtener la lista de proyectos.", e);
+        }
+    }
+
+    public Map<Integer, Integer> getAssignedCountsByProject() throws ManagerException {
+        try {
+            return projectDAO.getAssignedCountsByProject();
+        } catch (DAOException e) {
+            throw new ManagerException("Error al obtener los cupos ocupados de los proyectos.", e);
         }
     }
 }

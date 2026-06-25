@@ -42,9 +42,10 @@
             <Insets top="12.0"/>
         </VBox.margin>
         <columns>
-            <TableColumn fx:id="nameColumn" prefWidth="280.0" text="Proyecto"/>
-            <TableColumn fx:id="organizationColumn" prefWidth="220.0" text="Organización"/>
-            <TableColumn fx:id="capacityColumn" prefWidth="90.0" text="Cupo"/>
+            <TableColumn fx:id="nameColumn" prefWidth="250.0" text="Proyecto"/>
+            <TableColumn fx:id="organizationColumn" prefWidth="200.0" text="Organización"/>
+            <TableColumn fx:id="capacityColumn" prefWidth="80.0" text="Cupo"/>
+            <TableColumn fx:id="availableColumn" prefWidth="130.0" text="Cupos disponibles"/>
             <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Estado"/>
         </columns>
     </TableView>

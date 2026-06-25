@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
+import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.ProjectPostulation;
@@ -34,16 +36,32 @@ public class ProgressReportManagerTest {
     private static final double GRADE_ABOVE_MAXIMUM = 11.0;
     private static final double NEGATIVE_GRADE = -1.0;
 
+    private static final String STATUS_EVALUATED = "Evaluado";
+    private static final String STATUS_SUBMITTED = "Entregado";
+
     private ProgressReportManager progressReportManager;
     private StubProgressReportDAO stubProgressReportDAO;
     private StubPostulationDAO stubPostulationDAO;
+    private StubMonthlyReportDAO stubMonthlyReportDAO;
 
     @BeforeEach
     void setUp() {
         stubProgressReportDAO = new StubProgressReportDAO();
         stubPostulationDAO = new StubPostulationDAO();
-        progressReportManager = new ProgressReportManager(stubProgressReportDAO, stubPostulationDAO);
+        stubMonthlyReportDAO = new StubMonthlyReportDAO();
+        progressReportManager = new ProgressReportManager(stubProgressReportDAO, stubPostulationDAO, stubMonthlyReportDAO);
         stubPostulationDAO.setHasAssignedProject(true);
+        stubMonthlyReportDAO.setReportsInRange(List.of(buildEvaluatedMonthlyReport()));
+    }
+
+    private MonthlyReport buildEvaluatedMonthlyReport() {
+        MonthlyReport evaluatedReport = new MonthlyReport();
+        evaluatedReport.setReportId(1);
+        evaluatedReport.setPractitionerId(PRACTITIONER_ID);
+        evaluatedReport.setMonthName("Mayo");
+        evaluatedReport.setYear(2026);
+        evaluatedReport.setStatus(STATUS_EVALUATED);
+        return evaluatedReport;
     }
 
     @Test
@@ -160,6 +178,28 @@ public class ProgressReportManagerTest {
     void generateProgressReport_IntermediateAlreadyExists_ThrowsManagerException() {
         stubProgressReportDAO.setAccumulatedHours(VALID_INTERMEDIATE_HOURS);
         stubProgressReportDAO.setExistingIntermediate(true);
+
+        assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
+                PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+    }
+
+    @Test
+    void generateProgressReport_NoCoveredMonthlyReports_ThrowsManagerException() {
+        stubProgressReportDAO.setAccumulatedHours(VALID_INTERMEDIATE_HOURS);
+        stubMonthlyReportDAO.setReportsInRange(new ArrayList<>());
+
+        assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
+                PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
+    }
+
+    @Test
+    void generateProgressReport_CoveredMonthlyReportNotEvaluated_ThrowsManagerException() {
+        stubProgressReportDAO.setAccumulatedHours(VALID_INTERMEDIATE_HOURS);
+        MonthlyReport submittedReport = new MonthlyReport();
+        submittedReport.setMonthName("Mayo");
+        submittedReport.setYear(2026);
+        submittedReport.setStatus(STATUS_SUBMITTED);
+        stubMonthlyReportDAO.setReportsInRange(List.of(submittedReport));
 
         assertThrows(ManagerException.class, () -> progressReportManager.generateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, PERIOD_START, PERIOD_END));
@@ -357,6 +397,56 @@ public class ProgressReportManagerTest {
         @Override
         public double getTotalAccumulatedHours(int practitionerId) throws DAOException {
             return accumulatedHours;
+        }
+
+        @Override
+        public double getAccumulatedHoursInRange(int practitionerId, java.sql.Date startDate, java.sql.Date endDate)
+                throws DAOException {
+            return accumulatedHours;
+        }
+    }
+
+    private static class StubMonthlyReportDAO implements IMonthlyReportDAO {
+
+        private List<MonthlyReport> reportsInRange = new ArrayList<>();
+
+        void setReportsInRange(List<MonthlyReport> reportsInRange) {
+            this.reportsInRange = new ArrayList<>(reportsInRange);
+        }
+
+        @Override
+        public List<MonthlyReport> getReportsByPractitionerInRange(int practitionerId, java.sql.Date startDate,
+                                                                   java.sql.Date endDate) throws DAOException {
+            return new ArrayList<>(reportsInRange);
+        }
+
+        @Override
+        public int insertReport(MonthlyReport report) throws DAOException {
+            return 1;
+        }
+
+        @Override
+        public void updateReport(MonthlyReport report, int reportId) throws DAOException {
+        }
+
+        @Override
+        public List<MonthlyReport> getReportsByPractitioner(int practitionerId) throws DAOException {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public MonthlyReport getReportById(int reportId) throws DAOException {
+            return null;
+        }
+
+        @Override
+        public List<MonthlyReport> getSubmittedReports() throws DAOException {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException {
+            return new ArrayList<>();
         }
     }
 

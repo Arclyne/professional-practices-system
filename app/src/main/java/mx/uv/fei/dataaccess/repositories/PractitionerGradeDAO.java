@@ -35,8 +35,13 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
     private static final String SQL_SELECT_GRADES_BY_PROFESSOR =
             "SELECT * FROM practitioner_grade WHERE professor_id = ? ORDER BY graded_at DESC";
     private static final String SQL_CALCULATE_TENTATIVE_GRADE =
-            "SELECT COALESCE(AVG(grade), 0.0) FROM monthly_report " +
-                    "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL";
+            "SELECT COALESCE(AVG(grade), 0.0) FROM (" +
+                    "SELECT grade FROM monthly_report " +
+                    "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL " +
+                    "UNION ALL " +
+                    "SELECT grade FROM progress_report " +
+                    "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL" +
+                    ") AS evaluated_grades";
 
     @Inject
     public PractitionerGradeDAO(IDatabaseConnection databaseConnection) {
@@ -113,6 +118,7 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
              PreparedStatement statement = connection.prepareStatement(SQL_CALCULATE_TENTATIVE_GRADE)) {
 
             statement.setInt(1, practitionerId);
+            statement.setInt(2, practitionerId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {

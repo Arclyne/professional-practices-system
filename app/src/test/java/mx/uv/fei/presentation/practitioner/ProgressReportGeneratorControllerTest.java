@@ -28,6 +28,7 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.manager.infrastructure.CloudStorageManager;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
+import mx.uv.fei.domain.manager.reporting.MonthlyReportManager;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
 import mx.uv.fei.domain.common.ReportPdfGenerator;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -46,6 +47,7 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
     private static final LocalDate PERIOD_END = LocalDate.of(2026, 11, 30);
 
     private final ProgressReportManager progressReportManager = mock(ProgressReportManager.class);
+    private final MonthlyReportManager monthlyReportManager = mock(MonthlyReportManager.class);
     private final CloudStorageManager cloudStorageManager = mock(CloudStorageManager.class);
     private final ReportPdfGenerator pdfGenerator = mock(ReportPdfGenerator.class);
     private final PeriodManager periodManager = mock(PeriodManager.class);
@@ -69,7 +71,7 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType -> new ProgressReportGeneratorController(
-                progressReportManager, cloudStorageManager, pdfGenerator, periodManager, appStore));
+                progressReportManager, monthlyReportManager, cloudStorageManager, pdfGenerator, periodManager, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
