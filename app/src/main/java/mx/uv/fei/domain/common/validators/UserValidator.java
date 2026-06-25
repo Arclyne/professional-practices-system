@@ -80,8 +80,10 @@ public class UserValidator {
 
         BaseValidator.validateString(manager.getPhone(),
                 "El teléfono del encargado es obligatorio.");
-        BaseValidator.validateMaxLength(manager.getPhone(), FieldLengthLimits.PHONE_MAX,
-                "El teléfono del encargado no puede exceder " + FieldLengthLimits.PHONE_MAX + " caracteres.");
+
+        if (!BaseValidator.isValidPhoneNumber(manager.getPhone())) {
+            throw new ManagerException("El numero de telefono del encargado contiene caracteres inválidos.");
+        }
 
         BaseValidator.validateString(manager.getEmail(),
                 "El correo electrónico del encargado es obligatorio.");
