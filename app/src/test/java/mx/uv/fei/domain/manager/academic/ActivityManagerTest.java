@@ -41,7 +41,8 @@ public class ActivityManagerTest {
         newActivity.setPractitionerId(STORED_PRACTITIONER_ID);
         newActivity.setTitle("Capacitacion en herramientas internas");
         newActivity.setDescription("Induccion al uso de los sistemas internos de la empresa.");
-        newActivity.setActivityDate(Date.valueOf("2026-06-01"));
+        newActivity.setStartDate(Date.valueOf("2026-06-01"));
+        newActivity.setEndDate(Date.valueOf("2026-06-01"));
         newActivity.setDurationHours(2);
 
         assertDoesNotThrow(() -> activityManager.registerActivity(newActivity));
@@ -57,7 +58,8 @@ public class ActivityManagerTest {
         manualActivity.setReportId(null);
         manualActivity.setTitle("Manual de usuario del sistema");
         manualActivity.setDescription("Avance del manual de usuario para el personal de la empresa");
-        manualActivity.setActivityDate(Date.valueOf("2026-06-15"));
+        manualActivity.setStartDate(Date.valueOf("2026-06-15"));
+        manualActivity.setEndDate(Date.valueOf("2026-06-15"));
         manualActivity.setDurationHours(5);
         expectedActivities.add(manualActivity);
 
@@ -67,7 +69,8 @@ public class ActivityManagerTest {
         testingActivity.setReportId(null);
         testingActivity.setTitle("Pruebas de formularios de inventario");
         testingActivity.setDescription("Pruebas funcionales sobre los formularios de captura");
-        testingActivity.setActivityDate(Date.valueOf("2026-05-03"));
+        testingActivity.setStartDate(Date.valueOf("2026-05-03"));
+        testingActivity.setEndDate(Date.valueOf("2026-05-03"));
         testingActivity.setDurationHours(3);
         expectedActivities.add(testingActivity);
 
@@ -77,7 +80,8 @@ public class ActivityManagerTest {
         developmentActivity.setReportId(null);
         developmentActivity.setTitle("Desarrollo de pantallas de inventario");
         developmentActivity.setDescription("Maquetado de las pantallas del sistema de inventario");
-        developmentActivity.setActivityDate(Date.valueOf("2026-05-02"));
+        developmentActivity.setStartDate(Date.valueOf("2026-05-02"));
+        developmentActivity.setEndDate(Date.valueOf("2026-05-02"));
         developmentActivity.setDurationHours(4);
         expectedActivities.add(developmentActivity);
 
@@ -87,7 +91,8 @@ public class ActivityManagerTest {
         requirementsActivity.setReportId(1);
         requirementsActivity.setTitle("Levantamiento de requisitos");
         requirementsActivity.setDescription("Entrevistas con el personal del area de sistemas");
-        requirementsActivity.setActivityDate(Date.valueOf("2026-05-01"));
+        requirementsActivity.setStartDate(Date.valueOf("2026-05-01"));
+        requirementsActivity.setEndDate(Date.valueOf("2026-05-01"));
         requirementsActivity.setDurationHours(5);
         expectedActivities.add(requirementsActivity);
 

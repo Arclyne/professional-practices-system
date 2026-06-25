@@ -33,4 +33,22 @@
             <Label styleClass="card-subtitle" text="La calificación final se emite al concluir las 420 horas."/>
         </VBox>
     </HBox>
+
+    <HBox spacing="16.0">
+        <VBox.margin>
+            <Insets top="16.0"/>
+        </VBox.margin>
+
+        <VBox prefWidth="280.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="SECCIÓN (NRC)"/>
+            <Label fx:id="sectionLabel" styleClass="card-title" text="—"/>
+            <Label styleClass="card-subtitle" text="Grupo de prácticas en el que estás inscrito."/>
+        </VBox>
+
+        <VBox prefWidth="320.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="PROFESOR A CARGO"/>
+            <Label fx:id="professorLabel" styleClass="card-title" text="—"/>
+            <Label styleClass="card-subtitle" text="Académico responsable de tu sección."/>
+        </VBox>
+    </HBox>
 </VBox>

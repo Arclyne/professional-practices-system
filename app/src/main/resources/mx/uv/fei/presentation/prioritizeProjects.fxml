@@ -54,6 +54,8 @@
                         styleClass="primary-button" text="Agregar →"/>
                 <Button fx:id="revokeProjectButton" mnemonicParsing="false" onAction="#handleRevokeProjectAction"
                         styleClass="secondary-button" text="← Remover"/>
+                <Button fx:id="viewProjectInfoButton" mnemonicParsing="false" onAction="#handleViewProjectInfoAction"
+                        styleClass="secondary-button" text="Ver información"/>
             </VBox>
 
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">

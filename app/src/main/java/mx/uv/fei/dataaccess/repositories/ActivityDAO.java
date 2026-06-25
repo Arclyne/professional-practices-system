@@ -25,13 +25,13 @@ import java.util.List;
 public class ActivityDAO extends BaseDAO implements IActivityDAO {
 
     private static final String SQL_INSERT =
-            "INSERT INTO activity (practitioner_id, title, description, activity_date, duration_hours) VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO activity (practitioner_id, title, description, start_date, end_date, duration_hours) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE =
-            "UPDATE activity SET title = ?, description = ?, activity_date = ?, duration_hours = ? WHERE activity_id = ?";
+            "UPDATE activity SET title = ?, description = ?, start_date = ?, end_date = ?, duration_hours = ? WHERE activity_id = ?";
     private static final String SQL_SELECT_BY_PRACTITIONER =
-            "SELECT * FROM activity WHERE practitioner_id = ? ORDER BY activity_date DESC";
+            "SELECT * FROM activity WHERE practitioner_id = ? ORDER BY start_date DESC";
     private static final String SQL_SELECT_BY_REPORT =
-            "SELECT * FROM activity WHERE report_id = ? ORDER BY activity_date ASC";
+            "SELECT * FROM activity WHERE report_id = ? ORDER BY start_date ASC";
     private static final String SQL_ASSIGN_TO_REPORT =
             "UPDATE activity SET report_id = ? WHERE activity_id = ?";
     private static final String SQL_REMOVE_FROM_REPORT =
@@ -68,9 +68,10 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         updateTuple(SQL_UPDATE, statement -> {
             statement.setString(1, activity.getTitle());
             statement.setString(2, activity.getDescription());
-            statement.setDate(3, activity.getActivityDate());
-            statement.setInt(4, activity.getDurationHours());
-            statement.setInt(5, activityId);
+            statement.setDate(3, activity.getStartDate());
+            statement.setDate(4, activity.getEndDate());
+            statement.setInt(5, activity.getDurationHours());
+            statement.setInt(6, activityId);
         });
     }
 
@@ -103,8 +104,9 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         statement.setInt(1, activity.getPractitionerId());
         statement.setString(2, activity.getTitle());
         statement.setString(3, activity.getDescription());
-        statement.setDate(4, activity.getActivityDate());
-        statement.setInt(5, activity.getDurationHours());
+        statement.setDate(4, activity.getStartDate());
+        statement.setDate(5, activity.getEndDate());
+        statement.setInt(6, activity.getDurationHours());
     }
 
     private Activity mapResultSetToActivity(ResultSet resultSet) throws SQLException {
@@ -114,7 +116,8 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         activity.setReportId(resolveNullableReportId(resultSet));
         activity.setTitle(resultSet.getString("title"));
         activity.setDescription(resultSet.getString("description"));
-        activity.setActivityDate(resultSet.getDate("activity_date"));
+        activity.setStartDate(resultSet.getDate("start_date"));
+        activity.setEndDate(resultSet.getDate("end_date"));
         activity.setDurationHours(resultSet.getInt("duration_hours"));
         return activity;
     }

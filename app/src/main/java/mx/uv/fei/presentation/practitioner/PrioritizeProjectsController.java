@@ -35,6 +35,7 @@ public class PrioritizeProjectsController {
     @FXML private ListView<Project> prioritizedProjectsListView;
     @FXML private Button assignProjectButton;
     @FXML private Button revokeProjectButton;
+    @FXML private Button viewProjectInfoButton;
     @FXML private Button movePriorityUpButton;
     @FXML private Button movePriorityDownButton;
     @FXML private Button savePostulationButton;
@@ -130,6 +131,33 @@ public class PrioritizeProjectsController {
             Controller.showAlert("Selección requerida",
                     "Por favor, seleccione un proyecto de la lista de disponibles.", AlertType.WARNING);
         }
+    }
+
+    @FXML
+    private void handleViewProjectInfoAction() {
+        Project selectedProject = resolveSelectedProject();
+        if (selectedProject == null) {
+            Controller.showAlert("Selección requerida",
+                    "Selecciona un proyecto para ver su información.", AlertType.WARNING);
+            return;
+        }
+        Controller.showAlert("Información del proyecto", buildProjectDetail(selectedProject), AlertType.INFORMATION);
+    }
+
+    private Project resolveSelectedProject() {
+        Project selectedProject = availableProjectsListView.getSelectionModel().getSelectedItem();
+        if (selectedProject == null) {
+            selectedProject = prioritizedProjectsListView.getSelectionModel().getSelectedItem();
+        }
+        return selectedProject;
+    }
+
+    private String buildProjectDetail(Project project) {
+        return project.getProjectName()
+                + "\n\nEstado: " + project.getStatus()
+                + "\nCupos: " + project.getParticipantCapacity()
+                + "\nPeriodo: " + project.getStartDate() + " al " + project.getEndDate()
+                + "\n\n" + project.getDescription();
     }
 
     @FXML

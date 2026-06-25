@@ -2,9 +2,15 @@ package mx.uv.fei.presentation.practitioner;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
+import mx.uv.fei.domain.dto.PracticeGroup;
+import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.evaluation.GradingManager;
+import mx.uv.fei.domain.manager.people.PractitionerManager;
+import mx.uv.fei.domain.manager.people.ProfessorManager;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 import mx.uv.fei.domain.statemachine.state.RootState;
@@ -23,17 +29,26 @@ public class PractitionerHomeController {
     @FXML private Label greetingLabel;
     @FXML private Label accumulatedHoursLabel;
     @FXML private Label partialGradeLabel;
+    @FXML private Label sectionLabel;
+    @FXML private Label professorLabel;
 
     private final AppStore store;
     private final ProgressReportManager progressReportManager;
     private final GradingManager gradingManager;
+    private final PractitionerManager practitionerManager;
+    private final PracticeGroupManager practiceGroupManager;
+    private final ProfessorManager professorManager;
 
     @Inject
     public PractitionerHomeController(AppStore store, ProgressReportManager progressReportManager,
-                                      GradingManager gradingManager) {
+                                      GradingManager gradingManager, PractitionerManager practitionerManager,
+                                      PracticeGroupManager practiceGroupManager, ProfessorManager professorManager) {
         this.store = store;
         this.progressReportManager = progressReportManager;
         this.gradingManager = gradingManager;
+        this.practitionerManager = practitionerManager;
+        this.practiceGroupManager = practiceGroupManager;
+        this.professorManager = professorManager;
     }
 
     @FXML
@@ -42,6 +57,7 @@ public class PractitionerHomeController {
         populateGreeting(currentUser);
         populateAccumulatedHours(currentUser);
         populatePartialGrade(currentUser);
+        populateGroupInfo(currentUser);
     }
 
     private User resolveCurrentUser() {
@@ -88,5 +104,45 @@ public class PractitionerHomeController {
         }
 
         partialGradeLabel.setText(gradeText);
+    }
+
+    private void populateGroupInfo(User currentUser) {
+        sectionLabel.setText(UNAVAILABLE_METRIC);
+        professorLabel.setText(UNAVAILABLE_METRIC);
+
+        if (currentUser == null) {
+            return;
+        }
+
+        try {
+            applyGroupInfo(currentUser.getId());
+        } catch (ManagerException e) {
+            sectionLabel.setText(UNAVAILABLE_METRIC);
+            professorLabel.setText(UNAVAILABLE_METRIC);
+        }
+    }
+
+    private void applyGroupInfo(int practitionerId) throws ManagerException {
+        Practitioner practitioner = practitionerManager.getPractitionerById(practitionerId);
+        Integer groupId = practitioner != null ? practitioner.getGroupId() : null;
+        if (groupId == null || groupId <= 0) {
+            return;
+        }
+
+        PracticeGroup group = practiceGroupManager.getPracticeGroupById(groupId);
+        if (group == null || group.getGroupId() <= 0) {
+            return;
+        }
+
+        sectionLabel.setText(group.getSection());
+        professorLabel.setText(resolveProfessorName(group.getProfessorId()));
+    }
+
+    private String resolveProfessorName(int professorId) throws ManagerException {
+        Professor professor = professorManager.getProfessorById(professorId);
+        if (professor == null || professor.getName() == null) {
+            return UNAVAILABLE_METRIC;
+        }
+        return professor.getName() + " " + professor.getLastName();
     }
 }

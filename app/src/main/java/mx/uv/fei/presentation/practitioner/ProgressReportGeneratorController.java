@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.common.ReportPdfGenerator;
+import mx.uv.fei.domain.dto.CoveredReport;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.User;
@@ -11,6 +12,7 @@ import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.infrastructure.CloudStorageManager;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
+import mx.uv.fei.domain.manager.reporting.MonthlyReportManager;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 
@@ -49,6 +51,7 @@ public class ProgressReportGeneratorController {
     @FXML private Button viewSignedButton;
 
     private final ProgressReportManager progressReportManager;
+    private final MonthlyReportManager monthlyReportManager;
     private final CloudStorageManager cloudStorageManager;
     private final ReportPdfGenerator pdfGenerator;
     private final PeriodManager periodManager;
@@ -60,9 +63,11 @@ public class ProgressReportGeneratorController {
 
     @Inject
     public ProgressReportGeneratorController(ProgressReportManager progressReportManager,
+                                             MonthlyReportManager monthlyReportManager,
                                              CloudStorageManager cloudStorageManager, ReportPdfGenerator pdfGenerator,
                                              PeriodManager periodManager, AppStore store) {
         this.progressReportManager = progressReportManager;
+        this.monthlyReportManager = monthlyReportManager;
         this.cloudStorageManager = cloudStorageManager;
         this.pdfGenerator = pdfGenerator;
         this.periodManager = periodManager;
@@ -197,7 +202,10 @@ public class ProgressReportGeneratorController {
         }
         try {
             User currentUser = store.getState().sessionState().currentUserInSession();
-            String pdfPath = pdfGenerator.generateProgressReportPdf(currentProgressReport, currentUser);
+            List<CoveredReport> coveredReports = monthlyReportManager.getEvaluatedReportsWithActivitiesInRange(
+                    practitionerId, currentProgressReport.getPeriodCoveredStart(),
+                    currentProgressReport.getPeriodCoveredEnd());
+            String pdfPath = pdfGenerator.generateProgressReportPdf(currentProgressReport, currentUser, coveredReports);
             File generatedFile = new File(pdfPath);
             if (generatedFile.exists()) {
                 Desktop.getDesktop().open(generatedFile);

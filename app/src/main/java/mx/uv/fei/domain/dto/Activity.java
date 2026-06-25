@@ -17,7 +17,8 @@ public class Activity {
     private Integer reportId;
     private String title;
     private String description;
-    private Date activityDate;
+    private Date startDate;
+    private Date endDate;
     private int durationHours;
 
     public Activity() {}
@@ -37,8 +38,11 @@ public class Activity {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Date getActivityDate() { return activityDate; }
-    public void setActivityDate(Date activityDate) { this.activityDate = activityDate; }
+    public Date getStartDate() { return startDate; }
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
+
+    public Date getEndDate() { return endDate; }
+    public void setEndDate(Date endDate) { this.endDate = endDate; }
 
     public int getDurationHours() { return durationHours; }
     public void setDurationHours(int durationHours) { this.durationHours = durationHours; }
@@ -52,13 +56,14 @@ public class Activity {
             Activity other = (Activity) obj;
             isEqual = this.practitionerId == other.practitionerId &&
                     Objects.equals(this.title, other.title) &&
-                    Objects.equals(this.activityDate, other.activityDate);
+                    Objects.equals(this.startDate, other.startDate) &&
+                    Objects.equals(this.endDate, other.endDate);
         }
         return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(practitionerId, title, activityDate);
+        return Objects.hash(practitionerId, title, startDate, endDate);
     }
 }

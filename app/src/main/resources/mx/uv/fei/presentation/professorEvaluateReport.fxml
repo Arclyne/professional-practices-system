@@ -34,6 +34,10 @@
                 <Label text="Pendiente" style="-fx-text-fill: #F59E0B; -fx-font-size: 11px;"/>
             </HBox>
 
+            <Label text="Buscar por matrícula" styleClass="field-label"/>
+            <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction"
+                       promptText="Ej. zS20013412" maxWidth="1.7976931348623157E308"/>
+
             <Label text="Filtrar por grupo" styleClass="field-label"/>
             <ComboBox fx:id="groupFilterComboBox" onAction="#handleGroupFilterAction"
                       maxWidth="1.7976931348623157E308"/>

@@ -44,14 +44,19 @@
 
             <HBox spacing="12.0">
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <Label styleClass="section-label" text="Fecha"/>
-                    <DatePicker fx:id="datePickerActivity" maxWidth="1.7976931348623157E308"/>
+                    <Label styleClass="section-label" text="Fecha de inicio"/>
+                    <DatePicker fx:id="datePickerStart" maxWidth="1.7976931348623157E308"/>
                 </VBox>
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <Label styleClass="section-label" text="Horas de duración"/>
-                    <TextField fx:id="fieldDuration" promptText="Ej: 4"/>
+                    <Label styleClass="section-label" text="Fecha de fin"/>
+                    <DatePicker fx:id="datePickerEnd" maxWidth="1.7976931348623157E308"/>
                 </VBox>
             </HBox>
+
+            <VBox spacing="5.0">
+                <Label styleClass="section-label" text="Horas de duración (máx. 12 por día)"/>
+                <TextField fx:id="fieldDuration" promptText="Ej: 4"/>
+            </VBox>
 
             <VBox spacing="5.0" VBox.vgrow="ALWAYS">
                 <Label styleClass="section-label" text="Descripción"/>

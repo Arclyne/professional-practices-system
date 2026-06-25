@@ -45,6 +45,10 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
                     "AND pg.professor_id = ? " +
                     "AND pg.period_id = ? " +
                     "ORDER BY mr.year DESC, mr.start_date DESC";
+    private static final String SQL_SELECT_REPORTS_BY_PRACTITIONER_IN_RANGE =
+            "SELECT * FROM monthly_report " +
+                    "WHERE practitioner_id = ? AND start_date >= ? AND end_date <= ? " +
+                    "ORDER BY start_date ASC";
 
     @Inject
     public MonthlyReportDAO(IDatabaseConnection databaseConnection) {
@@ -130,6 +134,13 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
     public List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_REPORTS_BY_PROFESSOR, this::mapResultSetToMonthlyReport,
                 professorId, periodId);
+    }
+
+    @Override
+    public List<MonthlyReport> getReportsByPractitionerInRange(int practitionerId, java.sql.Date startDate,
+                                                               java.sql.Date endDate) throws DAOException {
+        return recoverALL(SQL_SELECT_REPORTS_BY_PRACTITIONER_IN_RANGE, this::mapResultSetToMonthlyReport,
+                practitionerId, startDate, endDate);
     }
 
     private MonthlyReport mapResultSetToMonthlyReport(ResultSet resultSet) throws SQLException {

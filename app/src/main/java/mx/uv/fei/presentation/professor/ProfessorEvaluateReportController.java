@@ -54,6 +54,7 @@ public class ProfessorEvaluateReportController implements Initializable {
     private static final String NO_VALUE = "—";
 
     @FXML private ListView<EvaluableReport> reportsListView;
+    @FXML private TextField searchTextField;
     @FXML private ComboBox<String> groupFilterComboBox;
     @FXML private VBox evaluationContainer;
     @FXML private Label labelReportKind;
@@ -249,8 +250,17 @@ public class ProfessorEvaluateReportController implements Initializable {
         applyGroupFilter();
     }
 
+    @FXML
+    private void handleSearchAction() {
+        applyGroupFilter();
+    }
+
     private void applyGroupFilter() {
-        filteredReports.setPredicate(this::matchesGroupFilter);
+        filteredReports.setPredicate(this::matchesActiveFilters);
+    }
+
+    private boolean matchesActiveFilters(EvaluableReport report) {
+        return matchesGroupFilter(report) && matchesEnrollmentSearch(report);
     }
 
     private boolean matchesGroupFilter(EvaluableReport report) {
@@ -262,6 +272,14 @@ public class ProfessorEvaluateReportController implements Initializable {
         }
 
         return isMatch;
+    }
+
+    private boolean matchesEnrollmentSearch(EvaluableReport report) {
+        String query = searchTextField.getText() == null ? "" : searchTextField.getText().trim().toLowerCase();
+        String enrollment = report.getPractitionerEnrollment() == null
+                ? "" : report.getPractitionerEnrollment().toLowerCase();
+
+        return query.isEmpty() || enrollment.contains(query);
     }
 
     private String enrollmentOf(EvaluableReport report) {

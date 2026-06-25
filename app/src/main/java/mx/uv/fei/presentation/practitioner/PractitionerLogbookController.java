@@ -40,7 +40,8 @@ public class PractitionerLogbookController implements Initializable {
     private int editingActivityId = NO_ACTIVITY_IN_EDITION;
 
     @FXML private TextField fieldTitle;
-    @FXML private DatePicker datePickerActivity;
+    @FXML private DatePicker datePickerStart;
+    @FXML private DatePicker datePickerEnd;
     @FXML private TextField fieldDuration;
     @FXML private TextArea textAreaDescription;
     @FXML private Button btnSaveActivity;
@@ -80,7 +81,7 @@ public class PractitionerLogbookController implements Initializable {
     private String buildActivityDisplayText(Activity activity) {
         String status = activity.getReportId() != null ? "Empaquetada" : "Libre";
         return "• " + activity.getTitle()
-                + "\n  Fecha: " + activity.getActivityDate()
+                + "\n  Fechas: " + activity.getStartDate() + " al " + activity.getEndDate()
                 + " | Horas: " + activity.getDurationHours()
                 + " | Estado: " + status;
     }
@@ -128,8 +129,11 @@ public class PractitionerLogbookController implements Initializable {
         activity.setTitle(fieldTitle.getText().trim());
         activity.setDescription(textAreaDescription.getText().trim());
 
-        if (datePickerActivity.getValue() != null) {
-            activity.setActivityDate(Date.valueOf(datePickerActivity.getValue()));
+        if (datePickerStart.getValue() != null) {
+            activity.setStartDate(Date.valueOf(datePickerStart.getValue()));
+        }
+        if (datePickerEnd.getValue() != null) {
+            activity.setEndDate(Date.valueOf(datePickerEnd.getValue()));
         }
         activity.setDurationHours(parseDurationHours());
         return activity;
@@ -146,7 +150,8 @@ public class PractitionerLogbookController implements Initializable {
         if (isActivityEditable(selectedActivity)) {
             editingActivityId = selectedActivity.getActivityId();
             fieldTitle.setText(selectedActivity.getTitle());
-            datePickerActivity.setValue(selectedActivity.getActivityDate().toLocalDate());
+            datePickerStart.setValue(selectedActivity.getStartDate().toLocalDate());
+            datePickerEnd.setValue(selectedActivity.getEndDate().toLocalDate());
             fieldDuration.setText(String.valueOf(selectedActivity.getDurationHours()));
             textAreaDescription.setText(selectedActivity.getDescription());
             btnSaveActivity.setText(SAVE_BUTTON_EDIT_TEXT);
@@ -157,7 +162,8 @@ public class PractitionerLogbookController implements Initializable {
     private void clearForm() {
         fieldTitle.clear();
         textAreaDescription.clear();
-        datePickerActivity.setValue(null);
+        datePickerStart.setValue(null);
+        datePickerEnd.setValue(null);
         fieldDuration.clear();
         editingActivityId = NO_ACTIVITY_IN_EDITION;
         btnSaveActivity.setText(SAVE_BUTTON_DEFAULT_TEXT);

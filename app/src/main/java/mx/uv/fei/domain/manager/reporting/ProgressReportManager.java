@@ -3,9 +3,11 @@ package mx.uv.fei.domain.manager.reporting;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
+import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
 import mx.uv.fei.domain.common.validators.BaseValidator;
+import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
@@ -20,11 +22,14 @@ public class ProgressReportManager {
 
     private final IProgressReportDAO progressReportDAO;
     private final IPostulationDAO postulationDAO;
+    private final IMonthlyReportDAO monthlyReportDAO;
 
     @Inject
-    public ProgressReportManager(IProgressReportDAO progressReportDAO, IPostulationDAO postulationDAO) {
+    public ProgressReportManager(IProgressReportDAO progressReportDAO, IPostulationDAO postulationDAO,
+                                 IMonthlyReportDAO monthlyReportDAO) {
         this.progressReportDAO = progressReportDAO;
         this.postulationDAO = postulationDAO;
+        this.monthlyReportDAO = monthlyReportDAO;
     }
 
     public ProgressReport generateProgressReport(int practitionerId, ProgressReportType reportType,
@@ -32,7 +37,8 @@ public class ProgressReportManager {
         BaseValidator.validateStartBeforeEnd(periodStart, periodEnd,
                 "La fecha de inicio del periodo debe ser anterior a la fecha de fin.");
         validateHasAssignedProject(practitionerId);
-        double accumulatedHours = getAccumulatedHours(practitionerId);
+        validateCoveredReportsAreEvaluated(practitionerId, periodStart, periodEnd);
+        double accumulatedHours = getAccumulatedHoursInRange(practitionerId, periodStart, periodEnd);
         validateHoursRequirement(reportType, accumulatedHours);
         validateReportDoesNotExist(practitionerId, reportType);
         validateIntermediateReportApprovedBeforeFinal(practitionerId, reportType);
@@ -103,6 +109,44 @@ public class ProgressReportManager {
             return progressReportDAO.getTotalAccumulatedHours(practitionerId);
         } catch (DAOException e) {
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
+        }
+    }
+
+    private double getAccumulatedHoursInRange(int practitionerId, Date periodStart, Date periodEnd)
+            throws ManagerException {
+        try {
+            return progressReportDAO.getAccumulatedHoursInRange(practitionerId, periodStart, periodEnd);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al calcular las horas del periodo cubierto.", e);
+        }
+    }
+
+    private void validateCoveredReportsAreEvaluated(int practitionerId, Date periodStart, Date periodEnd)
+            throws ManagerException {
+        List<MonthlyReport> coveredReports = retrieveCoveredReports(practitionerId, periodStart, periodEnd);
+        if (coveredReports.isEmpty()) {
+            throw new ManagerException("No hay reportes mensuales dentro del periodo cubierto. "
+                    + "Genera y haz evaluar tus reportes mensuales antes de generar el reporte de avance.");
+        }
+        for (MonthlyReport coveredReport : coveredReports) {
+            requireEvaluatedReport(coveredReport);
+        }
+    }
+
+    private void requireEvaluatedReport(MonthlyReport coveredReport) throws ManagerException {
+        if (!ReportStatus.EVALUATED.getDatabaseValue().equals(coveredReport.getStatus())) {
+            throw new ManagerException("El reporte mensual de " + coveredReport.getMonthName() + " "
+                    + coveredReport.getYear() + " aún no ha sido evaluado por el profesor. "
+                    + "Todos los reportes del periodo cubierto deben estar evaluados.");
+        }
+    }
+
+    private List<MonthlyReport> retrieveCoveredReports(int practitionerId, Date periodStart, Date periodEnd)
+            throws ManagerException {
+        try {
+            return monthlyReportDAO.getReportsByPractitionerInRange(practitionerId, periodStart, periodEnd);
+        } catch (DAOException e) {
+            throw new ManagerException("Error al recuperar los reportes mensuales del periodo cubierto.", e);
         }
     }
 

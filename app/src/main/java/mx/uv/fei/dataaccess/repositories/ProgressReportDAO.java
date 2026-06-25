@@ -56,7 +56,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
             "SELECT COALESCE(SUM(a.duration_hours), 0) " +
                     "FROM activity a " +
                     "INNER JOIN monthly_report mr ON a.report_id = mr.report_id " +
-                    "WHERE mr.practitioner_id = ?";
+                    "WHERE mr.practitioner_id = ? AND mr.status = 'Evaluado'";
+    private static final String SQL_SUM_ACCUMULATED_HOURS_IN_RANGE =
+            "SELECT COALESCE(SUM(a.duration_hours), 0) " +
+                    "FROM activity a " +
+                    "INNER JOIN monthly_report mr ON a.report_id = mr.report_id " +
+                    "WHERE mr.practitioner_id = ? AND mr.status = 'Evaluado' " +
+                    "AND mr.start_date >= ? AND mr.end_date <= ?";
 
     @Inject
     public ProgressReportDAO(IDatabaseConnection databaseConnection) {
@@ -161,6 +167,30 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
             }
         } catch (SQLException e) {
             throw new DAOException("Error al calcular las horas acumuladas.", e);
+        }
+
+        return accumulatedHours;
+    }
+
+    @Override
+    public double getAccumulatedHoursInRange(int practitionerId, java.sql.Date startDate, java.sql.Date endDate)
+            throws DAOException {
+        double accumulatedHours = 0.0;
+
+        try (Connection connection = databaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_SUM_ACCUMULATED_HOURS_IN_RANGE)) {
+
+            statement.setInt(1, practitionerId);
+            statement.setDate(2, startDate);
+            statement.setDate(3, endDate);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    accumulatedHours = resultSet.getDouble(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error al calcular las horas acumuladas del periodo cubierto.", e);
         }
 
         return accumulatedHours;
