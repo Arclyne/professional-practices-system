@@ -16,6 +16,12 @@
     <Label fx:id="greetingLabel" styleClass="content-title" text="Hola"/>
     <Label styleClass="content-subtitle" text="Consulta tu avance y entregables desde el menú lateral."/>
 
+    <Label fx:id="statusBannerLabel" styleClass="status-pill" wrapText="true" visible="false" managed="false">
+        <VBox.margin>
+            <Insets top="12.0"/>
+        </VBox.margin>
+    </Label>
+
     <HBox spacing="16.0">
         <VBox.margin>
             <Insets top="22.0"/>

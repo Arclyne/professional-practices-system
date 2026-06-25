@@ -20,6 +20,7 @@ public class GroupEnrollment {
     private int practitionerId;
     private int groupId;
     private int periodId;
+    private int opportunityNumber;
     private EnrollmentStatus status;
 
     public GroupEnrollment() {}
@@ -35,6 +36,9 @@ public class GroupEnrollment {
 
     public int getPeriodId() { return periodId; }
     public void setPeriodId(int periodId) { this.periodId = periodId; }
+
+    public int getOpportunityNumber() { return opportunityNumber; }
+    public void setOpportunityNumber(int opportunityNumber) { this.opportunityNumber = opportunityNumber; }
 
     public EnrollmentStatus getStatus() { return status; }
     public void setStatus(EnrollmentStatus status) { this.status = status; }

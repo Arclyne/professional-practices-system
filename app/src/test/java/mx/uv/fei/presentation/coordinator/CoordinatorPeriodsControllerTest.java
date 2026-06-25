@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.manager.academic.PeriodConclusionManager;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,6 +33,7 @@ public class CoordinatorPeriodsControllerTest extends ApplicationTest {
     private static final int STATUS_COLUMN_INDEX = 3;
 
     private final PeriodManager periodManager = mock(PeriodManager.class);
+    private final PeriodConclusionManager periodConclusionManager = mock(PeriodConclusionManager.class);
     private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
@@ -45,7 +47,8 @@ public class CoordinatorPeriodsControllerTest extends ApplicationTest {
         when(periodManager.getAllPeriods()).thenReturn(List.of(buildPeriod()));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinatorPeriodsController(periodManager, shellNavigator));
+        loader.setControllerFactory(controllerType ->
+                new CoordinatorPeriodsController(periodManager, periodConclusionManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

@@ -19,6 +19,10 @@ public class GroupEnrollmentManager {
 
     private static final String ALREADY_ENROLLED_MESSAGE =
             "El practicante ya está inscrito en un grupo durante este periodo.";
+    private static final String SECOND_OPPORTUNITY_EXHAUSTED_MESSAGE =
+            "No puedes reinscribir a este practicante: ya agotó sus dos oportunidades de inscripción "
+                    + "(segunda oportunidad).";
+    private static final int MAX_ENROLLMENT_OPPORTUNITIES = 2;
 
     private final IGroupEnrollmentDAO groupEnrollmentDAO;
     private final IPracticeGroupDAO practiceGroupDAO;
@@ -41,6 +45,7 @@ public class GroupEnrollmentManager {
     public int enrollPractitioner(GroupEnrollment enrollment) throws ManagerException {
         validateEnrollmentData(enrollment);
         ensurePractitionerIsNotEnrolledInPeriod(enrollment.getPractitionerId(), enrollment.getPeriodId());
+        enrollment.setOpportunityNumber(resolveOpportunityNumber(enrollment.getPractitionerId()));
 
         int generatedId;
         try {
@@ -85,6 +90,20 @@ public class GroupEnrollmentManager {
         } catch (DAOException e) {
             throw new ManagerException("No se pudo recuperar el periodo del grupo de prácticas.", e);
         }
+    }
+
+    private int resolveOpportunityNumber(int practitionerId) throws ManagerException {
+        int nextOpportunity;
+        try {
+            int previousEnrollments = groupEnrollmentDAO.getEnrollmentsByPractitioner(practitionerId).size();
+            if (previousEnrollments >= MAX_ENROLLMENT_OPPORTUNITIES) {
+                throw new ManagerException(SECOND_OPPORTUNITY_EXHAUSTED_MESSAGE);
+            }
+            nextOpportunity = previousEnrollments + 1;
+        } catch (DAOException e) {
+            throw new ManagerException("No se pudo verificar las inscripciones previas del practicante.", e);
+        }
+        return nextOpportunity;
     }
 
     private void ensurePractitionerIsNotEnrolledInPeriod(int practitionerId, int periodId) throws ManagerException {

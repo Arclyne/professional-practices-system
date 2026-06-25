@@ -14,6 +14,7 @@ import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -26,17 +27,20 @@ public class MonthlyReportManager {
     private final IActivityDAO activityDAO;
     private final IPostulationDAO postulationDAO;
     private final IPractitionerDocumentDAO documentDAO;
+    private final PracticeAccessManager practiceAccessManager;
 
     @Inject
     public MonthlyReportManager(IMonthlyReportDAO reportDAO, IActivityDAO activityDAO, IPostulationDAO postulationDAO,
-                                IPractitionerDocumentDAO documentDAO) {
+                                IPractitionerDocumentDAO documentDAO, PracticeAccessManager practiceAccessManager) {
         this.reportDAO = reportDAO;
         this.activityDAO = activityDAO;
         this.postulationDAO = postulationDAO;
         this.documentDAO = documentDAO;
+        this.practiceAccessManager = practiceAccessManager;
     }
 
     public void createReportAndLinkActivities(MonthlyReport report, List<Activity> selectedActivities) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(report.getPractitionerId());
         validateHasAssignedProject(report.getPractitionerId());
         validateAllInitialDocumentsAccepted(report.getPractitionerId());
         ReportValidator.validateMonthlyReportCreation(report, selectedActivities);
@@ -84,6 +88,7 @@ public class MonthlyReportManager {
     }
 
     public void submitSignedReport(MonthlyReport report, String signedFileUrl) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(report.getPractitionerId());
         validateHasAssignedProject(report.getPractitionerId());
         ReportValidator.validateSignedReport(signedFileUrl);
         report.setSignedFileUrl(signedFileUrl);

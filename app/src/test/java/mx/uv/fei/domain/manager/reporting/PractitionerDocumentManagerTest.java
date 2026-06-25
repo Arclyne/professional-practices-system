@@ -16,6 +16,7 @@ import mx.uv.fei.domain.dto.PractitionerDocument;
 import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.DocumentType;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,13 +28,15 @@ public class PractitionerDocumentManagerTest {
 
     private IPractitionerDocumentDAO documentDAO;
     private CloudStorageManager cloudStorageManager;
+    private PracticeAccessManager practiceAccessManager;
     private PractitionerDocumentManager documentManager;
 
     @BeforeEach
     void setUp() {
         documentDAO = mock(IPractitionerDocumentDAO.class);
         cloudStorageManager = mock(CloudStorageManager.class);
-        documentManager = new PractitionerDocumentManager(documentDAO, cloudStorageManager);
+        practiceAccessManager = mock(PracticeAccessManager.class);
+        documentManager = new PractitionerDocumentManager(documentDAO, cloudStorageManager, practiceAccessManager);
     }
 
     @Test

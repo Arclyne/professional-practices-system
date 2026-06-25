@@ -34,6 +34,7 @@ public class GroupEnrollmentDAOTest {
     private static final int SECOND_PERIOD_ID = 7;
     private static final int SECOND_GROUP_ID = 8;
     private static final int STORED_PROFESSOR_ID = 68;
+    private static final int FIRST_OPPORTUNITY = 1;
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -94,6 +95,7 @@ public class GroupEnrollmentDAOTest {
         enrollment.setPractitionerId(STORED_PRACTITIONER_ID);
         enrollment.setGroupId(groupId);
         enrollment.setPeriodId(periodId);
+        enrollment.setOpportunityNumber(FIRST_OPPORTUNITY);
         enrollment.setStatus(EnrollmentStatus.ACTIVE);
 
         return enrollment;

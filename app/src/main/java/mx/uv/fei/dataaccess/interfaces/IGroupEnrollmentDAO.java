@@ -11,7 +11,11 @@ public interface IGroupEnrollmentDAO {
 
     GroupEnrollment recoverEnrollmentByPractitionerAndPeriod(int practitionerId, int periodId) throws DAOException;
 
+    GroupEnrollment recoverLatestEnrollment(int practitionerId) throws DAOException;
+
     List<GroupEnrollment> getEnrollmentsByPractitioner(int practitionerId) throws DAOException;
 
     List<GroupEnrollment> getEnrollmentsByGroup(int groupId) throws DAOException;
+
+    List<GroupEnrollment> getEnrollmentsByPeriod(int periodId) throws DAOException;
 }
