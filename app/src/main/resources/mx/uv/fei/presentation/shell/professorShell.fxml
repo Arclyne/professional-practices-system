@@ -38,6 +38,8 @@
                 </VBox.margin>
             </Label>
 
+            <Button fx:id="practitionersNavButton" maxWidth="1.7976931348623157E308"
+                    onAction="#handleShowPractitionersAction" styleClass="sidebar-item" text="Mis practicantes"/>
             <Button fx:id="documentsNavButton" maxWidth="1.7976931348623157E308"
                     onAction="#handleShowDocumentsAction" styleClass="sidebar-item" text="Documentos"/>
             <Button fx:id="evaluateReportsNavButton" maxWidth="1.7976931348623157E308"

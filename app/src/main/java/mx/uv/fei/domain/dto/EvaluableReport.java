@@ -17,6 +17,8 @@ public class EvaluableReport {
 
     private int reportId;
     private int practitionerId;
+    private String practitionerEnrollment;
+    private String groupSection;
     private String reportKind;
     private String displayName;
     private String status;
@@ -31,8 +33,7 @@ public class EvaluableReport {
         evaluableReport.setReportId(source.getReportId());
         evaluableReport.setPractitionerId(source.getPractitionerId());
         evaluableReport.setReportKind(KIND_MONTHLY);
-        evaluableReport.setDisplayName("[Mensual] " + source.getMonthName() + " " + source.getYear()
-                + " — Practicante " + source.getPractitionerId());
+        evaluableReport.setDisplayName("[Mensual] " + source.getMonthName() + " " + source.getYear());
         evaluableReport.setStatus(source.getStatus());
         evaluableReport.setSignedFileUrl(source.getSignedFileUrl());
         evaluableReport.setGrade(source.getGrade());
@@ -47,8 +48,7 @@ public class EvaluableReport {
         evaluableReport.setReportKind(source.getReportType());
         evaluableReport.setDisplayName("[" + source.getReportType() + "] "
                 + source.getPeriodCoveredStart() + " al " + source.getPeriodCoveredEnd()
-                + " — " + source.getTotalHoursAtSubmission() + " hrs"
-                + " — Practicante " + source.getPractitionerId());
+                + " — " + source.getTotalHoursAtSubmission() + " hrs");
         evaluableReport.setStatus(source.getStatus());
         evaluableReport.setSignedFileUrl(source.getSignedFileUrl());
         evaluableReport.setGrade(source.getGrade());
@@ -61,6 +61,14 @@ public class EvaluableReport {
 
     public int getPractitionerId() { return practitionerId; }
     public void setPractitionerId(int practitionerId) { this.practitionerId = practitionerId; }
+
+    public String getPractitionerEnrollment() { return practitionerEnrollment; }
+    public void setPractitionerEnrollment(String practitionerEnrollment) {
+        this.practitionerEnrollment = practitionerEnrollment;
+    }
+
+    public String getGroupSection() { return groupSection; }
+    public void setGroupSection(String groupSection) { this.groupSection = groupSection; }
 
     public String getReportKind() { return reportKind; }
     public void setReportKind(String reportKind) { this.reportKind = reportKind; }

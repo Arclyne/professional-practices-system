@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.presentation.shell.ShellNavigator;
@@ -13,25 +14,36 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
 import java.sql.Date;
 
 @Component
 public class CoordinatorPeriodsController {
 
-    private static final String STATUS_ACTIVE = "Active";
-    private static final String STATUS_CONCLUDED = "Concluded";
-    private static final String STATUS_UPCOMING = "Upcoming";
-    private static final String STATUS_LABEL_ACTIVE = "Activo";
-    private static final String STATUS_LABEL_CONCLUDED = "Concluido";
-    private static final String STATUS_LABEL_UPCOMING = "Próximo";
+    private static final String STATUS_FILTER_ALL = "Todos los estados";
     private static final String NO_VALUE = "—";
+    private static final String DATE_SEPARATOR = "  ·  ";
     private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPeriod.fxml";
 
+    @FXML private VBox activePeriodCard;
+    @FXML private Label activePeriodNameLabel;
+    @FXML private Label activePeriodMetaLabel;
+    @FXML private Label activePeriodStatusLabel;
+    @FXML private Label noActivePeriodLabel;
+
     @FXML private TextField searchTextField;
+    @FXML private ComboBox<String> statusFilterComboBox;
+    @FXML private Button registerButton;
+    @FXML private Button activateButton;
+
     @FXML private TableView<Period> periodsTableView;
     @FXML private TableColumn<Period, String> nameColumn;
     @FXML private TableColumn<Period, String> startColumn;
@@ -54,6 +66,7 @@ public class CoordinatorPeriodsController {
     public void initialize() {
         setupColumns();
         bindFilteredTable();
+        setupStatusFilterOptions();
         loadPeriods();
     }
 
@@ -69,18 +82,50 @@ public class CoordinatorPeriodsController {
         periodsTableView.setItems(filteredPeriods);
     }
 
+    private void setupStatusFilterOptions() {
+        ObservableList<String> statusOptions = FXCollections.observableArrayList(
+                STATUS_FILTER_ALL,
+                PeriodStatus.UPCOMING.getDisplayLabel(),
+                PeriodStatus.ACTIVE.getDisplayLabel(),
+                PeriodStatus.CONCLUDED.getDisplayLabel());
+        statusFilterComboBox.setItems(statusOptions);
+        statusFilterComboBox.setValue(STATUS_FILTER_ALL);
+    }
+
     private void loadPeriods() {
         try {
             allPeriods.setAll(periodManager.getAllPeriods());
-            applyFilter();
+            applyFilters();
+            refreshActivePeriodCard(periodManager.getActivePeriod());
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
         }
     }
 
+    private void refreshActivePeriodCard(Period activePeriod) {
+        boolean hasActivePeriod = activePeriod != null;
+
+        setNodeVisible(activePeriodCard, hasActivePeriod);
+        setNodeVisible(noActivePeriodLabel, !hasActivePeriod);
+        registerButton.setDisable(hasActivePeriod);
+        activateButton.setDisable(hasActivePeriod);
+
+        if (hasActivePeriod) {
+            activePeriodNameLabel.setText(activePeriod.getPeriodName());
+            activePeriodMetaLabel.setText(formatDate(activePeriod.getStartDate())
+                    + DATE_SEPARATOR + formatDate(activePeriod.getEndDate()));
+            activePeriodStatusLabel.setText(statusLabelOf(activePeriod));
+        }
+    }
+
     @FXML
     private void handleSearchAction() {
-        applyFilter();
+        applyFilters();
+    }
+
+    @FXML
+    private void handleFilterAction() {
+        applyFilters();
     }
 
     @FXML
@@ -89,7 +134,7 @@ public class CoordinatorPeriodsController {
     }
 
     @FXML
-    private void handleActivateAction() {
+    private void handleActivateSelectedAction() {
         Period selectedPeriod = periodsTableView.getSelectionModel().getSelectedItem();
         if (selectedPeriod == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un periodo de la lista para activarlo.");
@@ -98,6 +143,7 @@ public class CoordinatorPeriodsController {
 
         try {
             periodManager.activatePeriod(selectedPeriod.getPeriodId());
+            Controller.showSuccessAlert("Periodo activado", "El periodo fue activado correctamente.");
             loadPeriods();
         } catch (ManagerException e) {
             Controller.showErrorAlert("No se pudo activar", e.getMessage());
@@ -106,14 +152,14 @@ public class CoordinatorPeriodsController {
 
     @FXML
     private void handleInactivateAction() {
-        Period selectedPeriod = periodsTableView.getSelectionModel().getSelectedItem();
-        if (selectedPeriod == null) {
-            Controller.showInfoAlert("Selección requerida", "Selecciona un periodo de la lista para inactivarlo.");
-            return;
-        }
-
         try {
-            periodManager.inactivatePeriod(selectedPeriod.getPeriodId());
+            Period activePeriod = periodManager.getActivePeriod();
+            if (activePeriod == null) {
+                Controller.showInfoAlert("Sin periodo activo", "No hay un periodo activo para concluir.");
+                return;
+            }
+            periodManager.inactivatePeriod(activePeriod.getPeriodId());
+            Controller.showSuccessAlert("Periodo concluido", "El periodo activo fue concluido.");
             loadPeriods();
         } catch (ManagerException e) {
             Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
@@ -121,7 +167,7 @@ public class CoordinatorPeriodsController {
     }
 
     @FXML
-    private void handleEditAction() {
+    private void handleEditSelectedAction() {
         Period selectedPeriod = periodsTableView.getSelectionModel().getSelectedItem();
         if (selectedPeriod == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un periodo de la lista para editarlo.");
@@ -136,8 +182,12 @@ public class CoordinatorPeriodsController {
         shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
-    private void applyFilter() {
-        filteredPeriods.setPredicate(this::matchesSearchText);
+    private void applyFilters() {
+        filteredPeriods.setPredicate(this::matchesActiveFilters);
+    }
+
+    private boolean matchesActiveFilters(Period period) {
+        return matchesSearchText(period) && matchesStatusFilter(period);
     }
 
     private boolean matchesSearchText(Period period) {
@@ -147,16 +197,22 @@ public class CoordinatorPeriodsController {
         return query.isEmpty() || searchableText.contains(query);
     }
 
+    private boolean matchesStatusFilter(Period period) {
+        String selectedStatus = statusFilterComboBox.getValue();
+        boolean isMatch = selectedStatus == null || STATUS_FILTER_ALL.equals(selectedStatus);
+
+        if (!isMatch && period.getPeriodStatus() != null) {
+            isMatch = statusLabelOf(period).equals(selectedStatus);
+        }
+
+        return isMatch;
+    }
+
     private String statusLabelOf(Period period) {
-        String status = period.getPeriodStatus();
         String label = NO_VALUE;
 
-        if (STATUS_ACTIVE.equalsIgnoreCase(status)) {
-            label = STATUS_LABEL_ACTIVE;
-        } else if (STATUS_CONCLUDED.equalsIgnoreCase(status)) {
-            label = STATUS_LABEL_CONCLUDED;
-        } else if (STATUS_UPCOMING.equalsIgnoreCase(status)) {
-            label = STATUS_LABEL_UPCOMING;
+        if (period.getPeriodStatus() != null) {
+            label = PeriodStatus.fromString(period.getPeriodStatus()).getDisplayLabel();
         }
 
         return label;
@@ -164,5 +220,10 @@ public class CoordinatorPeriodsController {
 
     private String formatDate(Date date) {
         return date != null ? date.toString() : NO_VALUE;
+    }
+
+    private void setNodeVisible(Node node, boolean isVisible) {
+        node.setVisible(isVisible);
+        node.setManaged(isVisible);
     }
 }

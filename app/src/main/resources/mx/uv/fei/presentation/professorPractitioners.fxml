@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.professor.ProfessorPractitionersController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="SEGUIMIENTO"/>
+    <Label styleClass="content-title" text="Mis practicantes"/>
+    <Label styleClass="content-subtitle" text="Practicantes de tus secciones en el periodo activo y el proyecto asignado a cada uno."/>
+
+    <Label fx:id="noActivePeriodLabel" managed="false" styleClass="content-card empty-card" visible="false"
+           text="No hay periodo activo. No es posible mostrar practicantes.">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+    </Label>
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+        <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
+                   promptText="Buscar por matrícula"/>
+        <ComboBox fx:id="groupFilterComboBox" onAction="#handleFilterAction" prefWidth="170.0"/>
+        <Button onAction="#handleViewProjectAction" styleClass="secondary-button" text="Ver proyecto"/>
+        <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
+    </HBox>
+
+    <TableView fx:id="practitionersTableView" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets top="12.0"/>
+        </VBox.margin>
+        <columns>
+            <TableColumn fx:id="nameColumn" prefWidth="240.0" text="Practicante"/>
+            <TableColumn fx:id="enrollmentColumn" prefWidth="140.0" text="Matrícula"/>
+            <TableColumn fx:id="groupColumn" prefWidth="120.0" text="Grupo"/>
+            <TableColumn fx:id="projectColumn" prefWidth="300.0" text="Proyecto"/>
+        </columns>
+    </TableView>
+</VBox>
