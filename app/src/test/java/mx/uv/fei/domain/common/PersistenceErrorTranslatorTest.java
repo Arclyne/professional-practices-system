@@ -60,6 +60,39 @@ class PersistenceErrorTranslatorTest {
     }
 
     @Test
+    void translate_DuplicateDocumentType_ReturnsDocumentMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Unique index violation: UQ_PRACTITIONER_DOCUMENT_TYPE ON PUBLIC.PRACTITIONER_DOCUMENT(PRACTITIONER_ID, DOCUMENT_TYPE_ID)"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("documento") && !message.contains("constraint"), result.getMessage());
+    }
+
+    @Test
+    void translate_DuplicateGradePeriod_ReturnsGradeMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Duplicate entry '123-Junio-Diciembre 2026' for key 'practitioner_grade.uq_grade_period'"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("calificación") && !message.contains("duplicate"), result.getMessage());
+    }
+
+    @Test
+    void translate_DuplicateSelfEvaluationReport_ReturnsSelfEvaluationMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Unique index violation: UQ_SELFEVAL_REPORT ON PUBLIC.SELF_EVALUATION(REPORT_ID)"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("autoevaluación") && !message.contains("constraint"), result.getMessage());
+    }
+
+    @Test
     void translate_NonIntegrityFailure_ReturnsGenericConnectionMessage() {
         DAOException failure = new DAOException("Fallo de red.", new SQLException("Connection reset"));
 
