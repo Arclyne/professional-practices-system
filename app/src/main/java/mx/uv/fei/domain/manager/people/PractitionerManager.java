@@ -48,7 +48,7 @@ public class PractitionerManager {
         try {
             userDAO.deactivateUser(practitionerId);
         } catch (DAOException e) {
-            throw new ManagerException("Error de base de datos al inactivar el practicante.", e);
+            throw new ManagerException("No se pudo inactivar el practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -56,7 +56,7 @@ public class PractitionerManager {
         try {
             userDAO.activateUser(practitionerId);
         } catch (DAOException e) {
-            throw new ManagerException("Error de base de datos al activar el practicante.", e);
+            throw new ManagerException("No se pudo activar el practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -181,7 +181,7 @@ public class PractitionerManager {
         try {
             practitionerDAO.updatePractitioner(practitioner, practitionerId);
         } catch (DAOException e) {
-            throw new ManagerException("Error de conexión con la base de datos.", e);
+            throw new ManagerException("No se pudo actualizar la información del practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
 

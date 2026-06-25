@@ -53,7 +53,7 @@ public class OrganizationManager {
         try {
             organizationDAO.deactivateMultipleOrganizations(organizationIds);
         } catch (DAOException e) {
-            throw new ManagerException("Error de base de datos al inactivar organizaciones.", e);
+            throw new ManagerException("No se pudo inactivar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }
 
@@ -65,7 +65,7 @@ public class OrganizationManager {
         try {
             organizationDAO.activateOrganization(organizationId);
         } catch (DAOException e) {
-            throw new ManagerException("Error de base de datos al activar la organización.", e);
+            throw new ManagerException("No se pudo activar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }
 }
