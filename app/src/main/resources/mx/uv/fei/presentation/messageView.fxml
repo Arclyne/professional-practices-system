@@ -15,7 +15,7 @@
 
 <BorderPane prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #FFFFFF;"
             stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="mx.uv.fei.presentation.MessageController">
+            fx:controller="mx.uv.fei.presentation.shared.MessageController">
 
     <left>
         <VBox prefWidth="210.0" spacing="8.0" style="-fx-background-color: #F3F4F6; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">

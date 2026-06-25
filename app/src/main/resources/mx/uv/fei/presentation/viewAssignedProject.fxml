@@ -10,7 +10,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="mx.uv.fei.presentation.ViewAssignedProjectController"
+      fx:controller="mx.uv.fei.presentation.practitioner.ViewAssignedProjectController"
       spacing="20.0"
       style="-fx-background-color: #FFFFFF;">
 

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import mx.uv.fei.presentation.components.FormField?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterOrganizationController">
+<VBox alignment="TOP_CENTER" spacing="20.0" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.coordinator.RegisterOrganizationController">
     <padding>
         <Insets bottom="30.0" left="50.0" right="50.0" top="40.0" />
     </padding>

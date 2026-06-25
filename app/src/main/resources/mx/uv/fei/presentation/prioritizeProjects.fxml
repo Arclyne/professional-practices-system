@@ -9,7 +9,7 @@
 
 <VBox spacing="6.0" styleClass="content-root" stylesheets="@../styles.css"
       xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="mx.uv.fei.presentation.PrioritizeProjectsController">
+      fx:controller="mx.uv.fei.presentation.practitioner.PrioritizeProjectsController">
     <padding>
         <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
     </padding>

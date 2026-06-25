@@ -14,7 +14,7 @@
 
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.ListView?>
-<AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.PractitionerReportGeneratorController">
+<AnchorPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.practitioner.PractitionerReportGeneratorController">
     <HBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <padding>
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>

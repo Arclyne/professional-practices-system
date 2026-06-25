@@ -19,7 +19,7 @@
 <VBox spacing="0.0" stylesheets="@../styles.css"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="mx.uv.fei.presentation.TemplateGeneratorController">
+      fx:controller="mx.uv.fei.presentation.coordinator.TemplateGeneratorController">
 
     <HBox alignment="CENTER_LEFT" style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
         <padding><Insets bottom="16.0" left="24.0" right="24.0" top="16.0"/></padding>

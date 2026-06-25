@@ -10,7 +10,7 @@
 <?import mx.uv.fei.presentation.components.FormField?>
 
 <AnchorPane prefHeight="550.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="mx.uv.fei.presentation.RegisterCoordinatorController">
+            fx:controller="mx.uv.fei.presentation.admin.RegisterCoordinatorController">
     <VBox spacing="15.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="60.0"
           AnchorPane.topAnchor="40.0">
         <Label styleClass="form-title" text="Registro de Coordinador"/>
