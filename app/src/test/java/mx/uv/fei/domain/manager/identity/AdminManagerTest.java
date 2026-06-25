@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 @Profile("test")
 public class AdminManagerTest {
 
-    // Usuario ya sembrado por data.sql (mismo username), usado para forzar la colisión de unicidad.
-    private static final String EXISTING_USERNAME = "30011111";
+    // Correo del administrador sembrado por data.sql; sigue existiendo tras inactivarlo.
+    private static final String SEEDED_ADMIN_EMAIL = "rmarquez@uv.mx";
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -35,41 +35,52 @@ public class AdminManagerTest {
     @BeforeEach
     void setUp() throws SQLException {
         TestDatabaseSetup.initialize(dbConnection);
-        clearAdministrators();
+        inactivateSeededAdmins();
     }
 
     /**
-     * El sistema arranca sin administrador (data.sql siembra uno, así que lo retiramos) para poder
-     * ejercitar el alta del administrador inicial.
+     * data.sql siembra un administrador activo. La regla es "un solo administrador ACTIVO", así que
+     * lo inactivamos para reproducir el escenario válido: inactivar al administrador en turno y dar
+     * de alta a otro.
      */
-    private void clearAdministrators() throws SQLException {
+    private void inactivateSeededAdmins() throws SQLException {
         try (Connection connection = dbConnection.getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM administrator");
+            statement.execute("UPDATE user SET status = 'Inactive' WHERE role_name = 'Administrator'");
         }
     }
 
     @Test
-    void registerInitialAdmin_ValidAdmin_DoesNotThrow() {
-        Administrator initialAdministrator = buildAdministrator("30014455", "jcastaneda@uv.mx");
+    void registerInitialAdmin_NoActiveAdmin_DoesNotThrow() {
+        Administrator newAdministrator = buildAdministrator("30014455", "jcastaneda@uv.mx");
 
-        assertDoesNotThrow(() -> adminManager.registerInitialAdmin(initialAdministrator));
+        assertDoesNotThrow(() -> adminManager.registerInitialAdmin(newAdministrator));
     }
 
     @Test
-    void registerInitialAdmin_DuplicateUserData_ThrowsDuplicateMessage() {
-        // El username ya existe en la tabla user (otro rol), aunque no haya administrador: el INSERT
-        // debe rebotar contra la restricción UNIQUE y traducirse a un mensaje claro de duplicidad
-        // ("ya está en uso" / "ya está registrado"), nunca al genérico error de conexión.
-        Administrator duplicateAdministrator = buildAdministrator(EXISTING_USERNAME, "otro.correo@uv.mx");
+    void registerInitialAdmin_DuplicateEmail_ThrowsDuplicateMessage() {
+        // El correo ya existe en la tabla user: el INSERT debe rebotar contra la restricción UNIQUE y
+        // traducirse a un mensaje claro de duplicidad, nunca al genérico de conexión.
+        Administrator duplicateAdministrator = buildAdministrator("30099999", SEEDED_ADMIN_EMAIL);
 
         ManagerException exception = assertThrows(ManagerException.class,
                 () -> adminManager.registerInitialAdmin(duplicateAdministrator));
 
         String message = exception.getMessage().toLowerCase();
-        assertTrue(message.contains("uso") || message.contains("registrado"),
-                "El mensaje debe indicar que el dato ya está en uso, no un error genérico de conexión. Fue: "
+        assertTrue(message.contains("registrado") || message.contains("uso"),
+                "El mensaje debe indicar que el dato ya está en uso, no un error genérico. Fue: "
                         + exception.getMessage());
+    }
+
+    @Test
+    void registerInitialAdmin_WhenActiveAdminExists_ThrowsActiveAdminMessage() {
+        assertDoesNotThrow(() -> adminManager.registerInitialAdmin(buildAdministrator("30014455", "jcastaneda@uv.mx")));
+
+        ManagerException exception = assertThrows(ManagerException.class,
+                () -> adminManager.registerInitialAdmin(buildAdministrator("30015566", "otro.admin@uv.mx")));
+
+        assertTrue(exception.getMessage().toLowerCase().contains("activo"),
+                "Debe rechazar un segundo administrador activo. Fue: " + exception.getMessage());
     }
 
     private Administrator buildAdministrator(String username, String email) {

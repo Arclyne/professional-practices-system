@@ -68,7 +68,7 @@ public class CoordinatorManager {
             userDAO.activateUser(coordinatorId);
         } catch (DAOException e) {
             log.error("Error al activar el coordinador con ID: {}.", coordinatorId, e);
-            throw new ManagerException("Error crítico de conexión al intentar activar el coordinador.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

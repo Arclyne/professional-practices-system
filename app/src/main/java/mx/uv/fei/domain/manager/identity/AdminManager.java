@@ -16,8 +16,6 @@ import mx.uv.fei.domain.statemachine.actions.AuthenticatorAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 
 @Component
 public class AdminManager {
@@ -46,7 +44,7 @@ public class AdminManager {
         administrator.setRole("Administrator");
         UserValidator.validateAdministratorData(administrator);
 
-        verifyIfAdminExist();
+        verifyNoActiveAdmin();
 
         try {
             int generatedId = administratorDAO.insertAdministrator(administrator);
@@ -60,11 +58,12 @@ public class AdminManager {
         }
     }
 
-    private void verifyIfAdminExist() throws ManagerException {
+    private void verifyNoActiveAdmin() throws ManagerException {
         try {
-            List<Administrator> administratorsList = administratorDAO.getAllAdministrators();
-            if (!administratorsList.isEmpty()) {
-                throw new ManagerException("Error ya existe un administrador registrado");
+            boolean activeAdminExists = administratorDAO.getAllAdministrators().stream()
+                    .anyMatch(administrator -> administrator.getStatus() == UserStatus.ACTIVE);
+            if (activeAdminExists) {
+                throw new ManagerException("Ya existe un administrador activo. Inactívalo antes de registrar a otro.");
             }
         } catch (DAOException e) {
             throw new ManagerException("Error al verificar la existencia de un administrador.", e);
