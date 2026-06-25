@@ -30,6 +30,9 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
             "SELECT group_id, section, professor_id, period_id FROM practice_group WHERE group_id = ?";
     private static final String SQL_SELECT_ALL_PRACTICE_GROUPS =
             "SELECT group_id, section, professor_id, period_id FROM practice_group";
+    private static final String SQL_SELECT_GROUPS_BY_PROFESSOR_AND_PERIOD =
+            "SELECT group_id, section, professor_id, period_id FROM practice_group "
+                    + "WHERE professor_id = ? AND period_id = ?";
     private static final String SQL_UPDATE_PRACTICE_GROUP =
             "UPDATE practice_group SET section = ?, professor_id = ?, period_id = ? WHERE group_id = ?";
 
@@ -89,6 +92,12 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     @Override
     public List<PracticeGroup> getAllPracticeGroups() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PRACTICE_GROUPS, this::mapResultSetToPracticeGroup);
+    }
+
+    @Override
+    public List<PracticeGroup> getPracticeGroupsByProfessorAndPeriod(int professorId, int periodId) throws DAOException {
+        return recoverALL(SQL_SELECT_GROUPS_BY_PROFESSOR_AND_PERIOD, this::mapResultSetToPracticeGroup,
+                professorId, periodId);
     }
 
     @Override

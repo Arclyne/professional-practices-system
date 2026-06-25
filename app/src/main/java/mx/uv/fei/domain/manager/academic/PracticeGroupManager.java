@@ -48,6 +48,15 @@ public class PracticeGroupManager {
         }
     }
 
+    public List<PracticeGroup> getGroupsByProfessorAndPeriod(int professorId, int periodId) throws ManagerException {
+        try {
+            return practiceGroupDAO.getPracticeGroupsByProfessorAndPeriod(professorId, periodId);
+        } catch (DAOException e) {
+            log.error("Error al recuperar los grupos del profesor {} en el periodo {}.", professorId, periodId, e);
+            throw new ManagerException("Ocurrió un error al recuperar las secciones del profesor.", e);
+        }
+    }
+
     public PracticeGroup getPracticeGroupById(int groupId) throws ManagerException {
         try {
             return practiceGroupDAO.recoverPracticeGroup(groupId);

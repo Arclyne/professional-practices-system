@@ -63,6 +63,9 @@ public final class PersistenceErrorTranslator {
     private static String describeDuplicate(SQLIntegrityConstraintViolationException violation) {
         String detail = violation.getMessage() != null ? violation.getMessage().toLowerCase() : "";
 
+        if (detail.contains("active_period_guard") || detail.contains("uq_school_period_active")) {
+            return "Ya existe un periodo activo. Conclúyelo antes de activar otro.";
+        }
         if (detail.contains("active_singleton_role") || detail.contains("uq_user_active_singleton")) {
             if (detail.contains("coordinator")) {
                 return "Ya existe un coordinador activo. Inactívalo antes de activar o registrar a otro.";

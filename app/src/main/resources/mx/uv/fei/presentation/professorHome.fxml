@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="6.0" styleClass="content-root" stylesheets="@../styles.css"
@@ -15,11 +16,20 @@
     <Label fx:id="greetingLabel" styleClass="content-title" text="Hola"/>
     <Label styleClass="content-subtitle" text="Evalúa reportes y califica a tus practicantes desde el menú lateral."/>
 
-    <VBox maxWidth="280.0" spacing="4.0" styleClass="content-card">
+    <HBox spacing="16.0">
         <VBox.margin>
             <Insets top="22.0"/>
         </VBox.margin>
-        <Label styleClass="card-eyebrow" text="REPORTES POR EVALUAR"/>
-        <Label fx:id="pendingReportsLabel" styleClass="card-title" text="0"/>
-    </VBox>
+
+        <VBox maxWidth="240.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="REPORTES POR EVALUAR"/>
+            <Label fx:id="pendingReportsLabel" styleClass="card-title" text="0"/>
+        </VBox>
+
+        <VBox maxWidth="360.0" spacing="4.0" styleClass="content-card">
+            <Label styleClass="card-eyebrow" text="MIS SECCIONES (PERIODO ACTIVO)"/>
+            <Label fx:id="sectionsLabel" styleClass="card-title" text="—"/>
+            <Label fx:id="activePeriodLabel" styleClass="card-subtitle" text=""/>
+        </VBox>
+    </HBox>
 </VBox>

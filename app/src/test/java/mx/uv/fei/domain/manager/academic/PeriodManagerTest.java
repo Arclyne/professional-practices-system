@@ -95,4 +95,35 @@ public class PeriodManagerTest {
 
         assertDoesNotThrow(() -> periodManager.updatePeriod(periodToUpdate, STORED_PERIOD_ID));
     }
+
+    @Test
+    void registerNewPeriod_NewPeriod_IsRegisteredAsUpcoming() throws ManagerException {
+        Period newPeriod = new Period();
+        newPeriod.setPeriodName("Periodo Proximo 2030");
+        newPeriod.setStartDate(Date.valueOf("2030-08-01"));
+        newPeriod.setEndDate(Date.valueOf("2031-01-31"));
+
+        periodManager.registerNewPeriod(newPeriod);
+
+        assertEquals("Upcoming", findPeriodByName("Periodo Proximo 2030").getPeriodStatus());
+    }
+
+    @Test
+    void activatePeriod_AnotherPeriodAlreadyActive_ThrowsManagerException() throws ManagerException {
+        Period newPeriod = new Period();
+        newPeriod.setPeriodName("Periodo Por Activar 2031");
+        newPeriod.setStartDate(Date.valueOf("2031-08-01"));
+        newPeriod.setEndDate(Date.valueOf("2032-01-31"));
+        periodManager.registerNewPeriod(newPeriod);
+        int newPeriodId = findPeriodByName("Periodo Por Activar 2031").getPeriodId();
+
+        assertThrows(ManagerException.class, () -> periodManager.activatePeriod(newPeriodId));
+    }
+
+    private Period findPeriodByName(String periodName) throws ManagerException {
+        return periodManager.getAllPeriods().stream()
+                .filter(period -> periodName.equals(period.getPeriodName()))
+                .findFirst()
+                .orElseThrow();
+    }
 }
