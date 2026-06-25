@@ -6,6 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
+import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.GroupEnrollmentManager;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
@@ -23,9 +24,11 @@ import javafx.scene.control.Label;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 @Component
 public class RegisterEnrollmentController implements Initializable {
@@ -46,6 +49,7 @@ public class RegisterEnrollmentController implements Initializable {
 
     private final Map<String, Integer> groupLabelToId = new HashMap<>();
     private final Map<Integer, String> periodNamesById = new HashMap<>();
+    private final Set<Integer> enrollablePeriodIds = new HashSet<>();
 
     private Practitioner practitionerToEnroll;
 
@@ -73,18 +77,29 @@ public class RegisterEnrollmentController implements Initializable {
     private void loadGroups() {
         try {
             mapPeriods(periodManager.getAllPeriods());
-            ObservableList<String> groupOptions = FXCollections.observableArrayList();
-
-            for (PracticeGroup practiceGroup : practiceGroupManager.getAllPracticeGroups()) {
-                String groupLabel = buildGroupLabel(practiceGroup);
-                groupOptions.add(groupLabel);
-                groupLabelToId.put(groupLabel, practiceGroup.getGroupId());
-            }
-
-            groupFormComboBox.setItems(groupOptions);
+            groupFormComboBox.setItems(buildEnrollableGroupOptions(practiceGroupManager.getAllPracticeGroups()));
         } catch (ManagerException e) {
             Controller.showAlert("Error de Carga",
                     "No se pudieron cargar los grupos de prácticas.", AlertType.ERROR);
+        }
+    }
+
+    private ObservableList<String> buildEnrollableGroupOptions(List<PracticeGroup> practiceGroups) {
+        groupLabelToId.clear();
+        ObservableList<String> groupOptions = FXCollections.observableArrayList();
+
+        for (PracticeGroup practiceGroup : practiceGroups) {
+            addGroupIfEnrollable(practiceGroup, groupOptions);
+        }
+
+        return groupOptions;
+    }
+
+    private void addGroupIfEnrollable(PracticeGroup practiceGroup, ObservableList<String> groupOptions) {
+        if (enrollablePeriodIds.contains(practiceGroup.getPeriodId())) {
+            String groupLabel = buildGroupLabel(practiceGroup);
+            groupOptions.add(groupLabel);
+            groupLabelToId.put(groupLabel, practiceGroup.getGroupId());
         }
     }
 
@@ -95,9 +110,22 @@ public class RegisterEnrollmentController implements Initializable {
 
     private void mapPeriods(List<Period> periods) {
         periodNamesById.clear();
+        enrollablePeriodIds.clear();
         for (Period period : periods) {
             periodNamesById.put(period.getPeriodId(), period.getPeriodName());
+            registerEnrollablePeriod(period);
         }
+    }
+
+    private void registerEnrollablePeriod(Period period) {
+        if (isEnrollablePeriod(period.getPeriodStatus())) {
+            enrollablePeriodIds.add(period.getPeriodId());
+        }
+    }
+
+    private boolean isEnrollablePeriod(String periodStatus) {
+        return PeriodStatus.ACTIVE.getDatabaseValue().equalsIgnoreCase(periodStatus)
+                || PeriodStatus.UPCOMING.getDatabaseValue().equalsIgnoreCase(periodStatus);
     }
 
     @FXML
