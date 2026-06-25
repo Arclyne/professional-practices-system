@@ -14,6 +14,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class Controller {
@@ -71,5 +72,21 @@ public class Controller {
                 listView.getSelectionModel().clearSelection();
             }
         }
+    }
+
+    public static String getRootError(Throwable e){
+        String messageError = "Error desconocido: Excepción nula.";
+        Throwable rootError = e;
+        if(e != null) {
+            while (rootError != null && rootError.getCause() != null) {
+                rootError = rootError.getCause();
+            }
+
+            messageError = rootError.getMessage();
+            if (messageError == null || messageError.trim().isEmpty()) {
+                messageError = "Error interno: " + rootError.getClass().getSimpleName();
+            }
+        }
+        return messageError;
     }
 }
