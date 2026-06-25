@@ -10,15 +10,12 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PeriodManager;
 import mx.uv.fei.domain.manager.PracticeGroupManager;
 import mx.uv.fei.domain.manager.ProfessorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
@@ -47,24 +44,38 @@ public class RegisterPracticeGroupController implements Initializable {
     private final PracticeGroupManager practiceGroupManager;
     private final ProfessorManager professorManager;
     private final PeriodManager periodManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
-    private final Map<String, Integer> professorNameToId = new HashMap<>();
-    private final Map<String, Integer> periodNameToId = new HashMap<>();
+    private final Map<String, Integer> professorIdByName = new HashMap<>();
+    private final Map<Integer, String> professorNameById = new HashMap<>();
+    private final Map<String, Integer> periodIdByName = new HashMap<>();
+    private final Map<Integer, String> periodNameById = new HashMap<>();
+
+    private PracticeGroup groupBeingEdited;
 
     @Inject
     public RegisterPracticeGroupController(PracticeGroupManager practiceGroupManager,
-                                           ProfessorManager professorManager, PeriodManager periodManager, AppStore store) {
+                                           ProfessorManager professorManager, PeriodManager periodManager,
+                                           ShellNavigator shellNavigator) {
         this.practiceGroupManager = practiceGroupManager;
         this.professorManager = professorManager;
         this.periodManager = periodManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadProfessors();
         loadPeriods();
+
+        Object pendingEntity = shellNavigator.consumePendingEntity();
+        if (pendingEntity instanceof PracticeGroup) {
+            groupBeingEdited = (PracticeGroup) pendingEntity;
+            populateFormForEdit(groupBeingEdited);
+        } else {
+            groupBeingEdited = null;
+            saveButton.setText("Guardar Grupo");
+        }
     }
 
     private void loadProfessors() {
@@ -76,7 +87,8 @@ public class RegisterPracticeGroupController implements Initializable {
                 String displayName = professor.getName() + " " + professor.getLastName()
                         + " (" + professor.getUserName() + ")";
                 professorOptions.add(displayName);
-                professorNameToId.put(displayName, professor.getId());
+                professorIdByName.put(displayName, professor.getId());
+                professorNameById.put(professor.getId(), displayName);
             }
             comboBoxProfessor.setItems(professorOptions);
         } catch (ManagerException e) {
@@ -93,7 +105,8 @@ public class RegisterPracticeGroupController implements Initializable {
 
             for (Period period : periods) {
                 periodOptions.add(period.getPeriodName());
-                periodNameToId.put(period.getPeriodName(), period.getPeriodId());
+                periodIdByName.put(period.getPeriodName(), period.getPeriodId());
+                periodNameById.put(period.getPeriodId(), period.getPeriodName());
             }
             comboBoxPeriod.setItems(periodOptions);
         } catch (ManagerException e) {
@@ -101,6 +114,13 @@ public class RegisterPracticeGroupController implements Initializable {
             Controller.showAlert("Error de Carga",
                     "No se pudieron cargar los profesores o los periodos disponibles.", AlertType.ERROR);
         }
+    }
+
+    private void populateFormForEdit(PracticeGroup group) {
+        saveButton.setText("Guardar cambios");
+        fieldSection.setText(group.getSection() != null ? group.getSection() : "");
+        comboBoxProfessor.setValue(professorNameById.get(group.getProfessorId()));
+        comboBoxPeriod.setValue(periodNameById.get(group.getPeriodId()));
     }
 
     @FXML
@@ -111,14 +131,32 @@ public class RegisterPracticeGroupController implements Initializable {
             return;
         }
 
+        if (groupBeingEdited != null) {
+            updatePracticeGroup();
+        } else {
+            registerPracticeGroup();
+        }
+    }
+
+    private void registerPracticeGroup() {
         try {
-            PracticeGroup practiceGroup = buildPracticeGroupFromForm();
-            practiceGroupManager.registerNewPracticeGroup(practiceGroup);
+            practiceGroupManager.registerNewPracticeGroup(buildPracticeGroupFromForm());
             Controller.showAlert("Registro Exitoso",
                     "El grupo de prácticas se ha creado exitosamente.", AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Fallo en el Registro", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private void updatePracticeGroup() {
+        try {
+            practiceGroupManager.updatePracticeGroup(buildPracticeGroupFromForm(), groupBeingEdited.getGroupId());
+            Controller.showAlert("Actualización Exitosa",
+                    "El grupo de prácticas se actualizó correctamente.", AlertType.INFORMATION);
+            shellNavigator.returnToList();
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -131,13 +169,13 @@ public class RegisterPracticeGroupController implements Initializable {
     private PracticeGroup buildPracticeGroupFromForm() {
         PracticeGroup practiceGroup = new PracticeGroup();
         practiceGroup.setSection(fieldSection.getText().trim());
-        practiceGroup.setProfessorId(professorNameToId.get((String) comboBoxProfessor.getValue()));
-        practiceGroup.setPeriodId(periodNameToId.get((String) comboBoxPeriod.getValue()));
+        practiceGroup.setProfessorId(professorIdByName.get((String) comboBoxProfessor.getValue()));
+        practiceGroup.setPeriodId(periodIdByName.get((String) comboBoxPeriod.getValue()));
         return practiceGroup;
     }
 
     @FXML
     private void handleActionCancelButton() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.returnToList();
     }
 }

@@ -5,24 +5,19 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.dto.Organization;
-import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.manager.OrganizationManager;
-import mx.uv.fei.presentation.components.FormComboBox;
-import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +26,8 @@ import java.util.Map;
 @Component
 public class CoordinatorManagersController {
 
-    private static final String FORM_TITLE_REGISTER = "Registrar encargado";
-    private static final String FORM_TITLE_EDIT = "Editar encargado";
     private static final String UNKNOWN_ORGANIZATION = "—";
-
-    @FXML private VBox listPane;
-    @FXML private VBox formPane;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerManager.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Manager> managersTableView;
@@ -46,25 +37,20 @@ public class CoordinatorManagersController {
     @FXML private TableColumn<Manager, String> organizationColumn;
     @FXML private TableColumn<Manager, String> statusColumn;
 
-    @FXML private Label formTitleLabel;
-    @FXML private FormField nameFormField;
-    @FXML private FormField phoneFormField;
-    @FXML private FormField emailFormField;
-    @FXML private FormComboBox organizationFormComboBox;
-
     private final ManagerManager managerManager;
     private final OrganizationManager organizationManager;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Manager> allManagers = FXCollections.observableArrayList();
 
     private FilteredList<Manager> filteredManagers;
-    private Manager managerBeingEdited;
     private Map<Integer, String> organizationNamesById = new HashMap<>();
-    private Map<String, Integer> organizationIdsByName = new HashMap<>();
 
     @Inject
-    public CoordinatorManagersController(ManagerManager managerManager, OrganizationManager organizationManager) {
+    public CoordinatorManagersController(ManagerManager managerManager, OrganizationManager organizationManager,
+                                         ShellNavigator shellNavigator) {
         this.managerManager = managerManager;
         this.organizationManager = organizationManager;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
@@ -72,7 +58,6 @@ public class CoordinatorManagersController {
         setupColumns();
         bindFilteredTable();
         loadManagers();
-        showListPane();
     }
 
     private void setupColumns() {
@@ -90,9 +75,7 @@ public class CoordinatorManagersController {
 
     private void loadManagers() {
         try {
-            List<Organization> organizations = organizationManager.getAllOrganizations();
-            mapOrganizations(organizations);
-            organizationFormComboBox.setItems(FXCollections.observableArrayList(organizationIdsByName.keySet()));
+            mapOrganizations(organizationManager.getAllOrganizations());
             allManagers.setAll(managerManager.getAllManagers());
             applyFilter();
         } catch (ManagerException e) {
@@ -102,10 +85,8 @@ public class CoordinatorManagersController {
 
     private void mapOrganizations(List<Organization> organizations) {
         organizationNamesById = new HashMap<>();
-        organizationIdsByName = new HashMap<>();
         for (Organization organization : organizations) {
             organizationNamesById.put(organization.getIdOrganization(), organization.getNameOrganization());
-            organizationIdsByName.put(organization.getNameOrganization(), organization.getIdOrganization());
         }
     }
 
@@ -159,98 +140,12 @@ public class CoordinatorManagersController {
             return;
         }
 
-        managerBeingEdited = selectedManager;
-        prepareFormForEdit(selectedManager);
-        showFormPane();
+        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedManager);
     }
 
     @FXML
-    private void handleShowRegisterFormAction() {
-        managerBeingEdited = null;
-        prepareFormForCreate();
-        showFormPane();
-    }
-
-    @FXML
-    private void handleSaveAction() {
-        if (isFormIncomplete()) {
-            Controller.showInfoAlert("Campos incompletos", "Por favor, completa todos los datos del encargado.");
-            return;
-        }
-
-        if (managerBeingEdited != null) {
-            saveEditedManager();
-        } else {
-            saveNewManager();
-        }
-    }
-
-    @FXML
-    private void handleCancelFormAction() {
-        managerBeingEdited = null;
-        showListPane();
-    }
-
-    private void saveNewManager() {
-        try {
-            Manager manager = buildManagerFromForm();
-            manager.setStatus(UserStatus.ACTIVE);
-            managerManager.registerManager(manager);
-            Controller.showSuccessAlert("Registro exitoso", "El encargado fue registrado correctamente.");
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error en el registro", e.getMessage());
-        }
-    }
-
-    private void saveEditedManager() {
-        try {
-            Manager manager = buildManagerFromForm();
-            managerManager.updateManager(manager, managerBeingEdited.getId());
-            Controller.showSuccessAlert("Actualización exitosa", "El encargado se actualizó correctamente.");
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error al actualizar", e.getMessage());
-        }
-    }
-
-    private void returnToList() {
-        managerBeingEdited = null;
-        loadManagers();
-        showListPane();
-    }
-
-    private Manager buildManagerFromForm() {
-        Manager manager = new Manager();
-        manager.setName(nameFormField.getText().trim());
-        manager.setPhone(phoneFormField.getText().trim());
-        manager.setEmail(emailFormField.getText().trim());
-        manager.setOrganizationId(organizationIdsByName.getOrDefault(organizationFormComboBox.getValue(), 0));
-
-        return manager;
-    }
-
-    private void prepareFormForCreate() {
-        formTitleLabel.setText(FORM_TITLE_REGISTER);
-        nameFormField.setText("");
-        phoneFormField.setText("");
-        emailFormField.setText("");
-        organizationFormComboBox.clearSelection();
-    }
-
-    private void prepareFormForEdit(Manager manager) {
-        formTitleLabel.setText(FORM_TITLE_EDIT);
-        nameFormField.setText(manager.getName());
-        phoneFormField.setText(manager.getPhone());
-        emailFormField.setText(manager.getEmail());
-        organizationFormComboBox.valueProperty().set(organizationNameOf(manager));
-    }
-
-    private boolean isFormIncomplete() {
-        return nameFormField.getText().isEmpty()
-                || phoneFormField.getText().isEmpty()
-                || emailFormField.getText().isEmpty()
-                || organizationFormComboBox.getValue() == null;
+    private void handleRegisterAction() {
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void applyFilter() {
@@ -271,20 +166,5 @@ public class CoordinatorManagersController {
 
     private String statusLabelOf(Manager manager) {
         return manager.getStatus() != null ? manager.getStatus().getDisplayLabel() : UNKNOWN_ORGANIZATION;
-    }
-
-    private void showListPane() {
-        setNodeVisible(listPane, true);
-        setNodeVisible(formPane, false);
-    }
-
-    private void showFormPane() {
-        setNodeVisible(listPane, false);
-        setNodeVisible(formPane, true);
-    }
-
-    private void setNodeVisible(Node node, boolean isVisible) {
-        node.setVisible(isVisible);
-        node.setManaged(isVisible);
     }
 }

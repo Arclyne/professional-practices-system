@@ -8,17 +8,16 @@ import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
-import mx.uv.fei.domain.statemachine.AppStore;
-import mx.uv.fei.domain.statemachine.actions.NavigationAction;
-import mx.uv.fei.domain.statemachine.enums.AppSection;
 import mx.uv.fei.presentation.components.FormComboBox;
 import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,16 +30,17 @@ public class RegisterCoordinatorController implements Initializable {
     @FXML private FormField emailFormField;
     @FXML private FormField personalNumberFormField;
     @FXML private FormComboBox genderFormComboBox;
+    @FXML private Button registerButton;
 
     private final CoordinatorManager coordinatorManager;
-    private final AppStore store;
+    private final ShellNavigator shellNavigator;
 
     private Coordinator coordinatorBeingEdited;
 
     @Inject
-    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, AppStore store) {
+    public RegisterCoordinatorController(CoordinatorManager coordinatorManager, ShellNavigator shellNavigator) {
         this.coordinatorManager = coordinatorManager;
-        this.store = store;
+        this.shellNavigator = shellNavigator;
     }
 
     @Override
@@ -51,29 +51,25 @@ public class RegisterCoordinatorController implements Initializable {
                 Gender.OTHER.getDisplayValue());
         genderFormComboBox.setItems(genderOptions);
 
-        String selectedEntityId = store.getState().navigationState().targetEntityId();
-        if (selectedEntityId != null && !selectedEntityId.isBlank()) {
-            loadCoordinatorForEdit(Integer.parseInt(selectedEntityId));
+        Object pendingEntity = shellNavigator.consumePendingEntity();
+        if (pendingEntity instanceof Coordinator) {
+            coordinatorBeingEdited = (Coordinator) pendingEntity;
+            populateFormForEdit(coordinatorBeingEdited);
+        } else {
+            coordinatorBeingEdited = null;
+            registerButton.setText("Registrar Coordinador");
         }
     }
 
-    private void loadCoordinatorForEdit(int coordinatorId) {
-        try {
-            Coordinator coordinator = coordinatorManager.getCoordinatorById(coordinatorId);
-            if (coordinator.getId() <= 0) {
-                Controller.showAlert("Error de Carga",
-                        "No se encontró la información del coordinador seleccionado.", AlertType.ERROR);
-                return;
-            }
-            coordinatorBeingEdited = coordinator;
-            nameFormField.setText(coordinator.getName());
-            lastNameFormField.setText(coordinator.getLastName());
-            emailFormField.setText(coordinator.getEmail());
-            personalNumberFormField.setText(coordinator.getUserName());
-            personalNumberFormField.setDisable(true);
+    private void populateFormForEdit(Coordinator coordinator) {
+        registerButton.setText("Guardar cambios");
+        nameFormField.setText(coordinator.getName());
+        lastNameFormField.setText(coordinator.getLastName());
+        emailFormField.setText(coordinator.getEmail());
+        personalNumberFormField.setText(coordinator.getUserName());
+        personalNumberFormField.setDisable(true);
+        if (coordinator.getGender() != null) {
             genderFormComboBox.valueProperty().set(coordinator.getGender().getDisplayValue());
-        } catch (ManagerException e) {
-            Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
     }
 
@@ -100,7 +96,7 @@ public class RegisterCoordinatorController implements Initializable {
                     "El coordinador ha sido registrado correctamente en el sistema.\n"
                             + "Contraseña temporal generada: " + temporaryPassword,
                     AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Error en el Registro", e.getMessage(), AlertType.ERROR);
         }
@@ -112,7 +108,7 @@ public class RegisterCoordinatorController implements Initializable {
             coordinatorManager.updateCoordinator(coordinatorBeingEdited, coordinatorBeingEdited.getId());
             Controller.showAlert("Actualización Exitosa",
                     "La información del coordinador se actualizó correctamente.", AlertType.INFORMATION);
-            store.dispatch(new NavigationAction.GoToSection(AppSection.COORDINATOR_MANAGEMENT_MENU));
+            shellNavigator.returnToList();
         } catch (ManagerException e) {
             Controller.showAlert("Error al Actualizar", e.getMessage(), AlertType.ERROR);
         }
@@ -143,6 +139,6 @@ public class RegisterCoordinatorController implements Initializable {
 
     @FXML
     private void handleActionCancelButton() {
-        store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
+        shellNavigator.returnToList();
     }
 }

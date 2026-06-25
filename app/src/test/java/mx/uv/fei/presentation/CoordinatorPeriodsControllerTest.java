@@ -1,8 +1,6 @@
 package mx.uv.fei.presentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,11 +17,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.manager.PeriodManager;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -34,6 +32,7 @@ public class CoordinatorPeriodsControllerTest extends ApplicationTest {
     private static final int STATUS_COLUMN_INDEX = 3;
 
     private final PeriodManager periodManager = mock(PeriodManager.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -46,7 +45,7 @@ public class CoordinatorPeriodsControllerTest extends ApplicationTest {
         when(periodManager.getAllPeriods()).thenReturn(List.of(buildPeriod()));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinatorPeriodsController(periodManager));
+        loader.setControllerFactory(controllerType -> new CoordinatorPeriodsController(periodManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
@@ -77,12 +76,7 @@ public class CoordinatorPeriodsControllerTest extends ApplicationTest {
     }
 
     @Test
-    void initialize_LoadsPeriods_ShowsListAndHidesForm() {
-        VBox listPane = lookup("#listPane").queryAs(VBox.class);
-        VBox formPane = lookup("#formPane").queryAs(VBox.class);
-
-        assertTrue(listPane.isVisible());
-        assertFalse(formPane.isVisible());
+    void initialize_LoadsPeriods_ShowsPeriodInTable() {
         assertEquals(1, periodsTable().getItems().size());
     }
 

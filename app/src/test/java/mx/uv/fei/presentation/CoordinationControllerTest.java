@@ -1,7 +1,6 @@
 package mx.uv.fei.presentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.Mockito.mock;
@@ -26,6 +25,7 @@ import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -35,6 +35,7 @@ public class CoordinationControllerTest extends ApplicationTest {
     private static final String FXML_PATH = "/mx/uv/fei/presentation/coordination.fxml";
 
     private final CoordinatorManager coordinatorManager = mock(CoordinatorManager.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -49,7 +50,7 @@ public class CoordinationControllerTest extends ApplicationTest {
         when(coordinatorManager.getAllCoordinators()).thenReturn(List.of(activeCoordinator));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinationController(coordinatorManager));
+        loader.setControllerFactory(controllerType -> new CoordinationController(coordinatorManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
@@ -95,15 +96,6 @@ public class CoordinationControllerTest extends ApplicationTest {
         Button activateButton = lookup("#activateButton").queryAs(Button.class);
 
         assertTrue(activateButton.isDisabled());
-    }
-
-    @Test
-    void showRegisterForm_ButtonDisabledWhileActive_KeepsListVisible() {
-        VBox listPane = lookup("#listPane").queryAs(VBox.class);
-        VBox formPane = lookup("#formPane").queryAs(VBox.class);
-
-        assertTrue(listPane.isVisible());
-        assertFalse(formPane.isVisible());
     }
 
     @Test

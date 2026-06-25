@@ -7,10 +7,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import mx.uv.fei.presentation.components.FormComboBox?>
-<?import mx.uv.fei.presentation.components.FormField?>
 
 <VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
       xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
@@ -19,52 +16,32 @@
         <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
     </padding>
 
-    <Label styleClass="content-eyebrow" text="INSTITUCIONAL"/>
-    <Label styleClass="content-title" text="Grupos de práctica"/>
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+            <Label styleClass="content-eyebrow" text="INSTITUCIONAL"/>
+            <Label styleClass="content-title" text="Grupos de práctica"/>
+        </VBox>
+        <Button onAction="#handleRegisterAction" styleClass="primary-button" text="+ Registrar grupo"/>
+    </HBox>
 
-    <VBox fx:id="listPane" spacing="12.0" VBox.vgrow="ALWAYS">
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
         <VBox.margin>
             <Insets top="18.0"/>
         </VBox.margin>
+        <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
+                   promptText="Buscar por sección, periodo o profesor"/>
+        <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
+        <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
+    </HBox>
 
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <Label styleClass="section-label" text="Grupos"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button onAction="#handleEditAction" styleClass="secondary-button" text="Editar"/>
-            <Button onAction="#handleShowRegisterFormAction" styleClass="primary-button" text="+ Registrar grupo"/>
-        </HBox>
-
-        <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
-                       promptText="Buscar por sección, periodo o profesor"/>
-            <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
-        </HBox>
-
-        <TableView fx:id="groupsTableView" VBox.vgrow="ALWAYS">
-            <columns>
-                <TableColumn fx:id="sectionColumn" prefWidth="200.0" text="NRC"/>
-                <TableColumn fx:id="periodColumn" prefWidth="240.0" text="Periodo"/>
-                <TableColumn fx:id="professorColumn" prefWidth="240.0" text="Profesor"/>
-            </columns>
-        </TableView>
-    </VBox>
-
-    <VBox fx:id="formPane" managed="false" maxWidth="520.0" spacing="14.0" visible="false">
+    <TableView fx:id="groupsTableView" VBox.vgrow="ALWAYS">
         <VBox.margin>
-            <Insets top="18.0"/>
+            <Insets top="12.0"/>
         </VBox.margin>
-
-        <Label fx:id="formTitleLabel" styleClass="content-card-title" text="Registrar grupo"/>
-
-        <FormField fx:id="sectionFormField" labelText="NRC" promptText="Ej. 60123" numericOnly="true"/>
-        <FormComboBox fx:id="periodFormComboBox" labelText="Periodo escolar"/>
-        <FormComboBox fx:id="professorFormComboBox" labelText="Profesor responsable"/>
-
-        <HBox spacing="12.0">
-            <Button maxWidth="1.7976931348623157E308" onAction="#handleCancelFormAction" styleClass="secondary-button"
-                    text="Cancelar" HBox.hgrow="ALWAYS"/>
-            <Button maxWidth="1.7976931348623157E308" onAction="#handleSaveAction" styleClass="primary-button"
-                    text="Guardar" HBox.hgrow="ALWAYS"/>
-        </HBox>
-    </VBox>
+        <columns>
+            <TableColumn fx:id="sectionColumn" prefWidth="200.0" text="NRC"/>
+            <TableColumn fx:id="periodColumn" prefWidth="240.0" text="Periodo"/>
+            <TableColumn fx:id="professorColumn" prefWidth="240.0" text="Profesor"/>
+        </columns>
+    </TableView>
 </VBox>

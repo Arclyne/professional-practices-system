@@ -4,12 +4,10 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Coordinator;
-import mx.uv.fei.domain.enums.Gender;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.CoordinatorManager;
-import mx.uv.fei.presentation.components.FormComboBox;
-import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,7 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -31,12 +28,8 @@ import java.util.List;
 @Component
 public class CoordinationController {
 
-    private static final String FORM_TITLE_REGISTER = "Registrar coordinador";
-    private static final String FORM_TITLE_EDIT = "Editar coordinador";
     private static final String STATUS_FILTER_ALL = "Todos los estados";
-
-    @FXML private VBox listPane;
-    @FXML private VBox formPane;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerCoordinator.fxml";
 
     @FXML private VBox activeCoordinatorCard;
     @FXML private Label activeCoordinatorNameLabel;
@@ -57,32 +50,24 @@ public class CoordinationController {
     @FXML private Button registerButton;
     @FXML private Button activateButton;
 
-    @FXML private Label formTitleLabel;
-    @FXML private FormField nameFormField;
-    @FXML private FormField lastNameFormField;
-    @FXML private FormField emailFormField;
-    @FXML private FormField personalNumberFormField;
-    @FXML private FormComboBox genderFormComboBox;
-
     private final CoordinatorManager coordinatorManager;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Coordinator> allCoordinators = FXCollections.observableArrayList();
 
     private FilteredList<Coordinator> filteredCoordinators;
-    private Coordinator coordinatorBeingEdited;
 
     @Inject
-    public CoordinationController(CoordinatorManager coordinatorManager) {
+    public CoordinationController(CoordinatorManager coordinatorManager, ShellNavigator shellNavigator) {
         this.coordinatorManager = coordinatorManager;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
     public void initialize() {
         setupTableColumns();
         bindFilteredTable();
-        setupGenderOptions();
         setupStatusFilterOptions();
         loadCoordinators();
-        showListPane();
     }
 
     private void bindFilteredTable() {
@@ -106,14 +91,6 @@ public class CoordinationController {
         userNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getUserName()));
         emailColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEmail()));
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(statusLabelOf(data.getValue())));
-    }
-
-    private void setupGenderOptions() {
-        ObservableList<String> genderOptions = FXCollections.observableArrayList(
-                Gender.MALE.getDisplayValue(),
-                Gender.FEMALE.getDisplayValue(),
-                Gender.OTHER.getDisplayValue());
-        genderFormComboBox.setItems(genderOptions);
     }
 
     private void loadCoordinators() {
@@ -229,119 +206,12 @@ public class CoordinationController {
             return;
         }
 
-        coordinatorBeingEdited = selectedCoordinator;
-        prepareFormForEdit(selectedCoordinator);
-        showFormPane();
+        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedCoordinator);
     }
 
     @FXML
     private void handleShowRegisterFormAction() {
-        coordinatorBeingEdited = null;
-        prepareFormForCreate();
-        showFormPane();
-    }
-
-    @FXML
-    private void handleSaveCoordinatorAction() {
-        if (isFormIncomplete()) {
-            Controller.showAlert("Campos incompletos",
-                    "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-            return;
-        }
-
-        if (coordinatorBeingEdited != null) {
-            saveEditedCoordinator();
-        } else {
-            saveNewCoordinator();
-        }
-    }
-
-    @FXML
-    private void handleCancelFormAction() {
-        coordinatorBeingEdited = null;
-        showListPane();
-    }
-
-    private void saveNewCoordinator() {
-        try {
-            Coordinator coordinator = buildCoordinatorFromForm();
-            String temporaryPassword = coordinatorManager.registerNewCoordinator(coordinator);
-            Controller.showSuccessAlert("Registro exitoso",
-                    "El coordinador fue registrado correctamente.\nContraseña temporal: " + temporaryPassword);
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error en el registro", e.getMessage());
-        }
-    }
-
-    private void saveEditedCoordinator() {
-        try {
-            applyEditableFields(coordinatorBeingEdited);
-            coordinatorManager.updateCoordinator(coordinatorBeingEdited, coordinatorBeingEdited.getId());
-            Controller.showSuccessAlert("Actualización exitosa",
-                    "La información del coordinador se actualizó correctamente.");
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error al actualizar", e.getMessage());
-        }
-    }
-
-    private void returnToList() {
-        coordinatorBeingEdited = null;
-        loadCoordinators();
-        showListPane();
-    }
-
-    private void prepareFormForCreate() {
-        formTitleLabel.setText(FORM_TITLE_REGISTER);
-        nameFormField.setText("");
-        lastNameFormField.setText("");
-        emailFormField.setText("");
-        personalNumberFormField.setText("");
-        personalNumberFormField.setDisable(false);
-        genderFormComboBox.clearSelection();
-    }
-
-    private void prepareFormForEdit(Coordinator coordinator) {
-        formTitleLabel.setText(FORM_TITLE_EDIT);
-        nameFormField.setText(coordinator.getName());
-        lastNameFormField.setText(coordinator.getLastName());
-        emailFormField.setText(coordinator.getEmail());
-        personalNumberFormField.setText(coordinator.getUserName());
-        personalNumberFormField.setDisable(true);
-        genderFormComboBox.valueProperty().set(coordinator.getGender().getDisplayValue());
-    }
-
-    private Coordinator buildCoordinatorFromForm() {
-        Coordinator coordinator = new Coordinator();
-        applyEditableFields(coordinator);
-        coordinator.setUserName(personalNumberFormField.getText().trim());
-        return coordinator;
-    }
-
-    private void applyEditableFields(Coordinator coordinator) {
-        coordinator.setName(nameFormField.getText().trim());
-        coordinator.setLastName(lastNameFormField.getText().trim());
-        coordinator.setEmail(emailFormField.getText().trim());
-        coordinator.setGender(Gender.fromDisplayValue(genderFormComboBox.getValue()));
-    }
-
-    private boolean isFormIncomplete() {
-        return nameFormField.getText().isEmpty()
-                || lastNameFormField.getText().isEmpty()
-                || emailFormField.getText().isEmpty()
-                || personalNumberFormField.getText().isEmpty()
-                || genderFormComboBox.getValue() == null;
-    }
-
-    private void showListPane() {
-        setNodeVisible(listPane, true);
-        setNodeVisible(formPane, false);
-    }
-
-    private void showFormPane() {
-        setNodeVisible(listPane, false);
-        setNodeVisible(formPane, true);
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private String statusLabelOf(Coordinator coordinator) {

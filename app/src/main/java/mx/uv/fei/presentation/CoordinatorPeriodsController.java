@@ -6,25 +6,18 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.PeriodManager;
-import mx.uv.fei.presentation.components.FormField;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 
 import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
 
 @Component
 public class CoordinatorPeriodsController {
@@ -35,12 +28,8 @@ public class CoordinatorPeriodsController {
     private static final String STATUS_LABEL_ACTIVE = "Activo";
     private static final String STATUS_LABEL_CONCLUDED = "Concluido";
     private static final String STATUS_LABEL_UPCOMING = "Próximo";
-    private static final String FORM_TITLE_REGISTER = "Registrar periodo";
-    private static final String FORM_TITLE_EDIT = "Editar periodo";
     private static final String NO_VALUE = "—";
-
-    @FXML private VBox listPane;
-    @FXML private VBox formPane;
+    private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPeriod.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Period> periodsTableView;
@@ -49,20 +38,16 @@ public class CoordinatorPeriodsController {
     @FXML private TableColumn<Period, String> endColumn;
     @FXML private TableColumn<Period, String> statusColumn;
 
-    @FXML private Label formTitleLabel;
-    @FXML private FormField nameFormField;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
-
     private final PeriodManager periodManager;
+    private final ShellNavigator shellNavigator;
     private final ObservableList<Period> allPeriods = FXCollections.observableArrayList();
 
     private FilteredList<Period> filteredPeriods;
-    private Period periodBeingEdited;
 
     @Inject
-    public CoordinatorPeriodsController(PeriodManager periodManager) {
+    public CoordinatorPeriodsController(PeriodManager periodManager, ShellNavigator shellNavigator) {
         this.periodManager = periodManager;
+        this.shellNavigator = shellNavigator;
     }
 
     @FXML
@@ -70,7 +55,6 @@ public class CoordinatorPeriodsController {
         setupColumns();
         bindFilteredTable();
         loadPeriods();
-        showListPane();
     }
 
     private void setupColumns() {
@@ -144,92 +128,12 @@ public class CoordinatorPeriodsController {
             return;
         }
 
-        periodBeingEdited = selectedPeriod;
-        prepareFormForEdit(selectedPeriod);
-        showFormPane();
+        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedPeriod);
     }
 
     @FXML
-    private void handleShowRegisterFormAction() {
-        periodBeingEdited = null;
-        prepareFormForCreate();
-        showFormPane();
-    }
-
-    @FXML
-    private void handleSaveAction() {
-        if (isFormIncomplete()) {
-            Controller.showInfoAlert("Campos incompletos", "Por favor, completa el nombre y las fechas del periodo.");
-            return;
-        }
-
-        if (periodBeingEdited != null) {
-            saveEditedPeriod();
-        } else {
-            saveNewPeriod();
-        }
-    }
-
-    @FXML
-    private void handleCancelFormAction() {
-        periodBeingEdited = null;
-        showListPane();
-    }
-
-    private void saveNewPeriod() {
-        try {
-            periodManager.registerNewPeriod(buildPeriodFromForm());
-            Controller.showSuccessAlert("Registro exitoso", "El periodo académico fue registrado correctamente.");
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error en el registro", e.getMessage());
-        }
-    }
-
-    private void saveEditedPeriod() {
-        try {
-            Period period = buildPeriodFromForm();
-            periodManager.updatePeriod(period, periodBeingEdited.getPeriodId());
-            Controller.showSuccessAlert("Actualización exitosa", "El periodo académico se actualizó correctamente.");
-            returnToList();
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error al actualizar", e.getMessage());
-        }
-    }
-
-    private void returnToList() {
-        periodBeingEdited = null;
-        loadPeriods();
-        showListPane();
-    }
-
-    private Period buildPeriodFromForm() {
-        Period period = new Period();
-        period.setPeriodName(nameFormField.getText().trim());
-        period.setStartDate(Date.valueOf(startDatePicker.getValue()));
-        period.setEndDate(Date.valueOf(endDatePicker.getValue()));
-
-        return period;
-    }
-
-    private void prepareFormForCreate() {
-        formTitleLabel.setText(FORM_TITLE_REGISTER);
-        nameFormField.setText("");
-        startDatePicker.setValue(null);
-        endDatePicker.setValue(null);
-    }
-
-    private void prepareFormForEdit(Period period) {
-        formTitleLabel.setText(FORM_TITLE_EDIT);
-        nameFormField.setText(period.getPeriodName());
-        startDatePicker.setValue(toLocalDate(period.getStartDate()));
-        endDatePicker.setValue(toLocalDate(period.getEndDate()));
-    }
-
-    private boolean isFormIncomplete() {
-        return nameFormField.getText().isEmpty()
-                || startDatePicker.getValue() == null
-                || endDatePicker.getValue() == null;
+    private void handleRegisterAction() {
+        shellNavigator.openForm(REGISTER_FORM_VIEW);
     }
 
     private void applyFilter() {
@@ -260,24 +164,5 @@ public class CoordinatorPeriodsController {
 
     private String formatDate(Date date) {
         return date != null ? date.toString() : NO_VALUE;
-    }
-
-    private LocalDate toLocalDate(Date date) {
-        return date != null ? date.toLocalDate() : null;
-    }
-
-    private void showListPane() {
-        setNodeVisible(listPane, true);
-        setNodeVisible(formPane, false);
-    }
-
-    private void showFormPane() {
-        setNodeVisible(listPane, false);
-        setNodeVisible(formPane, true);
-    }
-
-    private void setNodeVisible(Node node, boolean isVisible) {
-        node.setVisible(isVisible);
-        node.setManaged(isVisible);
     }
 }

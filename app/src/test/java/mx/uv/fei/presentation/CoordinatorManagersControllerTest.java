@@ -1,8 +1,6 @@
 package mx.uv.fei.presentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,7 +16,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Manager;
@@ -26,6 +23,7 @@ import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.enums.UserStatus;
 import mx.uv.fei.domain.manager.ManagerManager;
 import mx.uv.fei.domain.manager.OrganizationManager;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -38,6 +36,7 @@ public class CoordinatorManagersControllerTest extends ApplicationTest {
 
     private final ManagerManager managerManager = mock(ManagerManager.class);
     private final OrganizationManager organizationManager = mock(OrganizationManager.class);
+    private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
     static void requireGraphicalDisplay() {
@@ -52,7 +51,7 @@ public class CoordinatorManagersControllerTest extends ApplicationTest {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType -> new CoordinatorManagersController(
-                managerManager, organizationManager));
+                managerManager, organizationManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
@@ -100,12 +99,7 @@ public class CoordinatorManagersControllerTest extends ApplicationTest {
     }
 
     @Test
-    void initialize_LoadsManagers_ShowsListAndHidesForm() {
-        VBox listPane = lookup("#listPane").queryAs(VBox.class);
-        VBox formPane = lookup("#formPane").queryAs(VBox.class);
-
-        assertTrue(listPane.isVisible());
-        assertFalse(formPane.isVisible());
+    void initialize_LoadsManagers_ShowsManagerInTable() {
         assertEquals(1, managersTable().getItems().size());
     }
 
