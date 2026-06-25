@@ -49,7 +49,9 @@ public class CoordinatorDAOTest {
         newCoordinator.setEmail("pluna@uv.mx");
         newCoordinator.setPassword("CoordUv2026");
         newCoordinator.setRole("Coordinator");
-        newCoordinator.setStatus(UserStatus.ACTIVE);
+        // Un segundo coordinador no puede estar activo (ya hay uno activo sembrado): se da de alta como
+        // PENDING, igual que en el flujo real de registro.
+        newCoordinator.setStatus(UserStatus.PENDING);
         newCoordinator.setGender(Gender.FEMALE);
     }
 

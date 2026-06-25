@@ -38,6 +38,28 @@ class PersistenceErrorTranslatorTest {
     }
 
     @Test
+    void translate_ActiveAdministratorGuard_ReturnsActiveAdminMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Unique index violation: UQ_USER_ACTIVE_SINGLETON_ROLE ON PUBLIC.USER(ACTIVE_SINGLETON_ROLE) VALUES ('Administrator')"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("administrador") && message.contains("activo"), result.getMessage());
+    }
+
+    @Test
+    void translate_ActiveCoordinatorGuard_ReturnsActiveCoordinatorMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Duplicate entry 'Coordinator' for key 'user.uq_user_active_singleton_role'"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("coordinador") && message.contains("activo"), result.getMessage());
+    }
+
+    @Test
     void translate_NonIntegrityFailure_ReturnsGenericConnectionMessage() {
         DAOException failure = new DAOException("Fallo de red.", new SQLException("Connection reset"));
 

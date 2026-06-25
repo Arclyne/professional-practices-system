@@ -49,7 +49,9 @@ public class AdministratorDAOTest {
         newAdministrator.setLastName("Torres Lagunes");
         newAdministrator.setPassword("AdminUv2026");
         newAdministrator.setRole("Administrator");
-        newAdministrator.setStatus(UserStatus.ACTIVE);
+        // Un segundo administrador no puede estar activo (ya hay uno activo sembrado): se inserta como
+        // PENDING para respetar la nueva invariante de "un solo administrador activo".
+        newAdministrator.setStatus(UserStatus.PENDING);
         newAdministrator.setGender(Gender.FEMALE);
     }
 
