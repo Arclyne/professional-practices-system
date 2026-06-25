@@ -58,7 +58,7 @@ INSERT INTO project_postulation (practitioner_id, project_id, postulation_status
 
 INSERT INTO progress_report (report_id, practitioner_id, report_type, generation_date, period_covered_start, period_covered_end, total_hours_at_submission, status) VALUES
     (1, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma'),
-    (2, 123, 'Final', '2026-06-01', '2026-01-01', '2026-06-01', 480.0, 'Pendiente de Firma');
+    (2, 123, 'Intermedio', '2026-04-01', '2026-01-01', '2026-04-01', 240.0, 'Pendiente de Firma');
 
 INSERT INTO self_evaluation (self_eval_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES
     (1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 'https://storage.uv.mx/evidencias/autoevaluacion_zS24242424.pdf', 123, 1, 'Pendiente');
