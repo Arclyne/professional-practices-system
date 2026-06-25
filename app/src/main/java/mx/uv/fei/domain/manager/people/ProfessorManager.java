@@ -97,7 +97,7 @@ public class ProfessorManager {
             professorDAO.updateProfessor(professor, professorId);
         } catch (DAOException e) {
             log.error("Error al actualizar el profesor.", e);
-            throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 }

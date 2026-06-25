@@ -2,7 +2,9 @@ package mx.uv.fei.domain.manager.people;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -94,6 +96,42 @@ public class OrganizationManagerTest {
         List<Organization> resultOrganizations = organizationManager.getAllOrganizations();
 
         assertEquals(expectedOrganizations, resultOrganizations);
+    }
+
+    @Test
+    void registerOrganization_DuplicateEmail_ThrowsFriendlyMessageWithoutTechnicism() {
+        Organization duplicateEmailOrganization = new Organization();
+        duplicateEmailOrganization.setNameOrganization("Otra Empresa del Golfo");
+        duplicateEmailOrganization.setState("Veracruz");
+        duplicateEmailOrganization.setMail("contacto@tecgolfo.mx");
+
+        ManagerException thrownException = assertThrows(ManagerException.class,
+                () -> organizationManager.registerOrganization(duplicateEmailOrganization));
+
+        assertFriendlyDuplicateEmail(thrownException);
+    }
+
+    @Test
+    void updateOrganization_DuplicateEmail_ThrowsFriendlyMessageWithoutTechnicism() {
+        Organization organizationToUpdate = new Organization();
+        organizationToUpdate.setNameOrganization("Consultoria Digital Xalapa");
+        organizationToUpdate.setState("Active");
+        organizationToUpdate.setBusiness("Technology");
+        organizationToUpdate.setMail("contacto@tecgolfo.mx");
+
+        ManagerException thrownException = assertThrows(ManagerException.class,
+                () -> organizationManager.updateOrganization(organizationToUpdate, 2));
+
+        assertFriendlyDuplicateEmail(thrownException);
+    }
+
+    private void assertFriendlyDuplicateEmail(ManagerException thrownException) {
+        String message = thrownException.getMessage().toLowerCase();
+        assertTrue(message.contains("correo"),
+                "El mensaje debe indicar que el correo ya está en uso: " + thrownException.getMessage());
+        assertFalse(message.contains("duplicate") || message.contains("constraint")
+                        || message.contains("sql") || message.contains("exception") || message.contains(".java"),
+                "El mensaje no debe filtrar tecnicismos de base de datos: " + thrownException.getMessage());
     }
 
     @Test

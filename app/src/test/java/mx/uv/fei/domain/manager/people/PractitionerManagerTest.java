@@ -2,6 +2,9 @@ package mx.uv.fei.domain.manager.people;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +55,27 @@ public class PractitionerManagerTest {
         newPractitioner.setGrade(9.0);
 
         assertDoesNotThrow(() -> practitionerManager.registerNewPractitioner(newPractitioner));
+    }
+
+    @Test
+    void registerNewPractitioner_DuplicateEmail_ThrowsFriendlyMessageWithoutTechnicism() {
+        Practitioner duplicateEmailPractitioner = new Practitioner();
+        duplicateEmailPractitioner.setName("Luis Fernando");
+        duplicateEmailPractitioner.setLastName("Martinez Rivera");
+        duplicateEmailPractitioner.setEnrollment("s25080911");
+        duplicateEmailPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
+        duplicateEmailPractitioner.setGender(Gender.MALE);
+        duplicateEmailPractitioner.setIndigenousLanguage("Ninguna");
+
+        ManagerException thrownException = assertThrows(ManagerException.class,
+                () -> practitionerManager.registerNewPractitioner(duplicateEmailPractitioner));
+
+        String message = thrownException.getMessage().toLowerCase();
+        assertTrue(message.contains("correo"),
+                "El mensaje debe indicar que el correo ya está registrado: " + thrownException.getMessage());
+        assertFalse(message.contains("duplicate") || message.contains("constraint")
+                        || message.contains("sql") || message.contains("exception") || message.contains(".java"),
+                "El mensaje no debe filtrar tecnicismos de base de datos: " + thrownException.getMessage());
     }
 
     @Test
