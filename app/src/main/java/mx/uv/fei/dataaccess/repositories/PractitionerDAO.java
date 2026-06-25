@@ -89,6 +89,14 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                     "WHERE u.status = 'Active' " +
                     "AND pp.postulation_status = 'Assigned' " +
                     "AND ge.group_id = ?";
+    private static final String SQL_SELECT_ENROLLED_PRACTITIONERS_BY_GROUP =
+            "SELECT DISTINCT u.user_id, u.username AS matricula, u.name, u.last_name, u.email " +
+                    "FROM practitioner p " +
+                    "INNER JOIN user u ON p.practitioner_id = u.user_id " +
+                    "INNER JOIN group_enrollment ge ON p.practitioner_id = ge.practitioner_id " +
+                    "WHERE u.status = 'Active' " +
+                    "AND ge.status = 'Active' " +
+                    "AND ge.group_id = ?";
 
     private final IUserDAO userDAO;
 
@@ -210,6 +218,11 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
     @Override
     public List<Practitioner> retrievePractitionersByGroup(int groupId) throws DAOException {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_GROUP, this::mapResultSetToMinimalPractitioner, groupId);
+    }
+
+    @Override
+    public List<Practitioner> retrieveEnrolledPractitionersByGroup(int groupId) throws DAOException {
+        return recoverALL(SQL_SELECT_ENROLLED_PRACTITIONERS_BY_GROUP, this::mapResultSetToMinimalPractitioner, groupId);
     }
 
     private void executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)

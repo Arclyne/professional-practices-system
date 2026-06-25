@@ -3,8 +3,10 @@ package mx.uv.fei.presentation.coordinator;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.presentation.shell.ShellNavigator;
 
@@ -17,11 +19,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class CoordinatorPractitionersController {
 
     private static final String NO_GROUP_LABEL = "Sin grupo";
-    private static final String GROUP_PREFIX = "Grupo ";
     private static final String NO_STATUS_LABEL = "—";
     private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPractitioner.fxml";
     private static final String ENROLLMENT_FORM_VIEW = "/mx/uv/fei/presentation/registerEnrollment.fxml";
@@ -34,14 +39,18 @@ public class CoordinatorPractitionersController {
     @FXML private TableColumn<Practitioner, String> statusColumn;
 
     private final PractitionerManager practitionerManager;
+    private final PracticeGroupManager practiceGroupManager;
     private final ShellNavigator shellNavigator;
     private final ObservableList<Practitioner> allPractitioners = FXCollections.observableArrayList();
+    private final Map<Integer, String> sectionByGroupId = new HashMap<>();
 
     private FilteredList<Practitioner> filteredPractitioners;
 
     @Inject
-    public CoordinatorPractitionersController(PractitionerManager practitionerManager, ShellNavigator shellNavigator) {
+    public CoordinatorPractitionersController(PractitionerManager practitionerManager,
+                                              PracticeGroupManager practiceGroupManager, ShellNavigator shellNavigator) {
         this.practitionerManager = practitionerManager;
+        this.practiceGroupManager = practiceGroupManager;
         this.shellNavigator = shellNavigator;
     }
 
@@ -67,10 +76,18 @@ public class CoordinatorPractitionersController {
 
     private void loadPractitioners() {
         try {
+            mapGroupSections(practiceGroupManager.getAllPracticeGroups());
             allPractitioners.setAll(practitionerManager.getAllPractitioners());
             applyFilter();
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
+        }
+    }
+
+    private void mapGroupSections(List<PracticeGroup> groups) {
+        sectionByGroupId.clear();
+        for (PracticeGroup group : groups) {
+            sectionByGroupId.put(group.getGroupId(), group.getSection());
         }
     }
 
@@ -160,7 +177,9 @@ public class CoordinatorPractitionersController {
     }
 
     private String groupLabelOf(Practitioner practitioner) {
-        return practitioner.getGroupId() != null ? GROUP_PREFIX + practitioner.getGroupId() : NO_GROUP_LABEL;
+        return practitioner.getGroupId() != null
+                ? sectionByGroupId.getOrDefault(practitioner.getGroupId(), NO_GROUP_LABEL)
+                : NO_GROUP_LABEL;
     }
 
     private String statusLabelOf(Practitioner practitioner) {

@@ -164,6 +164,14 @@ public class PractitionerDAOTest {
     }
 
     @Test
+    void retrieveEnrolledPractitionersByGroup_EnrolledGroup_ReturnsPractitioner() throws DAOException {
+        List<Practitioner> resultPractitioners = practitionerDAO.retrieveEnrolledPractitionersByGroup(STORED_GROUP_ID);
+
+        assertEquals(1, resultPractitioners.size());
+        assertEquals(STORED_PRACTITIONER_ID, resultPractitioners.get(0).getId());
+    }
+
+    @Test
     void insertPractitioner_DuplicateEmail_ThrowsDAOException() {
         newPractitioner.setEmail("zS24242424@estudiantes.uv.mx");
 

@@ -2,6 +2,7 @@ package mx.uv.fei.presentation.professor;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,8 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.reporting.PractitionerDocumentManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -31,6 +34,8 @@ public class ProfessorDocumentsControllerTest extends ApplicationTest {
 
     private final PractitionerDocumentManager documentManager = mock(PractitionerDocumentManager.class);
     private final PractitionerManager practitionerManager = mock(PractitionerManager.class);
+    private final PracticeGroupManager practiceGroupManager = mock(PracticeGroupManager.class);
+    private final PeriodManager periodManager = mock(PeriodManager.class);
     private final AppStore appStore = mock(AppStore.class);
 
     @BeforeAll
@@ -44,11 +49,12 @@ public class ProfessorDocumentsControllerTest extends ApplicationTest {
         User professor = new User();
         professor.setId(PROFESSOR_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(professor)));
-        when(practitionerManager.retrievePractitionersByProfessor(PROFESSOR_ID)).thenReturn(List.of());
+        when(practiceGroupManager.getGroupsByProfessorAndPeriod(anyInt(), anyInt())).thenReturn(List.of());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
         loader.setControllerFactory(controllerType ->
-                new ProfessorDocumentsController(documentManager, practitionerManager, appStore));
+                new ProfessorDocumentsController(documentManager, practitionerManager, practiceGroupManager,
+                        periodManager, appStore));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));

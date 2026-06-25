@@ -135,7 +135,7 @@ public class ProfessorPractitionersController {
     }
 
     private void loadGroupPractitioners(PracticeGroup group) throws ManagerException {
-        List<Practitioner> practitioners = practitionerManager.retrievePractitionersByGroup(group.getGroupId());
+        List<Practitioner> practitioners = practitionerManager.retrieveEnrolledPractitionersByGroup(group.getGroupId());
         for (Practitioner practitioner : practitioners) {
             sectionByPractitionerId.put(practitioner.getId(), group.getSection());
             resolveAssignedProject(practitioner.getId());

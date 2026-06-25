@@ -183,9 +183,19 @@ public class GradePractitionerController implements Initializable {
         List<Practitioner> practitioners;
 
         if (selectedGroup == null || ALL_GROUPS_OPTION.equals(selectedGroup)) {
-            practitioners = practitionerManager.retrievePractitionersByProfessorAndPeriod(professorId, activePeriodId);
+            practitioners = retrievePractitionersFromAllGroups();
         } else {
-            practitioners = practitionerManager.retrievePractitionersByGroup(groupLabelToId.get(selectedGroup));
+            practitioners = practitionerManager.retrieveEnrolledPractitionersByGroup(groupLabelToId.get(selectedGroup));
+        }
+
+        return practitioners;
+    }
+
+    private List<Practitioner> retrievePractitionersFromAllGroups() throws ManagerException {
+        List<Practitioner> practitioners = new ArrayList<>();
+
+        for (int groupId : groupLabelToId.values()) {
+            practitioners.addAll(practitionerManager.retrieveEnrolledPractitionersByGroup(groupId));
         }
 
         return practitioners;
