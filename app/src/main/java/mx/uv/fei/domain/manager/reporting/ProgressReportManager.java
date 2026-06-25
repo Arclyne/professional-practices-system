@@ -12,6 +12,7 @@ import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -23,17 +24,20 @@ public class ProgressReportManager {
     private final IProgressReportDAO progressReportDAO;
     private final IPostulationDAO postulationDAO;
     private final IMonthlyReportDAO monthlyReportDAO;
+    private final PracticeAccessManager practiceAccessManager;
 
     @Inject
     public ProgressReportManager(IProgressReportDAO progressReportDAO, IPostulationDAO postulationDAO,
-                                 IMonthlyReportDAO monthlyReportDAO) {
+                                 IMonthlyReportDAO monthlyReportDAO, PracticeAccessManager practiceAccessManager) {
         this.progressReportDAO = progressReportDAO;
         this.postulationDAO = postulationDAO;
         this.monthlyReportDAO = monthlyReportDAO;
+        this.practiceAccessManager = practiceAccessManager;
     }
 
     public ProgressReport generateProgressReport(int practitionerId, ProgressReportType reportType,
                                                  Date periodStart, Date periodEnd) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(practitionerId);
         BaseValidator.validateStartBeforeEnd(periodStart, periodEnd,
                 "La fecha de inicio del periodo debe ser anterior a la fecha de fin.");
         validateHasAssignedProject(practitionerId);
@@ -60,6 +64,7 @@ public class ProgressReportManager {
 
     public void submitSignedProgressReport(int practitionerId, ProgressReportType reportType,
                                            String signedFileUrl) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(practitionerId);
         if (signedFileUrl == null || signedFileUrl.trim().isEmpty()) {
             throw new ManagerException("El archivo firmado es obligatorio para enviar el reporte.");
         }

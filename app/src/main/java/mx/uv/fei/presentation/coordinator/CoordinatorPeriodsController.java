@@ -6,6 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodConclusionManager;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.presentation.shell.ShellNavigator;
 
@@ -51,14 +52,18 @@ public class CoordinatorPeriodsController {
     @FXML private TableColumn<Period, String> statusColumn;
 
     private final PeriodManager periodManager;
+    private final PeriodConclusionManager periodConclusionManager;
     private final ShellNavigator shellNavigator;
     private final ObservableList<Period> allPeriods = FXCollections.observableArrayList();
 
     private FilteredList<Period> filteredPeriods;
 
     @Inject
-    public CoordinatorPeriodsController(PeriodManager periodManager, ShellNavigator shellNavigator) {
+    public CoordinatorPeriodsController(PeriodManager periodManager,
+                                        PeriodConclusionManager periodConclusionManager,
+                                        ShellNavigator shellNavigator) {
         this.periodManager = periodManager;
+        this.periodConclusionManager = periodConclusionManager;
         this.shellNavigator = shellNavigator;
     }
 
@@ -158,8 +163,9 @@ public class CoordinatorPeriodsController {
                 Controller.showInfoAlert("Sin periodo activo", "No hay un periodo activo para concluir.");
                 return;
             }
-            periodManager.inactivatePeriod(activePeriod.getPeriodId());
-            Controller.showSuccessAlert("Periodo concluido", "El periodo activo fue concluido.");
+            periodConclusionManager.concludePeriod(activePeriod.getPeriodId());
+            Controller.showSuccessAlert("Periodo concluido",
+                    "El periodo activo fue concluido. Los practicantes sin calificación recibieron 5 automáticamente.");
             loadPeriods();
         } catch (ManagerException e) {
             Controller.showErrorAlert("No se pudo inactivar", e.getMessage());

@@ -17,14 +17,18 @@ public class ActivityManager {
 
     private final IActivityDAO activityDAO;
     private final IPractitionerDocumentDAO documentDAO;
+    private final PracticeAccessManager practiceAccessManager;
 
     @Inject
-    public ActivityManager(IActivityDAO activityDAO, IPractitionerDocumentDAO documentDAO) {
+    public ActivityManager(IActivityDAO activityDAO, IPractitionerDocumentDAO documentDAO,
+                           PracticeAccessManager practiceAccessManager) {
         this.activityDAO = activityDAO;
         this.documentDAO = documentDAO;
+        this.practiceAccessManager = practiceAccessManager;
     }
 
     public void registerActivity(Activity activity) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(activity.getPractitionerId());
         validateAllInitialDocumentsAccepted(activity.getPractitionerId());
         ReportValidator.validateLogbookActivity(activity);
         try {
@@ -38,6 +42,7 @@ public class ActivityManager {
     }
 
     public void modifyActivity(Activity activity, int activityId) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(activity.getPractitionerId());
         ReportValidator.validateLogbookActivity(activity);
         try {
             activityDAO.updateActivity(activity, activityId);

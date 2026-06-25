@@ -1,4 +1,5 @@
 package mx.uv.fei.domain.manager.reporting;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 import mx.uv.fei.domain.manager.infrastructure.CloudStorageManager;
 
 import mx.uv.fei.config.annotation.etiquette.Component;
@@ -27,15 +28,19 @@ public class PractitionerDocumentManager {
 
     private final IPractitionerDocumentDAO documentDAO;
     private final CloudStorageManager cloudStorageManager;
+    private final PracticeAccessManager practiceAccessManager;
 
     @Inject
-    public PractitionerDocumentManager(IPractitionerDocumentDAO documentDAO, CloudStorageManager cloudStorageManager) {
+    public PractitionerDocumentManager(IPractitionerDocumentDAO documentDAO, CloudStorageManager cloudStorageManager,
+                                       PracticeAccessManager practiceAccessManager) {
         this.documentDAO = documentDAO;
         this.cloudStorageManager = cloudStorageManager;
+        this.practiceAccessManager = practiceAccessManager;
     }
 
     public void uploadDocument(int practitionerId, DocumentType documentType, File file) throws ManagerException {
         BaseValidator.validateId(practitionerId, "El practicante indicado no es válido.");
+        practiceAccessManager.ensureSubmissionsAllowed(practitionerId);
         validateDocumentNotUploaded(practitionerId, documentType);
 
         String storedFileUrl = cloudStorageManager.uploadEvidenceFile(file);

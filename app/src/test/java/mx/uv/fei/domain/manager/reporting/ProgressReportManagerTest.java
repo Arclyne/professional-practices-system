@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,13 +45,16 @@ public class ProgressReportManagerTest {
     private StubProgressReportDAO stubProgressReportDAO;
     private StubPostulationDAO stubPostulationDAO;
     private StubMonthlyReportDAO stubMonthlyReportDAO;
+    private PracticeAccessManager practiceAccessManager;
 
     @BeforeEach
     void setUp() {
         stubProgressReportDAO = new StubProgressReportDAO();
         stubPostulationDAO = new StubPostulationDAO();
         stubMonthlyReportDAO = new StubMonthlyReportDAO();
-        progressReportManager = new ProgressReportManager(stubProgressReportDAO, stubPostulationDAO, stubMonthlyReportDAO);
+        practiceAccessManager = mock(PracticeAccessManager.class);
+        progressReportManager = new ProgressReportManager(stubProgressReportDAO, stubPostulationDAO,
+                stubMonthlyReportDAO, practiceAccessManager);
         stubPostulationDAO.setHasAssignedProject(true);
         stubMonthlyReportDAO.setReportsInRange(List.of(buildEvaluatedMonthlyReport()));
     }

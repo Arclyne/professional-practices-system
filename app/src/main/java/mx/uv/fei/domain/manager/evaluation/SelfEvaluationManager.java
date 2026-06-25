@@ -8,6 +8,7 @@ import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.common.validators.SelfEvaluationValidator;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +20,16 @@ public class SelfEvaluationManager {
     private static final String SELF_EVALUATION_STATUS_REVIEWED = "Revisada";
 
     private final ISelfEvaluationDAO selfEvaluationDAO;
+    private final PracticeAccessManager practiceAccessManager;
 
     @Inject
-    public SelfEvaluationManager(ISelfEvaluationDAO selfEvaluationDAO) {
+    public SelfEvaluationManager(ISelfEvaluationDAO selfEvaluationDAO, PracticeAccessManager practiceAccessManager) {
         this.selfEvaluationDAO = selfEvaluationDAO;
+        this.practiceAccessManager = practiceAccessManager;
     }
 
     public void registerSelfEvaluation(SelfEvaluation selfEvaluation) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(selfEvaluation.getPractitionerId());
         SelfEvaluationValidator.validateEvaluationData(selfEvaluation);
         try {
             int generatedId = selfEvaluationDAO.insertSelfEvaluation(selfEvaluation);

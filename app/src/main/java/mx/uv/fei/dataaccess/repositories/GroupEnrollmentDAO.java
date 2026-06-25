@@ -23,16 +23,23 @@ import java.util.List;
 public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
 
     private static final String SQL_INSERT_ENROLLMENT =
-            "INSERT INTO group_enrollment (practitioner_id, group_id, period_id, status) VALUES (?, ?, ?, ?)";
+            "INSERT INTO group_enrollment (practitioner_id, group_id, period_id, opportunity_number, status) " +
+                    "VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_SELECT_ENROLLMENT_BY_PRACTITIONER_AND_PERIOD =
-            "SELECT enrollment_id, practitioner_id, group_id, period_id, status " +
+            "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
                     "FROM group_enrollment WHERE practitioner_id = ? AND period_id = ?";
+    private static final String SQL_SELECT_LATEST_ENROLLMENT_BY_PRACTITIONER =
+            "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
+                    "FROM group_enrollment WHERE practitioner_id = ? ORDER BY enrollment_id DESC LIMIT 1";
     private static final String SQL_SELECT_ENROLLMENTS_BY_PRACTITIONER =
-            "SELECT enrollment_id, practitioner_id, group_id, period_id, status " +
+            "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
                     "FROM group_enrollment WHERE practitioner_id = ?";
     private static final String SQL_SELECT_ENROLLMENTS_BY_GROUP =
-            "SELECT enrollment_id, practitioner_id, group_id, period_id, status " +
+            "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
                     "FROM group_enrollment WHERE group_id = ?";
+    private static final String SQL_SELECT_ENROLLMENTS_BY_PERIOD =
+            "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
+                    "FROM group_enrollment WHERE period_id = ?";
 
     @Inject
     public GroupEnrollmentDAO(IDatabaseConnection databaseConnection) {
@@ -45,7 +52,8 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
             statement.setInt(1, enrollment.getPractitionerId());
             statement.setInt(2, enrollment.getGroupId());
             statement.setInt(3, enrollment.getPeriodId());
-            statement.setString(4, enrollment.getStatus().getDatabaseValue());
+            statement.setInt(4, enrollment.getOpportunityNumber());
+            statement.setString(5, enrollment.getStatus().getDatabaseValue());
         });
     }
 
@@ -54,6 +62,14 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
             throws DAOException {
         List<GroupEnrollment> enrollments = recoverALL(SQL_SELECT_ENROLLMENT_BY_PRACTITIONER_AND_PERIOD,
                 this::mapResultSetToEnrollment, practitionerId, periodId);
+
+        return enrollments.isEmpty() ? null : enrollments.get(0);
+    }
+
+    @Override
+    public GroupEnrollment recoverLatestEnrollment(int practitionerId) throws DAOException {
+        List<GroupEnrollment> enrollments = recoverALL(SQL_SELECT_LATEST_ENROLLMENT_BY_PRACTITIONER,
+                this::mapResultSetToEnrollment, practitionerId);
 
         return enrollments.isEmpty() ? null : enrollments.get(0);
     }
@@ -68,12 +84,18 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
         return recoverALL(SQL_SELECT_ENROLLMENTS_BY_GROUP, this::mapResultSetToEnrollment, groupId);
     }
 
+    @Override
+    public List<GroupEnrollment> getEnrollmentsByPeriod(int periodId) throws DAOException {
+        return recoverALL(SQL_SELECT_ENROLLMENTS_BY_PERIOD, this::mapResultSetToEnrollment, periodId);
+    }
+
     private GroupEnrollment mapResultSetToEnrollment(ResultSet resultSet) throws SQLException {
         GroupEnrollment enrollment = new GroupEnrollment();
         enrollment.setEnrollmentId(resultSet.getInt("enrollment_id"));
         enrollment.setPractitionerId(resultSet.getInt("practitioner_id"));
         enrollment.setGroupId(resultSet.getInt("group_id"));
         enrollment.setPeriodId(resultSet.getInt("period_id"));
+        enrollment.setOpportunityNumber(resultSet.getInt("opportunity_number"));
         enrollment.setStatus(EnrollmentStatus.fromString(resultSet.getString("status")));
 
         return enrollment;
