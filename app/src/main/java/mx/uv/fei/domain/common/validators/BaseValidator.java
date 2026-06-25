@@ -11,6 +11,7 @@ public class BaseValidator {
     private static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^(s)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern PERSONAL_NUMBER_PATTERN = Pattern.compile("^\\d+$");
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\d{10}$");
 
     public static boolean isValidEmail(String email) {
         return email != null && EMAIL_PATTERN.matcher(email).matches();
@@ -26,6 +27,10 @@ public class BaseValidator {
 
     public static boolean isValidName(String name) {
         return name != null && NAME_PATTERN.matcher(name).matches();
+    }
+
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        return phoneNumber != null && PHONE_PATTERN.matcher(phoneNumber).matches();
     }
 
     public static void validateString(String value, String errorMessage) throws ManagerException {
