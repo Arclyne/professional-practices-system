@@ -45,7 +45,7 @@ public class ProfessorManager {
             }
             return temporaryPassword;
         } catch (DAOException e) {
-            log.error("Error al insertar el profesor.", e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -54,6 +54,7 @@ public class ProfessorManager {
         try {
             userDAO.deactivateMultipleUsers(professorIds);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error de base de datos al inactivar profesores.", e);
         }
     }
@@ -62,6 +63,7 @@ public class ProfessorManager {
         try {
             userDAO.deactivateUser(professorId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error de base de datos al inactivar el profesor.", e);
         }
     }
@@ -70,6 +72,7 @@ public class ProfessorManager {
         try {
             userDAO.activateUser(professorId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error de base de datos al activar el profesor.", e);
         }
     }
@@ -78,6 +81,7 @@ public class ProfessorManager {
         try {
             return professorDAO.getAllProfessors();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al obtener la lista de profesores.", e);
         }
     }
@@ -86,6 +90,7 @@ public class ProfessorManager {
         try {
             return professorDAO.recoverProfessor(professorId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar la información del profesor.", e);
         }
     }
@@ -96,7 +101,7 @@ public class ProfessorManager {
         try {
             professorDAO.updateProfessor(professor, professorId);
         } catch (DAOException e) {
-            log.error("Error al actualizar el profesor.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión con el servidor. Por favor, intente más tarde.", e);
         }
     }

@@ -34,7 +34,7 @@ public class PracticeGroupManager {
                 throw new ManagerException("No se pudo registrar el grupo de prácticas en el sistema.");
             }
         } catch (DAOException e) {
-            log.error("Error al insertar el grupo de prácticas.", e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -52,7 +52,7 @@ public class PracticeGroupManager {
         try {
             return practiceGroupDAO.getPracticeGroupsByProfessorAndPeriod(professorId, periodId);
         } catch (DAOException e) {
-            log.error("Error al recuperar los grupos del profesor {} en el periodo {}.", professorId, periodId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar las secciones del profesor.", e);
         }
     }

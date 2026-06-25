@@ -53,7 +53,7 @@ public class PractitionerDocumentManager {
                 throw new ManagerException("No se pudo registrar el documento subido.");
             }
         } catch (DAOException e) {
-            log.error("No se pudo guardar el documento del practicante {}.", practitionerId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al guardar el documento.", e);
         }
     }
@@ -67,7 +67,7 @@ public class PractitionerDocumentManager {
         try {
             documentDAO.editDocument(documentId, documentName, storedFileUrl);
         } catch (DAOException e) {
-            log.error("No se pudo editar el documento {}.", documentId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al actualizar el documento.", e);
         }
     }
@@ -76,7 +76,7 @@ public class PractitionerDocumentManager {
         try {
             return documentDAO.getDocumentsByPractitionerAndCategory(practitionerId, category.getDatabaseValue());
         } catch (DAOException e) {
-            log.error("Error al cargar los documentos del practicante {}.", practitionerId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al cargar los documentos.", e);
         }
     }
@@ -85,7 +85,7 @@ public class PractitionerDocumentManager {
         try {
             return documentDAO.getDocumentsByProfessor(professorId);
         } catch (DAOException e) {
-            log.error("Error al cargar los documentos de los practicantes del profesor {}.", professorId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al cargar los documentos de los practicantes.", e);
         }
     }
@@ -95,7 +95,7 @@ public class PractitionerDocumentManager {
         try {
             documentDAO.acceptDocument(documentId);
         } catch (DAOException e) {
-            log.error("Error al aceptar el documento {}.", documentId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo aceptar el documento.", e);
         }
     }
@@ -108,17 +108,13 @@ public class PractitionerDocumentManager {
         try {
             documentDAO.rejectDocument(documentId, reviewComment.trim());
         } catch (DAOException e) {
-            log.error("Error al rechazar el documento {}.", documentId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo rechazar el documento.", e);
         }
     }
 
     public boolean areAllInitialDocumentsAccepted(int practitionerId) throws ManagerException {
         return areAllDocumentsAccepted(practitionerId, DocumentCategory.INITIAL);
-    }
-
-    public boolean areAllFinalDocumentsAccepted(int practitionerId) throws ManagerException {
-        return areAllDocumentsAccepted(practitionerId, DocumentCategory.FINAL);
     }
 
     private boolean areAllDocumentsAccepted(int practitionerId, DocumentCategory category) throws ManagerException {

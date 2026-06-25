@@ -12,7 +12,10 @@ import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -20,6 +23,8 @@ import java.util.List;
 
 @Component
 public class ProgressReportManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ProgressReportManager.class);
 
     private final IProgressReportDAO progressReportDAO;
     private final IPostulationDAO postulationDAO;
@@ -56,6 +61,7 @@ public class ProgressReportManager {
             }
             report.setReportId(generatedId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo generar el reporte de avance.", e);
         }
 
@@ -89,6 +95,7 @@ public class ProgressReportManager {
         try {
             return progressReportDAO.getProgressReportsByPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -97,6 +104,7 @@ public class ProgressReportManager {
         try {
             return progressReportDAO.getSubmittedProgressReports();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -105,6 +113,7 @@ public class ProgressReportManager {
         try {
             return progressReportDAO.getSubmittedProgressReportsByProfessor(professorId, periodId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -113,6 +122,7 @@ public class ProgressReportManager {
         try {
             return progressReportDAO.getTotalAccumulatedHours(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -122,6 +132,7 @@ public class ProgressReportManager {
         try {
             return progressReportDAO.getAccumulatedHoursInRange(practitionerId, periodStart, periodEnd);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al calcular las horas del periodo cubierto.", e);
         }
     }
@@ -151,6 +162,7 @@ public class ProgressReportManager {
         try {
             return monthlyReportDAO.getReportsByPractitionerInRange(practitionerId, periodStart, periodEnd);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes mensuales del periodo cubierto.", e);
         }
     }
@@ -172,6 +184,7 @@ public class ProgressReportManager {
                         "Ya existe un reporte de tipo '%s' para este practicante.", reportType.getDatabaseValue()));
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -193,6 +206,7 @@ public class ProgressReportManager {
             isApproved = intermediateReport != null
                     && ReportStatus.EVALUATED.getDatabaseValue().equals(intermediateReport.getStatus());
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
 
@@ -222,6 +236,7 @@ public class ProgressReportManager {
             }
             return report;
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar los reportes de avance.", e);
         }
     }
@@ -230,6 +245,7 @@ public class ProgressReportManager {
         try {
             progressReportDAO.updateProgressReport(report, report.getReportId());
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo actualizar el reporte de avance.", e);
         }
     }
@@ -241,6 +257,7 @@ public class ProgressReportManager {
                 throw new ManagerException("No puedes generar reportes de avance sin tener un proyecto asignado.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar el estado del proyecto asignado.", e);
         }
     }

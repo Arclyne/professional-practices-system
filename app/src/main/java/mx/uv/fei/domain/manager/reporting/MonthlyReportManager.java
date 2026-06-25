@@ -14,7 +14,10 @@ import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ import java.util.List;
 
 @Component
 public class MonthlyReportManager {
+
+    private static final Logger log = LoggerFactory.getLogger(MonthlyReportManager.class);
 
     private final IMonthlyReportDAO reportDAO;
     private final IActivityDAO activityDAO;
@@ -53,6 +58,7 @@ public class MonthlyReportManager {
             }
             linkActivitiesToReport(selectedActivities, generatedReportId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo generar el reporte mensual.", e);
         }
     }
@@ -61,6 +67,7 @@ public class MonthlyReportManager {
         try {
             return reportDAO.getReportsByPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al cargar los reportes.", e);
         }
     }
@@ -75,6 +82,7 @@ public class MonthlyReportManager {
             }
             return coveredReports;
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al cargar los reportes del periodo cubierto.", e);
         }
     }
@@ -97,6 +105,7 @@ public class MonthlyReportManager {
         try {
             reportDAO.updateReport(report, report.getReportId());
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al enviar el reporte firmado.", e);
         }
     }
@@ -105,6 +114,7 @@ public class MonthlyReportManager {
         try {
             return reportDAO.getSubmittedReports();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al cargar los reportes para evaluar.", e);
         }
     }
@@ -113,6 +123,7 @@ public class MonthlyReportManager {
         try {
             return reportDAO.getSubmittedReportsByProfessor(professorId, periodId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al cargar los reportes para evaluar.", e);
         }
     }
@@ -131,6 +142,7 @@ public class MonthlyReportManager {
 
             reportDAO.updateReport(report, reportId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al intentar guardar la evaluación.", e);
         }
     }
@@ -139,6 +151,7 @@ public class MonthlyReportManager {
         try {
             return postulationDAO.hasAssignedProject(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar el estado del proyecto asignado.", e);
         }
     }
@@ -147,6 +160,7 @@ public class MonthlyReportManager {
         try {
             return documentDAO.areAllDocumentsAccepted(practitionerId, DocumentCategory.INITIAL.getDatabaseValue());
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudieron verificar los documentos iniciales del practicante.", e);
         }
     }
@@ -164,6 +178,7 @@ public class MonthlyReportManager {
                         + report.getMonthName() + " " + report.getYear() + ".");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar si ya existe un reporte para ese mes.", e);
         }
     }
@@ -182,6 +197,7 @@ public class MonthlyReportManager {
                 throw new ManagerException("No puedes crear o enviar reportes sin tener un proyecto asignado. Postula a un proyecto primero.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar el estado del proyecto asignado.", e);
         }
     }

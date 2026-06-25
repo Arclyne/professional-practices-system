@@ -37,7 +37,7 @@ public class SmtpEmailManager {
                 mailProperties.load(inputStream);
             }
         } catch (IOException e) {
-            log.error("No se pudo cargar el archivo de configuración {}.", MAIL_CONFIG_FILE, e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -46,7 +46,7 @@ public class SmtpEmailManager {
             try {
                 sendEmail(recipientEmail, subject, body);
             } catch (MessagingException e) {
-                log.error("Fallo al enviar correo asíncrono a: {}.", recipientEmail, e);
+                log.error(e.getMessage(), e);
             }
         });
     }

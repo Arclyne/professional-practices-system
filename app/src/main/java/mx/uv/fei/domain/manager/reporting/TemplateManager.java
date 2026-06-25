@@ -3,6 +3,9 @@ package mx.uv.fei.domain.manager.reporting;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.domain.dto.DocumentTemplate;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +27,8 @@ import java.util.Properties;
 
 @Component
 public class TemplateManager {
+
+    private static final Logger log = LoggerFactory.getLogger(TemplateManager.class);
 
     private static final String TEMPLATES_SUBDIRECTORY = "templates";
     private static final String GENERATED_SUBDIRECTORY = "generated";
@@ -57,6 +62,7 @@ public class TemplateManager {
             saveMetadataFile(template, templateDirectory);
             saveBodyFile(template, templateDirectory);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo guardar la plantilla en disco.", e);
         }
     }
@@ -77,6 +83,7 @@ public class TemplateManager {
                 }
             }
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al cargar las plantillas guardadas.", e);
         }
         return loadedTemplates;
@@ -111,6 +118,7 @@ public class TemplateManager {
                 documentIndex++;
             }
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al generar el documento desde la plantilla.", e);
         }
         return generatedFilePaths;
@@ -122,6 +130,7 @@ public class TemplateManager {
             Files.deleteIfExists(templateDirectory.resolve(templateId + METADATA_FILE_EXTENSION));
             Files.deleteIfExists(templateDirectory.resolve(templateId + BODY_FILE_EXTENSION));
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo eliminar la plantilla.", e);
         }
     }

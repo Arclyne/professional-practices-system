@@ -32,6 +32,7 @@ public class PostulationManager {
         try {
             return postulationDAO.retrievePractitionerPostulations(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema al recuperar las postulaciones.", e);
         }
     }
@@ -40,7 +41,7 @@ public class PostulationManager {
         try {
             postulationDAO.assignProjectUsingStoredProcedure(practitionerId, projectId);
         } catch (DAOException e) {
-            log.error("Error al asignar el proyecto {} al practicante {}.", projectId, practitionerId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión al intentar registrar la asignación.", e);
         }
     }
@@ -49,6 +50,7 @@ public class PostulationManager {
         try {
             return projectDAO.getAvailableProjectsWithCapacity();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema al intentar recuperar los proyectos disponibles.", e);
         }
     }
@@ -69,6 +71,7 @@ public class PostulationManager {
         try {
             return projectDAO.getAssignedProjectByPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar el proyecto asignado.", e);
         }
     }

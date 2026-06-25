@@ -38,7 +38,7 @@ public class PeriodManager {
                 throw new ManagerException("No se pudo registrar el periodo académico.");
             }
         } catch (DAOException e) {
-            log.error("Error al insertar el periodo académico.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
@@ -47,6 +47,7 @@ public class PeriodManager {
         try {
             return periodDAO.getAllPeriods();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar los periodos académicos.", e);
         }
     }
@@ -55,6 +56,7 @@ public class PeriodManager {
         try {
             return periodDAO.getActivePeriod();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar el periodo académico activo.", e);
         }
     }
@@ -63,6 +65,7 @@ public class PeriodManager {
         try {
             return periodDAO.recoverPeriod(periodId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar la información del periodo académico.", e);
         }
     }
@@ -73,7 +76,7 @@ public class PeriodManager {
         try {
             periodDAO.updatePeriod(period, periodId);
         } catch (DAOException e) {
-            log.error("Error al actualizar el periodo académico.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
@@ -84,7 +87,7 @@ public class PeriodManager {
         try {
             periodDAO.activatePeriod(periodId);
         } catch (DAOException e) {
-            log.error("Error al activar el periodo académico con ID: {}.", periodId, e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -100,7 +103,7 @@ public class PeriodManager {
         try {
             periodDAO.deactivatePeriod(periodId);
         } catch (DAOException e) {
-            log.error("Error al inactivar el periodo académico con ID: {}.", periodId, e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo inactivar el periodo académico.", e);
         }
     }

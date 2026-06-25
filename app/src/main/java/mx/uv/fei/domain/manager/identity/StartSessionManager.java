@@ -48,7 +48,7 @@ public class StartSessionManager {
             store.dispatch(new AuthenticatorAction.LoginSuccess(authenticatedUser));
             routeUserByStatus(authenticatedUser);
         } catch (DAOException e) {
-            log.error("Error de base de datos al iniciar sesión.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException(GENERIC_SYSTEM_ERROR, e);
         }
     }
