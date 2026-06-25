@@ -11,11 +11,15 @@ import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.enums.EnrollmentStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.evaluation.GradingManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class PeriodConclusionManager {
+
+    private static final Logger log = LoggerFactory.getLogger(PeriodConclusionManager.class);
 
     private static final double AUTOMATIC_FINAL_GRADE = 5.0;
 
@@ -39,6 +43,7 @@ public class PeriodConclusionManager {
             assignAutomaticGradesToUngraded(periodId, period.getPeriodName());
             periodDAO.deactivatePeriod(periodId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo concluir el periodo académico.", e);
         }
     }

@@ -8,11 +8,16 @@ import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.OrganizationValidator;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class OrganizationManager {
+
+    private static final Logger log = LoggerFactory.getLogger(OrganizationManager.class);
 
     private final IOrganizationDAO organizationDAO;
 
@@ -27,6 +32,7 @@ public class OrganizationManager {
         try {
             organizationDAO.insertOrganization(organization);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -35,6 +41,7 @@ public class OrganizationManager {
         try {
             return organizationDAO.getAllOrganizations();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al recuperar la lista de organizaciones.", e);
         }
     }
@@ -45,6 +52,7 @@ public class OrganizationManager {
         try {
             organizationDAO.updateOrganization(organization, id);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -53,6 +61,7 @@ public class OrganizationManager {
         try {
             organizationDAO.deactivateMultipleOrganizations(organizationIds);
         } catch (DAOException e) {
+             log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo inactivar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -65,6 +74,7 @@ public class OrganizationManager {
         try {
             organizationDAO.activateOrganization(organizationId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo activar la organización. Intenta de nuevo en unos momentos.", e);
         }
     }

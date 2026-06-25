@@ -7,11 +7,16 @@ import mx.uv.fei.dataaccess.interfaces.IManagerDAO;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Manager;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class ManagerManager {
+
+    private static final Logger log = LoggerFactory.getLogger(ManagerManager.class);
 
     private final IManagerDAO managerDAO;
 
@@ -24,6 +29,7 @@ public class ManagerManager {
         try {
             return managerDAO.getAllManagers();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al obtener la lista de encargados.", e);
         }
     }
@@ -32,6 +38,7 @@ public class ManagerManager {
         try {
             return managerDAO.getManagersByOrganization(organizationId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudieron cargar los encargados de esta organización.", e);
         }
     }
@@ -41,6 +48,7 @@ public class ManagerManager {
         try {
             managerDAO.insertManager(manager);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
@@ -49,6 +57,7 @@ public class ManagerManager {
         try {
             managerDAO.deactivateMultipleManagers(managerIds);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo inactivar el encargado. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -61,6 +70,7 @@ public class ManagerManager {
         try {
             managerDAO.activateManager(managerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo activar el encargado. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -69,6 +79,7 @@ public class ManagerManager {
         try {
             return managerDAO.recoverManager(managerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar la información del encargado.", e);
         }
     }
@@ -79,6 +90,7 @@ public class ManagerManager {
         try {
             managerDAO.updateManager(manager, managerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }

@@ -55,11 +55,11 @@ public class CloudStorageManager {
             HttpResponse<String> response = sendUploadRequest(file, uniqueFileName);
             return resolveUploadResponse(response, uniqueFileName);
         } catch (IOException e) {
-            log.error("Falló la subida del documento al almacenamiento en la nube.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo subir el documento. Revisa tu conexión a internet e inténtalo de nuevo.", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("La subida del documento al almacenamiento en la nube fue interrumpida.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("La subida del documento fue interrumpida. Inténtalo de nuevo.", e);
         }
     }
@@ -96,7 +96,7 @@ public class CloudStorageManager {
             Files.copy(file.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
             return destinationPath.toUri().toString();
         } catch (IOException e) {
-            log.error("No se pudo guardar el documento en el almacenamiento local.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo guardar el documento en el almacenamiento.", e);
         }
     }

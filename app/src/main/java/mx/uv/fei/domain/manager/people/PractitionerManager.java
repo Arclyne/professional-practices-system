@@ -48,6 +48,7 @@ public class PractitionerManager {
         try {
             userDAO.deactivateUser(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("No se pudo inactivar el practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -56,6 +57,7 @@ public class PractitionerManager {
         try {
             userDAO.activateUser(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("No se pudo activar el practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -80,7 +82,7 @@ public class PractitionerManager {
             }
             enrollPractitionerIfGroupSelected(generatedId, practitioner.getGroupId());
         } catch (DAOException e) {
-            log.error("Error al insertar el practicante.", e);
+            log.error(e.getMessage());
             throw PersistenceErrorTranslator.translate(e);
         }
 
@@ -114,6 +116,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrievePractitionersPendingAssignment();
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes pendientes de asignación.", e);
         }
     }
@@ -122,6 +125,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrieveAssignedPractitioners();
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes asignados.", e);
         }
     }
@@ -130,6 +134,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrievePractitionersByProfessor(professorId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del profesor.", e);
         }
     }
@@ -139,6 +144,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrievePractitionersByProfessorAndPeriod(professorId, periodId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del profesor.", e);
         }
     }
@@ -147,6 +153,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrievePractitionersByGroup(groupId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del grupo.", e);
         }
     }
@@ -155,6 +162,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.retrieveEnrolledPractitionersByGroup(groupId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar los practicantes del grupo.", e);
         }
     }
@@ -163,6 +171,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.getAllPractitioners();
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Ocurrió un error al recuperar la lista de practicantes.", e);
         }
     }
@@ -171,6 +180,7 @@ public class PractitionerManager {
         try {
             return practitionerDAO.recoverPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("No se pudo recuperar la información del practicante.", e);
         }
     }
@@ -181,6 +191,7 @@ public class PractitionerManager {
         try {
             practitionerDAO.updatePractitioner(practitioner, practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("No se pudo actualizar la información del practicante. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -192,6 +203,7 @@ public class PractitionerManager {
                 throw new ManagerException("La matrícula " + enrollment + " ya se encuentra registrada en el sistema.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage());
             throw new ManagerException("Error al verificar la disponibilidad de la matrícula.", e);
         }
     }

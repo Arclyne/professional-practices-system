@@ -7,6 +7,8 @@ import mx.uv.fei.dataaccess.interfaces.IProjectDAO;
 import mx.uv.fei.domain.common.validators.ProjectValidator;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Map;
 @Component
 public class ProjectManager {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectManager.class);
     private final IProjectDAO projectDAO;
 
     @Inject
@@ -26,6 +29,7 @@ public class ProjectManager {
         try {
             projectDAO.insertProject(project);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un problema de conexión. Por favor, intente más tarde.", e);
         }
     }
@@ -35,6 +39,7 @@ public class ProjectManager {
         try {
             projectDAO.updateProject(project, id);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al actualizar el proyecto en la base de datos.", e);
         }
     }
@@ -43,6 +48,7 @@ public class ProjectManager {
         try {
             projectDAO.deactivateMultipleProjects(projectIds);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo inactivar el proyecto. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -55,6 +61,7 @@ public class ProjectManager {
         try {
             projectDAO.activateProject(projectId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo activar el proyecto. Intenta de nuevo en unos momentos.", e);
         }
     }
@@ -63,6 +70,7 @@ public class ProjectManager {
         try {
             return projectDAO.getAllProjects();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al obtener la lista de proyectos.", e);
         }
     }
@@ -71,6 +79,7 @@ public class ProjectManager {
         try {
             return projectDAO.getAssignedCountsByProject();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al obtener los cupos ocupados de los proyectos.", e);
         }
     }

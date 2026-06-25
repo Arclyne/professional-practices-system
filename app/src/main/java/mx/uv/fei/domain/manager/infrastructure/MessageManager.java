@@ -21,12 +21,10 @@ public class MessageManager {
     private static final Logger log = LoggerFactory.getLogger(MessageManager.class);
 
     private final MessageDAO messageDAO;
-    private final SmtpEmailManager emailManager;
 
     @Inject
-    public MessageManager(MessageDAO messageDAO, SmtpEmailManager emailManager) {
+    public MessageManager(MessageDAO messageDAO) {
         this.messageDAO = messageDAO;
-        this.emailManager = emailManager;
     }
 
     public void sendMessage(MessageRequest messageRequest) throws ManagerException {
@@ -45,7 +43,7 @@ public class MessageManager {
 
             messageDAO.insertParticipant(generatedMessageId, messageRequest.senderId(), receiverId);
         } catch (DAOException e) {
-            log.error("Fallo al registrar el mensaje en la base de datos.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No fue posible procesar el envío del mensaje.", e);
         }
     }
@@ -54,7 +52,7 @@ public class MessageManager {
         try {
             return messageDAO.getMessagesByReceiver(receiverId, limit, offset);
         } catch (DAOException e) {
-            log.error("Fallo al consultar la bandeja de entrada.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No fue posible cargar los mensajes de la bandeja de entrada.", e);
         }
     }
@@ -63,7 +61,7 @@ public class MessageManager {
         try {
             return messageDAO.getMessagesBySender(senderId, limit, offset);
         } catch (DAOException e) {
-            log.error("Fallo al consultar los mensajes enviados.", e);
+            log.error(e.getMessage(), e);
             throw new ManagerException("No fue posible cargar los mensajes enviados.", e);
         }
     }

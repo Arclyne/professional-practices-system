@@ -7,7 +7,10 @@ import mx.uv.fei.dataaccess.interfaces.IAuthenticationToken;
 import mx.uv.fei.domain.dto.AuthenticationToken;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.statemachine.SessionFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -15,6 +18,8 @@ import java.time.temporal.ChronoUnit;
 
 @Component
 public class TokenManager {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenManager.class);
 
     private static final int TOKEN_MINIMUM_VALUE = 100000;
     private static final int TOKEN_RANDOM_BOUND = 900000;
@@ -45,6 +50,7 @@ public class TokenManager {
         try {
             tokenDAO.insertToken(token);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al registrar el token para el usuario.", e);
         }
     }
@@ -73,6 +79,7 @@ public class TokenManager {
                 throw new ManagerException("El token ha expirado. Solicite un nuevo código.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error de conexión durante la verificación del token.", e);
         }
     }
@@ -81,6 +88,7 @@ public class TokenManager {
         try {
             return Integer.parseInt(tokenInput.trim());
         } catch (NumberFormatException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("El código de token debe ser un valor numérico.", e);
         }
     }

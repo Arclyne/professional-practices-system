@@ -11,11 +11,15 @@ import mx.uv.fei.domain.dto.GroupEnrollment;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.enums.EnrollmentStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Component
 public class GroupEnrollmentManager {
+
+    private static final Logger log = LoggerFactory.getLogger(GroupEnrollmentManager.class);
 
     private static final String ALREADY_ENROLLED_MESSAGE =
             "El practicante ya está inscrito en un grupo durante este periodo.";
@@ -54,6 +58,7 @@ public class GroupEnrollmentManager {
             }
             generatedId = groupEnrollmentDAO.insertEnrollment(enrollment);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
 
@@ -68,6 +73,7 @@ public class GroupEnrollmentManager {
         try {
             return groupEnrollmentDAO.getEnrollmentsByGroup(groupId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar las inscripciones del grupo.", e);
         }
     }
@@ -76,6 +82,7 @@ public class GroupEnrollmentManager {
         try {
             return groupEnrollmentDAO.getEnrollmentsByPractitioner(practitionerId);
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Ocurrió un error al recuperar las inscripciones del practicante.", e);
         }
     }
@@ -88,6 +95,7 @@ public class GroupEnrollmentManager {
             }
             return practiceGroup.getPeriodId();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo recuperar el periodo del grupo de prácticas.", e);
         }
     }
@@ -101,6 +109,7 @@ public class GroupEnrollmentManager {
             }
             nextOpportunity = previousEnrollments + 1;
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar las inscripciones previas del practicante.", e);
         }
         return nextOpportunity;
@@ -112,6 +121,7 @@ public class GroupEnrollmentManager {
                 throw new ManagerException(ALREADY_ENROLLED_MESSAGE);
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo verificar la inscripción del practicante.", e);
         }
     }

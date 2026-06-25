@@ -35,6 +35,7 @@ public class AdminManager {
         try {
             return administratorDAO.checkIfAdminExists();
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error crítico al verificar el estado inicial del sistema.", e);
         }
     }
@@ -53,7 +54,7 @@ public class AdminManager {
             }
             store.dispatch(new AuthenticatorAction.AdminCreatedSuccessfully());
         } catch (DAOException e) {
-            log.error("Error al insertar el administrador inicial.", e);
+            log.error(e.getMessage(), e);
             throw PersistenceErrorTranslator.translate(e);
         }
     }
@@ -66,6 +67,7 @@ public class AdminManager {
                 throw new ManagerException("Ya existe un administrador activo. Inactívalo antes de registrar a otro.");
             }
         } catch (DAOException e) {
+            log.error(e.getMessage(), e);
             throw new ManagerException("Error al verificar la existencia de un administrador.", e);
         }
     }
