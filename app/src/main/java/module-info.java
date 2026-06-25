@@ -36,7 +36,7 @@ module mx.uv.fei {
 
         requires java.desktop;
     requires java.net.http;
-    requires mx.uv.fei;
+
 
     exports mx.uv.fei.app;
     opens mx.uv.fei.domain.common;
