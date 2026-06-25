@@ -7,6 +7,7 @@ import mx.uv.fei.dataaccess.interfaces.IActivityDAO;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerDocumentDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.CoveredReport;
@@ -59,7 +60,7 @@ public class MonthlyReportManager {
             linkActivitiesToReport(selectedActivities, generatedReportId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("No se pudo generar el reporte mensual.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

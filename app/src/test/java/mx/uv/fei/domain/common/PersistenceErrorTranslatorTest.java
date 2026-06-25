@@ -93,6 +93,28 @@ class PersistenceErrorTranslatorTest {
     }
 
     @Test
+    void translate_DuplicateMonthlyReport_ReturnsMonthMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Unique index violation: UQ_MONTHLY_REPORT_PRACTITIONER_MONTH ON PUBLIC.MONTHLY_REPORT(PRACTITIONER_ID, YEAR, MONTH_NAME)"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("mes") && !message.contains("constraint"), result.getMessage());
+    }
+
+    @Test
+    void translate_DuplicateProgressReport_ReturnsProgressReportMessage() {
+        DAOException failure = wrapInChain(new SQLIntegrityConstraintViolationException(
+                "Duplicate entry '123-Intermedio' for key 'progress_report.uq_progress_report_practitioner_type'"));
+
+        ManagerException result = PersistenceErrorTranslator.translate(failure);
+
+        String message = result.getMessage().toLowerCase();
+        assertTrue(message.contains("reporte de avance") && !message.contains("duplicate"), result.getMessage());
+    }
+
+    @Test
     void translate_NonIntegrityFailure_ReturnsGenericConnectionMessage() {
         DAOException failure = new DAOException("Fallo de red.", new SQLException("Connection reset"));
 

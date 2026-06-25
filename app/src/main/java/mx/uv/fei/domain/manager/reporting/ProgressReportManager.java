@@ -6,6 +6,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IMonthlyReportDAO;
 import mx.uv.fei.dataaccess.interfaces.IPostulationDAO;
 import mx.uv.fei.dataaccess.interfaces.IProgressReportDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.dto.MonthlyReport;
 import mx.uv.fei.domain.dto.ProgressReport;
@@ -62,7 +63,7 @@ public class ProgressReportManager {
             report.setReportId(generatedId);
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("No se pudo generar el reporte de avance.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
 
         return report;

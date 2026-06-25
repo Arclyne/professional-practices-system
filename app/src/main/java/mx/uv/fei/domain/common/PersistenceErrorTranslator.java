@@ -93,6 +93,12 @@ public final class PersistenceErrorTranslator {
         if (detail.contains("uq_selfeval_report")) {
             return "Ya existe una autoevaluación registrada para este reporte.";
         }
+        if (detail.contains("uq_monthly_report_practitioner_month")) {
+            return "Ya tienes un reporte registrado para ese mes.";
+        }
+        if (detail.contains("uq_progress_report_practitioner_type")) {
+            return "Ya existe un reporte de avance de ese tipo para este practicante.";
+        }
 
         return GENERIC_DUPLICATE_MESSAGE;
     }
