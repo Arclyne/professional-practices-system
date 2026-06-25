@@ -82,7 +82,7 @@ public class UserValidator {
                 "El teléfono del encargado es obligatorio.");
 
         if (!BaseValidator.isValidPhoneNumber(manager.getPhone())) {
-            throw new ManagerException("El numero de telefono del encargado contiene caracteres inválidos.");
+            throw new ManagerException("El numero de telefono del encargado no tiene un formato valido.");
         }
 
         BaseValidator.validateString(manager.getEmail(),
