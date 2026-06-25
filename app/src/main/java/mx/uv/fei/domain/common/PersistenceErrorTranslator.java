@@ -84,6 +84,15 @@ public final class PersistenceErrorTranslator {
         if (detail.contains("enrollment") || detail.contains("uq_enrollment_practitioner_period")) {
             return "El practicante ya está inscrito en un grupo de este periodo.";
         }
+        if (detail.contains("uq_practitioner_document_type") || detail.contains("document_type")) {
+            return "Ya subiste un documento de este tipo. Edítalo en lugar de subir otro.";
+        }
+        if (detail.contains("uq_grade_period")) {
+            return "Este practicante ya tiene una calificación registrada para el periodo.";
+        }
+        if (detail.contains("uq_selfeval_report")) {
+            return "Ya existe una autoevaluación registrada para este reporte.";
+        }
 
         return GENERIC_DUPLICATE_MESSAGE;
     }

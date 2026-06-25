@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IPractitionerGradeDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.PractitionerGrade;
@@ -117,7 +118,7 @@ public class GradingManager {
             return generatedId;
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("No se pudo registrar la calificación en el sistema.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 

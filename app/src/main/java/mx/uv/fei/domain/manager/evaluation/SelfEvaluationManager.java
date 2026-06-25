@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.ISelfEvaluationDAO;
+import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.common.validators.SelfEvaluationValidator;
 import mx.uv.fei.domain.dto.SelfEvaluation;
@@ -38,7 +39,7 @@ public class SelfEvaluationManager {
             }
         } catch (DAOException e) {
             log.error(e.getMessage(), e);
-            throw new ManagerException("No se pudo registrar la autoevaluación.", e);
+            throw PersistenceErrorTranslator.translate(e);
         }
     }
 
