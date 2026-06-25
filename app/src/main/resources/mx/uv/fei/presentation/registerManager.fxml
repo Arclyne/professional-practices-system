@@ -9,7 +9,7 @@
 <?import mx.uv.fei.presentation.components.FormField?>
 
 <AnchorPane prefHeight="600.0" prefWidth="500.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.RegisterManagerController">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.fei.presentation.coordinator.RegisterManagerController">
     <VBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
         <padding>

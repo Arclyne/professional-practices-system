@@ -18,8 +18,19 @@ module mx.uv.fei {
         opens mx.uv.fei.domain.statemachine;
         opens mx.uv.fei.domain.statemachine.reducers ;
         opens mx.uv.fei.domain.statemachine.actions ;
-        opens mx.uv.fei.domain.manager ;
+        opens mx.uv.fei.domain.manager.identity;
+        opens mx.uv.fei.domain.manager.people;
+        opens mx.uv.fei.domain.manager.academic;
+        opens mx.uv.fei.domain.manager.evaluation;
+        opens mx.uv.fei.domain.manager.reporting;
+        opens mx.uv.fei.domain.manager.infrastructure;
         opens mx.uv.fei.presentation ;
+        opens mx.uv.fei.presentation.auth;
+        opens mx.uv.fei.presentation.admin;
+        opens mx.uv.fei.presentation.coordinator;
+        opens mx.uv.fei.presentation.professor;
+        opens mx.uv.fei.presentation.practitioner;
+        opens mx.uv.fei.presentation.shared;
         opens mx.uv.fei.presentation.shell;
         opens mx.uv.fei.presentation.components;
 
