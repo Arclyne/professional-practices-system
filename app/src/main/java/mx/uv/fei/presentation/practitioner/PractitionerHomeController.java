@@ -10,7 +10,6 @@ import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
-import mx.uv.fei.domain.manager.evaluation.GradingManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.manager.people.ProfessorManager;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
@@ -25,19 +24,18 @@ public class PractitionerHomeController {
 
     private static final String DEFAULT_GREETING_NAME = "practicante";
     private static final String UNAVAILABLE_METRIC = "—";
+    private static final String LOAD_ERROR_TEXT = "Error al cargar";
     private static final String HOURS_FORMAT = "%.0f h";
-    private static final String GRADE_FORMAT = "%.1f / 10";
+    private static final String EMPTY_BANNER = "";
 
     @FXML private Label greetingLabel;
     @FXML private Label statusBannerLabel;
     @FXML private Label accumulatedHoursLabel;
-    @FXML private Label partialGradeLabel;
     @FXML private Label sectionLabel;
     @FXML private Label professorLabel;
 
     private final AppStore store;
     private final ProgressReportManager progressReportManager;
-    private final GradingManager gradingManager;
     private final PractitionerManager practitionerManager;
     private final PracticeGroupManager practiceGroupManager;
     private final ProfessorManager professorManager;
@@ -45,12 +43,11 @@ public class PractitionerHomeController {
 
     @Inject
     public PractitionerHomeController(AppStore store, ProgressReportManager progressReportManager,
-                                      GradingManager gradingManager, PractitionerManager practitionerManager,
+                                      PractitionerManager practitionerManager,
                                       PracticeGroupManager practiceGroupManager, ProfessorManager professorManager,
                                       PracticeAccessManager practiceAccessManager) {
         this.store = store;
         this.progressReportManager = progressReportManager;
-        this.gradingManager = gradingManager;
         this.practitionerManager = practitionerManager;
         this.practiceGroupManager = practiceGroupManager;
         this.professorManager = professorManager;
@@ -63,7 +60,6 @@ public class PractitionerHomeController {
         populateGreeting(currentUser);
         populateStatusBanner(currentUser);
         populateAccumulatedHours(currentUser);
-        populatePartialGrade(currentUser);
         populateGroupInfo(currentUser);
     }
 
@@ -84,23 +80,28 @@ public class PractitionerHomeController {
     }
 
     private void populateStatusBanner(User currentUser) {
-        setStatusBannerVisible(false);
-        if (currentUser == null) {
-            return;
+        String bannerMessage = EMPTY_BANNER;
+
+        if (currentUser != null) {
+            bannerMessage = resolveStatusBannerMessage(currentUser.getId());
         }
 
-        try {
-            PracticeStatus practiceStatus = practiceAccessManager.resolveStatus(currentUser.getId());
-            applyStatusBanner(practiceAccessManager.buildHomeStatusMessage(practiceStatus));
-        } catch (ManagerException e) {
-            setStatusBannerVisible(false);
-        }
-    }
-
-    private void applyStatusBanner(String bannerMessage) {
         boolean hasMessage = !bannerMessage.isEmpty();
         statusBannerLabel.setText(bannerMessage);
         setStatusBannerVisible(hasMessage);
+    }
+
+    private String resolveStatusBannerMessage(int practitionerId) {
+        String bannerMessage;
+
+        try {
+            PracticeStatus practiceStatus = practiceAccessManager.resolveStatus(practitionerId);
+            bannerMessage = practiceAccessManager.buildHomeStatusMessage(practiceStatus);
+        } catch (ManagerException e) {
+            bannerMessage = EMPTY_BANNER;
+        }
+
+        return bannerMessage;
     }
 
     private void setStatusBannerVisible(boolean isVisible) {
@@ -112,69 +113,66 @@ public class PractitionerHomeController {
         String hoursText = UNAVAILABLE_METRIC;
 
         if (currentUser != null) {
-            try {
-                double accumulatedHours = progressReportManager.getAccumulatedHours(currentUser.getId());
-                hoursText = String.format(HOURS_FORMAT, accumulatedHours);
-            } catch (ManagerException e) {
-                hoursText = UNAVAILABLE_METRIC;
-            }
+            hoursText = resolveAccumulatedHoursText(currentUser.getId());
         }
 
         accumulatedHoursLabel.setText(hoursText);
     }
 
-    private void populatePartialGrade(User currentUser) {
-        String gradeText = UNAVAILABLE_METRIC;
+    private String resolveAccumulatedHoursText(int practitionerId) {
+        String hoursText;
 
-        if (currentUser != null) {
-            try {
-                double partialGrade = gradingManager.previewTentativeGrade(currentUser.getId());
-                gradeText = String.format(GRADE_FORMAT, partialGrade);
-            } catch (ManagerException e) {
-                gradeText = UNAVAILABLE_METRIC;
-            }
+        try {
+            double accumulatedHours = progressReportManager.getAccumulatedHours(practitionerId);
+            hoursText = String.format(HOURS_FORMAT, accumulatedHours);
+        } catch (ManagerException e) {
+            hoursText = LOAD_ERROR_TEXT;
         }
 
-        partialGradeLabel.setText(gradeText);
+        return hoursText;
     }
 
     private void populateGroupInfo(User currentUser) {
-        sectionLabel.setText(UNAVAILABLE_METRIC);
-        professorLabel.setText(UNAVAILABLE_METRIC);
+        String sectionText = UNAVAILABLE_METRIC;
+        String professorText = UNAVAILABLE_METRIC;
 
-        if (currentUser == null) {
-            return;
+        if (currentUser != null) {
+            try {
+                PracticeGroup group = resolveCurrentGroup(currentUser.getId());
+                if (group != null && group.getGroupId() > 0) {
+                    sectionText = group.getSection();
+                    professorText = resolveProfessorName(group.getProfessorId());
+                }
+            } catch (ManagerException e) {
+                sectionText = LOAD_ERROR_TEXT;
+                professorText = LOAD_ERROR_TEXT;
+            }
         }
 
-        try {
-            applyGroupInfo(currentUser.getId());
-        } catch (ManagerException e) {
-            sectionLabel.setText(UNAVAILABLE_METRIC);
-            professorLabel.setText(UNAVAILABLE_METRIC);
-        }
+        sectionLabel.setText(sectionText);
+        professorLabel.setText(professorText);
     }
 
-    private void applyGroupInfo(int practitionerId) throws ManagerException {
+    private PracticeGroup resolveCurrentGroup(int practitionerId) throws ManagerException {
+        PracticeGroup group = null;
         Practitioner practitioner = practitionerManager.getPractitionerById(practitionerId);
         Integer groupId = practitioner != null ? practitioner.getGroupId() : null;
-        if (groupId == null || groupId <= 0) {
-            return;
+
+        if (groupId != null && groupId > 0) {
+            group = practiceGroupManager.getPracticeGroupById(groupId);
         }
 
-        PracticeGroup group = practiceGroupManager.getPracticeGroupById(groupId);
-        if (group == null || group.getGroupId() <= 0) {
-            return;
-        }
-
-        sectionLabel.setText(group.getSection());
-        professorLabel.setText(resolveProfessorName(group.getProfessorId()));
+        return group;
     }
 
     private String resolveProfessorName(int professorId) throws ManagerException {
         Professor professor = professorManager.getProfessorById(professorId);
-        if (professor == null || professor.getName() == null) {
-            return UNAVAILABLE_METRIC;
+        String professorName = UNAVAILABLE_METRIC;
+
+        if (professor != null && professor.getName() != null) {
+            professorName = professor.getName() + " " + professor.getLastName();
         }
-        return professor.getName() + " " + professor.getLastName();
+
+        return professorName;
     }
 }

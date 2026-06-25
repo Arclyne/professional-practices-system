@@ -32,12 +32,6 @@
             <Label fx:id="accumulatedHoursLabel" styleClass="card-title" text="—"/>
             <Label styleClass="card-subtitle" text="de 420 h requeridas"/>
         </VBox>
-
-        <VBox prefWidth="320.0" spacing="4.0" styleClass="content-card">
-            <Label styleClass="card-eyebrow" text="CALIFICACIÓN PARCIAL"/>
-            <Label fx:id="partialGradeLabel" styleClass="card-title" text="—"/>
-            <Label styleClass="card-subtitle" text="La calificación final se emite al concluir las 420 horas."/>
-        </VBox>
     </HBox>
 
     <HBox spacing="16.0">
