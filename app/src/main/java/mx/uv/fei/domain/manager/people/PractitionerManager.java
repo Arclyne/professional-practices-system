@@ -151,6 +151,14 @@ public class PractitionerManager {
         }
     }
 
+    public List<Practitioner> retrieveEnrolledPractitionersByGroup(int groupId) throws ManagerException {
+        try {
+            return practitionerDAO.retrieveEnrolledPractitionersByGroup(groupId);
+        } catch (DAOException e) {
+            throw new ManagerException("Ocurrió un error al recuperar los practicantes del grupo.", e);
+        }
+    }
+
     public List<Practitioner> getAllPractitioners() throws ManagerException {
         try {
             return practitionerDAO.getAllPractitioners();

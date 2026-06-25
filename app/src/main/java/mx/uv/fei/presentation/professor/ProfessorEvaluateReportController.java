@@ -132,7 +132,7 @@ public class ProfessorEvaluateReportController implements Initializable {
     }
 
     private void mapGroupPractitioners(PracticeGroup group) throws ManagerException {
-        List<Practitioner> practitioners = practitionerManager.retrievePractitionersByGroup(group.getGroupId());
+        List<Practitioner> practitioners = practitionerManager.retrieveEnrolledPractitionersByGroup(group.getGroupId());
         for (Practitioner practitioner : practitioners) {
             enrollmentByPractitionerId.put(practitioner.getId(), practitioner.getEnrollment());
             sectionByPractitionerId.put(practitioner.getId(), group.getSection());

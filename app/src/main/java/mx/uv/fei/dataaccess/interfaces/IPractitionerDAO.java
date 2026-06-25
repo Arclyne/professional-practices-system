@@ -24,4 +24,6 @@ public interface IPractitionerDAO {
     List<Practitioner> retrievePractitionersByProfessorAndPeriod(int professorId, int periodId) throws DAOException;
 
     List<Practitioner> retrievePractitionersByGroup(int groupId) throws DAOException;
+
+    List<Practitioner> retrieveEnrolledPractitionersByGroup(int groupId) throws DAOException;
 }

@@ -4,8 +4,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -16,11 +16,15 @@ import javafx.stage.Stage;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
 import mx.uv.fei.domain.manager.evaluation.SelfEvaluationManager;
@@ -34,7 +38,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ReviewSelfEvaluationController {
@@ -43,7 +49,10 @@ public class ReviewSelfEvaluationController {
     private static final String STATUS_NOT_DELIVERED = "No entregada";
     private static final String STATUS_REVIEWED = "Revisada";
     private static final String STATUS_PENDING_EVIDENCE = "pendiente";
+    private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
+    private static final String GROUP_LABEL_PREFIX = "NRC ";
 
+    @FXML private ComboBox<String> groupFilterComboBox;
     @FXML private TableView<SelfEvaluationRow> evaluationsTableView;
     @FXML private TableColumn<SelfEvaluationRow, String> studentTableColumn;
     @FXML private TableColumn<SelfEvaluationRow, String> groupTableColumn;
@@ -70,18 +79,28 @@ public class ReviewSelfEvaluationController {
     private final SelfEvaluationManager selfEvaluationManager;
     private final ProgressReportManager progressReportManager;
     private final PractitionerManager practitionerManager;
+    private final PracticeGroupManager practiceGroupManager;
+    private final PeriodManager periodManager;
     private final AppStore appStore;
 
+    private final Map<String, PracticeGroup> groupByLabel = new HashMap<>();
+
     private SelfEvaluationRow selectedRow;
+    private int professorId;
+    private int activePeriodId;
 
     @Inject
     public ReviewSelfEvaluationController(SelfEvaluationManager selfEvaluationManager,
                                           ProgressReportManager progressReportManager,
                                           PractitionerManager practitionerManager,
+                                          PracticeGroupManager practiceGroupManager,
+                                          PeriodManager periodManager,
                                           AppStore appStore) {
         this.selfEvaluationManager = selfEvaluationManager;
         this.progressReportManager = progressReportManager;
         this.practitionerManager = practitionerManager;
+        this.practiceGroupManager = practiceGroupManager;
+        this.periodManager = periodManager;
         this.appStore = appStore;
     }
 
@@ -94,33 +113,79 @@ public class ReviewSelfEvaluationController {
         evaluationsTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> showEvaluationDetails(newValue));
 
         clearDetails();
+        resolveProfessorContext();
+        loadProfessorGroups();
         loadStudentsAndEvaluations();
+    }
+
+    private void resolveProfessorContext() {
+        User currentUser = appStore.getState().sessionState().currentUserInSession();
+        professorId = currentUser != null ? currentUser.getId() : 0;
+
+        try {
+            Period activePeriod = periodManager.getActivePeriod();
+            activePeriodId = activePeriod != null ? activePeriod.getPeriodId() : 0;
+        } catch (ManagerException e) {
+            activePeriodId = 0;
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    private void loadProfessorGroups() {
+        ObservableList<String> groupOptions = FXCollections.observableArrayList(ALL_GROUPS_OPTION);
+
+        try {
+            List<PracticeGroup> groups = practiceGroupManager.getGroupsByProfessorAndPeriod(professorId, activePeriodId);
+            for (PracticeGroup group : groups) {
+                String groupLabel = GROUP_LABEL_PREFIX + group.getSection();
+                groupOptions.add(groupLabel);
+                groupByLabel.put(groupLabel, group);
+            }
+        } catch (ManagerException e) {
+            Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+        }
+
+        groupFilterComboBox.setItems(groupOptions);
+        groupFilterComboBox.setValue(ALL_GROUPS_OPTION);
+        groupFilterComboBox.valueProperty().addListener((_, _, _) -> loadStudentsAndEvaluations());
     }
 
     private void loadStudentsAndEvaluations() {
         try {
-            User currentUser = appStore.getState().sessionState().currentUserInSession();
-            int academicId = currentUser.getId();
-
-            List<Practitioner> students = practitionerManager.retrievePractitionersByProfessor(academicId);
             List<SelfEvaluationRow> rows = new ArrayList<>();
-
-            for (Practitioner student : students) {
-                SelfEvaluationRow evaluationRow = createSelfEvaluationRow(student);
-                if (evaluationRow.getSelfEvaluation() != null) {
-                    rows.add(evaluationRow);
-                }
+            for (PracticeGroup group : groupsForSelectedFilter()) {
+                appendRowsForGroup(group, rows);
             }
-
-            ObservableList<SelfEvaluationRow> data = FXCollections.observableArrayList(rows);
-            evaluationsTableView.setItems(data);
-
+            evaluationsTableView.setItems(FXCollections.observableArrayList(rows));
         } catch (ManagerException e) {
             Controller.showAlert("Error", "No se pudieron cargar las autoevaluaciones: " + e.getMessage(), AlertType.ERROR);
         }
     }
 
-    private SelfEvaluationRow createSelfEvaluationRow(Practitioner student) throws ManagerException {
+    private List<PracticeGroup> groupsForSelectedFilter() {
+        String selectedGroup = groupFilterComboBox.getValue();
+        List<PracticeGroup> groups;
+
+        if (selectedGroup == null || ALL_GROUPS_OPTION.equals(selectedGroup)) {
+            groups = new ArrayList<>(groupByLabel.values());
+        } else {
+            groups = List.of(groupByLabel.get(selectedGroup));
+        }
+
+        return groups;
+    }
+
+    private void appendRowsForGroup(PracticeGroup group, List<SelfEvaluationRow> rows) throws ManagerException {
+        List<Practitioner> students = practitionerManager.retrieveEnrolledPractitionersByGroup(group.getGroupId());
+        for (Practitioner student : students) {
+            SelfEvaluationRow evaluationRow = createSelfEvaluationRow(student, group.getSection());
+            if (evaluationRow.getSelfEvaluation() != null) {
+                rows.add(evaluationRow);
+            }
+        }
+    }
+
+    private SelfEvaluationRow createSelfEvaluationRow(Practitioner student, String groupSection) throws ManagerException {
         List<ProgressReport> reports = progressReportManager.getProgressReportsByPractitioner(student.getId());
         ProgressReport finalReport = reports.stream()
                 .filter(r -> REPORT_TYPE_FINAL.equals(r.getReportType()))
@@ -138,7 +203,7 @@ public class ReviewSelfEvaluationController {
         }
 
         String fullName = student.getName() + " " + student.getLastName();
-        return new SelfEvaluationRow(fullName, student.getEnrollment(), status, student, evaluation);
+        return new SelfEvaluationRow(fullName, groupSection, status, student, evaluation);
     }
 
     private void showEvaluationDetails(SelfEvaluationRow row) {

@@ -3,11 +3,15 @@ package mx.uv.fei.presentation.professor;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
+import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.PractitionerDocument;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.DocumentStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
+import mx.uv.fei.domain.manager.academic.PeriodManager;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.reporting.PractitionerDocumentManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
@@ -16,6 +20,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -26,14 +31,20 @@ import javafx.scene.layout.VBox;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ProfessorDocumentsController {
 
     private static final String NO_DATE_LABEL = "—";
+    private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
+    private static final String GROUP_LABEL_PREFIX = "NRC ";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    @FXML private ComboBox<String> groupFilterComboBox;
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private Label noPractitionersLabel;
     @FXML private VBox reviewContainer;
@@ -47,17 +58,25 @@ public class ProfessorDocumentsController {
 
     private final PractitionerDocumentManager documentManager;
     private final PractitionerManager practitionerManager;
+    private final PracticeGroupManager practiceGroupManager;
+    private final PeriodManager periodManager;
     private final AppStore store;
     private final ObservableList<PractitionerDocument> documents = FXCollections.observableArrayList();
+    private final Map<String, Integer> groupLabelToId = new HashMap<>();
 
     private int professorId;
+    private int activePeriodId;
     private Practitioner selectedPractitioner;
 
     @Inject
     public ProfessorDocumentsController(PractitionerDocumentManager documentManager,
-                                        PractitionerManager practitionerManager, AppStore store) {
+                                        PractitionerManager practitionerManager,
+                                        PracticeGroupManager practiceGroupManager, PeriodManager periodManager,
+                                        AppStore store) {
         this.documentManager = documentManager;
         this.practitionerManager = practitionerManager;
+        this.practiceGroupManager = practiceGroupManager;
+        this.periodManager = periodManager;
         this.store = store;
     }
 
@@ -70,6 +89,8 @@ public class ProfessorDocumentsController {
         setupColumns();
         documentsTableView.setItems(documents);
         configurePractitionerList();
+        resolveActivePeriod();
+        loadProfessorGroups();
         loadPractitioners();
     }
 
@@ -100,20 +121,72 @@ public class ProfessorDocumentsController {
                         showReviewForPractitioner(selected);
                     }
                 });
+
+        groupFilterComboBox.valueProperty().addListener((_, _, _) -> loadPractitioners());
     }
 
-    private void loadPractitioners() {
+    private void resolveActivePeriod() {
         try {
-            List<Practitioner> practitioners = practitionerManager.retrievePractitionersByProfessor(professorId);
-            if (practitioners.isEmpty()) {
-                noPractitionersLabel.setVisible(true);
-                noPractitionersLabel.setManaged(true);
-            } else {
-                practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
+            Period activePeriod = periodManager.getActivePeriod();
+            activePeriodId = activePeriod != null ? activePeriod.getPeriodId() : 0;
+        } catch (ManagerException e) {
+            activePeriodId = 0;
+            Controller.showErrorAlert("Error de carga", e.getMessage());
+        }
+    }
+
+    private void loadProfessorGroups() {
+        ObservableList<String> groupOptions = FXCollections.observableArrayList(ALL_GROUPS_OPTION);
+
+        try {
+            List<PracticeGroup> groups = practiceGroupManager.getGroupsByProfessorAndPeriod(professorId, activePeriodId);
+            for (PracticeGroup group : groups) {
+                String groupLabel = GROUP_LABEL_PREFIX + group.getSection();
+                groupOptions.add(groupLabel);
+                groupLabelToId.put(groupLabel, group.getGroupId());
             }
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
         }
+
+        groupFilterComboBox.setItems(groupOptions);
+        groupFilterComboBox.setValue(ALL_GROUPS_OPTION);
+    }
+
+    private void loadPractitioners() {
+        try {
+            List<Practitioner> practitioners = retrievePractitionersForSelectedFilter();
+            boolean hasPractitioners = !practitioners.isEmpty();
+
+            practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
+            noPractitionersLabel.setVisible(!hasPractitioners);
+            noPractitionersLabel.setManaged(!hasPractitioners);
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("Error de carga", e.getMessage());
+        }
+    }
+
+    private List<Practitioner> retrievePractitionersForSelectedFilter() throws ManagerException {
+        String selectedGroup = groupFilterComboBox.getValue();
+        List<Practitioner> practitioners;
+
+        if (selectedGroup == null || ALL_GROUPS_OPTION.equals(selectedGroup)) {
+            practitioners = retrievePractitionersFromAllGroups();
+        } else {
+            practitioners = practitionerManager.retrieveEnrolledPractitionersByGroup(groupLabelToId.get(selectedGroup));
+        }
+
+        return practitioners;
+    }
+
+    private List<Practitioner> retrievePractitionersFromAllGroups() throws ManagerException {
+        List<Practitioner> practitioners = new ArrayList<>();
+
+        for (int groupId : groupLabelToId.values()) {
+            practitioners.addAll(practitionerManager.retrieveEnrolledPractitionersByGroup(groupId));
+        }
+
+        return practitioners;
     }
 
     private void showReviewForPractitioner(Practitioner practitioner) {

@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.GradingEligibility;
 import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.manager.evaluation.GradingEligibilityManager;
@@ -44,6 +45,8 @@ public class GradePractitionerControllerTest extends ApplicationTest {
     private static final String SAVE_BUTTON_TEXT = "Guardar Calificación";
     private static final int PROFESSOR_ID = 68;
     private static final int ACTIVE_PERIOD_ID = 5;
+    private static final int GROUP_ID = 11;
+    private static final String GROUP_SECTION = "60123";
     private static final int PRACTITIONER_ID = 123;
     private static final double TENTATIVE_GRADE = 7.5;
     private static final double FINAL_GRADE = 9.5;
@@ -67,8 +70,8 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         professor.setId(PROFESSOR_ID);
         when(appStore.getState()).thenReturn(RootState.initialState().withSessionState(new SessionState(professor)));
         when(periodManager.getActivePeriod()).thenReturn(buildActivePeriod());
-        when(practiceGroupManager.getAllPracticeGroups()).thenReturn(List.of());
-        when(practitionerManager.retrievePractitionersByProfessorAndPeriod(PROFESSOR_ID, ACTIVE_PERIOD_ID))
+        when(practiceGroupManager.getAllPracticeGroups()).thenReturn(List.of(buildProfessorGroup()));
+        when(practitionerManager.retrieveEnrolledPractitionersByGroup(GROUP_ID))
                 .thenReturn(buildAssignedPractitioners());
         when(gradingManager.previewTentativeGrade(PRACTITIONER_ID)).thenReturn(TENTATIVE_GRADE);
         when(gradingManager.getGradeByPractitionerAndPeriod(PRACTITIONER_ID, ACTIVE_PERIOD)).thenReturn(null);
@@ -90,6 +93,15 @@ public class GradePractitionerControllerTest extends ApplicationTest {
         activePeriod.setPeriodId(ACTIVE_PERIOD_ID);
         activePeriod.setPeriodName(ACTIVE_PERIOD);
         return activePeriod;
+    }
+
+    private PracticeGroup buildProfessorGroup() {
+        PracticeGroup professorGroup = new PracticeGroup();
+        professorGroup.setGroupId(GROUP_ID);
+        professorGroup.setSection(GROUP_SECTION);
+        professorGroup.setProfessorId(PROFESSOR_ID);
+        professorGroup.setPeriodId(ACTIVE_PERIOD_ID);
+        return professorGroup;
     }
 
     private List<Practitioner> buildAssignedPractitioners() {

@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.enums.UserStatus;
+import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.presentation.shell.ShellNavigator;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,6 +31,7 @@ public class CoordinatorPractitionersControllerTest extends ApplicationTest {
     private static final String FXML_PATH = "/mx/uv/fei/presentation/coordinatorPractitioners.fxml";
 
     private final PractitionerManager practitionerManager = mock(PractitionerManager.class);
+    private final PracticeGroupManager practiceGroupManager = mock(PracticeGroupManager.class);
     private final ShellNavigator shellNavigator = mock(ShellNavigator.class);
 
     @BeforeAll
@@ -41,9 +43,11 @@ public class CoordinatorPractitionersControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         when(practitionerManager.getAllPractitioners()).thenReturn(List.of(buildPractitioner()));
+        when(practiceGroupManager.getAllPracticeGroups()).thenReturn(List.of());
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_PATH));
-        loader.setControllerFactory(controllerType -> new CoordinatorPractitionersController(practitionerManager, shellNavigator));
+        loader.setControllerFactory(controllerType ->
+                new CoordinatorPractitionersController(practitionerManager, practiceGroupManager, shellNavigator));
         Parent root = loader.load();
 
         stage.setScene(new Scene(root));
