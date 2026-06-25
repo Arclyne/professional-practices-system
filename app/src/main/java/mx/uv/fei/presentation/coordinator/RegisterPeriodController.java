@@ -64,10 +64,7 @@ public class RegisterPeriodController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos Incompletos",
                     "Por favor, llene el nombre y seleccione las fechas del periodo.", AlertType.WARNING);
-            return;
-        }
-
-        if (periodBeingEdited != null) {
+        } else if (periodBeingEdited != null) {
             updatePeriod();
         } else {
             registerPeriod();

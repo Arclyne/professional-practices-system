@@ -103,9 +103,12 @@ public class RegisterPractitionerController implements Initializable {
     }
 
     private void selectGroupForId(Integer groupId) {
-        if (groupId == null) {
-            return;
+        if (groupId != null) {
+            selectMatchingGroup(groupId);
         }
+    }
+
+    private void selectMatchingGroup(Integer groupId) {
         for (Map.Entry<String, Integer> groupEntry : groupDisplayToId.entrySet()) {
             if (groupEntry.getValue().equals(groupId)) {
                 comboBoxPracticeGroup.setValue(groupEntry.getKey());
@@ -144,10 +147,7 @@ public class RegisterPractitionerController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos Incompletos",
                     "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-            return;
-        }
-
-        if (practitionerBeingEdited != null) {
+        } else if (practitionerBeingEdited != null) {
             updatePractitioner();
         } else {
             registerSinglePractitioner();

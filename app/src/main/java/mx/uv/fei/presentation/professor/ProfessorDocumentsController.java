@@ -213,17 +213,20 @@ public class ProfessorDocumentsController {
         PractitionerDocument selectedDocument = documentsTableView.getSelectionModel().getSelectedItem();
         if (selectedDocument == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un documento para abrirlo.");
-            return;
+        } else {
+            Controller.openStoredFile(selectedDocument.getStoredFileUrl());
         }
-        Controller.openStoredFile(selectedDocument.getStoredFileUrl());
     }
 
     @FXML
     private void handleAcceptAction() {
         PractitionerDocument selectedDocument = requireSelectedDocument();
-        if (selectedDocument == null) {
-            return;
+        if (selectedDocument != null) {
+            acceptDocument(selectedDocument);
         }
+    }
+
+    private void acceptDocument(PractitionerDocument selectedDocument) {
         try {
             documentManager.acceptDocument(selectedDocument.getDocumentId());
             loadDocumentsForSelected();
@@ -235,9 +238,12 @@ public class ProfessorDocumentsController {
     @FXML
     private void handleRejectAction() {
         PractitionerDocument selectedDocument = requireSelectedDocument();
-        if (selectedDocument == null) {
-            return;
+        if (selectedDocument != null) {
+            rejectDocument(selectedDocument);
         }
+    }
+
+    private void rejectDocument(PractitionerDocument selectedDocument) {
         try {
             documentManager.rejectDocument(selectedDocument.getDocumentId(), rejectReasonTextField.getText());
             rejectReasonTextField.clear();

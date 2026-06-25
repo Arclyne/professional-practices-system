@@ -154,18 +154,20 @@ public class ProgressReportGeneratorController {
         if (activePeriod == null) {
             Controller.showAlert("Periodo no disponible",
                     "No hay un periodo académico activo para cubrir el reporte.", AlertType.WARNING);
-            return;
+        } else {
+            generateReportForSelectedType();
         }
+    }
 
+    private void generateReportForSelectedType() {
         ProgressReportType reportType = resolveSelectedType();
         Date periodEnd = resolvePeriodEnd(reportType);
         if (periodEnd == null) {
             Controller.showAlert("Fecha requerida",
                     "Selecciona la fecha de corte del reporte intermedio.", AlertType.WARNING);
-            return;
+        } else {
+            generateReport(reportType, activePeriod.getStartDate(), periodEnd);
         }
-
-        generateReport(reportType, activePeriod.getStartDate(), periodEnd);
     }
 
     private Date resolvePeriodEnd(ProgressReportType reportType) {
@@ -197,9 +199,12 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleDownloadReport() {
-        if (currentProgressReport == null) {
-            return;
+        if (currentProgressReport != null) {
+            downloadCurrentReport();
         }
+    }
+
+    private void downloadCurrentReport() {
         try {
             User currentUser = store.getState().sessionState().currentUserInSession();
             List<CoveredReport> coveredReports = monthlyReportManager.getEvaluatedReportsWithActivitiesInRange(
@@ -226,10 +231,12 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleUploadSignedReport() {
-        if (currentProgressReport == null) {
-            return;
+        if (currentProgressReport != null) {
+            chooseAndUploadSignedReport();
         }
+    }
 
+    private void chooseAndUploadSignedReport() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Reporte Firmado");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documentos PDF", "*.pdf"));
@@ -255,9 +262,13 @@ public class ProgressReportGeneratorController {
 
     @FXML
     private void handleViewSignedReport() {
-        if (currentProgressReport == null || currentProgressReport.getSignedFileUrl() == null) {
-            return;
+        boolean hasSignedFile = currentProgressReport != null && currentProgressReport.getSignedFileUrl() != null;
+        if (hasSignedFile) {
+            openSignedReport();
         }
+    }
+
+    private void openSignedReport() {
         try {
             Desktop.getDesktop().browse(new URI(currentProgressReport.getSignedFileUrl()));
         } catch (Exception e) {

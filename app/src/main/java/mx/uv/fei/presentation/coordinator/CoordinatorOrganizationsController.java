@@ -87,9 +87,12 @@ public class CoordinatorOrganizationsController {
         Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
         if (selectedOrganization == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona una organización para activarla.");
-            return;
+        } else {
+            activateSelectedOrganization(selectedOrganization);
         }
+    }
 
+    private void activateSelectedOrganization(Organization selectedOrganization) {
         try {
             organizationManager.activateOrganization(selectedOrganization.getIdOrganization());
             loadOrganizations();
@@ -103,9 +106,12 @@ public class CoordinatorOrganizationsController {
         Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
         if (selectedOrganization == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona una organización para inactivarla.");
-            return;
+        } else {
+            inactivateSelectedOrganization(selectedOrganization);
         }
+    }
 
+    private void inactivateSelectedOrganization(Organization selectedOrganization) {
         try {
             organizationManager.inactivateOrganization(selectedOrganization.getIdOrganization());
             loadOrganizations();
@@ -119,10 +125,9 @@ public class CoordinatorOrganizationsController {
         Organization selectedOrganization = organizationsTableView.getSelectionModel().getSelectedItem();
         if (selectedOrganization == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona una organización para editarla.");
-            return;
+        } else {
+            openForEdit(selectedOrganization);
         }
-
-        openForEdit(selectedOrganization);
     }
 
     @FXML

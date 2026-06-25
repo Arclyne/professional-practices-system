@@ -81,11 +81,13 @@ public class ProfessorHomeController {
         if (activePeriodId <= 0) {
             sectionsLabel.setText("Sin periodo activo");
             activePeriodLabel.setText("");
-            return;
+        } else {
+            activePeriodLabel.setText(activePeriodName);
+            loadProfessorSections();
         }
+    }
 
-        activePeriodLabel.setText(activePeriodName);
-
+    private void loadProfessorSections() {
         try {
             List<PracticeGroup> groups = practiceGroupManager.getGroupsByProfessorAndPeriod(professorId, activePeriodId);
             if (groups.isEmpty()) {

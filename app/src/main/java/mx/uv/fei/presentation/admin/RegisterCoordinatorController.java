@@ -78,10 +78,7 @@ public class RegisterCoordinatorController implements Initializable {
         if (isFormIncomplete()) {
             Controller.showAlert("Campos incompletos",
                     "Por favor, llene todos los campos obligatorios.", AlertType.WARNING);
-            return;
-        }
-
-        if (coordinatorBeingEdited != null) {
+        } else if (coordinatorBeingEdited != null) {
             updateCoordinator();
         } else {
             registerCoordinator();

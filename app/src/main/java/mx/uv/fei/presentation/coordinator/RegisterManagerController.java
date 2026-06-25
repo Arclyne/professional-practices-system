@@ -96,10 +96,7 @@ public class RegisterManagerController implements Initializable {
     private void handleActionSaveButton() {
         if (isFormIncomplete()) {
             Controller.showInfoAlert("Campos incompletos", "Por favor, completa todos los datos del encargado.");
-            return;
-        }
-
-        if (managerBeingEdited != null) {
+        } else if (managerBeingEdited != null) {
             updateManager();
         } else {
             registerManager();

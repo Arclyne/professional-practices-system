@@ -68,20 +68,22 @@ public class PrioritizeProjectsController {
     }
 
     private boolean showAssignedProjectStateIfAny() {
+        boolean hasAssignedProject = false;
+
         try {
             User currentUser = store.getState().sessionState().currentUserInSession();
             Project assignedProject = postulationManager.getAssignedProject(currentUser.getId());
-            boolean hasAssignedProject = assignedProject != null && assignedProject.getProjectId() > 0;
+            hasAssignedProject = assignedProject != null && assignedProject.getProjectId() > 0;
             if (hasAssignedProject) {
                 assignedProjectNameLabel.setText(assignedProject.getProjectName());
             }
             displayAssignedState(hasAssignedProject);
-            return hasAssignedProject;
         } catch (ManagerException e) {
             Controller.showAlert("Error de conexión", e.getMessage(), AlertType.ERROR);
             displayAssignedState(false);
-            return false;
         }
+
+        return hasAssignedProject;
     }
 
     private void displayAssignedState(boolean hasAssignedProject) {
@@ -139,9 +141,9 @@ public class PrioritizeProjectsController {
         if (selectedProject == null) {
             Controller.showAlert("Selección requerida",
                     "Selecciona un proyecto para ver su información.", AlertType.WARNING);
-            return;
+        } else {
+            Controller.showAlert("Información del proyecto", buildProjectDetail(selectedProject), AlertType.INFORMATION);
         }
-        Controller.showAlert("Información del proyecto", buildProjectDetail(selectedProject), AlertType.INFORMATION);
     }
 
     private Project resolveSelectedProject() {

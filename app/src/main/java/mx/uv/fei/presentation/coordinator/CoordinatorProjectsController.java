@@ -114,9 +114,12 @@ public class CoordinatorProjectsController {
         Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
         if (selectedProject == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para activarlo.");
-            return;
+        } else {
+            activateSelectedProject(selectedProject);
         }
+    }
 
+    private void activateSelectedProject(Project selectedProject) {
         try {
             projectManager.activateProject(selectedProject.getProjectId());
             loadProjects();
@@ -130,9 +133,12 @@ public class CoordinatorProjectsController {
         Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
         if (selectedProject == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para inactivarlo.");
-            return;
+        } else {
+            inactivateSelectedProject(selectedProject);
         }
+    }
 
+    private void inactivateSelectedProject(Project selectedProject) {
         try {
             projectManager.inactivateProject(selectedProject.getProjectId());
             loadProjects();
@@ -146,10 +152,9 @@ public class CoordinatorProjectsController {
         Project selectedProject = projectsTableView.getSelectionModel().getSelectedItem();
         if (selectedProject == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un proyecto para editarlo.");
-            return;
+        } else {
+            openForEdit(selectedProject);
         }
-
-        openForEdit(selectedProject);
     }
 
     @FXML

@@ -43,9 +43,12 @@ public class StartSessionController {
         if (identifier.isEmpty() || password.isEmpty()) {
             Controller.showErrorAlert("Campos requeridos",
                     "Por favor, ingrese su correo o matrícula y su contraseña.");
-            return;
+        } else {
+            processLogin(identifier, password);
         }
+    }
 
+    private void processLogin(String identifier, String password) {
         try {
             startSessionManager.processLogin(buildCredential(identifier, password));
         } catch (ManagerException e) {

@@ -44,12 +44,14 @@ public class Controller {
     public static void openStoredFile(String fileUrl) {
         if (fileUrl == null || fileUrl.isBlank()) {
             showErrorAlert("Archivo no disponible", "El documento seleccionado no tiene un archivo asociado.");
-            return;
-        }
-        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+        } else if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             showErrorAlert("Acción no disponible", "El sistema no permite abrir archivos desde la aplicación.");
-            return;
+        } else {
+            browseStoredFile(fileUrl);
         }
+    }
+
+    private static void browseStoredFile(String fileUrl) {
         try {
             Desktop.getDesktop().browse(new URI(fileUrl));
         } catch (IOException | URISyntaxException e) {

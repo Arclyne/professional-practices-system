@@ -106,9 +106,12 @@ public class CoordinatorPractitionersController {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para activarlo.");
-            return;
+        } else {
+            activateSelectedPractitioner(selectedPractitioner);
         }
+    }
 
+    private void activateSelectedPractitioner(Practitioner selectedPractitioner) {
         try {
             practitionerManager.activatePractitioner(selectedPractitioner.getId());
             loadPractitioners();
@@ -122,9 +125,12 @@ public class CoordinatorPractitionersController {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para inactivarlo.");
-            return;
+        } else {
+            inactivateSelectedPractitioner(selectedPractitioner);
         }
+    }
 
+    private void inactivateSelectedPractitioner(Practitioner selectedPractitioner) {
         try {
             practitionerManager.inactivatePractitioner(selectedPractitioner.getId());
             loadPractitioners();
@@ -138,10 +144,9 @@ public class CoordinatorPractitionersController {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para editarlo.");
-            return;
+        } else {
+            openForEdit(selectedPractitioner);
         }
-
-        openForEdit(selectedPractitioner);
     }
 
     private void openForEdit(Practitioner practitioner) {
@@ -153,10 +158,9 @@ public class CoordinatorPractitionersController {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para reinscribirlo.");
-            return;
+        } else {
+            shellNavigator.openForm(ENROLLMENT_FORM_VIEW, selectedPractitioner);
         }
-
-        shellNavigator.openForm(ENROLLMENT_FORM_VIEW, selectedPractitioner);
     }
 
     @FXML

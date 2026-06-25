@@ -192,10 +192,12 @@ public class PractitionerReportsListController implements Initializable {
 
     @FXML
     private void handleDownloadPdfAction(ActionEvent event) {
-        if (selectedReport == null) {
-            return;
+        if (selectedReport != null) {
+            downloadSelectedReportPdf();
         }
+    }
 
+    private void downloadSelectedReportPdf() {
         try {
             User currentPractitioner = store.getState().sessionState().currentUserInSession();
             List<Activity> reportActivities = activityManager.getActivitiesByReport(selectedReport.getReportId());
@@ -215,10 +217,12 @@ public class PractitionerReportsListController implements Initializable {
 
     @FXML
     private void handleUploadSignedPdfAction(ActionEvent event) {
-        if (selectedReport == null) {
-            return;
+        if (selectedReport != null) {
+            chooseAndUploadSignedReport();
         }
+    }
 
+    private void chooseAndUploadSignedReport() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar Reporte Firmado");
         fileChooser.getExtensionFilters().add(
@@ -227,28 +231,35 @@ public class PractitionerReportsListController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(reportsListView.getScene().getWindow());
 
         if (selectedFile != null) {
-            try {
-                String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
-                reportManager.submitSignedReport(selectedReport, fileUrl);
+            uploadSignedReport(selectedFile);
+        }
+    }
 
-                Controller.showAlert("Reporte Enviado", "Documento subido exitosamente.", AlertType.INFORMATION);
+    private void uploadSignedReport(File selectedFile) {
+        try {
+            String fileUrl = cloudStorageManager.uploadEvidenceFile(selectedFile);
+            reportManager.submitSignedReport(selectedReport, fileUrl);
 
-                User currentUser = store.getState().sessionState().currentUserInSession();
-                int practitionerId = currentUser != null ? currentUser.getId() : 0;
-                loadReportsList(practitionerId);
-                showReportDetails(selectedReport);
-            } catch (ManagerException e) {
-                Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
-            }
+            Controller.showAlert("Reporte Enviado", "Documento subido exitosamente.", AlertType.INFORMATION);
+
+            User currentUser = store.getState().sessionState().currentUserInSession();
+            int practitionerId = currentUser != null ? currentUser.getId() : 0;
+            loadReportsList(practitionerId);
+            showReportDetails(selectedReport);
+        } catch (ManagerException e) {
+            Controller.showAlert("Error al Subir", e.getMessage(), AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleViewSignedPdfAction(ActionEvent event) {
-        if (selectedReport == null || selectedReport.getSignedFileUrl() == null) {
-            return;
+        boolean hasSignedFile = selectedReport != null && selectedReport.getSignedFileUrl() != null;
+        if (hasSignedFile) {
+            openSignedReport();
         }
+    }
 
+    private void openSignedReport() {
         try {
             java.awt.Desktop.getDesktop().browse(new java.net.URI(selectedReport.getSignedFileUrl()));
         } catch (Exception exception) {

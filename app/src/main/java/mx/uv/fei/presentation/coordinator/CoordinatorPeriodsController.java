@@ -143,9 +143,12 @@ public class CoordinatorPeriodsController {
         Period selectedPeriod = periodsTableView.getSelectionModel().getSelectedItem();
         if (selectedPeriod == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un periodo de la lista para activarlo.");
-            return;
+        } else {
+            activateSelectedPeriod(selectedPeriod);
         }
+    }
 
+    private void activateSelectedPeriod(Period selectedPeriod) {
         try {
             periodManager.activatePeriod(selectedPeriod.getPeriodId());
             Controller.showSuccessAlert("Periodo activado", "El periodo fue activado correctamente.");
@@ -161,15 +164,19 @@ public class CoordinatorPeriodsController {
             Period activePeriod = periodManager.getActivePeriod();
             if (activePeriod == null) {
                 Controller.showInfoAlert("Sin periodo activo", "No hay un periodo activo para concluir.");
-                return;
+            } else {
+                concludeActivePeriod(activePeriod);
             }
-            periodConclusionManager.concludePeriod(activePeriod.getPeriodId());
-            Controller.showSuccessAlert("Periodo concluido",
-                    "El periodo activo fue concluido. Los practicantes sin calificación recibieron 5 automáticamente.");
-            loadPeriods();
         } catch (ManagerException e) {
             Controller.showErrorAlert("No se pudo inactivar", e.getMessage());
         }
+    }
+
+    private void concludeActivePeriod(Period activePeriod) throws ManagerException {
+        periodConclusionManager.concludePeriod(activePeriod.getPeriodId());
+        Controller.showSuccessAlert("Periodo concluido",
+                "El periodo activo fue concluido. Los practicantes sin calificación recibieron 5 automáticamente.");
+        loadPeriods();
     }
 
     @FXML
@@ -177,10 +184,9 @@ public class CoordinatorPeriodsController {
         Period selectedPeriod = periodsTableView.getSelectionModel().getSelectedItem();
         if (selectedPeriod == null) {
             Controller.showInfoAlert("Selección requerida", "Selecciona un periodo de la lista para editarlo.");
-            return;
+        } else {
+            shellNavigator.openForm(REGISTER_FORM_VIEW, selectedPeriod);
         }
-
-        shellNavigator.openForm(REGISTER_FORM_VIEW, selectedPeriod);
     }
 
     @FXML
