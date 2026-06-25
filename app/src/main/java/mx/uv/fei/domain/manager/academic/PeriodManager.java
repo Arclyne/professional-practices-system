@@ -8,6 +8,7 @@ import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.FieldLengthLimits;
 import mx.uv.fei.domain.dto.Period;
+import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import java.util.List;
 public class PeriodManager {
 
     private static final Logger log = LoggerFactory.getLogger(PeriodManager.class);
-    private static final String PERIOD_STATUS_UPCOMING = "Upcoming";
 
     private final IPeriodDAO periodDAO;
 
@@ -30,7 +30,7 @@ public class PeriodManager {
 
     public void registerNewPeriod(Period period) throws ManagerException {
         validatePeriodData(period);
-        period.setPeriodStatus(PERIOD_STATUS_UPCOMING);
+        period.setPeriodStatus(PeriodStatus.UPCOMING.getDatabaseValue());
 
         try {
             int generatedId = periodDAO.insertPeriod(period);

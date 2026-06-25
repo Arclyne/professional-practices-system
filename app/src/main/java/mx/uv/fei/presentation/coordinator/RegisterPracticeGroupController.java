@@ -6,6 +6,7 @@ import mx.uv.fei.domain.common.Controller;
 import mx.uv.fei.domain.dto.Period;
 import mx.uv.fei.domain.dto.PracticeGroup;
 import mx.uv.fei.domain.dto.Professor;
+import mx.uv.fei.domain.enums.PeriodStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
@@ -104,9 +105,12 @@ public class RegisterPracticeGroupController implements Initializable {
             ObservableList<String> periodOptions = FXCollections.observableArrayList();
 
             for (Period period : periods) {
-                periodOptions.add(period.getPeriodName());
-                periodIdByName.put(period.getPeriodName(), period.getPeriodId());
-                periodNameById.put(period.getPeriodId(), period.getPeriodName());
+                if (isSelectablePeriod(period)) {
+                    String displayLabel = buildPeriodDisplayLabel(period);
+                    periodOptions.add(displayLabel);
+                    periodIdByName.put(displayLabel, period.getPeriodId());
+                    periodNameById.put(period.getPeriodId(), displayLabel);
+                }
             }
             comboBoxPeriod.setItems(periodOptions);
         } catch (ManagerException e) {
@@ -114,6 +118,15 @@ public class RegisterPracticeGroupController implements Initializable {
             Controller.showAlert("Error de Carga",
                     "No se pudieron cargar los profesores o los periodos disponibles.", AlertType.ERROR);
         }
+    }
+
+    private boolean isSelectablePeriod(Period period) {
+        PeriodStatus status = PeriodStatus.fromString(period.getPeriodStatus());
+        return status == PeriodStatus.UPCOMING || status == PeriodStatus.ACTIVE;
+    }
+
+    private String buildPeriodDisplayLabel(Period period) {
+        return period.getPeriodName() + " (" + PeriodStatus.fromString(period.getPeriodStatus()).getDisplayLabel() + ")";
     }
 
     private void populateFormForEdit(PracticeGroup group) {
