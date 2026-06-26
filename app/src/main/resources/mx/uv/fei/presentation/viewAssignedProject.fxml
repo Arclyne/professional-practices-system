@@ -1,71 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="mx.uv.fei.presentation.practitioner.ViewAssignedProjectController"
-      spacing="20.0"
-      style="-fx-background-color: #FFFFFF;">
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="mx.uv.fei.presentation.practitioner.ViewAssignedProjectController"
+            style="-fx-background-color: #FFFFFF;">
 
-    <padding>
-        <Insets top="30.0" right="40.0" bottom="30.0" left="40.0"/>
-    </padding>
+    <VBox spacing="20.0" style="-fx-background-color: #FFFFFF;">
 
-    <children>
+        <padding>
+            <Insets top="30.0" right="40.0" bottom="30.0" left="40.0"/>
+        </padding>
 
-        <Label text="Mi Proyecto Asignado"
-               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+        <children>
 
-        <Label text="Esta es la información del proyecto en el que has sido aceptado."
-               style="-fx-font-size: 13px; -fx-text-fill: #6B7280;"/>
+            <Label text="Mi Proyecto Asignado"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
 
-        <Region prefHeight="10.0"/>
+            <Label text="Esta es la información del proyecto en el que has sido aceptado."
+                   style="-fx-font-size: 13px; -fx-text-fill: #6B7280;"/>
 
-        <VBox spacing="16.0"
-              style="-fx-background-color: #F9FAFB; -fx-background-radius: 12px; -fx-border-color: #E5E7EB; -fx-border-radius: 12px;">
-            <padding>
-                <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
-            </padding>
-            <children>
+            <Region prefHeight="10.0"/>
 
-                <Label fx:id="projectNameLabel"
-                       text="Nombre del Proyecto"
-                       wrapText="true"
-                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+            <VBox spacing="16.0"
+                  style="-fx-background-color: #F9FAFB; -fx-background-radius: 12px; -fx-border-color: #E5E7EB; -fx-border-radius: 12px;">
+                <padding>
+                    <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
+                </padding>
+                <children>
 
-                <HBox spacing="24.0">
-                    <children>
-                        <Label fx:id="projectStatusLabel"
-                               text="Estado:"
-                               style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
-                        <Label fx:id="projectPeriodLabel"
-                               text="Periodo:"
-                               style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
-                    </children>
-                </HBox>
+                    <Label fx:id="projectNameLabel"
+                           text="Nombre del Proyecto"
+                           wrapText="true"
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
 
-                <Region prefHeight="4.0"/>
+                    <HBox spacing="24.0">
+                        <children>
+                            <Label fx:id="projectStatusLabel"
+                                   text="Estado:"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                            <Label fx:id="projectCapacityLabel"
+                                   text="Cupos:"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                            <Label fx:id="projectPeriodLabel"
+                                   text="Periodo:"
+                                   style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                        </children>
+                    </HBox>
 
-                <Label text="Descripción"
-                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                    <Region prefHeight="4.0"/>
 
-                <TextArea fx:id="projectDescriptionTextArea"
-                          editable="false"
-                          wrapText="true"
-                          prefRowCount="8"
-                          style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #D1D5DB; -fx-border-radius: 8px;"/>
+                    <Label text="Descripción"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
 
-            </children>
-        </VBox>
+                    <TextArea fx:id="projectDescriptionTextArea"
+                              editable="false"
+                              wrapText="true"
+                              prefRowCount="6"
+                              style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #D1D5DB; -fx-border-radius: 8px;"/>
 
-        <Region VBox.vgrow="ALWAYS"/>
+                </children>
+            </VBox>
 
-    </children>
-</VBox>
+            <VBox spacing="10.0"
+                  style="-fx-background-color: #F9FAFB; -fx-background-radius: 12px; -fx-border-color: #E5E7EB; -fx-border-radius: 12px;">
+                <padding>
+                    <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
+                </padding>
+                <children>
+
+                    <Label text="Organización"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+
+                    <Label fx:id="organizationNameLabel"
+                           text="Nombre de la organización"
+                           wrapText="true"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+                    <Label fx:id="organizationCityLabel"
+                           text="Ciudad:"
+                           wrapText="true"
+                           style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                    <Label fx:id="organizationAddressLabel"
+                           text="Dirección:"
+                           wrapText="true"
+                           style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                    <Label fx:id="organizationBusinessLabel"
+                           text="Giro:"
+                           wrapText="true"
+                           style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+                    <Label fx:id="organizationContactLabel"
+                           text="Contacto:"
+                           wrapText="true"
+                           style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+
+                </children>
+            </VBox>
+
+            <VBox spacing="10.0"
+                  style="-fx-background-color: #F9FAFB; -fx-background-radius: 12px; -fx-border-color: #E5E7EB; -fx-border-radius: 12px;">
+                <padding>
+                    <Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/>
+                </padding>
+                <children>
+
+                    <Label text="Encargado"
+                           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+
+                    <Label fx:id="managerNameLabel"
+                           text="Nombre del encargado"
+                           wrapText="true"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+                    <Label fx:id="managerContactLabel"
+                           text="Contacto:"
+                           wrapText="true"
+                           style="-fx-font-size: 13px; -fx-text-fill: #374151;"/>
+
+                </children>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+        </children>
+    </VBox>
+</ScrollPane>
