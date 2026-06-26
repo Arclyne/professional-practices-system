@@ -36,7 +36,7 @@
         <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction" HBox.hgrow="ALWAYS"
                    promptText="Buscar por matrícula"/>
         <ComboBox fx:id="groupFilterComboBox" onAction="#handleFilterAction" prefWidth="170.0"/>
-        <Button onAction="#handleViewProjectAction" styleClass="secondary-button" text="Ver proyecto"/>
+        <Button onAction="#handleViewProjectAction" styleClass="secondary-button" text="Ver detalles"/>
         <Button onAction="#handleRefreshAction" styleClass="secondary-button" text="Refrescar"/>
     </HBox>
 
