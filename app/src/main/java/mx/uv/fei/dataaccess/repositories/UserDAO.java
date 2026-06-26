@@ -40,10 +40,6 @@ public class UserDAO extends BaseDAO implements IUserDAO {
             "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE username = ?";
     private static final String SQL_SELECT_USER_BY_EMAIL =
             "SELECT user_id, username, password, name, last_name, email, role_name, status, gender, registration_date, discharge_date FROM user WHERE email = ?";
-    private static final String SQL_VERIFY_CREDENTIALS_BY_USERNAME =
-            "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
-    private static final String SQL_VERIFY_CREDENTIALS_BY_EMAIL =
-            "SELECT COUNT(*) FROM user WHERE email = ? AND password = ?";
     private static final String SQL_SELECT_USER_ROLE_BY_USERNAME =
             "SELECT role_name FROM user WHERE username = ?";
 
@@ -111,50 +107,6 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         } catch (SQLException e) {
             throw new DAOException("Error al actualizar el usuario en la transacción.", e);
         }
-    }
-
-    @Override
-    public boolean verifyCredentialsByUserName(String userName, String password) throws DAOException {
-        boolean isValid = false;
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_USERNAME)) {
-
-            statement.setString(1, userName);
-            statement.setString(2, password);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    isValid = resultSet.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            throw new DAOException("Error al verificar las credenciales del usuario por nombre de usuario.", e);
-        }
-
-        return isValid;
-    }
-
-    @Override
-    public boolean verifyCredentialsByEmail(String email, String password) throws DAOException {
-        boolean isValid = false;
-
-        try (Connection connection = databaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_VERIFY_CREDENTIALS_BY_EMAIL)) {
-
-            statement.setString(1, email);
-            statement.setString(2, password);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    isValid = resultSet.getInt(1) > 0;
-                }
-            }
-        } catch (SQLException e) {
-            throw new DAOException("Error al verificar las credenciales del usuario por correo electrónico.", e);
-        }
-
-        return isValid;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class CoordinatorDAOTest {
         newCoordinator.setLastName("Luna Mendez");
         newCoordinator.setUserName("pluna");
         newCoordinator.setEmail("pluna@uv.mx");
-        newCoordinator.setPassword("CoordUv2026");
+        newCoordinator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         newCoordinator.setRole("Coordinator");
         // Un segundo coordinador no puede estar activo (ya hay uno activo sembrado): se da de alta como
         // PENDING, igual que en el flujo real de registro.
@@ -59,7 +59,7 @@ public class CoordinatorDAOTest {
         Coordinator storedCoordinator = new Coordinator();
         storedCoordinator.setId(STORED_COORDINATOR_ID);
         storedCoordinator.setUserName("30022222");
-        storedCoordinator.setPassword("CoordFei2026");
+        storedCoordinator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedCoordinator.setName("Marco Antonio");
         storedCoordinator.setLastName("Rodriguez Castillo");
         storedCoordinator.setEmail("mrodriguez@uv.mx");

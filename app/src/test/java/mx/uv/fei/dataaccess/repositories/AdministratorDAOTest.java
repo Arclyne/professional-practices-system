@@ -47,7 +47,7 @@ public class AdministratorDAOTest {
         newAdministrator.setEmail("gtorres@uv.mx");
         newAdministrator.setName("Guadalupe");
         newAdministrator.setLastName("Torres Lagunes");
-        newAdministrator.setPassword("AdminUv2026");
+        newAdministrator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         newAdministrator.setRole("Administrator");
         // Un segundo administrador no puede estar activo (ya hay uno activo sembrado): se inserta como
         // PENDING para respetar la nueva invariante de "un solo administrador activo".
@@ -59,7 +59,7 @@ public class AdministratorDAOTest {
         Administrator storedAdministrator = new Administrator();
         storedAdministrator.setId(STORED_ADMINISTRATOR_ID);
         storedAdministrator.setUserName("30011111");
-        storedAdministrator.setPassword("AdminFei2026");
+        storedAdministrator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedAdministrator.setName("Ricardo");
         storedAdministrator.setLastName("Marquez Sosa");
         storedAdministrator.setEmail("rmarquez@uv.mx");

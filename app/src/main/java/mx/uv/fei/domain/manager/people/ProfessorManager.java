@@ -7,6 +7,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IProfessorDAO;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.common.PersistenceErrorTranslator;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Professor;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -37,6 +38,7 @@ public class ProfessorManager {
         professor.setRole("Professor");
         professor.setStatus(UserStatus.PENDING);
         UserValidator.validateProfessorData(professor);
+        professor.setPassword(PasswordHasher.hash(temporaryPassword));
 
         try {
             int generatedId = professorDAO.insertProfessor(professor);

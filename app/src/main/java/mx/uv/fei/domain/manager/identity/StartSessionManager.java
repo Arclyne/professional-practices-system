@@ -4,6 +4,7 @@ import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.User;
@@ -64,18 +65,16 @@ public class StartSessionManager {
     }
 
     private User authenticateAndRetrieveUser(String identifier, String password, LoginMethod loginMethod) throws DAOException, ManagerException {
-        boolean isCredentialValid;
         User user;
 
         if (loginMethod == LoginMethod.EMAIL) {
-            isCredentialValid = userDAO.verifyCredentialsByEmail(identifier, password);
-            user = isCredentialValid ? userDAO.getUserByEmail(identifier) : null;
+            user = userDAO.getUserByEmail(identifier);
         } else {
-            isCredentialValid = userDAO.verifyCredentialsByUserName(identifier, password);
-            user = isCredentialValid ? userDAO.getUserByUserName(identifier) : null;
+            user = userDAO.getUserByUserName(identifier);
         }
 
-        if (!isCredentialValid || user == null) {
+        boolean isCredentialValid = user.getId() > 0 && PasswordHasher.matches(password, user.getPassword());
+        if (!isCredentialValid) {
             throw new ManagerException(GENERIC_AUTH_ERROR);
         }
 

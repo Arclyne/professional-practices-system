@@ -47,7 +47,7 @@ public class ProfessorDAOTest {
         newProfessor.setLastName("Sandoval Rivas");
         newProfessor.setUserName("nsandoval");
         newProfessor.setEmail("nsandoval@uv.mx");
-        newProfessor.setPassword("ProfesoraUv2026");
+        newProfessor.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         newProfessor.setRole("Professor");
         newProfessor.setStatus(UserStatus.ACTIVE);
         newProfessor.setGender(Gender.FEMALE);
@@ -57,7 +57,7 @@ public class ProfessorDAOTest {
         Professor storedProfessor = new Professor();
         storedProfessor.setId(STORED_PROFESSOR_ID);
         storedProfessor.setUserName("30033333");
-        storedProfessor.setPassword("ProfeFei2026");
+        storedProfessor.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedProfessor.setName("Jose Eduardo");
         storedProfessor.setLastName("Prior Hernandez");
         storedProfessor.setEmail("eprior@uv.mx");

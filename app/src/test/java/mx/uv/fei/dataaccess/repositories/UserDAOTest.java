@@ -2,7 +2,6 @@ package mx.uv.fei.dataaccess.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -31,7 +30,6 @@ public class UserDAOTest {
     private static final int STORED_COORDINATOR_ID = 67;
     private static final String STORED_ADMIN_USERNAME = "30011111";
     private static final String STORED_ADMIN_EMAIL = "rmarquez@uv.mx";
-    private static final String STORED_ADMIN_PASSWORD = "AdminFei2026";
 
     @Inject
     private IDatabaseConnection dbConnection;
@@ -50,7 +48,7 @@ public class UserDAOTest {
         newUser.setEmail("zS25080910@estudiantes.uv.mx");
         newUser.setName("Luis Fernando");
         newUser.setLastName("Martinez Rivera");
-        newUser.setPassword("PracticanteUv2026");
+        newUser.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         newUser.setRole("Practitioner");
         newUser.setStatus(UserStatus.ACTIVE);
         newUser.setGender(Gender.MALE);
@@ -60,7 +58,7 @@ public class UserDAOTest {
         User storedUser = new User();
         storedUser.setId(STORED_ADMINISTRATOR_ID);
         storedUser.setUserName(STORED_ADMIN_USERNAME);
-        storedUser.setPassword(STORED_ADMIN_PASSWORD);
+        storedUser.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedUser.setName("Ricardo");
         storedUser.setLastName("Marquez Sosa");
         storedUser.setEmail(STORED_ADMIN_EMAIL);
@@ -89,24 +87,10 @@ public class UserDAOTest {
         try (Connection connection = dbConnection.getConnection()) {
             newUser.setId(STORED_ADMINISTRATOR_ID);
             newUser.setStatus(UserStatus.INACTIVE);
-            newUser.setPassword("NuevaClaveUv2026");
+            newUser.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
 
             assertDoesNotThrow(() -> userDAO.updateUser(newUser, connection));
         }
-    }
-
-    @Test
-    void verifyCredentialsByUserName_ValidCredentials_ReturnsTrue() throws DAOException {
-        boolean result = userDAO.verifyCredentialsByUserName(STORED_ADMIN_USERNAME, STORED_ADMIN_PASSWORD);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void verifyCredentialsByEmail_ValidCredentials_ReturnsTrue() throws DAOException {
-        boolean result = userDAO.verifyCredentialsByEmail(STORED_ADMIN_EMAIL, STORED_ADMIN_PASSWORD);
-
-        assertTrue(result);
     }
 
     @Test
@@ -146,13 +130,6 @@ public class UserDAOTest {
         try (Connection connection = dbConnection.getConnection()) {
             assertThrows(DAOException.class, () -> userDAO.insertUser(newUser, connection));
         }
-    }
-
-    @Test
-    void verifyCredentialsByUserName_InvalidPassword_ReturnsFalse() throws DAOException {
-        boolean result = userDAO.verifyCredentialsByUserName(STORED_ADMIN_USERNAME, "ClaveIncorrecta99");
-
-        assertFalse(result);
     }
 
     @Test

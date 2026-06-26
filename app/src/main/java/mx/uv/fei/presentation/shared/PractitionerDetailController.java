@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 @Component
 public class PractitionerDetailController {
 
-    private static final Logger log = LoggerFactory.getLogger(PractitionerDetailController.class);
-
     private static final String NO_PRACTITIONER_MESSAGE =
             "No se pudo abrir el detalle: practicante no disponible.";
     private static final String LOAD_ERROR_MESSAGE =
@@ -107,7 +105,6 @@ public class PractitionerDetailController {
             displayPractitioner(practitioner);
             displayAssignedProject(practitioner.getId());
         } catch (ManagerException e) {
-            log.error("No se pudieron cargar los detalles del practicante.", e);
             showLoadError(LOAD_ERROR_MESSAGE);
         }
     }

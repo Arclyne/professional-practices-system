@@ -57,7 +57,7 @@ public class ProfessorManagerTest {
         Professor storedProfessor = new Professor();
         storedProfessor.setId(STORED_PROFESSOR_ID);
         storedProfessor.setUserName("30033333");
-        storedProfessor.setPassword("ProfeFei2026");
+        storedProfessor.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedProfessor.setName("Jose Eduardo");
         storedProfessor.setLastName("Prior Hernandez");
         storedProfessor.setEmail("eprior@uv.mx");

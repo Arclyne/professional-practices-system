@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IAdministratorDAO;
 import mx.uv.fei.domain.common.PersistenceErrorTranslator;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Administrator;
 
@@ -44,6 +45,7 @@ public class AdminManager {
         administrator.setStatus(UserStatus.ACTIVE);
         administrator.setRole("Administrator");
         UserValidator.validateAdministratorData(administrator);
+        administrator.setPassword(PasswordHasher.hash(administrator.getPassword()));
 
         verifyNoActiveAdmin();
 
