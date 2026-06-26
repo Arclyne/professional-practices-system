@@ -1,12 +1,6 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Define los estados posibles de un usuario dentro del sistema.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public enum UserStatus {
 
     ACTIVE("Active", "Activo"),

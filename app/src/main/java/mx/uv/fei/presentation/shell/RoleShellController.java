@@ -23,14 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 
-/**
- * Base reutilizable del panel por rol: barra lateral fija más un área de contenido
- * que intercambia sub-vistas sin recargar el shell. Cada rol la extiende y solo
- * declara sus accesos de navegación.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public abstract class RoleShellController implements IDisposable {
 
     private static final Logger log = LoggerFactory.getLogger(RoleShellController.class);

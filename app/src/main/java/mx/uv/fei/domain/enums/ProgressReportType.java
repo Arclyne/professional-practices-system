@@ -1,12 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Define los tipos de reporte de avance y sus horas requeridas de práctica.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public enum ProgressReportType {
 
     INTERMEDIO("Intermedio", 210),

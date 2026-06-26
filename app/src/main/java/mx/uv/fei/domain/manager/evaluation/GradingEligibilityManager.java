@@ -21,15 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Determina si un practicante cumple los requisitos de cierre para ser calificado.
- *
- * Un practicante es calificable cuando su carta de liberación (documentos finales) fue
- * aceptada, su reporte final fue evaluado (horas cumplidas) y su autoevaluación fue aceptada.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 @Component
 public class GradingEligibilityManager {
 

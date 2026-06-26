@@ -4,12 +4,6 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.io.File;
 
-/**
- * Valida los archivos subidos por los usuarios antes de almacenarlos.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public class FileValidator {
 
     private static final int MAX_FILE_SIZE_MB = 10;

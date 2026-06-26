@@ -2,13 +2,6 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-/**
- * Representa un estudiante inscrito en el programa de prácticas profesionales.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class Practitioner extends User {
 
     private String indigenousLanguage;

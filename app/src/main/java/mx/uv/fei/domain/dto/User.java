@@ -6,13 +6,7 @@ import mx.uv.fei.domain.enums.UserStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Representa un usuario del sistema con sus datos de autenticación y perfil.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class User {
 
     private int id;

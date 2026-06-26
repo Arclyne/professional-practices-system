@@ -4,13 +4,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Representa una plantilla de documento reutilizable para la generación de reportes.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class DocumentTemplate {
 
     private String templateId;

@@ -1,12 +1,6 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Define los estados posibles de un reporte dentro del flujo de evaluación.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public enum ReportStatus {
 
     PENDING("Pendiente de Firma"),
