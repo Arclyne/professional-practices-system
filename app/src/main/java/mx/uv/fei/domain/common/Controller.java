@@ -23,7 +23,7 @@ public class Controller {
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
 
     private static final String FILE_UNAVAILABLE_MESSAGE =
-            "El archivo no está disponible. Es posible que se haya movido o eliminado de la carpeta de almacenamiento.";
+            "El archivo no está disponible.";
 
     public static void showSuccessAlert(String alertTitle, String alertMessage) {
         showAlert(alertTitle, alertMessage, AlertType.INFORMATION);
