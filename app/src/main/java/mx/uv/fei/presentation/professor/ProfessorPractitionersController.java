@@ -8,9 +8,9 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PostulationManager;
 import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
-import mx.uv.fei.domain.manager.people.OrganizationManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
+import mx.uv.fei.presentation.shell.ShellNavigator;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -34,6 +34,7 @@ public class ProfessorPractitionersController {
     private static final String GROUP_FILTER_ALL = "Todos los grupos";
     private static final String NO_GROUP_LABEL = "Sin grupo";
     private static final String NO_PROJECT_LABEL = "Sin proyecto asignado";
+    private static final String PRACTITIONER_DETAIL_VIEW = "/mx/uv/fei/presentation/practitionerDetail.fxml";
 
     @FXML private Label noActivePeriodLabel;
     @FXML private TextField searchTextField;
@@ -49,13 +50,12 @@ public class ProfessorPractitionersController {
     private final PracticeGroupManager practiceGroupManager;
     private final PractitionerManager practitionerManager;
     private final PostulationManager postulationManager;
-    private final OrganizationManager organizationManager;
+    private final ShellNavigator shellNavigator;
     private final AppStore store;
 
     private final ObservableList<Practitioner> allPractitioners = FXCollections.observableArrayList();
     private final Map<Integer, String> sectionByPractitionerId = new HashMap<>();
     private final Map<Integer, String> projectNameByPractitionerId = new HashMap<>();
-    private final Map<Integer, Project> projectByPractitionerId = new HashMap<>();
 
     private FilteredList<Practitioner> filteredPractitioners;
     private int professorId;
@@ -67,14 +67,14 @@ public class ProfessorPractitionersController {
             PracticeGroupManager practiceGroupManager,
             PractitionerManager practitionerManager,
             PostulationManager postulationManager,
-            OrganizationManager organizationManager,
+            ShellNavigator shellNavigator,
             AppStore store
     ) {
         this.periodManager = periodManager;
         this.practiceGroupManager = practiceGroupManager;
         this.practitionerManager = practitionerManager;
         this.postulationManager = postulationManager;
-        this.organizationManager = organizationManager;
+        this.shellNavigator = shellNavigator;
         this.store = store;
     }
 
@@ -143,6 +143,7 @@ public class ProfessorPractitionersController {
     private void loadGroupPractitioners(PracticeGroup group) throws ManagerException {
         List<Practitioner> practitioners = practitionerManager.retrieveEnrolledPractitionersByGroup(group.getGroupId());
         for (Practitioner practitioner : practitioners) {
+            practitioner.setGroupId(group.getGroupId());
             sectionByPractitionerId.put(practitioner.getId(), group.getSection());
             resolveAssignedProject(practitioner.getId());
             allPractitioners.add(practitioner);
@@ -152,7 +153,6 @@ public class ProfessorPractitionersController {
     private void resolveAssignedProject(int practitionerId) throws ManagerException {
         Project assignedProject = postulationManager.getAssignedProject(practitionerId);
         if (assignedProject.getProjectId() > 0) {
-            projectByPractitionerId.put(practitionerId, assignedProject);
             projectNameByPractitionerId.put(practitionerId, assignedProject.getProjectName());
         }
     }
@@ -161,7 +161,6 @@ public class ProfessorPractitionersController {
         allPractitioners.clear();
         sectionByPractitionerId.clear();
         projectNameByPractitionerId.clear();
-        projectByPractitionerId.clear();
     }
 
     @FXML
@@ -184,38 +183,9 @@ public class ProfessorPractitionersController {
     private void handleViewProjectAction() {
         Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
         if (selectedPractitioner == null) {
-            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para ver su proyecto.");
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para ver su detalle.");
         } else {
-            showProjectForPractitioner(selectedPractitioner);
-        }
-    }
-
-    private void showProjectForPractitioner(Practitioner selectedPractitioner) {
-        Project assignedProject = projectByPractitionerId.get(selectedPractitioner.getId());
-        if (assignedProject == null) {
-            Controller.showInfoAlert("Sin proyecto",
-                    "El practicante no tiene un proyecto asignado en este periodo.");
-        } else {
-            Controller.showInfoAlert("Proyecto de " + selectedPractitioner.getEnrollment(),
-                    buildProjectDetail(assignedProject));
-        }
-    }
-
-    private String buildProjectDetail(Project project) {
-        return project.getProjectName()
-                + "\n\nEstado: " + project.getStatus()
-                + "\nPeriodo: " + project.getStartDate() + " al " + project.getEndDate()
-                + "\nDescription: " + project.getDescription()
-                + "\nOrganization: " + organizationNameOf(project);
-    }
-
-    private String organizationNameOf(Project project) {
-        try {
-            Organization organization = organizationManager.getOrganizationById(project.getCompanyId());
-            return organization.getNameOrganization() != null ? organization.getNameOrganization() : "Sin organización";
-        } catch (ManagerException e) {
-            Controller.showErrorAlert("Error de carga", e.getMessage());
-            return "Sin organización";
+            shellNavigator.openForm(PRACTITIONER_DETAIL_VIEW, selectedPractitioner);
         }
     }
 

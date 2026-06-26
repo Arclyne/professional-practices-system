@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="4.0" styleClass="content-root" stylesheets="@../styles.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uv.fei.presentation.shared.PractitionerDetailController">
+    <padding>
+        <Insets bottom="28.0" left="32.0" right="32.0" top="28.0"/>
+    </padding>
+
+    <Label styleClass="content-eyebrow" text="DETALLE"/>
+    <Label styleClass="content-title" text="Detalle del practicante"/>
+    <Label styleClass="content-subtitle"
+           text="Información completa del practicante, sus horas y el proyecto asignado."/>
+
+    <Label fx:id="loadErrorLabel" managed="false" styleClass="content-card empty-card" visible="false"
+           wrapText="true" text="Ocurrió un error al cargar la información del practicante.">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+    </Label>
+
+    <ScrollPane fx:id="contentScrollPane" fitToWidth="true" styleClass="content-root"
+                VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets top="18.0"/>
+        </VBox.margin>
+        <content>
+            <VBox fx:id="contentContainer" spacing="18.0">
+
+                <!-- Horas (arriba) -->
+                <VBox spacing="12.0" styleClass="content-card">
+                    <Label styleClass="content-card-title" text="Horas de práctica"/>
+                    <HBox spacing="16.0">
+                        <VBox alignment="CENTER" spacing="4.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label styleClass="card-eyebrow" text="REALIZADAS"/>
+                            <Label fx:id="hoursCompletedLabel" styleClass="stat-number" text="0"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="4.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label styleClass="card-eyebrow" text="REQUERIDAS"/>
+                            <Label fx:id="hoursRequiredLabel" styleClass="stat-number" text="0"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="4.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                            <Label styleClass="card-eyebrow" text="FALTANTES"/>
+                            <Label fx:id="hoursRemainingLabel" styleClass="stat-number" text="0"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Practicante -->
+                <VBox spacing="10.0" styleClass="content-card">
+                    <Label styleClass="content-card-title" text="Practicante"/>
+                    <Label fx:id="nameLabel" styleClass="card-title" text="—" wrapText="true"/>
+                    <HBox spacing="48.0">
+                        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                            <Label fx:id="enrollmentLabel" styleClass="field-label" text="Matrícula: —"/>
+                            <Label fx:id="userNameLabel" styleClass="field-label" text="Usuario: —"/>
+                            <Label fx:id="emailLabel" styleClass="field-label" text="Correo: —"/>
+                        </VBox>
+                        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                            <Label fx:id="groupLabel" styleClass="field-label" text="Grupo: —"/>
+                            <Label fx:id="gradeLabel" styleClass="field-label" text="Calificación: —"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Proyecto / Organización / Encargado -->
+                <VBox fx:id="projectContainer" spacing="12.0" styleClass="content-card">
+                    <Label styleClass="content-card-title" text="Proyecto asignado"/>
+                    <Label fx:id="projectNameLabel" styleClass="card-title" text="—" wrapText="true"/>
+                    <HBox spacing="24.0">
+                        <Label fx:id="projectStatusLabel" styleClass="field-label" text="Estado: —"/>
+                        <Label fx:id="projectCapacityLabel" styleClass="field-label" text="Cupos: —"/>
+                    </HBox>
+                    <Label fx:id="projectPeriodLabel" styleClass="field-label" text="Periodo: —"/>
+                    <Label styleClass="section-label" text="Descripción"/>
+                    <TextArea fx:id="projectDescriptionTextArea" editable="false" prefRowCount="5"
+                              wrapText="true"/>
+
+                    <Region prefHeight="2.0"/>
+
+                    <Label styleClass="content-card-title" text="Organización"/>
+                    <Label fx:id="organizationNameLabel" styleClass="card-title" text="—" wrapText="true"/>
+                    <Label fx:id="organizationCityLabel" styleClass="field-label" text="Ciudad: —"/>
+                    <Label fx:id="organizationAddressLabel" styleClass="field-label" text="Dirección: —"
+                           wrapText="true"/>
+                    <Label fx:id="organizationBusinessLabel" styleClass="field-label" text="Giro: —"/>
+                    <Label fx:id="organizationContactLabel" styleClass="field-label" text="Contacto: —"/>
+
+                    <Region prefHeight="2.0"/>
+
+                    <Label styleClass="content-card-title" text="Encargado del proyecto"/>
+                    <Label fx:id="managerNameLabel" styleClass="card-title" text="—" wrapText="true"/>
+                    <Label fx:id="managerContactLabel" styleClass="field-label" text="Contacto: —"/>
+                </VBox>
+
+                <!-- Sin proyecto -->
+                <Label fx:id="noProjectContainer" managed="false" styleClass="content-card empty-card"
+                       visible="false" wrapText="true"
+                       text="El practicante no tiene un proyecto asignado en este periodo."/>
+
+            </VBox>
+        </content>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_LEFT">
+        <VBox.margin>
+            <Insets top="16.0"/>
+        </VBox.margin>
+        <Button onAction="#handleReturnAction" styleClass="secondary-button" text="Volver"/>
+    </HBox>
+</VBox>

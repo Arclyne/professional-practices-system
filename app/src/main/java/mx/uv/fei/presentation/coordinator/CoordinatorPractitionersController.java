@@ -30,6 +30,7 @@ public class CoordinatorPractitionersController {
     private static final String NO_STATUS_LABEL = "—";
     private static final String REGISTER_FORM_VIEW = "/mx/uv/fei/presentation/registerPractitioner.fxml";
     private static final String ENROLLMENT_FORM_VIEW = "/mx/uv/fei/presentation/registerEnrollment.fxml";
+    private static final String PRACTITIONER_DETAIL_VIEW = "/mx/uv/fei/presentation/practitionerDetail.fxml";
 
     @FXML private TextField searchTextField;
     @FXML private TableView<Practitioner> practitionersTableView;
@@ -166,6 +167,16 @@ public class CoordinatorPractitionersController {
     @FXML
     private void handleRegisterAction() {
         shellNavigator.openForm(REGISTER_FORM_VIEW);
+    }
+
+    @FXML
+    private void handleViewDetailAction() {
+        Practitioner selectedPractitioner = practitionersTableView.getSelectionModel().getSelectedItem();
+        if (selectedPractitioner == null) {
+            Controller.showInfoAlert("Selección requerida", "Selecciona un practicante para ver su detalle.");
+        } else {
+            shellNavigator.openForm(PRACTITIONER_DETAIL_VIEW, selectedPractitioner);
+        }
     }
 
     private void applyFilter() {
