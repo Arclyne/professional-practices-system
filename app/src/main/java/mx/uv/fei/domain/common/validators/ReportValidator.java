@@ -85,6 +85,13 @@ public class ReportValidator {
                 "La retroalimentación no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
     }
 
+    public static void validateRejectionFeedback(String feedback) throws ManagerException {
+        BaseValidator.validateString(feedback,
+                "Debes indicar el motivo del rechazo del reporte.");
+        BaseValidator.validateMaxLength(feedback, FieldLengthLimits.LONG_TEXT_MAX,
+                "El motivo del rechazo no puede exceder " + FieldLengthLimits.LONG_TEXT_MAX + " caracteres.");
+    }
+
     private static void validateActivitiesWithinReportRange(MonthlyReport report, List<Activity> activities) throws ManagerException {
         if (activities == null || activities.isEmpty()) {
             throw new ManagerException("Debe seleccionar al menos una actividad libre para generar el reporte.");

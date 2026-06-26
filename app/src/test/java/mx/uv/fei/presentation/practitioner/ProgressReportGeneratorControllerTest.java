@@ -1,5 +1,7 @@
 package mx.uv.fei.presentation.practitioner;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,10 +17,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 
@@ -41,7 +43,6 @@ import org.testfx.framework.junit5.ApplicationTest;
 public class ProgressReportGeneratorControllerTest extends ApplicationTest {
 
     private static final String FXML_PATH = "/mx/uv/fei/presentation/progressReportGenerator.fxml";
-    private static final String TYPE_FINAL_LABEL = "Final (mín. 420 horas)";
     private static final int PRACTITIONER_ID = 123;
     private static final LocalDate PERIOD_START = LocalDate.of(2026, 6, 1);
     private static final LocalDate PERIOD_END = LocalDate.of(2026, 11, 30);
@@ -101,8 +102,12 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
         interact(() -> lookup("#generateReportButton").queryAs(Button.class).fire());
     }
 
+    private boolean isVisible(String nodeId) {
+        return lookup(nodeId).queryAs(Node.class).isVisible();
+    }
+
     @Test
-    void handleGenerateReport_IntermediateTypeSelected_GeneratesIntermediateReport() throws Exception {
+    void handleGenerateReport_WithCutoffDate_GeneratesIntermediateReport() throws Exception {
         selectIntermediateCutoffDate();
 
         clickGenerateButton();
@@ -112,20 +117,15 @@ public class ProgressReportGeneratorControllerTest extends ApplicationTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void handleGenerateReport_FinalTypeSelected_GeneratesFinalReport() throws Exception {
-        interact(() -> lookup("#reportTypeComboBox").queryAs(ComboBox.class).setValue(TYPE_FINAL_LABEL));
-
-        clickGenerateButton();
-
-        verify(progressReportManager).generateProgressReport(
-                eq(PRACTITIONER_ID), eq(ProgressReportType.FINAL), any(), any());
-    }
-
-    @Test
-    void handleGenerateReport_IntermediateWithoutCutoffDate_DoesNotGenerateReport() throws Exception {
+    void handleGenerateReport_WithoutCutoffDate_DoesNotGenerateReport() throws Exception {
         clickGenerateButton();
 
         verify(progressReportManager, never()).generateProgressReport(anyInt(), any(), any(), any());
+    }
+
+    @Test
+    void initialize_NoIntermediateReport_FinalCardIsLocked() {
+        assertTrue(isVisible("#finalLockedLabel"));
+        assertFalse(isVisible("#finalGenerateButton"));
     }
 }

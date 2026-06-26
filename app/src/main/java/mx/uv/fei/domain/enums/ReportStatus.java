@@ -11,7 +11,8 @@ public enum ReportStatus {
 
     PENDING("Pendiente de Firma"),
     SUBMITTED("Entregado"),
-    EVALUATED("Evaluado");
+    EVALUATED("Evaluado"),
+    REJECTED("Rechazado");
 
     private final String databaseValue;
 

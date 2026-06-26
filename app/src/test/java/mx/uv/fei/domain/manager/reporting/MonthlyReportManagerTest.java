@@ -2,6 +2,7 @@ package mx.uv.fei.domain.manager.reporting;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.Activity;
 import mx.uv.fei.domain.dto.MonthlyReport;
+import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,5 +89,27 @@ public class MonthlyReportManagerTest {
     @Test
     void evaluateReport_ValidData_DoesNotThrow() {
         assertDoesNotThrow(() -> reportManager.evaluateReport(STORED_REPORT_ID, 10.0, "Excelente trabajo"));
+    }
+
+    @Test
+    void rejectReport_ValidFeedback_DoesNotThrow() {
+        assertDoesNotThrow(() -> reportManager.rejectReport(STORED_REPORT_ID, "Faltan actividades por documentar."));
+    }
+
+    @Test
+    void rejectReport_BlankFeedback_ThrowsManagerException() {
+        assertThrows(ManagerException.class, () -> reportManager.rejectReport(STORED_REPORT_ID, "   "));
+    }
+
+    @Test
+    void rejectReport_ValidFeedback_PersistsRejectedStatus() throws ManagerException {
+        reportManager.rejectReport(STORED_REPORT_ID, "Faltan actividades por documentar.");
+
+        MonthlyReport rejectedReport = reportManager.getPractitionerReports(STORED_PRACTITIONER_ID).stream()
+                .filter(report -> report.getReportId() == STORED_REPORT_ID)
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(ReportStatus.REJECTED.getDatabaseValue(), rejectedReport.getStatus());
     }
 }

@@ -90,6 +90,11 @@
                     mnemonicParsing="false" onAction="#handleSaveEvaluationAction"
                     text="Guardar Evaluación"
                     style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 10 20 10 20;"/>
+
+            <Button fx:id="btnRejectReport" maxWidth="1.7976931348623157E308"
+                    mnemonicParsing="false" onAction="#handleRejectAction"
+                    text="Rechazar (para corrección)"
+                    style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 10 20 10 20;"/>
         </VBox>
     </HBox>
 </AnchorPane>
