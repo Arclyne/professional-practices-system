@@ -20,6 +20,7 @@ import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.Project;
 import mx.uv.fei.domain.dto.ProjectPostulation;
 import mx.uv.fei.domain.enums.ProgressReportType;
+import mx.uv.fei.domain.enums.ReportStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -306,6 +307,42 @@ public class ProgressReportManagerTest {
 
         assertThrows(ManagerException.class, () -> progressReportManager.evaluateProgressReport(
                 PRACTITIONER_ID, ProgressReportType.INTERMEDIO, VALID_GRADE, "   "));
+    }
+
+    @Test
+    void rejectProgressReport_ValidFeedback_UpdatesStatus() throws ManagerException {
+        stubProgressReportDAO.setExistingIntermediate(true);
+
+        progressReportManager.rejectProgressReport(PRACTITIONER_ID, ProgressReportType.INTERMEDIO,
+                "Faltan evidencias por adjuntar.");
+
+        assertEquals(ReportStatus.REJECTED.getDatabaseValue(), stubProgressReportDAO.getLastUpdatedReport().getStatus());
+    }
+
+    @Test
+    void rejectProgressReport_ValidFeedback_SetsFeedbackOnReport() throws ManagerException {
+        stubProgressReportDAO.setExistingIntermediate(true);
+
+        progressReportManager.rejectProgressReport(PRACTITIONER_ID, ProgressReportType.INTERMEDIO,
+                "Faltan evidencias por adjuntar.");
+
+        assertEquals("Faltan evidencias por adjuntar.", stubProgressReportDAO.getLastUpdatedReport().getProfessorFeedback());
+    }
+
+    @Test
+    void rejectProgressReport_BlankFeedback_ThrowsManagerException() {
+        stubProgressReportDAO.setExistingIntermediate(true);
+
+        assertThrows(ManagerException.class, () -> progressReportManager.rejectProgressReport(
+                PRACTITIONER_ID, ProgressReportType.INTERMEDIO, "   "));
+    }
+
+    @Test
+    void rejectProgressReport_ReportNotFound_ThrowsManagerException() {
+        stubProgressReportDAO.setExistingIntermediate(false);
+
+        assertThrows(ManagerException.class, () -> progressReportManager.rejectProgressReport(
+                PRACTITIONER_ID, ProgressReportType.INTERMEDIO, "Faltan evidencias por adjuntar."));
     }
 
     @Test
