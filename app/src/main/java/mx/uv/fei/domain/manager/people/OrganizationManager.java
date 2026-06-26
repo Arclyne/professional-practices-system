@@ -8,7 +8,6 @@ import mx.uv.fei.domain.common.PersistenceErrorTranslator;
 import mx.uv.fei.domain.common.validators.OrganizationValidator;
 import mx.uv.fei.domain.dto.Organization;
 import mx.uv.fei.domain.exceptions.ManagerException;
-import mx.uv.fei.domain.manager.academic.PeriodManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +62,15 @@ public class OrganizationManager {
         } catch (DAOException e) {
              log.error(e.getMessage(), e);
             throw new ManagerException("No se pudo inactivar la organización. Intenta de nuevo en unos momentos.", e);
+        }
+    }
+
+    public Organization getOrganizationById(int organizationId) throws ManagerException {
+        try {
+            return organizationDAO.recoverOrganization(organizationId);
+        } catch (DAOException e) {
+            log.error(e.getMessage(), e);
+            throw new ManagerException("No se pudo recuperar la información de la organización.", e);
         }
     }
 
