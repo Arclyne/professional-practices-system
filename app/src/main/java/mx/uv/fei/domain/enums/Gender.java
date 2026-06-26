@@ -1,12 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Representa el género de un usuario registrado en el sistema.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public enum Gender {
 
     MALE("Male", "Masculino"),

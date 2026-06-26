@@ -2,13 +2,7 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-/**
- * Representa un reporte evaluable unificado, independientemente de si es mensual o de avance.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class EvaluableReport {
 
     public static final String KIND_MONTHLY      = "Mensual";

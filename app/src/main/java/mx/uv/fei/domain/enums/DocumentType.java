@@ -3,15 +3,7 @@ package mx.uv.fei.domain.enums;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Catálogo de los tipos de documento que un practicante debe entregar.
- *
- * Cada tipo se identifica por un código estable (almacenado en la tabla {@code document_type})
- * y pertenece a una etapa ({@link DocumentCategory}). El nombre visible se muestra en la interfaz.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
+
 public enum DocumentType {
 
     CURP("CURP", "CURP", DocumentCategory.INITIAL),

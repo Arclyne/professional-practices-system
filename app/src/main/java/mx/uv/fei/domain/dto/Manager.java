@@ -4,13 +4,6 @@ import mx.uv.fei.domain.enums.UserStatus;
 
 import java.util.Objects;
 
-/**
- * Representa al encargado de un proyecto dentro de una organización vinculada.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class Manager {
 
     private int id;

@@ -3,13 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * Representa la calificación de un practicante asignada por un profesor en un periodo académico.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class PractitionerGrade {
 
     private int gradeId;

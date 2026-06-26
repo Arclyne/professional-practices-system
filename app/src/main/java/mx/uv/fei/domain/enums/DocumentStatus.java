@@ -1,14 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Define los estados posibles de un documento subido por un practicante.
- *
- * El valor almacenado en la base de datos está en inglés; el nombre visible se muestra
- * en español en la interfaz.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public enum DocumentStatus {
 
     PENDING("Pending", "Pendiente"),

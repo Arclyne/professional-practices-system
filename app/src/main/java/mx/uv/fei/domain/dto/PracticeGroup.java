@@ -2,13 +2,7 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-/**
- * Representa un grupo de prácticas profesionales asignado a un profesor en un periodo académico.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class PracticeGroup {
 
     private int groupId;

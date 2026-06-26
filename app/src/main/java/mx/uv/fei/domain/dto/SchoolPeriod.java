@@ -3,13 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
-/**
- * Representa un periodo escolar con fechas de inicio y fin para el programa de prácticas.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class SchoolPeriod {
 
     private int periodId;

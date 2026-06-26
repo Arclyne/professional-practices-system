@@ -2,13 +2,7 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-/**
- * Representa un usuario con rol de administrador del sistema.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class Administrator extends User {
 
     public Administrator() {

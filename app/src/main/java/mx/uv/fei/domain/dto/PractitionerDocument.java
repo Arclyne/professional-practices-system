@@ -3,15 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-/**
- * Representa un documento general subido por un practicante a su expediente de prácticas.
- *
- * El nombre original del archivo se conserva para mostrarlo al usuario, mientras que la
- * URL almacenada es única por subida, lo que permite distinguir archivos con el mismo nombre.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public class PractitionerDocument {
 
     private int documentId;

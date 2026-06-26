@@ -2,13 +2,6 @@ package mx.uv.fei.domain.dto;
 
 import java.util.Objects;
 
-/**
- * Representa la postulación de un practicante a un proyecto de prácticas profesionales.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class ProjectPostulation {
 
     private int practitionerId;

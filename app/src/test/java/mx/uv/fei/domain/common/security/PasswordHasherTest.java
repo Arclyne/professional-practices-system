@@ -12,12 +12,9 @@ public class PasswordHasherTest {
 
     private static final String PLAIN_PASSWORD = "ClaveSegura2026";
 
-    /** Hash Argon2id precalculado para EXPECTED_PLAINTEXT (sal y parámetros embebidos en el propio hash). */
     private static final String EXPECTED_HASH =
             "$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw";
     private static final String EXPECTED_PLAINTEXT = "ClaveFei2026";
-
-    // --- Verificación contra un hash esperado (known-answer test) ---
 
     @Test
     void matches_PlaintextAgainstExpectedHash_ReturnsTrue() {
@@ -28,8 +25,6 @@ public class PasswordHasherTest {
     void matches_WrongPlaintextAgainstExpectedHash_ReturnsFalse() {
         assertFalse(PasswordHasher.matches("OtraClave2026", EXPECTED_HASH));
     }
-
-    // --- Cifrado ---
 
     @Test
     void hash_ValidPassword_ProducesArgon2idHashDifferentFromPlain() throws ManagerException {
@@ -47,8 +42,6 @@ public class PasswordHasherTest {
         assertNotEquals(firstHash, secondHash);
     }
 
-    // --- Round-trip cifrado + verificación ---
-
     @Test
     void matches_FreshlyHashedPassword_ReturnsTrue() throws ManagerException {
         String hashedPassword = PasswordHasher.hash(PLAIN_PASSWORD);
@@ -62,8 +55,6 @@ public class PasswordHasherTest {
 
         assertFalse(PasswordHasher.matches("ClaveIncorrecta99", hashedPassword));
     }
-
-    // --- Flujos alternos de verificación ---
 
     @Test
     void matches_NullPlainPassword_ReturnsFalse() {
@@ -84,8 +75,6 @@ public class PasswordHasherTest {
     void matches_MalformedHash_ReturnsFalse() {
         assertFalse(PasswordHasher.matches(EXPECTED_PLAINTEXT, "$argon2id$datos-corruptos"));
     }
-
-    // --- Flujos de excepción del cifrado ---
 
     @Test
     void hash_NullPassword_ThrowsManagerException() {

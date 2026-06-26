@@ -3,13 +3,6 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
-/**
- * Representa un periodo académico dentro del programa de prácticas profesionales.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public class Period {
 
     private int periodId;

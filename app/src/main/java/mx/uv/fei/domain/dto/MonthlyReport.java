@@ -3,13 +3,7 @@ package mx.uv.fei.domain.dto;
 import java.sql.Date;
 import java.util.Objects;
 
-/**
- * Representa el reporte mensual de actividades de un practicante.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class MonthlyReport {
 
     private int reportId;
