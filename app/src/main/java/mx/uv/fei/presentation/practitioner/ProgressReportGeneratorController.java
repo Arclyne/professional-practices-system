@@ -29,7 +29,6 @@ import javafx.stage.FileChooser;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.net.URI;
 import java.sql.Date;
 import java.util.List;
 
@@ -327,15 +326,7 @@ public class ProgressReportGeneratorController {
     private void viewSignedReport(ProgressReport report) {
         boolean hasSignedFile = report != null && report.getSignedFileUrl() != null;
         if (hasSignedFile) {
-            openSignedReport(report);
-        }
-    }
-
-    private void openSignedReport(ProgressReport report) {
-        try {
-            Desktop.getDesktop().browse(new URI(report.getSignedFileUrl()));
-        } catch (Exception e) {
-            Controller.showAlert("Error de Archivo", "No se pudo abrir el archivo firmado.", AlertType.ERROR);
+            Controller.openStoredFile(report.getSignedFileUrl());
         }
     }
 }

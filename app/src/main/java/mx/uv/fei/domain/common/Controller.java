@@ -14,12 +14,16 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class Controller {
 
     private static final Logger log = LoggerFactory.getLogger(Controller.class);
+
+    private static final String FILE_UNAVAILABLE_MESSAGE =
+            "El archivo no está disponible. Es posible que se haya movido o eliminado de la carpeta de almacenamiento.";
 
     public static void showSuccessAlert(String alertTitle, String alertMessage) {
         showAlert(alertTitle, alertMessage, AlertType.INFORMATION);
@@ -53,11 +57,20 @@ public class Controller {
 
     private static void browseStoredFile(String fileUrl) {
         try {
-            Desktop.getDesktop().browse(new URI(fileUrl));
+            URI fileUri = new URI(fileUrl);
+            if (isMissingLocalFile(fileUri)) {
+                showErrorAlert("Archivo no disponible", FILE_UNAVAILABLE_MESSAGE);
+            } else {
+                Desktop.getDesktop().browse(fileUri);
+            }
         } catch (IOException | URISyntaxException e) {
             log.error("No se pudo abrir el recurso almacenado: {}", fileUrl, e);
-            showErrorAlert("Error de archivo", "No se pudo abrir el documento solicitado.");
+            showErrorAlert("Archivo no disponible", FILE_UNAVAILABLE_MESSAGE);
         }
+    }
+
+    private static boolean isMissingLocalFile(URI fileUri) {
+        return "file".equalsIgnoreCase(fileUri.getScheme()) && !Files.exists(Paths.get(fileUri));
     }
 
     public static <T> void setupCheckBoxListView(ListView<T> listView, Map<T, BooleanProperty> selectionMap) {
