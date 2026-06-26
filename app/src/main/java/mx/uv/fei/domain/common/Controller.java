@@ -63,14 +63,15 @@ public class Controller {
             } else {
                 Desktop.getDesktop().browse(fileUri);
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | IllegalArgumentException e) {
             log.error("No se pudo abrir el recurso almacenado: {}", fileUrl, e);
             showErrorAlert("Archivo no disponible", FILE_UNAVAILABLE_MESSAGE);
         }
     }
 
     private static boolean isMissingLocalFile(URI fileUri) {
-        return "file".equalsIgnoreCase(fileUri.getScheme()) && !Files.exists(Paths.get(fileUri));
+        return !fileUri.isAbsolute()
+                || ("file".equalsIgnoreCase(fileUri.getScheme()) && !Files.exists(Paths.get(fileUri)));
     }
 
     public static <T> void setupCheckBoxListView(ListView<T> listView, Map<T, BooleanProperty> selectionMap) {
