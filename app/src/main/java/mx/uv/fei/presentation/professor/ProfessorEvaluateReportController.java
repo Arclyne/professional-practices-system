@@ -51,11 +51,15 @@ public class ProfessorEvaluateReportController implements Initializable {
     private static final String EVALUATED_PREFIX = "[Evaluado] ";
     private static final String PENDING_PREFIX = "[Pendiente] ";
     private static final String GROUP_FILTER_ALL = "Todos los grupos";
+    private static final String STATUS_FILTER_ALL = "Todos los estados";
+    private static final String STATUS_FILTER_PENDING = "Pendientes de evaluar";
+    private static final String STATUS_FILTER_EVALUATED = "Ya evaluados";
     private static final String NO_VALUE = "—";
 
     @FXML private ListView<EvaluableReport> reportsListView;
     @FXML private TextField searchTextField;
     @FXML private ComboBox<String> groupFilterComboBox;
+    @FXML private ComboBox<String> statusFilterComboBox;
     @FXML private VBox evaluationContainer;
     @FXML private Label labelReportKind;
     @FXML private Label labelReportInfo;
@@ -99,7 +103,14 @@ public class ProfessorEvaluateReportController implements Initializable {
         resolveProfessorContext();
         configureListView();
         loadProfessorGroups();
+        loadStatusFilter();
         loadAllSubmittedReports();
+    }
+
+    private void loadStatusFilter() {
+        statusFilterComboBox.setItems(FXCollections.observableArrayList(
+                STATUS_FILTER_ALL, STATUS_FILTER_PENDING, STATUS_FILTER_EVALUATED));
+        statusFilterComboBox.setValue(STATUS_FILTER_ALL);
     }
 
     private void resolveProfessorContext() {
@@ -255,12 +266,30 @@ public class ProfessorEvaluateReportController implements Initializable {
         applyGroupFilter();
     }
 
+    @FXML
+    private void handleStatusFilterAction() {
+        applyGroupFilter();
+    }
+
     private void applyGroupFilter() {
         filteredReports.setPredicate(this::matchesActiveFilters);
     }
 
     private boolean matchesActiveFilters(EvaluableReport report) {
-        return matchesGroupFilter(report) && matchesEnrollmentSearch(report);
+        return matchesGroupFilter(report) && matchesEnrollmentSearch(report) && matchesStatusFilter(report);
+    }
+
+    private boolean matchesStatusFilter(EvaluableReport report) {
+        String selectedStatus = statusFilterComboBox.getValue();
+        boolean isMatch = selectedStatus == null || STATUS_FILTER_ALL.equals(selectedStatus);
+
+        if (!isMatch && STATUS_FILTER_PENDING.equals(selectedStatus)) {
+            isMatch = ReportStatus.SUBMITTED.getDatabaseValue().equals(report.getStatus());
+        } else if (!isMatch && STATUS_FILTER_EVALUATED.equals(selectedStatus)) {
+            isMatch = ReportStatus.EVALUATED.getDatabaseValue().equals(report.getStatus());
+        }
+
+        return isMatch;
     }
 
     private boolean matchesGroupFilter(EvaluableReport report) {

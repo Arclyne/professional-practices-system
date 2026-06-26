@@ -20,7 +20,7 @@
           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-        <VBox spacing="12.0" prefWidth="320.0"
+        <VBox spacing="12.0" prefWidth="320.0" minWidth="300.0"
               style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
             <padding><Insets bottom="24.0" left="20.0" right="20.0" top="24.0"/></padding>
 
@@ -28,9 +28,16 @@
             <Label textFill="#6b7280" wrapText="true"
                    text="Practicantes asignados a tu grupo. Selecciona uno para ver su calificación tentativa y asignar la definitiva."/>
 
+            <Label text="Buscar por matrícula" styleClass="field-label"/>
+            <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction"
+                       promptText="Ej. zS20013412" maxWidth="1.7976931348623157E308"/>
+
             <Label text="Filtrar por grupo (NRC):" styleClass="field-label"/>
             <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"
                       promptText="Todos mis grupos"/>
+
+            <Label text="Filtrar por estado:" styleClass="field-label"/>
+            <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>
 
             <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                       style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
@@ -60,7 +67,7 @@
             </VBox>
 
             <Label fx:id="labelAlreadyGraded"
-                   text="✓ Este practicante ya tiene una calificación registrada para este periodo. Usa el botón Actualizar para modificarla."
+                   text="✓ Este practicante ya tiene una calificación registrada para este periodo. Usa el botón Editar para modificarla."
                    style="-fx-text-fill: #10B981; -fx-font-weight: bold;"
                    visible="false" managed="false" wrapText="true"/>
 
@@ -80,12 +87,18 @@
             <Region VBox.vgrow="ALWAYS"/>
 
             <HBox spacing="12.0">
-                <Button onAction="#handleSaveGrade"
+                <Button fx:id="saveButton" onAction="#handleSaveGrade"
                         text="💾  Guardar Calificación"
                         style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
                         HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
-                <Button onAction="#handleUpdateGrade"
+                <Button fx:id="editButton" onAction="#handleEditGrade"
+                        text="✏  Editar Calificación"
+                        managed="false" visible="false"
+                        style="-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
+                        HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
+                <Button fx:id="updateButton" onAction="#handleUpdateGrade"
                         text="✏  Actualizar"
+                        managed="false" visible="false"
                         style="-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8px; -fx-cursor: hand; -fx-padding: 8 16 8 16;"
                         HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308"/>
             </HBox>

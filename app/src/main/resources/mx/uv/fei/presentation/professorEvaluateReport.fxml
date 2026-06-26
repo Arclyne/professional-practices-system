@@ -42,6 +42,10 @@
             <ComboBox fx:id="groupFilterComboBox" onAction="#handleGroupFilterAction"
                       maxWidth="1.7976931348623157E308"/>
 
+            <Label text="Filtrar por estado" styleClass="field-label"/>
+            <ComboBox fx:id="statusFilterComboBox" onAction="#handleStatusFilterAction"
+                      maxWidth="1.7976931348623157E308"/>
+
             <ListView fx:id="reportsListView" VBox.vgrow="ALWAYS"
                       style="-fx-border-color: #E5E7EB; -fx-background-radius: 5px; -fx-border-radius: 5px;"/>
         </VBox>

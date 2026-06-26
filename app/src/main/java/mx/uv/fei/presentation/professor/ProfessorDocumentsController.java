@@ -42,9 +42,16 @@ public class ProfessorDocumentsController {
     private static final String NO_DATE_LABEL = "—";
     private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
     private static final String GROUP_LABEL_PREFIX = "NRC ";
+    private static final String STATUS_FILTER_ALL = "Todos los estados";
+    private static final String STATUS_FILTER_PENDING_REVIEW = "Por revisar (pendientes)";
+    private static final String STATUS_FILTER_REJECTED = "Con rechazados";
+    private static final String STATUS_FILTER_ALL_ACCEPTED = "Todo aceptado";
+    private static final String STATUS_FILTER_NO_SUBMISSIONS = "Sin entregas";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML private ComboBox<String> groupFilterComboBox;
+    @FXML private ComboBox<String> statusFilterComboBox;
+    @FXML private TextField searchTextField;
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private Label noPractitionersLabel;
     @FXML private VBox reviewContainer;
@@ -63,6 +70,8 @@ public class ProfessorDocumentsController {
     private final AppStore store;
     private final ObservableList<PractitionerDocument> documents = FXCollections.observableArrayList();
     private final Map<String, Integer> groupLabelToId = new HashMap<>();
+    private final Map<Integer, String> documentBucketByPractitionerId = new HashMap<>();
+    private final List<Practitioner> loadedPractitioners = new ArrayList<>();
 
     private int professorId;
     private int activePeriodId;
@@ -90,8 +99,22 @@ public class ProfessorDocumentsController {
         documentsTableView.setItems(documents);
         configurePractitionerList();
         resolveActivePeriod();
+        loadStatusFilter();
         loadProfessorGroups();
-        loadPractitioners();
+        reloadPractitioners();
+    }
+
+    private void loadStatusFilter() {
+        statusFilterComboBox.setItems(FXCollections.observableArrayList(
+                STATUS_FILTER_ALL, STATUS_FILTER_PENDING_REVIEW, STATUS_FILTER_REJECTED,
+                STATUS_FILTER_ALL_ACCEPTED, STATUS_FILTER_NO_SUBMISSIONS));
+        statusFilterComboBox.setValue(STATUS_FILTER_ALL);
+        statusFilterComboBox.valueProperty().addListener((_, _, _) -> applyPractitionerFilters());
+    }
+
+    @FXML
+    private void handleSearchAction() {
+        applyPractitionerFilters();
     }
 
     private void setupColumns() {
@@ -122,7 +145,7 @@ public class ProfessorDocumentsController {
                     }
                 });
 
-        groupFilterComboBox.valueProperty().addListener((_, _, _) -> loadPractitioners());
+        groupFilterComboBox.valueProperty().addListener((_, _, _) -> reloadPractitioners());
     }
 
     private void resolveActivePeriod() {
@@ -153,17 +176,75 @@ public class ProfessorDocumentsController {
         groupFilterComboBox.setValue(ALL_GROUPS_OPTION);
     }
 
-    private void loadPractitioners() {
+    private void reloadPractitioners() {
         try {
-            List<Practitioner> practitioners = retrievePractitionersForSelectedFilter();
-            boolean hasPractitioners = !practitioners.isEmpty();
-
-            practitionersListView.setItems(FXCollections.observableArrayList(practitioners));
-            noPractitionersLabel.setVisible(!hasPractitioners);
-            noPractitionersLabel.setManaged(!hasPractitioners);
+            loadDocumentStatuses();
+            loadedPractitioners.clear();
+            loadedPractitioners.addAll(retrievePractitionersForSelectedFilter());
+            applyPractitionerFilters();
         } catch (ManagerException e) {
             Controller.showErrorAlert("Error de carga", e.getMessage());
         }
+    }
+
+    private void applyPractitionerFilters() {
+        List<Practitioner> visiblePractitioners = new ArrayList<>();
+        for (Practitioner practitioner : loadedPractitioners) {
+            if (matchesStatusFilter(practitioner) && matchesEnrollmentSearch(practitioner)) {
+                visiblePractitioners.add(practitioner);
+            }
+        }
+        boolean hasPractitioners = !visiblePractitioners.isEmpty();
+        practitionersListView.setItems(FXCollections.observableArrayList(visiblePractitioners));
+        noPractitionersLabel.setVisible(!hasPractitioners);
+        noPractitionersLabel.setManaged(!hasPractitioners);
+    }
+
+    private boolean matchesStatusFilter(Practitioner practitioner) {
+        String selectedStatus = statusFilterComboBox.getValue();
+        String bucket = documentBucketByPractitionerId.getOrDefault(practitioner.getId(), STATUS_FILTER_NO_SUBMISSIONS);
+        return selectedStatus == null || STATUS_FILTER_ALL.equals(selectedStatus) || selectedStatus.equals(bucket);
+    }
+
+    private boolean matchesEnrollmentSearch(Practitioner practitioner) {
+        String query = searchTextField.getText() == null ? "" : searchTextField.getText().trim().toLowerCase();
+        String enrollment = practitioner.getEnrollment() == null ? "" : practitioner.getEnrollment().toLowerCase();
+        return query.isEmpty() || enrollment.contains(query);
+    }
+
+    private void loadDocumentStatuses() throws ManagerException {
+        documentBucketByPractitionerId.clear();
+        Map<Integer, List<PractitionerDocument>> documentsByPractitioner = new HashMap<>();
+        for (PractitionerDocument document : documentManager.getDocumentsByProfessor(professorId)) {
+            documentsByPractitioner.computeIfAbsent(document.getPractitionerId(), _ -> new ArrayList<>()).add(document);
+        }
+        for (Map.Entry<Integer, List<PractitionerDocument>> entry : documentsByPractitioner.entrySet()) {
+            documentBucketByPractitionerId.put(entry.getKey(), resolveDocumentBucket(entry.getValue()));
+        }
+    }
+
+    private String resolveDocumentBucket(List<PractitionerDocument> practitionerDocuments) {
+        boolean hasPending = practitionerDocuments.stream().anyMatch(this::isPending);
+        boolean hasRejected = practitionerDocuments.stream().anyMatch(this::isRejected);
+        String bucket;
+
+        if (hasPending) {
+            bucket = STATUS_FILTER_PENDING_REVIEW;
+        } else if (hasRejected) {
+            bucket = STATUS_FILTER_REJECTED;
+        } else {
+            bucket = STATUS_FILTER_ALL_ACCEPTED;
+        }
+
+        return bucket;
+    }
+
+    private boolean isPending(PractitionerDocument document) {
+        return DocumentStatus.PENDING.getDatabaseValue().equals(document.getStatus());
+    }
+
+    private boolean isRejected(PractitionerDocument document) {
+        return DocumentStatus.REJECTED.getDatabaseValue().equals(document.getStatus());
     }
 
     private List<Practitioner> retrievePractitionersForSelectedFilter() throws ManagerException {

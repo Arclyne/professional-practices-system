@@ -15,7 +15,7 @@
 <HBox stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="mx.uv.fei.presentation.professor.ProfessorDocumentsController">
 
-    <VBox prefWidth="320.0" spacing="12.0"
+    <VBox prefWidth="320.0" minWidth="300.0" spacing="12.0"
           style="-fx-background-color: #F9FAFB; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;">
         <padding><Insets bottom="24.0" left="20.0" right="20.0" top="24.0"/></padding>
 
@@ -23,8 +23,15 @@
         <Label textFill="#6b7280" wrapText="true"
                text="Selecciona un practicante para revisar sus documentos iniciales y finales."/>
 
+        <Label text="Buscar por matrícula" styleClass="field-label"/>
+        <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction"
+                   promptText="Ej. zS20013412" maxWidth="1.7976931348623157E308"/>
+
         <Label text="Filtrar por grupo" styleClass="field-label"/>
         <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"/>
+
+        <Label text="Filtrar por estado de documentos" styleClass="field-label"/>
+        <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>
 
         <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                   style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
