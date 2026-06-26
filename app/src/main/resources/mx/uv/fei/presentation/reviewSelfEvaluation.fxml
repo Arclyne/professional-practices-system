@@ -15,6 +15,8 @@
 
         <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"/>
 
+        <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>
+
         <TableView fx:id="evaluationsTableView" VBox.vgrow="ALWAYS" style="-fx-cursor: hand;">
             <columns>
                 <TableColumn fx:id="studentTableColumn" prefWidth="180.0" text="Alumno" />

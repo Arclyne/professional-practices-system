@@ -45,8 +45,13 @@ public class GradePractitionerController implements Initializable {
             "No hay un periodo académico activo. Solicita al coordinador que active uno.";
     private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
     private static final String GROUP_LABEL_PREFIX = "NRC ";
+    private static final String STATUS_FILTER_ALL = "Todos los estados";
+    private static final String STATUS_FILTER_READY = "Listos para calificar";
+    private static final String STATUS_FILTER_MISSING_REQUIREMENTS = "Faltan requisitos";
+    private static final String STATUS_FILTER_GRADED = "Ya calificados";
 
     @FXML private ComboBox<String> groupFilterComboBox;
+    @FXML private ComboBox<String> statusFilterComboBox;
     @FXML private ListView<Practitioner> practitionersListView;
     @FXML private VBox gradeContainer;
     @FXML private Label labelPractitionerName;
@@ -64,6 +69,7 @@ public class GradePractitionerController implements Initializable {
     private final AppStore store;
 
     private final Map<String, Integer> groupLabelToId = new HashMap<>();
+    private final Map<Integer, String> gradingBucketByPractitionerId = new HashMap<>();
 
     private Practitioner selectedPractitioner;
     private boolean selectedPractitionerEligible;
@@ -96,8 +102,16 @@ public class GradePractitionerController implements Initializable {
         resolveActivePeriod();
         if (activePeriod != null) {
             configurePractitionerList();
+            loadStatusFilter();
             loadProfessorGroups();
         }
+    }
+
+    private void loadStatusFilter() {
+        statusFilterComboBox.setItems(FXCollections.observableArrayList(
+                STATUS_FILTER_ALL, STATUS_FILTER_READY, STATUS_FILTER_MISSING_REQUIREMENTS, STATUS_FILTER_GRADED));
+        statusFilterComboBox.setValue(STATUS_FILTER_ALL);
+        statusFilterComboBox.valueProperty().addListener((_, _, _) -> loadPractitionersForProfessor());
     }
 
     private void resolveActivePeriod() {
@@ -172,10 +186,53 @@ public class GradePractitionerController implements Initializable {
 
     private void loadPractitionersForProfessor() {
         try {
-            updatePractitionerList(retrievePractitionersForSelectedFilter());
+            List<Practitioner> practitioners = retrievePractitionersForSelectedFilter();
+            loadGradingStatuses(practitioners);
+            updatePractitionerList(filterByGradingStatus(practitioners));
         } catch (ManagerException e) {
             Controller.showAlert("Error de Carga", e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private void loadGradingStatuses(List<Practitioner> practitioners) {
+        gradingBucketByPractitionerId.clear();
+        for (Practitioner practitioner : practitioners) {
+            gradingBucketByPractitionerId.put(practitioner.getId(), resolveGradingBucket(practitioner.getId()));
+        }
+    }
+
+    private String resolveGradingBucket(int practitionerId) {
+        String bucket;
+
+        try {
+            if (gradingManager.getGradeByPractitionerAndPeriod(practitionerId, activePeriod) != null) {
+                bucket = STATUS_FILTER_GRADED;
+            } else if (eligibilityManager.evaluateEligibility(practitionerId).isEligible()) {
+                bucket = STATUS_FILTER_READY;
+            } else {
+                bucket = STATUS_FILTER_MISSING_REQUIREMENTS;
+            }
+        } catch (ManagerException e) {
+            bucket = STATUS_FILTER_MISSING_REQUIREMENTS;
+        }
+
+        return bucket;
+    }
+
+    private List<Practitioner> filterByGradingStatus(List<Practitioner> practitioners) {
+        String selectedStatus = statusFilterComboBox.getValue();
+        boolean includeAll = selectedStatus == null || STATUS_FILTER_ALL.equals(selectedStatus);
+        List<Practitioner> filtered = new ArrayList<>();
+
+        for (Practitioner practitioner : practitioners) {
+            String bucket = gradingBucketByPractitionerId.getOrDefault(
+                    practitioner.getId(), STATUS_FILTER_MISSING_REQUIREMENTS);
+            if (includeAll || selectedStatus.equals(bucket)) {
+                filtered.add(practitioner);
+            }
+        }
+
+        return filtered;
     }
 
     private List<Practitioner> retrievePractitionersForSelectedFilter() throws ManagerException {

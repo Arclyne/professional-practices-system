@@ -26,6 +26,9 @@
         <Label text="Filtrar por grupo" styleClass="field-label"/>
         <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"/>
 
+        <Label text="Filtrar por estado de documentos" styleClass="field-label"/>
+        <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>
+
         <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                   style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
 

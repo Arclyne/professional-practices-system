@@ -32,6 +32,9 @@
             <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"
                       promptText="Todos mis grupos"/>
 
+            <Label text="Filtrar por estado:" styleClass="field-label"/>
+            <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>
+
             <ListView fx:id="practitionersListView" VBox.vgrow="ALWAYS"
                       style="-fx-border-color: #E5E7EB; -fx-border-radius: 5px;"/>
 

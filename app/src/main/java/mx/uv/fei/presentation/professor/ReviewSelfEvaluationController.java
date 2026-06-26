@@ -52,8 +52,14 @@ public class ReviewSelfEvaluationController {
     private static final String STATUS_PENDING_EVIDENCE = "pendiente";
     private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
     private static final String GROUP_LABEL_PREFIX = "NRC ";
+    private static final String STATUS_FILTER_ALL = "Todas";
+    private static final String STATUS_FILTER_PENDING = "Por revisar";
+    private static final String STATUS_FILTER_REVIEWED = "Revisadas";
+    private static final String STATUS_FILTER_REJECTED = "Rechazadas";
+    private static final String STATUS_FILTER_NOT_DELIVERED = "No entregadas";
 
     @FXML private ComboBox<String> groupFilterComboBox;
+    @FXML private ComboBox<String> statusFilterComboBox;
     @FXML private TableView<SelfEvaluationRow> evaluationsTableView;
     @FXML private TableColumn<SelfEvaluationRow, String> studentTableColumn;
     @FXML private TableColumn<SelfEvaluationRow, String> groupTableColumn;
@@ -88,6 +94,7 @@ public class ReviewSelfEvaluationController {
     private final AppStore appStore;
 
     private final Map<String, PracticeGroup> groupByLabel = new HashMap<>();
+    private final List<SelfEvaluationRow> allEvaluationRows = new ArrayList<>();
 
     private SelfEvaluationRow selectedRow;
     private int professorId;
@@ -119,7 +126,16 @@ public class ReviewSelfEvaluationController {
         clearDetails();
         resolveProfessorContext();
         loadProfessorGroups();
+        loadStatusFilter();
         loadStudentsAndEvaluations();
+    }
+
+    private void loadStatusFilter() {
+        statusFilterComboBox.setItems(FXCollections.observableArrayList(
+                STATUS_FILTER_ALL, STATUS_FILTER_PENDING, STATUS_FILTER_REVIEWED,
+                STATUS_FILTER_REJECTED, STATUS_FILTER_NOT_DELIVERED));
+        statusFilterComboBox.setValue(STATUS_FILTER_ALL);
+        statusFilterComboBox.valueProperty().addListener((_, _, _) -> applyStatusFilter());
     }
 
     private void resolveProfessorContext() {
@@ -156,14 +172,49 @@ public class ReviewSelfEvaluationController {
 
     private void loadStudentsAndEvaluations() {
         try {
-            List<SelfEvaluationRow> rows = new ArrayList<>();
+            allEvaluationRows.clear();
             for (PracticeGroup group : groupsForSelectedFilter()) {
-                appendRowsForGroup(group, rows);
+                appendRowsForGroup(group, allEvaluationRows);
             }
-            evaluationsTableView.setItems(FXCollections.observableArrayList(rows));
+            applyStatusFilter();
         } catch (ManagerException e) {
             Controller.showAlert("Error", "No se pudieron cargar las autoevaluaciones: " + e.getMessage(), AlertType.ERROR);
         }
+    }
+
+    private void applyStatusFilter() {
+        String selectedStatus = statusFilterComboBox.getValue();
+        List<SelfEvaluationRow> visibleRows = new ArrayList<>();
+        for (SelfEvaluationRow row : allEvaluationRows) {
+            if (matchesStatusFilter(row, selectedStatus)) {
+                visibleRows.add(row);
+            }
+        }
+        evaluationsTableView.setItems(FXCollections.observableArrayList(visibleRows));
+    }
+
+    private boolean matchesStatusFilter(SelfEvaluationRow row, String selectedStatus) {
+        boolean isMatch = selectedStatus == null || STATUS_FILTER_ALL.equals(selectedStatus);
+
+        if (!isMatch) {
+            isMatch = expectedStatusForFilter(selectedStatus).equals(row.getStatus());
+        }
+
+        return isMatch;
+    }
+
+    private String expectedStatusForFilter(String filterOption) {
+        String expectedStatus;
+        if (STATUS_FILTER_PENDING.equals(filterOption)) {
+            expectedStatus = SelfEvaluationStatus.PENDING.getDatabaseValue();
+        } else if (STATUS_FILTER_REVIEWED.equals(filterOption)) {
+            expectedStatus = SelfEvaluationStatus.REVIEWED.getDatabaseValue();
+        } else if (STATUS_FILTER_REJECTED.equals(filterOption)) {
+            expectedStatus = SelfEvaluationStatus.REJECTED.getDatabaseValue();
+        } else {
+            expectedStatus = STATUS_NOT_DELIVERED;
+        }
+        return expectedStatus;
     }
 
     private List<PracticeGroup> groupsForSelectedFilter() {
@@ -182,10 +233,7 @@ public class ReviewSelfEvaluationController {
     private void appendRowsForGroup(PracticeGroup group, List<SelfEvaluationRow> rows) throws ManagerException {
         List<Practitioner> students = practitionerManager.retrieveEnrolledPractitionersByGroup(group.getGroupId());
         for (Practitioner student : students) {
-            SelfEvaluationRow evaluationRow = createSelfEvaluationRow(student, group.getSection());
-            if (evaluationRow.getSelfEvaluation() != null) {
-                rows.add(evaluationRow);
-            }
+            rows.add(createSelfEvaluationRow(student, group.getSection()));
         }
     }
 
