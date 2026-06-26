@@ -147,6 +147,9 @@
             <Button fx:id="uploadSignedButton" onAction="#handleUploadSignedPdf"
                     text="Subir PDF Firmado"
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8px; -fx-padding: 8 16 8 16;"/>
+            <Button fx:id="viewEvidenceButton" onAction="#handleViewEvidence"
+                    text="Ver Archivo Subido"
+                    style="-fx-background-color: #6B7280; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8px; -fx-padding: 8 16 8 16;"/>
         </HBox>
     </VBox>
 

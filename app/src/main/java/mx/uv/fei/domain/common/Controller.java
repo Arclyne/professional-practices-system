@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,6 +53,14 @@ public class Controller {
             showErrorAlert("Acción no disponible", "El sistema no permite abrir archivos desde la aplicación.");
         } else {
             browseStoredFile(fileUrl);
+        }
+    }
+
+    public static void openStoredFilePath(String filePath) {
+        if (filePath == null || filePath.isBlank()) {
+            showErrorAlert("Archivo no disponible", "El documento seleccionado no tiene un archivo asociado.");
+        } else {
+            openStoredFile(new File(filePath).toURI().toString());
         }
     }
 
