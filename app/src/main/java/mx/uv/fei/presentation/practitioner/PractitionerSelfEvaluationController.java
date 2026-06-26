@@ -207,7 +207,7 @@ public class PractitionerSelfEvaluationController {
         setComboBoxesDisabled(isReviewed);
         saveButton.setDisable(isReviewed);
         uploadSignedButton.setDisable(isReviewed);
-        downloadPdfButton.setDisable(false);
+        downloadPdfButton.setDisable(isReviewed);
         viewEvidenceButton.setDisable(!hasUploadedEvidence());
     }
 
