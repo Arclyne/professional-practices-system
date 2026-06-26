@@ -5,9 +5,11 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.ISelfEvaluationDAO;
 import mx.uv.fei.domain.common.PersistenceErrorTranslator;
+import mx.uv.fei.domain.common.validators.BaseValidator;
 import mx.uv.fei.domain.common.validators.ReportValidator;
 import mx.uv.fei.domain.common.validators.SelfEvaluationValidator;
 import mx.uv.fei.domain.dto.SelfEvaluation;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PracticeAccessManager;
 
@@ -18,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class SelfEvaluationManager {
 
     private static final Logger log = LoggerFactory.getLogger(SelfEvaluationManager.class);
-    private static final String SELF_EVALUATION_STATUS_REVIEWED = "Revisada";
+    private static final int REVIEW_COMMENT_MAX = 500;
 
     private final ISelfEvaluationDAO selfEvaluationDAO;
     private final PracticeAccessManager practiceAccessManager;
@@ -72,7 +74,23 @@ public class SelfEvaluationManager {
     }
 
     public void markAsReviewed(int selfEvaluationId) throws ManagerException {
-        updateSelfEvaluationStatus(selfEvaluationId, SELF_EVALUATION_STATUS_REVIEWED);
+        updateSelfEvaluationStatus(selfEvaluationId, SelfEvaluationStatus.REVIEWED.getDatabaseValue());
+    }
+
+    public void rejectSelfEvaluation(int selfEvaluationId, String reviewComment) throws ManagerException {
+        validateReviewComment(reviewComment);
+        try {
+            selfEvaluationDAO.rejectSelfEvaluation(selfEvaluationId, reviewComment.trim());
+        } catch (DAOException e) {
+            log.error(e.getMessage(), e);
+            throw new ManagerException("Error al rechazar la autoevaluación.", e);
+        }
+    }
+
+    private void validateReviewComment(String reviewComment) throws ManagerException {
+        BaseValidator.validateString(reviewComment, "Debes indicar el motivo del rechazo de la autoevaluación.");
+        BaseValidator.validateMaxLength(reviewComment, REVIEW_COMMENT_MAX,
+                "El motivo del rechazo no puede exceder " + REVIEW_COMMENT_MAX + " caracteres.");
     }
 
     public SelfEvaluation recoverSelfEvaluation(int reportId) throws ManagerException {

@@ -68,7 +68,9 @@ INSERT INTO document_type (document_type_id, type_code, type_name, category) VAL
     (2, 'SCHEDULE',          'Horario',              'Initial'),
     (3, 'INE',               'INE',                  'Initial'),
     (4, 'ACCEPTANCE_LETTER', 'Carta de aceptacion',  'Initial'),
-    (5, 'RELEASE_LETTER',    'Carta de liberacion',  'Final');
+    (5, 'RELEASE_LETTER',    'Carta de liberacion',  'Final'),
+    (6, 'ORGANIZATION_EVALUATION', 'Evaluacion de la organizacion', 'Final'),
+    (7, 'PROFESSOR_EVALUATION',    'Evaluacion del profesor',       'Final');
 
 INSERT INTO practitioner_document (document_id, practitioner_id, document_type_id, document_name, stored_file_url, status, upload_date, review_date) VALUES
     (1, 123, 1, 'curp.pdf',             'file:///SimuladorOneDrive_FEI/a1_curp.pdf',             'Accepted', '2026-06-10 09:15:00', '2026-06-11 08:00:00'),

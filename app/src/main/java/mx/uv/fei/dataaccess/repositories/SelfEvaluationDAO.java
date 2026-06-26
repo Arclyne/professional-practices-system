@@ -6,6 +6,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.ISelfEvaluationDAO;
 import mx.uv.fei.domain.dto.SelfEvaluation;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +24,7 @@ import java.sql.Statement;
 @Component
 public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
 
-    private static final String DEFAULT_SELF_EVALUATION_STATUS = "Pendiente";
+    private static final String DEFAULT_SELF_EVALUATION_STATUS = SelfEvaluationStatus.PENDING.getDatabaseValue();
 
     private static final String SQL_INSERT_SELF_EVALUATION =
             "INSERT INTO self_evaluation (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, evidence, practitioner_id, report_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -31,6 +32,8 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
             "UPDATE self_evaluation SET status = ?, evidence = ? WHERE self_eval_id = ?";
     private static final String SQL_UPDATE_SELF_EVALUATION_STATUS =
             "UPDATE self_evaluation SET status = ? WHERE self_eval_id = ?";
+    private static final String SQL_REJECT_SELF_EVALUATION =
+            "UPDATE self_evaluation SET status = ?, review_comment = ? WHERE self_eval_id = ?";
     private static final String SQL_UPDATE_SELF_EVALUATION_EVIDENCE =
             "UPDATE self_evaluation SET evidence = ? WHERE self_eval_id = ?";
     private static final String SQL_SELECT_SELF_EVALUATION_BY_REPORT =
@@ -105,6 +108,15 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         });
     }
 
+    @Override
+    public void rejectSelfEvaluation(int selfEvaluationId, String reviewComment) throws DAOException {
+        updateTuple(SQL_REJECT_SELF_EVALUATION, statement -> {
+            statement.setString(1, SelfEvaluationStatus.REJECTED.getDatabaseValue());
+            statement.setString(2, reviewComment);
+            statement.setInt(3, selfEvaluationId);
+        });
+    }
+
     public void updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException {
         updateTuple(SQL_UPDATE_SELF_EVALUATION_EVIDENCE, statement -> {
             statement.setString(1, evidence);
@@ -142,6 +154,7 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         selfEvaluation.setPractitionerId(resultSet.getInt("practitioner_id"));
         selfEvaluation.setReportId(resultSet.getInt("report_id"));
         selfEvaluation.setStatus(resultSet.getString("status"));
+        selfEvaluation.setReviewComment(resultSet.getString("review_comment"));
         return selfEvaluation;
     }
 }

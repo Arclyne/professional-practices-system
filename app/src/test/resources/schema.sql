@@ -72,6 +72,7 @@ CREATE TABLE self_evaluation (
                                  practitioner_id INT           NOT NULL,
                                  report_id       INT           NOT NULL,
                                  status          VARCHAR(50)   DEFAULT 'Pendiente',
+                                 review_comment  VARCHAR(500)  DEFAULT NULL,
                                  PRIMARY KEY (self_eval_id),
                                  CONSTRAINT uq_selfeval_report UNIQUE (report_id),
                                  CONSTRAINT fk_selfeval_practitioner FOREIGN KEY (practitioner_id) REFERENCES practitioner (practitioner_id) ON DELETE CASCADE,

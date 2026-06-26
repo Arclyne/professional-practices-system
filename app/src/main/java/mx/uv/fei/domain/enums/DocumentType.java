@@ -18,7 +18,9 @@ public enum DocumentType {
     SCHEDULE("SCHEDULE", "Horario", DocumentCategory.INITIAL),
     INE("INE", "INE", DocumentCategory.INITIAL),
     ACCEPTANCE_LETTER("ACCEPTANCE_LETTER", "Carta de aceptación", DocumentCategory.INITIAL),
-    RELEASE_LETTER("RELEASE_LETTER", "Carta de liberación", DocumentCategory.FINAL);
+    RELEASE_LETTER("RELEASE_LETTER", "Carta de liberación", DocumentCategory.FINAL),
+    ORGANIZATION_EVALUATION("ORGANIZATION_EVALUATION", "Evaluación de la organización", DocumentCategory.FINAL),
+    PROFESSOR_EVALUATION("PROFESSOR_EVALUATION", "Evaluación del profesor", DocumentCategory.FINAL);
 
     private final String code;
     private final String displayName;

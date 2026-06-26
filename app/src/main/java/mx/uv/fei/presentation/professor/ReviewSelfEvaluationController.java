@@ -22,6 +22,7 @@ import mx.uv.fei.domain.dto.Practitioner;
 import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
@@ -47,7 +48,7 @@ public class ReviewSelfEvaluationController {
 
     private static final String REPORT_TYPE_FINAL = "Final";
     private static final String STATUS_NOT_DELIVERED = "No entregada";
-    private static final String STATUS_REVIEWED = "Revisada";
+    private static final String STATUS_REVIEWED = SelfEvaluationStatus.REVIEWED.getDatabaseValue();
     private static final String STATUS_PENDING_EVIDENCE = "pendiente";
     private static final String ALL_GROUPS_OPTION = "Todos mis grupos";
     private static final String GROUP_LABEL_PREFIX = "NRC ";
@@ -72,9 +73,12 @@ public class ReviewSelfEvaluationController {
     @FXML private TextField q9TextField;
     @FXML private TextField q10TextField;
 
+    @FXML private TextField rejectReasonTextField;
+
     @FXML private Button viewEvidenceButton;
     @FXML private Button downloadEvidenceButton;
     @FXML private Button approveButton;
+    @FXML private Button rejectButton;
 
     private final SelfEvaluationManager selfEvaluationManager;
     private final ProgressReportManager progressReportManager;
@@ -234,9 +238,12 @@ public class ReviewSelfEvaluationController {
                     && !eval.getEvidence().isEmpty()
                     && !STATUS_PENDING_EVIDENCE.equals(eval.getEvidence());
 
+            boolean isReviewed = STATUS_REVIEWED.equals(eval.getStatus());
             viewEvidenceButton.setDisable(!hasEvidence);
             downloadEvidenceButton.setDisable(!hasEvidence);
-            approveButton.setDisable(STATUS_REVIEWED.equals(eval.getStatus()));
+            approveButton.setDisable(isReviewed);
+            rejectButton.setDisable(isReviewed);
+            rejectReasonTextField.setDisable(isReviewed);
         }
     }
 
@@ -251,6 +258,8 @@ public class ReviewSelfEvaluationController {
         viewEvidenceButton.setDisable(true);
         downloadEvidenceButton.setDisable(true);
         approveButton.setDisable(true);
+        rejectButton.setDisable(true);
+        rejectReasonTextField.clear();
     }
 
     @FXML
@@ -306,6 +315,21 @@ public class ReviewSelfEvaluationController {
                 clearDetails();
             } catch (ManagerException e) {
                 Controller.showAlert("Error", "No se pudo actualizar el estado: " + e.getMessage(), AlertType.ERROR);
+            }
+        }
+    }
+
+    @FXML
+    private void handleRejectEvaluation() {
+        if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
+            try {
+                selfEvaluationManager.rejectSelfEvaluation(
+                        selectedRow.getSelfEvaluation().getSelfEvalId(), rejectReasonTextField.getText());
+                Controller.showAlert("Éxito", "Autoevaluación rechazada correctamente.", AlertType.INFORMATION);
+                loadStudentsAndEvaluations();
+                clearDetails();
+            } catch (ManagerException e) {
+                Controller.showAlert("Error", "No se pudo rechazar la autoevaluación: " + e.getMessage(), AlertType.ERROR);
             }
         }
     }
