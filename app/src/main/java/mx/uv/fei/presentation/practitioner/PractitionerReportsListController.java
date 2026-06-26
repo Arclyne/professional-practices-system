@@ -243,15 +243,15 @@ public class PractitionerReportsListController implements Initializable {
                 ? report.getProfessorFeedback()
                 : "El profesor aún no ha emitido comentarios para este reporte.");
 
-        boolean isPending = ReportStatus.PENDING.getDatabaseValue()
-                .equalsIgnoreCase(report.getStatus());
+        boolean canSubmit = ReportStatus.PENDING.getDatabaseValue().equalsIgnoreCase(report.getStatus())
+                || ReportStatus.REJECTED.getDatabaseValue().equalsIgnoreCase(report.getStatus());
 
-        btnDownloadPdf.setVisible(isPending);
-        btnDownloadPdf.setManaged(isPending);
-        btnUploadPdf.setVisible(isPending);
-        btnUploadPdf.setManaged(isPending);
-        btnViewSignedPdf.setVisible(!isPending);
-        btnViewSignedPdf.setManaged(!isPending);
+        btnDownloadPdf.setVisible(canSubmit);
+        btnDownloadPdf.setManaged(canSubmit);
+        btnUploadPdf.setVisible(canSubmit);
+        btnUploadPdf.setManaged(canSubmit);
+        btnViewSignedPdf.setVisible(!canSubmit);
+        btnViewSignedPdf.setManaged(!canSubmit);
     }
 
     @FXML

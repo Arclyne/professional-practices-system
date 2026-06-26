@@ -387,6 +387,51 @@ public class ProfessorEvaluateReportController implements Initializable {
     }
 
     @FXML
+    private void handleRejectAction() {
+        if (canRejectReport()) {
+            rejectSelectedReport();
+        }
+    }
+
+    private boolean canRejectReport() {
+        boolean canReject = true;
+
+        if (selectedReport == null) {
+            canReject = false;
+        } else if (areaFeedback.getText().trim().isEmpty()) {
+            Controller.showAlert("Campo requerido",
+                    "Escribe el motivo del rechazo en la retroalimentación.", AlertType.WARNING);
+            canReject = false;
+        }
+
+        return canReject;
+    }
+
+    private void rejectSelectedReport() {
+        String feedback = areaFeedback.getText().trim();
+        try {
+            applyRejection(selectedReport, feedback);
+            Controller.showAlert("Reporte Rechazado",
+                    "El reporte fue rechazado. El practicante podrá corregirlo y reenviarlo.",
+                    AlertType.INFORMATION);
+            showEvaluationContainer(false);
+            selectedReport = null;
+            loadAllSubmittedReports();
+        } catch (ManagerException e) {
+            Controller.showAlert("Datos inválidos", e.getMessage(), AlertType.WARNING);
+        }
+    }
+
+    private void applyRejection(EvaluableReport report, String feedback) throws ManagerException {
+        if (report.isProgressReport()) {
+            ProgressReportType reportType = ProgressReportType.fromString(report.getReportKind());
+            progressReportManager.rejectProgressReport(report.getPractitionerId(), reportType, feedback);
+        } else {
+            monthlyReportManager.rejectReport(report.getReportId(), feedback);
+        }
+    }
+
+    @FXML
     private void handleReturnAction() {
         store.dispatch(new NavigationAction.GoToSection(AppSection.DASHBOARD));
     }

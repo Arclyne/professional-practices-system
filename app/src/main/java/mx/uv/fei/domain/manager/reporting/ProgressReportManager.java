@@ -92,6 +92,15 @@ public class ProgressReportManager {
         updateReport(report);
     }
 
+    public void rejectProgressReport(int practitionerId, ProgressReportType reportType,
+                                     String feedback) throws ManagerException {
+        validateFeedback(feedback);
+        ProgressReport report = getExistingReport(practitionerId, reportType);
+        report.setProfessorFeedback(feedback.trim());
+        report.setStatus(ReportStatus.REJECTED.getDatabaseValue());
+        updateReport(report);
+    }
+
     public List<ProgressReport> getProgressReportsByPractitioner(int practitionerId) throws ManagerException {
         try {
             return progressReportDAO.getProgressReportsByPractitioner(practitionerId);

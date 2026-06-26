@@ -148,6 +148,24 @@ public class MonthlyReportManager {
         }
     }
 
+    public void rejectReport(int reportId, String feedback) throws ManagerException {
+        ReportValidator.validateRejectionFeedback(feedback);
+
+        try {
+            MonthlyReport report = reportDAO.getReportById(reportId);
+            if (report == null || report.getReportId() <= 0) {
+                throw new ManagerException("El reporte especificado no existe.");
+            }
+            report.setProfessorFeedback(feedback.trim());
+            report.setStatus(ReportStatus.REJECTED.getDatabaseValue());
+
+            reportDAO.updateReport(report, reportId);
+        } catch (DAOException e) {
+            log.error(e.getMessage(), e);
+            throw new ManagerException("Ocurrió un error al intentar rechazar el reporte.", e);
+        }
+    }
+
     public boolean verifyHasAssignedProject(int practitionerId) throws ManagerException {
         try {
             return postulationDAO.hasAssignedProject(practitionerId);
