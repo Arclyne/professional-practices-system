@@ -9,16 +9,6 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-/**
- * Cifrado y verificación de contraseñas mediante el algoritmo Argon2id.
- *
- * <p>El hash resultante se devuelve en el formato estándar PHC
- * ({@code $argon2id$v=19$m=...,t=...,p=...$salt$hash}), por lo que la sal y los
- * parámetros viajan junto al hash y no requieren almacenamiento adicional.</p>
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public final class PasswordHasher {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
