@@ -2,6 +2,7 @@ package mx.uv.fei.presentation.practitioner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -118,5 +119,10 @@ public class PractitionerSelfEvaluationViewTest extends ApplicationTest {
     @Test
     void initialize_EvaluationWithUploadedEvidence_EnablesViewEvidenceButton() {
         assertFalse(isButtonDisabled("#viewEvidenceButton"));
+    }
+
+    @Test
+    void initialize_ReviewedEvaluation_DisablesDownloadButton() {
+        assertTrue(isButtonDisabled("#downloadPdfButton"));
     }
 }
