@@ -35,6 +35,8 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             "UPDATE linked_organization SET status = 'Inactive' WHERE organization_id = ?";
     private static final String SQL_ACTIVATE_ORGANIZATION =
             "UPDATE linked_organization SET status = 'Active' WHERE organization_id = ?";
+    private static final String SQL_SELECT_ORGANIZATION_BY_ID =
+            "SELECT organization_id, organization_name, status, address, city, sector, email, phone FROM linked_organization WHERE organization_id = ?";
 
     @Inject
     public OrganizationDAO(IDatabaseConnection databaseConnection) {
@@ -52,6 +54,12 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
             statement.setString(6, organization.getMail());
             statement.setString(7, organization.getCellphone());
         });
+    }
+
+    @Override
+    public Organization recoverOrganization(int organizationId) throws DAOException {
+        List<Organization> organizations = recoverALL(SQL_SELECT_ORGANIZATION_BY_ID, this::mapResultSetToOrganization, organizationId);
+        return organizations.isEmpty() ? new Organization() : organizations.getFirst();
     }
 
     @Override

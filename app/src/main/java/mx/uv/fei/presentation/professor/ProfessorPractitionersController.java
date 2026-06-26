@@ -3,15 +3,12 @@ package mx.uv.fei.presentation.professor;
 import mx.uv.fei.config.annotation.etiquette.Component;
 import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.domain.common.Controller;
-import mx.uv.fei.domain.dto.Period;
-import mx.uv.fei.domain.dto.PracticeGroup;
-import mx.uv.fei.domain.dto.Practitioner;
-import mx.uv.fei.domain.dto.Project;
-import mx.uv.fei.domain.dto.User;
+import mx.uv.fei.domain.dto.*;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import mx.uv.fei.domain.manager.academic.PostulationManager;
 import mx.uv.fei.domain.manager.academic.PracticeGroupManager;
+import mx.uv.fei.domain.manager.people.OrganizationManager;
 import mx.uv.fei.domain.manager.people.PractitionerManager;
 import mx.uv.fei.domain.statemachine.AppStore;
 
@@ -52,6 +49,7 @@ public class ProfessorPractitionersController {
     private final PracticeGroupManager practiceGroupManager;
     private final PractitionerManager practitionerManager;
     private final PostulationManager postulationManager;
+    private final OrganizationManager organizationManager;
     private final AppStore store;
 
     private final ObservableList<Practitioner> allPractitioners = FXCollections.observableArrayList();
@@ -64,13 +62,19 @@ public class ProfessorPractitionersController {
     private int activePeriodId;
 
     @Inject
-    public ProfessorPractitionersController(PeriodManager periodManager, PracticeGroupManager practiceGroupManager,
-                                            PractitionerManager practitionerManager,
-                                            PostulationManager postulationManager, AppStore store) {
+    public ProfessorPractitionersController(
+            PeriodManager periodManager,
+            PracticeGroupManager practiceGroupManager,
+            PractitionerManager practitionerManager,
+            PostulationManager postulationManager,
+            OrganizationManager organizationManager,
+            AppStore store
+    ) {
         this.periodManager = periodManager;
         this.practiceGroupManager = practiceGroupManager;
         this.practitionerManager = practitionerManager;
         this.postulationManager = postulationManager;
+        this.organizationManager = organizationManager;
         this.store = store;
     }
 
@@ -201,7 +205,18 @@ public class ProfessorPractitionersController {
         return project.getProjectName()
                 + "\n\nEstado: " + project.getStatus()
                 + "\nPeriodo: " + project.getStartDate() + " al " + project.getEndDate()
-                + "\n\n" + project.getDescription();
+                + "\nDescription: " + project.getDescription()
+                + "\nOrganization: " + organizationNameOf(project);
+    }
+
+    private String organizationNameOf(Project project) {
+        try {
+            Organization organization = organizationManager.getOrganizationById(project.getCompanyId());
+            return organization.getNameOrganization() != null ? organization.getNameOrganization() : "Sin organización";
+        } catch (ManagerException e) {
+            Controller.showErrorAlert("Error de carga", e.getMessage());
+            return "Sin organización";
+        }
     }
 
     private void applyFilters() {
