@@ -2,14 +2,7 @@ package mx.uv.fei.domain.dto;
 
 import java.util.List;
 
-/**
- * Agrupa un reporte mensual evaluado con sus actividades para listarlo dentro
- * del reporte de avance (intermedio o final) que cubre su rango de fechas.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class CoveredReport {
 
     private final MonthlyReport report;

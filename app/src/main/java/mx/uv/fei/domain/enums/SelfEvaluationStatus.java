@@ -1,12 +1,6 @@
 package mx.uv.fei.domain.enums;
 
 
-/**
- * Define los estados posibles de una autoevaluación dentro del flujo de revisión.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public enum SelfEvaluationStatus {
 
     PENDING("Pendiente"),

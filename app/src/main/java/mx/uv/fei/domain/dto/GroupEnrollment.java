@@ -4,16 +4,7 @@ import mx.uv.fei.domain.enums.EnrollmentStatus;
 
 import java.util.Objects;
 
-/**
- * Representa la inscripción de un practicante en un grupo de prácticas durante un periodo escolar.
- *
- * Desacopla a la persona (practicante) de su participación, permitiendo que un mismo practicante
- * se reinscriba en periodos distintos manteniendo una sola inscripción por periodo.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
+
 public class GroupEnrollment {
 
     private int enrollmentId;

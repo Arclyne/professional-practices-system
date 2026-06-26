@@ -1,12 +1,5 @@
 package mx.uv.fei.domain.enums;
 
-/**
- * Define los estados posibles de la inscripción de un practicante en un grupo de prácticas.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @author José Eduardo Prior Hernández
- * @version 1.0
- */
 public enum EnrollmentStatus {
 
     ACTIVE("Active", "Activa"),

@@ -5,20 +5,6 @@ import mx.uv.fei.domain.exceptions.ManagerException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
-/**
- * Traduce fallos de persistencia ({@link DAOException}) a {@link ManagerException} con un mensaje
- * claro para el usuario.
- *
- * <p>La detección de duplicados se basa en el <em>tipo</em> de la excepción SQL subyacente
- * ({@link SQLIntegrityConstraintViolationException}), recorriendo toda la cadena de causas, y no en
- * el texto del mensaje. Esto cierra la condición de carrera del patrón "SELECT y luego INSERT": aun
- * cuando dos operaciones simultáneas pasen la verificación previa, la restricción {@code UNIQUE} de
- * la base de datos rechaza el segundo INSERT y aquí se reporta como "ya está en uso" en lugar de un
- * genérico error de conexión.
- *
- * @author Angel Gabriel Aguilar Hernandez
- * @version 1.0
- */
 public final class PersistenceErrorTranslator {
 
     private static final String GENERIC_CONNECTION_MESSAGE =
@@ -29,20 +15,13 @@ public final class PersistenceErrorTranslator {
     private PersistenceErrorTranslator() {
     }
 
-    /**
-     * Convierte un fallo de persistencia en una {@link ManagerException} con mensaje apto para el
-     * usuario: un mensaje específico de duplicidad si la causa es una violación de unicidad, o un
-     * mensaje genérico de conexión en cualquier otro caso.
-     */
     public static ManagerException translate(DAOException persistenceFailure) {
         SQLIntegrityConstraintViolationException duplicate = findIntegrityViolation(persistenceFailure);
         String message = duplicate != null ? describeDuplicate(duplicate) : GENERIC_CONNECTION_MESSAGE;
         return new ManagerException(message, persistenceFailure);
     }
 
-    /**
-     * Indica si el fallo proviene de una violación de restricción de unicidad (entrada duplicada).
-     */
+
     public static boolean isDuplicateEntry(Throwable error) {
         return findIntegrityViolation(error) != null;
     }
