@@ -61,6 +61,7 @@ public class PractitionerSelfEvaluationController {
     @FXML private Button saveButton;
     @FXML private Button downloadPdfButton;
     @FXML private Button uploadSignedButton;
+    @FXML private Button viewEvidenceButton;
 
     private final SelfEvaluationManager selfEvaluationManager;
     private final ProgressReportManager progressReportManager;
@@ -207,6 +208,7 @@ public class PractitionerSelfEvaluationController {
         saveButton.setDisable(isReviewed);
         uploadSignedButton.setDisable(isReviewed);
         downloadPdfButton.setDisable(false);
+        viewEvidenceButton.setDisable(!hasUploadedEvidence());
     }
 
     private void setControlsForNewEvaluation() {
@@ -214,6 +216,12 @@ public class PractitionerSelfEvaluationController {
         saveButton.setDisable(false);
         uploadSignedButton.setDisable(true);
         downloadPdfButton.setDisable(true);
+        viewEvidenceButton.setDisable(true);
+    }
+
+    private boolean hasUploadedEvidence() {
+        String evidence = currentSelfEvaluation != null ? currentSelfEvaluation.getEvidence() : null;
+        return evidence != null && !evidence.isBlank() && !EVIDENCE_PENDING.equalsIgnoreCase(evidence);
     }
 
     private void setComboBoxesDisabled(boolean isDisabled) {
@@ -341,6 +349,16 @@ public class PractitionerSelfEvaluationController {
             loadEvaluationState();
         } catch (ManagerException e) {
             Controller.showAlert("Error", e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleViewEvidence() {
+        if (hasUploadedEvidence()) {
+            Controller.openStoredFilePath(currentSelfEvaluation.getEvidence());
+        } else {
+            Controller.showAlert("Sin archivo",
+                    "Aún no has subido tu archivo de autoevaluación firmado.", AlertType.INFORMATION);
         }
     }
 
