@@ -1,5 +1,6 @@
 package mx.uv.fei.domain.manager.identity;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.SQLException;
@@ -36,5 +37,23 @@ public class StartSessionManagerTest {
                 "Password", "ClaveIncorrecta99");
 
         assertThrows(ManagerException.class, () -> sessionManager.processLogin(invalidCredentials));
+    }
+
+    @Test
+    void processLogin_ValidCredentialsAgainstHashedPassword_DoesNotThrow() {
+        Map<String, String> validCredentials = Map.of(
+                "Identifier", "rmarquez@uv.mx",
+                "Password", "ClaveFei2026");
+
+        assertDoesNotThrow(() -> sessionManager.processLogin(validCredentials));
+    }
+
+    @Test
+    void processLogin_CorrectUserWrongPassword_ThrowsManagerException() {
+        Map<String, String> wrongPassword = Map.of(
+                "Identifier", "rmarquez@uv.mx",
+                "Password", "ClaveIncorrecta99");
+
+        assertThrows(ManagerException.class, () -> sessionManager.processLogin(wrongPassword));
     }
 }

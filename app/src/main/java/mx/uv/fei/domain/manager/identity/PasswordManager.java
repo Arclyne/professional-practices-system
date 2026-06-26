@@ -5,6 +5,7 @@ import mx.uv.fei.config.annotation.etiquette.Inject;
 import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.PasswordValidator;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -50,7 +51,7 @@ public class PasswordManager {
 
         PasswordValidator.validatePassword(confirmPassword);
         currentUser.setStatus(UserStatus.ACTIVE);
-        currentUser.setPassword(newPassword);
+        currentUser.setPassword(PasswordHasher.hash(newPassword));
 
         try (Connection sharedConnection = databaseConnection.getConnection()) {
             userDAO.updateUser(currentUser, sharedConnection);

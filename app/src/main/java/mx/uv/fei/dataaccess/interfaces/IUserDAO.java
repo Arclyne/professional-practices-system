@@ -12,8 +12,6 @@ public interface IUserDAO {
     void activateUser(int userId) throws DAOException;
     void updateUser(User user, Connection sharedConnection) throws DAOException;
     String getUserRole(String userName) throws DAOException;
-    boolean verifyCredentialsByUserName(String userName, String password) throws DAOException;
-    boolean verifyCredentialsByEmail(String email, String password) throws DAOException;
     User getUserByUserName(String userName) throws DAOException;
     User getUserByEmail(String email) throws DAOException;
     void deactivateMultipleUsers(List<Integer> userIdentifiersList) throws DAOException;

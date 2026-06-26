@@ -50,7 +50,7 @@ public class PractitionerDAOTest {
         newPractitioner.setLastName("Martinez Rivera");
         newPractitioner.setUserName("zS25080910");
         newPractitioner.setEmail("zS25080910@estudiantes.uv.mx");
-        newPractitioner.setPassword("PracticanteUv2026");
+        newPractitioner.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         newPractitioner.setRole("Practitioner");
         newPractitioner.setStatus(UserStatus.ACTIVE);
         newPractitioner.setGender(Gender.MALE);
@@ -64,7 +64,7 @@ public class PractitionerDAOTest {
         storedPractitioner.setId(STORED_PRACTITIONER_ID);
         storedPractitioner.setUserName("zS24242424");
         storedPractitioner.setEnrollment("zS24242424");
-        storedPractitioner.setPassword("PracticasUv2026");
+        storedPractitioner.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         storedPractitioner.setName("Angel Gabriel");
         storedPractitioner.setLastName("Aguilar Hernandez");
         storedPractitioner.setEmail("zS24242424@estudiantes.uv.mx");

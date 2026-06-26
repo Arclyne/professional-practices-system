@@ -10,6 +10,7 @@ module mx.uv.fei {
     requires jakarta.mail;
     requires org.apache.pdfbox;
     requires org.apache.pdfbox.io;
+    requires org.bouncycastle.provider;
 
     opens mx.uv.fei.appconfiguration ;
 

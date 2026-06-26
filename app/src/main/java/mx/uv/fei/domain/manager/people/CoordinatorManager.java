@@ -7,6 +7,7 @@ import mx.uv.fei.dataaccess.exceptions.DAOException;
 import mx.uv.fei.dataaccess.interfaces.ICoordinatorDAO;
 import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.common.PersistenceErrorTranslator;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.Coordinator;
 import mx.uv.fei.domain.enums.UserStatus;
@@ -39,6 +40,7 @@ public class CoordinatorManager {
         coordinator.setStatus(UserStatus.PENDING);
         coordinator.setRole("Coordinator");
         UserValidator.validateCoordinatorData(coordinator);
+        coordinator.setPassword(PasswordHasher.hash(temporaryPassword));
 
         try {
             int generatedId = coordinatorDAO.insertCoordinator(coordinator);

@@ -5,11 +5,11 @@ MERGE INTO role (role_name, description) KEY (role_name) VALUES
     ('Practitioner', 'Student role');
 
 INSERT INTO user (user_id, username, password, name, last_name, email, role_name, status, gender) VALUES
-    (13,  '30011111',   'AdminFei2026',     'Ricardo',       'Marquez Sosa',       'rmarquez@uv.mx',               'Administrator', 'Active', 'Male'),
-    (67,  '30022222',   'CoordFei2026',     'Marco Antonio', 'Rodriguez Castillo', 'mrodriguez@uv.mx',             'Coordinator',   'Active', 'Male'),
-    (68,  '30033333',   'ProfeFei2026',     'Jose Eduardo',  'Prior Hernandez',    'eprior@uv.mx',                 'Professor',     'Active', 'Male'),
-    (123, 'zS24242424', 'PracticasUv2026',  'Angel Gabriel', 'Aguilar Hernandez',  'zS24242424@estudiantes.uv.mx', 'Practitioner',  'Active', 'Male'),
-    (14,  'zS23151617', 'EstudianteUv2026', 'Daniela',       'Morales Vazquez',    'zS23151617@estudiantes.uv.mx', 'Practitioner',  'Active', 'Female');
+    (13,  '30011111',   '$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw', 'Ricardo',       'Marquez Sosa',       'rmarquez@uv.mx',               'Administrator', 'Active', 'Male'),
+    (67,  '30022222',   '$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw', 'Marco Antonio', 'Rodriguez Castillo', 'mrodriguez@uv.mx',             'Coordinator',   'Active', 'Male'),
+    (68,  '30033333',   '$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw', 'Jose Eduardo',  'Prior Hernandez',    'eprior@uv.mx',                 'Professor',     'Active', 'Male'),
+    (123, 'zS24242424', '$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw', 'Angel Gabriel', 'Aguilar Hernandez',  'zS24242424@estudiantes.uv.mx', 'Practitioner',  'Active', 'Male'),
+    (14,  'zS23151617', '$argon2id$v=19$m=19456,t=3,p=1$DCg1S9In6YGYy7www34CHw$G+vLCRPOM6Lidsn4xrKHC3Q7n3Pbc8Q66I0wbEAMTGw', 'Daniela',       'Morales Vazquez',    'zS23151617@estudiantes.uv.mx', 'Practitioner',  'Active', 'Female');
 
 INSERT INTO administrator (administrator_id)  VALUES (13);
 INSERT INTO coordinator   (coordinator_id)    VALUES (67);

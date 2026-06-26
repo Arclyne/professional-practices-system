@@ -10,6 +10,7 @@ import mx.uv.fei.dataaccess.interfaces.IUserDAO;
 import mx.uv.fei.domain.common.IFileBackup;
 import mx.uv.fei.domain.common.IPractitionerParser;
 import mx.uv.fei.domain.common.PersistenceErrorTranslator;
+import mx.uv.fei.domain.common.security.PasswordHasher;
 import mx.uv.fei.domain.common.validators.UserValidator;
 import mx.uv.fei.domain.dto.BatchRegistrationSummary;
 import mx.uv.fei.domain.dto.Practitioner;
@@ -69,7 +70,7 @@ public class PractitionerManager {
         verifyEnrollmentAvailability(practitioner.getEnrollment());
 
         String temporaryPassword = PasswordManager.generatePassword();
-        practitioner.setPassword(temporaryPassword);
+        practitioner.setPassword(PasswordHasher.hash(temporaryPassword));
         practitioner.setUserName(practitioner.getEnrollment());
         practitioner.setRole(ROLE_PRACTITIONER);
         practitioner.setStatus(UserStatus.PENDING);

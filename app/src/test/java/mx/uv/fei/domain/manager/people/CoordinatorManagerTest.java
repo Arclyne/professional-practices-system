@@ -75,7 +75,7 @@ public class CoordinatorManagerTest {
         Coordinator expectedCoordinator = new Coordinator();
         expectedCoordinator.setId(STORED_COORDINATOR_ID);
         expectedCoordinator.setUserName("30022222");
-        expectedCoordinator.setPassword("CoordFei2026");
+        expectedCoordinator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         expectedCoordinator.setName("Marco Antonio");
         expectedCoordinator.setLastName("Rodriguez Castillo");
         expectedCoordinator.setEmail("mrodriguez@uv.mx");
@@ -108,7 +108,7 @@ public class CoordinatorManagerTest {
         coordinator.setName("Patricia");
         coordinator.setLastName("Luna Mendez");
         coordinator.setUserName("30025566");
-        coordinator.setPassword("CoordUv2026");
+        coordinator.setPassword(TestDatabaseSetup.SEED_PASSWORD_HASH);
         coordinator.setEmail("pluna@uv.mx");
         coordinator.setGender(Gender.FEMALE);
 
