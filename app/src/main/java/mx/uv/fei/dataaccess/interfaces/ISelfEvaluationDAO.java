@@ -13,5 +13,7 @@ public interface ISelfEvaluationDAO {
 
     void updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException;
 
+    void rejectSelfEvaluation(int selfEvaluationId, String reviewComment) throws DAOException;
+
     void updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException;
 }

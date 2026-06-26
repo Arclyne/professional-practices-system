@@ -12,6 +12,7 @@ import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.enums.DocumentCategory;
 import mx.uv.fei.domain.enums.ProgressReportType;
 import mx.uv.fei.domain.enums.ReportStatus;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.academic.PeriodManager;
 import org.slf4j.Logger;
@@ -33,8 +34,6 @@ import java.util.List;
 public class GradingEligibilityManager {
 
     private static final Logger log = LoggerFactory.getLogger(GradingEligibilityManager.class);
-
-    private static final String SELF_EVALUATION_STATUS_ACCEPTED = "Revisada";
 
     private final IPractitionerDocumentDAO documentDAO;
     private final IProgressReportDAO progressReportDAO;
@@ -67,7 +66,7 @@ public class GradingEligibilityManager {
     public String buildPendingRequirementsMessage(GradingEligibility eligibility) {
         List<String> pendingRequirements = new ArrayList<>();
         if (!eligibility.finalDocumentsAccepted()) {
-            pendingRequirements.add("carta de liberación aceptada");
+            pendingRequirements.add("documentos finales aceptados (carta de liberación y evaluaciones)");
         }
         if (!eligibility.finalReportAccepted()) {
             pendingRequirements.add("reporte final aceptado (horas cumplidas)");
@@ -90,7 +89,7 @@ public class GradingEligibilityManager {
         if (finalReport != null) {
             SelfEvaluation selfEvaluation = selfEvaluationDAO.getSelfEvaluationByReportId(finalReport.getReportId());
             isAccepted = selfEvaluation != null
-                    && SELF_EVALUATION_STATUS_ACCEPTED.equals(selfEvaluation.getStatus());
+                    && SelfEvaluationStatus.REVIEWED.getDatabaseValue().equals(selfEvaluation.getStatus());
         }
 
         return isAccepted;

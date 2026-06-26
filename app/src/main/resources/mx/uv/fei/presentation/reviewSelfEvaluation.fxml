@@ -77,9 +77,12 @@
             </GridPane>
         </ScrollPane>
 
+        <TextField fx:id="rejectReasonTextField" promptText="Motivo del rechazo (obligatorio para rechazar)" />
+
         <HBox alignment="CENTER_RIGHT" spacing="15.0">
             <Button fx:id="viewEvidenceButton" onAction="#handleViewEvidence" text="Ver Evidencia" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;" />
             <Button fx:id="downloadEvidenceButton" onAction="#handleDownloadEvidence" text="Descargar Evidencia" style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-cursor: hand;" />
+            <Button fx:id="rejectButton" onAction="#handleRejectEvaluation" text="Rechazar" style="-fx-background-color: #F44336; -fx-text-fill: white; -fx-cursor: hand;" />
             <Button fx:id="approveButton" onAction="#handleApproveEvaluation" text="Marcar como Revisada" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;" />
         </HBox>
     </VBox>

@@ -13,6 +13,7 @@ import mx.uv.fei.config.annotation.etiquette.Profile;
 import mx.uv.fei.config.annotation.test.StartEtiquetteTest;
 import mx.uv.fei.dataaccess.interfaces.IDatabaseConnection;
 import mx.uv.fei.domain.dto.SelfEvaluation;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,6 +126,29 @@ public class SelfEvaluationManagerTest {
     @Test
     void updateSelfEvaluationStatus_ValidStatus_DoesNotThrow() {
         assertDoesNotThrow(() -> selfEvaluationManager.updateSelfEvaluationStatus(STORED_EVALUATION_ID, "Pendiente"));
+    }
+
+    @Test
+    void rejectSelfEvaluation_ValidComment_DoesNotThrow() {
+        assertDoesNotThrow(() -> selfEvaluationManager.rejectSelfEvaluation(STORED_EVALUATION_ID,
+                "Las respuestas no coinciden con la evidencia entregada."));
+    }
+
+    @Test
+    void rejectSelfEvaluation_BlankComment_ThrowsManagerException() {
+        assertThrows(ManagerException.class,
+                () -> selfEvaluationManager.rejectSelfEvaluation(STORED_EVALUATION_ID, "   "));
+    }
+
+    @Test
+    void rejectSelfEvaluation_ValidComment_PersistsRejectedStatusWithComment() throws ManagerException {
+        String rejectionComment = "Las respuestas no coinciden con la evidencia entregada.";
+
+        selfEvaluationManager.rejectSelfEvaluation(STORED_EVALUATION_ID, rejectionComment);
+        SelfEvaluation rejectedEvaluation = selfEvaluationManager.recoverSelfEvaluation(1);
+
+        assertEquals(SelfEvaluationStatus.REJECTED.getDatabaseValue(), rejectedEvaluation.getStatus());
+        assertEquals(rejectionComment, rejectedEvaluation.getReviewComment());
     }
 
     @Test

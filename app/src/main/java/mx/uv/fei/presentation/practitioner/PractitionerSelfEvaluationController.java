@@ -9,6 +9,7 @@ import mx.uv.fei.domain.dto.ProgressReport;
 import mx.uv.fei.domain.dto.SelfEvaluation;
 import mx.uv.fei.domain.dto.User;
 import mx.uv.fei.domain.enums.ReportStatus;
+import mx.uv.fei.domain.enums.SelfEvaluationStatus;
 import mx.uv.fei.domain.exceptions.ManagerException;
 import mx.uv.fei.domain.manager.reporting.ProgressReportManager;
 import mx.uv.fei.domain.manager.evaluation.SelfEvaluationManager;
@@ -35,7 +36,8 @@ public class PractitionerSelfEvaluationController {
 
     private static final String REPORT_TYPE_FINAL = "Final";
     private static final String PROGRESS_REPORT_VIEW = "/mx/uv/fei/presentation/progressReportGenerator.fxml";
-    private static final String SELF_EVALUATION_STATUS_REVIEWED = "Revisada";
+    private static final String SELF_EVALUATION_STATUS_REVIEWED = SelfEvaluationStatus.REVIEWED.getDatabaseValue();
+    private static final String SELF_EVALUATION_STATUS_REJECTED = SelfEvaluationStatus.REJECTED.getDatabaseValue();
     private static final String EVIDENCE_PENDING = "pendiente";
     private static final String PDF_INITIAL_NAME = "PRAIS-03_Autoevaluacion.pdf";
     private static final int MINIMUM_SCORE = 1;
@@ -169,13 +171,22 @@ public class PractitionerSelfEvaluationController {
     private void applyStateForEvaluation() {
         if (currentSelfEvaluation != null) {
             populateComboBoxes();
-            statusLabel.setText("Estado de Autoevaluación: " + currentSelfEvaluation.getStatus());
+            statusLabel.setText(buildExistingStatusText());
             boolean isReviewed = SELF_EVALUATION_STATUS_REVIEWED.equals(currentSelfEvaluation.getStatus());
             setControlsForExistingEvaluation(isReviewed);
         } else {
             statusLabel.setText("Autoevaluación habilitada — completa el formulario");
             setControlsForNewEvaluation();
         }
+    }
+
+    private String buildExistingStatusText() {
+        String statusText = "Estado de Autoevaluación: " + currentSelfEvaluation.getStatus();
+        boolean isRejected = SELF_EVALUATION_STATUS_REJECTED.equals(currentSelfEvaluation.getStatus());
+        if (isRejected && currentSelfEvaluation.getReviewComment() != null) {
+            statusText = statusText + " — Motivo: " + currentSelfEvaluation.getReviewComment();
+        }
+        return statusText;
     }
 
     private void populateComboBoxes() {

@@ -16,6 +16,7 @@ public class SelfEvaluation {
     private int reportId;
     private String evidence;
     private String status;
+    private String reviewComment;
     private int q1;
     private int q2;
     private int q3;
@@ -41,6 +42,9 @@ public class SelfEvaluation {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getReviewComment() { return reviewComment; }
+    public void setReviewComment(String reviewComment) { this.reviewComment = reviewComment; }
 
     public int getQ1() { return q1; }
     public void setQ1(int q1) { this.q1 = q1; }
