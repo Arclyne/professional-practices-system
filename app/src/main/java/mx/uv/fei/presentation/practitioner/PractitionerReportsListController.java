@@ -43,7 +43,6 @@ import mx.uv.fei.domain.statemachine.enums.AppSection;
 public class PractitionerReportsListController implements Initializable {
 
     private static final String MSG_PDF_OPEN_ERROR  = "No se pudo abrir el visor de PDF.";
-    private static final String MSG_LINK_OPEN_ERROR = "No se pudo abrir el archivo.";
     private static final String STATUS_FILTER_ALL = "Todos";
     private static final String STATUS_FILTER_PENDING_REVIEW = "Pendientes de revisión";
     private static final String STATUS_FILTER_REVIEWED = "Revisadas";
@@ -319,15 +318,7 @@ public class PractitionerReportsListController implements Initializable {
     private void handleViewSignedPdfAction(ActionEvent event) {
         boolean hasSignedFile = selectedReport != null && selectedReport.getSignedFileUrl() != null;
         if (hasSignedFile) {
-            openSignedReport();
-        }
-    }
-
-    private void openSignedReport() {
-        try {
-            java.awt.Desktop.getDesktop().browse(new java.net.URI(selectedReport.getSignedFileUrl()));
-        } catch (Exception exception) {
-            Controller.showAlert("Error de Enlace", MSG_LINK_OPEN_ERROR, AlertType.ERROR);
+            Controller.openStoredFile(selectedReport.getSignedFileUrl());
         }
     }
 

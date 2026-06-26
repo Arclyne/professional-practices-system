@@ -47,6 +47,9 @@ import java.util.Map;
 public class ReviewSelfEvaluationController {
 
     private static final String REPORT_TYPE_FINAL = "Final";
+    private static final String FILE_UNAVAILABLE_TITLE = "Archivo no disponible";
+    private static final String FILE_UNAVAILABLE_MESSAGE =
+            "El archivo no está disponible. Es posible que se haya movido o eliminado de su ubicación original.";
     private static final String STATUS_NOT_DELIVERED = "No entregada";
     private static final String STATUS_REVIEWED = SelfEvaluationStatus.REVIEWED.getDatabaseValue();
     private static final String STATUS_PENDING_EVIDENCE = "pendiente";
@@ -325,17 +328,27 @@ public class ReviewSelfEvaluationController {
     @FXML
     private void handleViewEvidence() {
         if (selectedRow != null && selectedRow.getSelfEvaluation() != null) {
-            String evidencePath = selectedRow.getSelfEvaluation().getEvidence();
-            if (evidencePath != null && !evidencePath.isEmpty()) {
-                try {
-                    java.net.URI uri = new java.io.File(evidencePath).toURI();
-                    java.awt.Desktop.getDesktop().browse(uri);
-                } catch (IOException e) {
-                    Controller.showAlert("Error de Archivo",
-                            "No se pudo abrir la evidencia del alumno: " + e.getMessage(),
-                            AlertType.ERROR);
-                }
-            }
+            openEvidence(selectedRow.getSelfEvaluation().getEvidence());
+        }
+    }
+
+    private void openEvidence(String evidencePath) {
+        if (evidencePath == null || evidencePath.isEmpty()) {
+            return;
+        }
+        File evidenceFile = new File(evidencePath);
+        if (!evidenceFile.exists()) {
+            Controller.showAlert(FILE_UNAVAILABLE_TITLE, FILE_UNAVAILABLE_MESSAGE, AlertType.ERROR);
+        } else {
+            browseEvidence(evidenceFile);
+        }
+    }
+
+    private void browseEvidence(File evidenceFile) {
+        try {
+            java.awt.Desktop.getDesktop().browse(evidenceFile.toURI());
+        } catch (IOException e) {
+            Controller.showAlert(FILE_UNAVAILABLE_TITLE, FILE_UNAVAILABLE_MESSAGE, AlertType.ERROR);
         }
     }
 
@@ -354,13 +367,25 @@ public class ReviewSelfEvaluationController {
             File destination = fileChooser.showSaveDialog(stage);
 
             if (destination != null) {
-                try {
-                    Files.copy(Paths.get(remotePath), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    Controller.showAlert("Éxito", "Archivo de evidencia descargado correctamente.", AlertType.INFORMATION);
-                } catch (IOException e) {
-                    Controller.showAlert("Error", "No se pudo descargar el archivo de evidencia: " + e.getMessage(), AlertType.ERROR);
-                }
+                downloadEvidenceFile(remotePath, destination);
             }
+        }
+    }
+
+    private void downloadEvidenceFile(String remotePath, File destination) {
+        if (remotePath == null || !Files.exists(Paths.get(remotePath))) {
+            Controller.showAlert(FILE_UNAVAILABLE_TITLE, FILE_UNAVAILABLE_MESSAGE, AlertType.ERROR);
+        } else {
+            copyEvidenceFile(remotePath, destination);
+        }
+    }
+
+    private void copyEvidenceFile(String remotePath, File destination) {
+        try {
+            Files.copy(Paths.get(remotePath), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Controller.showAlert("Éxito", "Archivo de evidencia descargado correctamente.", AlertType.INFORMATION);
+        } catch (IOException e) {
+            Controller.showAlert(FILE_UNAVAILABLE_TITLE, FILE_UNAVAILABLE_MESSAGE, AlertType.ERROR);
         }
     }
 

@@ -104,18 +104,20 @@ public class SelfEvaluationManagerTest {
 
     @Test
     void submitEvidence_ValidUrl_DoesNotThrow() {
-        assertDoesNotThrow(() -> selfEvaluationManager.submitEvidence(STORED_EVALUATION_ID,
+        assertDoesNotThrow(() -> selfEvaluationManager.submitEvidence(PRACTITIONER_ID, STORED_EVALUATION_ID,
                 "https://storage.uv.mx/evidencias/evidencia_actualizada_zS24242424.pdf"));
     }
 
     @Test
     void submitEvidence_NullUrl_ThrowsManagerException() {
-        assertThrows(ManagerException.class, () -> selfEvaluationManager.submitEvidence(STORED_EVALUATION_ID, null));
+        assertThrows(ManagerException.class,
+                () -> selfEvaluationManager.submitEvidence(PRACTITIONER_ID, STORED_EVALUATION_ID, null));
     }
 
     @Test
     void submitEvidence_BlankUrl_ThrowsManagerException() {
-        assertThrows(ManagerException.class, () -> selfEvaluationManager.submitEvidence(STORED_EVALUATION_ID, "   "));
+        assertThrows(ManagerException.class,
+                () -> selfEvaluationManager.submitEvidence(PRACTITIONER_ID, STORED_EVALUATION_ID, "   "));
     }
 
     @Test

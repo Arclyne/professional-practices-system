@@ -175,7 +175,7 @@ public class CoordinatorPeriodsController {
     private void concludeActivePeriod(Period activePeriod) throws ManagerException {
         periodConclusionManager.concludePeriod(activePeriod.getPeriodId());
         Controller.showSuccessAlert("Periodo concluido",
-                "El periodo activo fue concluido. Los practicantes sin calificación recibieron 5 automáticamente.");
+                "El periodo activo fue concluido. Todos los practicantes tienen calificación registrada.");
         loadPeriods();
     }
 

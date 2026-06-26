@@ -37,8 +37,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-import java.awt.Desktop;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -323,16 +321,7 @@ public class ProfessorEvaluateReportController implements Initializable {
     private void handleViewPdfAction() {
         boolean hasSignedFile = selectedReport != null && selectedReport.getSignedFileUrl() != null;
         if (hasSignedFile) {
-            openReportEvidence();
-        }
-    }
-
-    private void openReportEvidence() {
-        try {
-            Desktop.getDesktop().browse(new URI(selectedReport.getSignedFileUrl()));
-        } catch (Exception e) {
-            Controller.showAlert("Error de Archivo",
-                    "No se pudo abrir la evidencia del alumno.", AlertType.ERROR);
+            Controller.openStoredFile(selectedReport.getSignedFileUrl());
         }
     }
 

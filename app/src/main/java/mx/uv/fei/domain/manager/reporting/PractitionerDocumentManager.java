@@ -59,8 +59,10 @@ public class PractitionerDocumentManager {
         }
     }
 
-    public void editDocument(int documentId, File file) throws ManagerException {
+    public void editDocument(int practitionerId, int documentId, File file) throws ManagerException {
+        BaseValidator.validateId(practitionerId, "El practicante indicado no es válido.");
         BaseValidator.validateId(documentId, "El documento indicado no es válido.");
+        practiceAccessManager.ensureSubmissionsAllowed(practitionerId);
 
         String storedFileUrl = cloudStorageManager.uploadEvidenceFile(file);
         String documentName = validatedDocumentName(file);

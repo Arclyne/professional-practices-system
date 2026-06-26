@@ -3,6 +3,7 @@ import mx.uv.fei.domain.manager.infrastructure.CloudStorageManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -56,6 +57,28 @@ public class PractitionerDocumentManagerTest {
 
         assertThrows(ManagerException.class,
                 () -> documentManager.uploadDocument(VALID_PRACTITIONER_ID, DocumentType.CURP, anyFile));
+
+        verifyNoInteractions(cloudStorageManager);
+    }
+
+    @Test
+    void editDocument_InvalidPractitionerId_ThrowsBeforeUploading() {
+        File anyFile = mock(File.class);
+
+        assertThrows(ManagerException.class,
+                () -> documentManager.editDocument(INVALID_ID, VALID_DOCUMENT_ID, anyFile));
+
+        verifyNoInteractions(cloudStorageManager);
+    }
+
+    @Test
+    void editDocument_SubmissionsNotAllowed_ThrowsBeforeUploading() throws Exception {
+        File anyFile = mock(File.class);
+        doThrow(new ManagerException("Has concluido tus prácticas profesionales. Ya no puedes realizar entregas."))
+                .when(practiceAccessManager).ensureSubmissionsAllowed(VALID_PRACTITIONER_ID);
+
+        assertThrows(ManagerException.class,
+                () -> documentManager.editDocument(VALID_PRACTITIONER_ID, VALID_DOCUMENT_ID, anyFile));
 
         verifyNoInteractions(cloudStorageManager);
     }
