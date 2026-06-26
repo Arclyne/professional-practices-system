@@ -223,7 +223,7 @@ public class PractitionerDocumentsController {
     private void persistEditedDocument(PractitionerDocument selectedDocument, File selectedFile,
                                        DocumentCategory category, ObservableList<PractitionerDocument> target) {
         try {
-            documentManager.editDocument(selectedDocument.getDocumentId(), selectedFile);
+            documentManager.editDocument(currentPractitionerId(), selectedDocument.getDocumentId(), selectedFile);
             Controller.showInfoAlert("Documento actualizado", "El documento se actualizó y quedó pendiente de revisión.");
             loadDocuments(category, target);
         } catch (ManagerException e) {

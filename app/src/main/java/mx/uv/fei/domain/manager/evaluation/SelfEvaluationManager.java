@@ -45,7 +45,8 @@ public class SelfEvaluationManager {
         }
     }
 
-    public void submitEvidence(int selfEvaluationId, String fileUrl) throws ManagerException {
+    public void submitEvidence(int practitionerId, int selfEvaluationId, String fileUrl) throws ManagerException {
+        practiceAccessManager.ensureSubmissionsAllowed(practitionerId);
         ReportValidator.validateSignedReport(fileUrl);
         try {
             selfEvaluationDAO.updateSelfEvaluationEvidence(selfEvaluationId, fileUrl);

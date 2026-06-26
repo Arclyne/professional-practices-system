@@ -335,7 +335,8 @@ public class PractitionerSelfEvaluationController {
 
     private void uploadEvidence(String filePath) {
         try {
-            selfEvaluationManager.submitEvidence(currentSelfEvaluation.getSelfEvalId(), filePath);
+            selfEvaluationManager.submitEvidence(currentSelfEvaluation.getPractitionerId(),
+                    currentSelfEvaluation.getSelfEvalId(), filePath);
             Controller.showAlert("Éxito", "Evidencia subida correctamente.", AlertType.INFORMATION);
             loadEvaluationState();
         } catch (ManagerException e) {
