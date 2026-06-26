@@ -13,6 +13,9 @@
             </Label>
         </HBox>
 
+        <TextField fx:id="searchTextField" onKeyReleased="#handleSearchAction"
+                   promptText="Buscar por matrícula (ej. zS20013412)" maxWidth="1.7976931348623157E308"/>
+
         <ComboBox fx:id="groupFilterComboBox" maxWidth="1.7976931348623157E308"/>
 
         <ComboBox fx:id="statusFilterComboBox" maxWidth="1.7976931348623157E308"/>

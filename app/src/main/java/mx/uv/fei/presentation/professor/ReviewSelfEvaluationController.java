@@ -60,6 +60,7 @@ public class ReviewSelfEvaluationController {
 
     @FXML private ComboBox<String> groupFilterComboBox;
     @FXML private ComboBox<String> statusFilterComboBox;
+    @FXML private TextField searchTextField;
     @FXML private TableView<SelfEvaluationRow> evaluationsTableView;
     @FXML private TableColumn<SelfEvaluationRow, String> studentTableColumn;
     @FXML private TableColumn<SelfEvaluationRow, String> groupTableColumn;
@@ -186,7 +187,7 @@ public class ReviewSelfEvaluationController {
         String selectedStatus = statusFilterComboBox.getValue();
         List<SelfEvaluationRow> visibleRows = new ArrayList<>();
         for (SelfEvaluationRow row : allEvaluationRows) {
-            if (matchesStatusFilter(row, selectedStatus)) {
+            if (matchesStatusFilter(row, selectedStatus) && matchesEnrollmentSearch(row)) {
                 visibleRows.add(row);
             }
         }
@@ -215,6 +216,17 @@ public class ReviewSelfEvaluationController {
             expectedStatus = STATUS_NOT_DELIVERED;
         }
         return expectedStatus;
+    }
+
+    private boolean matchesEnrollmentSearch(SelfEvaluationRow row) {
+        String query = searchTextField.getText() == null ? "" : searchTextField.getText().trim().toLowerCase();
+        String enrollment = row.getEnrollment() == null ? "" : row.getEnrollment().toLowerCase();
+        return query.isEmpty() || enrollment.contains(query);
+    }
+
+    @FXML
+    private void handleSearchAction() {
+        applyStatusFilter();
     }
 
     private List<PracticeGroup> groupsForSelectedFilter() {
@@ -255,7 +267,7 @@ public class ReviewSelfEvaluationController {
         }
 
         String fullName = student.getName() + " " + student.getLastName();
-        return new SelfEvaluationRow(fullName, groupSection, status, student, evaluation);
+        return new SelfEvaluationRow(fullName, groupSection, student.getEnrollment(), status, student, evaluation);
     }
 
     private void showEvaluationDetails(SelfEvaluationRow row) {
@@ -390,13 +402,16 @@ public class ReviewSelfEvaluationController {
     public static class SelfEvaluationRow {
         private final String studentName;
         private final String groupCode;
+        private final String enrollment;
         private final String status;
         private final User student;
         private final SelfEvaluation selfEvaluation;
 
-        public SelfEvaluationRow(String studentName, String groupCode, String status, User student, SelfEvaluation selfEvaluation) {
+        public SelfEvaluationRow(String studentName, String groupCode, String enrollment, String status,
+                                 User student, SelfEvaluation selfEvaluation) {
             this.studentName = studentName;
             this.groupCode = groupCode;
+            this.enrollment = enrollment;
             this.status = status;
             this.student = student;
             this.selfEvaluation = selfEvaluation;
@@ -404,6 +419,7 @@ public class ReviewSelfEvaluationController {
 
         public String getStudentName() { return studentName; }
         public String getGroupCode() { return groupCode; }
+        public String getEnrollment() { return enrollment; }
         public String getStatus() { return status; }
         public User getStudent() { return student; }
         public SelfEvaluation getSelfEvaluation() { return selfEvaluation; }
