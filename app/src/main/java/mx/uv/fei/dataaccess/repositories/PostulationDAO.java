@@ -42,11 +42,23 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
     private static final String SQL_CALL_ASSIGNMENT_PROCEDURE =
             "{CALL assign_project_and_reject_others(?, ?)}";
 
+    /**
+     * Crea el DAO de postulaciones con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public PostulationDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Indica si el practicante ya ha registrado sus prioridades de proyecto (postulaciones no canceladas).
+     *
+     * @param practitionerId identificador del practicante
+     * @return {@code true} si tiene postulaciones vigentes; {@code false} en caso contrario
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public boolean hasPractitionerSubmittedPriorities(int practitionerId) throws DAOException {
         boolean hasSubmittedPriorities = false;
@@ -68,6 +80,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         return hasSubmittedPriorities;
     }
 
+    /**
+     * Registra en lote las prioridades de proyecto de un practicante, cancelando antes las pendientes.
+     *
+     * @param practitionerId      identificador del practicante
+     * @param prioritizedProjects proyectos en orden de prioridad descendente
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public void insertProjectPriorities(int practitionerId, List<Project> prioritizedProjects) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
@@ -88,6 +107,14 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         }
     }
 
+    /**
+     * Cancela las postulaciones pendientes e inserta por lotes las nuevas prioridades del practicante.
+     *
+     * @param connection     conexión transaccional sobre la que se ejecuta el lote
+     * @param practitionerId identificador del practicante
+     * @param projects       proyectos en orden de prioridad descendente
+     * @throws SQLException si el lote no registra todas las prioridades o si ocurre un error
+     */
     private void executePriorityBatch(Connection connection, int practitionerId, List<Project> projects) throws SQLException {
         cancelPendingPostulations(connection, practitionerId);
         try (PreparedStatement statement = connection.prepareStatement(SQL_INSERT_POSTULATION)) {
@@ -106,6 +133,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         }
     }
 
+    /**
+     * Cancela las postulaciones pendientes de un practicante sobre la conexión recibida.
+     *
+     * @param connection     conexión transaccional sobre la que se ejecuta la actualización
+     * @param practitionerId identificador del practicante
+     * @throws SQLException si ocurre un error al ejecutar la actualización
+     */
     private void cancelPendingPostulations(Connection connection, int practitionerId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_CANCEL_PENDING_POSTULATIONS)) {
             statement.setInt(1, practitionerId);
@@ -113,11 +147,25 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         }
     }
 
+    /**
+     * Recupera las postulaciones vigentes de un practicante, ordenadas por nivel de prioridad.
+     *
+     * @param practitionerId identificador del practicante
+     * @return lista de postulaciones del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<ProjectPostulation> retrievePractitionerPostulations(int practitionerId) throws DAOException {
         return recoverALL(SQL_SELECT_POSTULATIONS_BY_PRACTITIONER, this::mapResultSetToPostulation, practitionerId);
     }
 
+    /**
+     * Asigna un proyecto a un practicante mediante un procedimiento almacenado que rechaza las demás postulaciones.
+     *
+     * @param practitionerId identificador del practicante
+     * @param projectId      identificador del proyecto a asignar
+     * @throws DAOException si ocurre un error al ejecutar el procedimiento almacenado
+     */
     @Override
     public void assignProjectUsingStoredProcedure(int practitionerId, int projectId) throws DAOException {
         try (Connection connection = databaseConnection.getConnection();
@@ -132,6 +180,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         }
     }
 
+    /**
+     * Indica si el practicante ya tiene un proyecto asignado.
+     *
+     * @param practitionerId identificador del practicante
+     * @return {@code true} si tiene un proyecto asignado; {@code false} en caso contrario
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public boolean hasAssignedProject(int practitionerId) throws DAOException {
         boolean hasAssignedProject = false;
@@ -153,6 +208,13 @@ public class PostulationDAO extends BaseDAO implements IPostulationDAO {
         return hasAssignedProject;
     }
 
+    /**
+     * Construye una postulación con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return postulación con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private ProjectPostulation mapResultSetToPostulation(ResultSet resultSet) throws SQLException {
         ProjectPostulation postulation = new ProjectPostulation();
         postulation.setPractitionerId(resultSet.getInt("practitioner_id"));

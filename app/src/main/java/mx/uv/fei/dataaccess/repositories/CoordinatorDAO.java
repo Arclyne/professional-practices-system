@@ -42,12 +42,25 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
 
     private final IUserDAO userDAO;
 
+    /**
+     * Crea el DAO de coordinadores con la fuente de conexiones y el DAO de usuarios.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     * @param userDAO            DAO de usuarios usado para los datos comunes de cuenta
+     */
     @Inject
     public CoordinatorDAO(IDatabaseConnection databaseConnection, IUserDAO userDAO) {
         super(databaseConnection);
         this.userDAO = userDAO;
     }
 
+    /**
+     * Inserta un coordinador creando primero su usuario base dentro de una transacción.
+     *
+     * @param coordinator coordinador con los datos a registrar
+     * @return identificador generado para el coordinador, o {@code -1} si la operación falla
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public int insertCoordinator(Coordinator coordinator) throws DAOException {
         int generatedId = -1;
@@ -85,6 +98,13 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un coordinador junto con sus datos de usuario a partir de su identificador.
+     *
+     * @param coordinatorId identificador del coordinador a recuperar
+     * @return coordinador encontrado, o un {@link Coordinator} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Coordinator recoverCoordinator(int coordinatorId) throws DAOException {
         Coordinator recoveredCoordinator = new Coordinator();
@@ -106,6 +126,12 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         return recoveredCoordinator;
     }
 
+    /**
+     * Recupera el coordinador en funciones, es decir el que está activo o pendiente.
+     *
+     * @return coordinador activo o pendiente, o {@code null} si no hay ninguno
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Coordinator getCurrentCoordinator() throws DAOException {
         Coordinator currentCoordinator = null;
@@ -124,11 +150,24 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         return currentCoordinator;
     }
 
+    /**
+     * Recupera todos los coordinadores junto con sus datos de usuario.
+     *
+     * @return lista con todos los coordinadores; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Coordinator> getAllCoordinators() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_COORDINATORS, this::mapResultSetToCoordinator);
     }
 
+    /**
+     * Actualiza los datos de usuario asociados a un coordinador dentro de una transacción.
+     *
+     * @param coordinatorToUpdate coordinador con los datos modificados
+     * @param coordinatorId       identificador del coordinador a actualizar
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public void updateCoordinator(Coordinator coordinatorToUpdate, int coordinatorId) throws DAOException {
         coordinatorToUpdate.setId(coordinatorId);
@@ -150,6 +189,13 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         }
     }
 
+    /**
+     * Construye un coordinador con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return coordinador con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Coordinator mapResultSetToCoordinator(ResultSet resultSet) throws SQLException {
         Coordinator coordinator = new Coordinator();
 
@@ -168,16 +214,38 @@ public class CoordinatorDAO extends BaseDAO implements ICoordinatorDAO {
         return coordinator;
     }
 
+    /**
+     * Obtiene el estado del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;
     }
 
+    /**
+     * Obtiene el género del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return género del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
         String genderValue = resultSet.getString("gender");
         return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
     }
 
+    /**
+     * Obtiene una marca de tiempo como {@link LocalDateTime} tolerando valores nulos.
+     *
+     * @param resultSet  resultado posicionado en la fila a leer
+     * @param columnName nombre de la columna de tipo marca de tiempo
+     * @return fecha y hora correspondiente, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;

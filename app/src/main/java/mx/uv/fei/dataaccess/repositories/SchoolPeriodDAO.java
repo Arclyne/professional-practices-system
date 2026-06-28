@@ -35,11 +35,23 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
     private static final String SQL_SELECT_ALL_SCHOOL_PERIODS =
             "SELECT period_id, period_name, start_date, end_date, period_status FROM school_period";
 
+    /**
+     * Crea el DAO de periodos escolares con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public SchoolPeriodDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un nuevo periodo escolar y devuelve su identificador generado.
+     *
+     * @param schoolPeriod periodo escolar con los datos a registrar
+     * @return identificador generado para el periodo, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el periodo
+     */
     @Override
     public int insertSchoolPeriod(SchoolPeriod schoolPeriod) throws DAOException {
         int generatedId = -1;
@@ -66,6 +78,13 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un periodo escolar a partir de su identificador.
+     *
+     * @param periodId identificador del periodo a recuperar
+     * @return periodo encontrado, o un {@link SchoolPeriod} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public SchoolPeriod recoverSchoolPeriod(int periodId) throws DAOException {
         SchoolPeriod recoveredPeriod = new SchoolPeriod();
@@ -87,11 +106,24 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         return recoveredPeriod;
     }
 
+    /**
+     * Recupera todos los periodos escolares registrados.
+     *
+     * @return lista con todos los periodos escolares; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<SchoolPeriod> getAllSchoolPeriods() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_SCHOOL_PERIODS, this::mapResultSetToSchoolPeriod);
     }
 
+    /**
+     * Actualiza los datos de un periodo escolar existente.
+     *
+     * @param schoolPeriod periodo escolar con los datos modificados
+     * @param periodId     identificador del periodo a actualizar
+     * @throws DAOException si el periodo no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateSchoolPeriod(SchoolPeriod schoolPeriod, int periodId) throws DAOException {
         updateTuple(SQL_UPDATE_SCHOOL_PERIOD, statement -> {
@@ -103,6 +135,13 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         });
     }
 
+    /**
+     * Construye un periodo escolar con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return periodo escolar con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private SchoolPeriod mapResultSetToSchoolPeriod(ResultSet resultSet) throws SQLException {
         SchoolPeriod schoolPeriod = new SchoolPeriod();
         schoolPeriod.setPeriodId(resultSet.getInt("period_id"));
@@ -113,10 +152,22 @@ public class SchoolPeriodDAO extends BaseDAO implements ISchoolPeriodDAO {
         return schoolPeriod;
     }
 
+    /**
+     * Convierte una fecha SQL a {@link LocalDate} tolerando valores nulos.
+     *
+     * @param sqlDate fecha de tipo {@link Date} a convertir
+     * @return fecha como {@link LocalDate}, o {@code null} si la entrada es nula
+     */
     private LocalDate toLocalDate(Date sqlDate) {
         return sqlDate != null ? sqlDate.toLocalDate() : null;
     }
 
+    /**
+     * Convierte un {@link LocalDate} a fecha SQL tolerando valores nulos.
+     *
+     * @param localDate fecha de tipo {@link LocalDate} a convertir
+     * @return fecha como {@link Date}, o {@code null} si la entrada es nula
+     */
     private Date toSqlDate(LocalDate localDate) {
         return localDate != null ? Date.valueOf(localDate) : null;
     }

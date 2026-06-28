@@ -64,11 +64,23 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                     "WHERE mr.practitioner_id = ? AND mr.status = 'Evaluado' " +
                     "AND mr.start_date >= ? AND mr.end_date <= ?";
 
+    /**
+     * Crea el DAO de reportes de avance con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public ProgressReportDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un reporte de avance con estado pendiente por defecto y devuelve su identificador generado.
+     *
+     * @param progressReport reporte de avance con los datos a registrar
+     * @return identificador generado para el reporte, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el reporte
+     */
     @Override
     public int insertProgressReport(ProgressReport progressReport) throws DAOException {
         int generatedId = -1;
@@ -100,6 +112,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         return generatedId;
     }
 
+    /**
+     * Actualiza el estado, archivo firmado, calificación y retroalimentación de un reporte de avance.
+     *
+     * @param progressReport reporte con los datos modificados
+     * @param reportId       identificador del reporte a actualizar
+     * @throws DAOException si el reporte no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateProgressReport(ProgressReport progressReport, int reportId) throws DAOException {
         updateTuple(SQL_UPDATE_PROGRESS_REPORT, statement -> {
@@ -111,6 +130,14 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         });
     }
 
+    /**
+     * Recupera el reporte de avance de un practicante de un tipo determinado.
+     *
+     * @param practitionerId identificador del practicante
+     * @param reportType     tipo de reporte (por ejemplo intermedio o final)
+     * @return reporte encontrado, o {@code null} si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public ProgressReport getProgressReportByPractitionerAndType(int practitionerId, String reportType) throws DAOException {
         ProgressReport recoveredReport = null;
@@ -134,16 +161,37 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         return recoveredReport;
     }
 
+    /**
+     * Recupera los reportes de avance de un practicante, del más reciente al más antiguo.
+     *
+     * @param practitionerId identificador del practicante
+     * @return lista de reportes del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<ProgressReport> getProgressReportsByPractitioner(int practitionerId) throws DAOException {
         return recoverALL(SQL_SELECT_PROGRESS_REPORTS_BY_PRACTITIONER, this::mapResultSetToProgressReport, practitionerId);
     }
 
+    /**
+     * Recupera todos los reportes de avance entregados o evaluados.
+     *
+     * @return lista de reportes entregados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<ProgressReport> getSubmittedProgressReports() throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_PROGRESS_REPORTS, this::mapResultSetToProgressReport);
     }
 
+    /**
+     * Recupera los reportes de avance entregados de los practicantes a cargo de un profesor en un periodo.
+     *
+     * @param professorId identificador del profesor
+     * @param periodId    identificador del periodo escolar
+     * @return lista de reportes entregados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<ProgressReport> getSubmittedProgressReportsByProfessor(int professorId, int periodId)
             throws DAOException {
@@ -151,6 +199,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
                 professorId, periodId);
     }
 
+    /**
+     * Calcula el total de horas acumuladas por un practicante en sus reportes mensuales evaluados.
+     *
+     * @param practitionerId identificador del practicante
+     * @return suma de horas acumuladas, o {@code 0.0} si no hay actividades evaluadas
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public double getTotalAccumulatedHours(int practitionerId) throws DAOException {
         double accumulatedHours = 0.0;
@@ -172,6 +227,15 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         return accumulatedHours;
     }
 
+    /**
+     * Calcula las horas acumuladas por un practicante en los reportes mensuales evaluados de un rango de fechas.
+     *
+     * @param practitionerId identificador del practicante
+     * @param startDate      fecha de inicio del rango (inclusive)
+     * @param endDate        fecha de fin del rango (inclusive)
+     * @return suma de horas acumuladas en el rango, o {@code 0.0} si no hay actividades evaluadas
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public double getAccumulatedHoursInRange(int practitionerId, java.sql.Date startDate, java.sql.Date endDate)
             throws DAOException {
@@ -196,6 +260,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         return accumulatedHours;
     }
 
+    /**
+     * Construye un reporte de avance con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return reporte de avance con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private ProgressReport mapResultSetToProgressReport(ResultSet resultSet) throws SQLException {
         ProgressReport progressReport = new ProgressReport();
         progressReport.setReportId(resultSet.getInt("report_id"));
@@ -212,6 +283,13 @@ public class ProgressReportDAO extends BaseDAO implements IProgressReportDAO {
         return progressReport;
     }
 
+    /**
+     * Obtiene la calificación del reporte tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return calificación del reporte, o {@code null} si aún no ha sido evaluado
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Double resolveNullableGrade(ResultSet resultSet) throws SQLException {
         double grade = resultSet.getDouble("grade");
         return resultSet.wasNull() ? null : grade;

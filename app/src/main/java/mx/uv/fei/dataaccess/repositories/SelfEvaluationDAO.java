@@ -39,11 +39,23 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
     private static final String SQL_SELECT_SELF_EVALUATION_BY_REPORT =
             "SELECT * FROM self_evaluation WHERE report_id = ?";
 
+    /**
+     * Crea el DAO de autoevaluaciones con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public SelfEvaluationDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Registra una autoevaluación con estado pendiente y devuelve su identificador generado.
+     *
+     * @param selfEvaluation autoevaluación con los datos a registrar
+     * @return identificador generado para la autoevaluación, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar la autoevaluación
+     */
     @Override
     public int insertSelfEvaluation(SelfEvaluation selfEvaluation) throws DAOException {
         int generatedId = -1;
@@ -71,6 +83,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera la autoevaluación asociada a un reporte.
+     *
+     * @param reportId identificador del reporte
+     * @return autoevaluación encontrada, o {@code null} si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public SelfEvaluation getSelfEvaluationByReportId(int reportId) throws DAOException {
         SelfEvaluation recoveredSelfEvaluation = null;
@@ -92,6 +111,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         return recoveredSelfEvaluation;
     }
 
+    /**
+     * Actualiza el estado y la evidencia de una autoevaluación.
+     *
+     * @param selfEvaluation   autoevaluación con el estado y la evidencia modificados
+     * @param selfEvaluationId identificador de la autoevaluación a actualizar
+     * @throws DAOException si la autoevaluación no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateSelfEvaluation(SelfEvaluation selfEvaluation, int selfEvaluationId) throws DAOException {
         updateTuple(SQL_UPDATE_SELF_EVALUATION, statement -> {
@@ -101,6 +127,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         });
     }
 
+    /**
+     * Actualiza únicamente el estado de una autoevaluación.
+     *
+     * @param selfEvaluationId identificador de la autoevaluación a actualizar
+     * @param status           nuevo estado de la autoevaluación
+     * @throws DAOException si la autoevaluación no existe o si ocurre un error al actualizar
+     */
     public void updateSelfEvaluationStatus(int selfEvaluationId, String status) throws DAOException {
         updateTuple(SQL_UPDATE_SELF_EVALUATION_STATUS, statement -> {
             statement.setString(1, status);
@@ -108,6 +141,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         });
     }
 
+    /**
+     * Marca una autoevaluación como rechazada y guarda el comentario de revisión.
+     *
+     * @param selfEvaluationId identificador de la autoevaluación a rechazar
+     * @param reviewComment    comentario que explica el motivo del rechazo
+     * @throws DAOException si la autoevaluación no existe o si ocurre un error al actualizar
+     */
     @Override
     public void rejectSelfEvaluation(int selfEvaluationId, String reviewComment) throws DAOException {
         updateTuple(SQL_REJECT_SELF_EVALUATION, statement -> {
@@ -117,6 +157,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         });
     }
 
+    /**
+     * Actualiza únicamente la evidencia de una autoevaluación.
+     *
+     * @param selfEvaluationId identificador de la autoevaluación a actualizar
+     * @param evidence         nueva evidencia de la autoevaluación
+     * @throws DAOException si la autoevaluación no existe o si ocurre un error al actualizar
+     */
     public void updateSelfEvaluationEvidence(int selfEvaluationId, String evidence) throws DAOException {
         updateTuple(SQL_UPDATE_SELF_EVALUATION_EVIDENCE, statement -> {
             statement.setString(1, evidence);
@@ -124,6 +171,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         });
     }
 
+    /**
+     * Enlaza las diez respuestas de la autoevaluación a las primeras posiciones de la sentencia.
+     *
+     * @param statement      sentencia preparada sobre la que se enlazan las respuestas
+     * @param selfEvaluation autoevaluación de la que se obtienen las respuestas
+     * @throws SQLException si ocurre un error al enlazar algún parámetro
+     */
     private void bindSelfEvaluationAnswers(PreparedStatement statement, SelfEvaluation selfEvaluation) throws SQLException {
         statement.setInt(1, selfEvaluation.getQ1());
         statement.setInt(2, selfEvaluation.getQ2());
@@ -137,6 +191,13 @@ public class SelfEvaluationDAO extends BaseDAO implements ISelfEvaluationDAO {
         statement.setInt(10, selfEvaluation.getQ10());
     }
 
+    /**
+     * Construye una autoevaluación con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return autoevaluación con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private SelfEvaluation mapResultSetToSelfEvaluation(ResultSet resultSet) throws SQLException {
         SelfEvaluation selfEvaluation = new SelfEvaluation();
         selfEvaluation.setSelfEvalId(resultSet.getInt("self_eval_id"));

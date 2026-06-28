@@ -38,11 +38,23 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
     private static final String SQL_SELECT_ORGANIZATION_BY_ID =
             "SELECT organization_id, organization_name, status, address, city, sector, email, phone FROM linked_organization WHERE organization_id = ?";
 
+    /**
+     * Crea el DAO de organizaciones con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public OrganizationDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta una nueva organización vinculada y devuelve su identificador generado.
+     *
+     * @param organization organización con los datos a registrar
+     * @return identificador generado para la organización, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar la organización
+     */
     @Override
     public int insertOrganization(Organization organization) throws DAOException {
         return insertTuple(SQL_INSERT_ORGANIZATION, statement -> {
@@ -56,12 +68,26 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         });
     }
 
+    /**
+     * Recupera una organización a partir de su identificador.
+     *
+     * @param organizationId identificador de la organización a recuperar
+     * @return organización encontrada, o una {@link Organization} vacía si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Organization recoverOrganization(int organizationId) throws DAOException {
         List<Organization> organizations = recoverALL(SQL_SELECT_ORGANIZATION_BY_ID, this::mapResultSetToOrganization, organizationId);
         return organizations.isEmpty() ? new Organization() : organizations.getFirst();
     }
 
+    /**
+     * Recupera una organización a partir de su nombre.
+     *
+     * @param organizationName nombre de la organización a recuperar
+     * @return organización encontrada, o una {@link Organization} vacía si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Organization recoverOrganization(String organizationName) throws DAOException {
         Organization recoveredOrganization = new Organization();
@@ -83,11 +109,24 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         return recoveredOrganization;
     }
 
+    /**
+     * Recupera todas las organizaciones registradas.
+     *
+     * @return lista con todas las organizaciones; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Organization> getAllOrganizations() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_ORGANIZATIONS, this::mapResultSetToOrganization);
     }
 
+    /**
+     * Actualiza los datos de una organización existente.
+     *
+     * @param organizationToUpdate organización con los datos modificados
+     * @param organizationId       identificador de la organización a actualizar
+     * @throws DAOException si la organización no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateOrganization(Organization organizationToUpdate, int organizationId) throws DAOException {
         updateTuple(SQL_UPDATE_ORGANIZATION, statement -> {
@@ -102,6 +141,12 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         });
     }
 
+    /**
+     * Inactiva varias organizaciones en una sola transacción por lotes.
+     *
+     * @param organizationIds identificadores de las organizaciones a inactivar
+     * @throws DAOException si la operación por lotes falla o si ocurre un error de conexión
+     */
     @Override
     public void deactivateMultipleOrganizations(List<Integer> organizationIds) throws DAOException {
 
@@ -122,11 +167,24 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         }
     }
 
+    /**
+     * Marca una organización como activa.
+     *
+     * @param organizationId identificador de la organización a activar
+     * @throws DAOException si la organización no existe o si ocurre un error al actualizar
+     */
     @Override
     public void activateOrganization(int organizationId) throws DAOException {
         updateTuple(SQL_ACTIVATE_ORGANIZATION, statement -> statement.setInt(1, organizationId));
     }
 
+    /**
+     * Ejecuta por lotes la inactivación de las organizaciones indicadas sobre la conexión recibida.
+     *
+     * @param connection      conexión transaccional sobre la que se ejecuta el lote
+     * @param organizationIds identificadores de las organizaciones a inactivar
+     * @throws SQLException si ocurre un error al ejecutar el lote
+     */
     private void executeDeactivationBatch(Connection connection, List<Integer> organizationIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_ORGANIZATION)) {
             for (Integer organizationId : organizationIds) {
@@ -137,6 +195,13 @@ public class OrganizationDAO extends BaseDAO implements IOrganizationDAO {
         }
     }
 
+    /**
+     * Construye una organización con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return organización con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Organization mapResultSetToOrganization(ResultSet resultSet) throws SQLException {
         Organization organization = new Organization();
         organization.setIdOrganization(resultSet.getInt("organization_id"));

@@ -40,16 +40,35 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
     private static final String SQL_SELECT_MANAGER_BY_ID =
             "SELECT manager_id, manager_name, phone, email, status, organization_id FROM project_manager WHERE manager_id = ?";
 
+    /**
+     * Crea el DAO de encargados de proyecto con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public ManagerDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Recupera los encargados pertenecientes a una organización.
+     *
+     * @param organizationId identificador de la organización
+     * @return lista de encargados de la organización; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Manager> getManagersByOrganization(int organizationId) throws DAOException {
         return recoverALL(SQL_SELECT_MANAGERS_BY_ORGANIZATION, this::mapResultSetToManager, organizationId);
     }
 
+    /**
+     * Inserta un nuevo encargado de proyecto y devuelve su identificador generado.
+     *
+     * @param manager encargado con los datos a registrar
+     * @return identificador generado para el encargado, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el encargado
+     */
     @Override
     public int insertManager(Manager manager) throws DAOException {
         return insertTuple(SQL_INSERT_MANAGER, statement -> {
@@ -61,17 +80,37 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         });
     }
 
+    /**
+     * Recupera todos los encargados de proyecto registrados.
+     *
+     * @return lista con todos los encargados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Manager> getAllManagers() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_MANAGERS, this::mapResultSetToManager);
     }
 
+    /**
+     * Recupera un encargado de proyecto a partir de su identificador.
+     *
+     * @param managerId identificador del encargado a recuperar
+     * @return encargado encontrado, o un {@link Manager} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Manager recoverManager(int managerId) throws DAOException {
         List<Manager> managers = recoverALL(SQL_SELECT_MANAGER_BY_ID, this::mapResultSetToManager, managerId);
         return managers.isEmpty() ? new Manager() : managers.getFirst();
     }
 
+    /**
+     * Actualiza los datos de un encargado de proyecto existente.
+     *
+     * @param manager   encargado con los datos modificados
+     * @param managerId identificador del encargado a actualizar
+     * @throws DAOException si el encargado no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateManager(Manager manager, int managerId) throws DAOException {
         updateTuple(SQL_UPDATE_MANAGER, statement -> {
@@ -83,11 +122,23 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         });
     }
 
+    /**
+     * Marca un encargado de proyecto como activo.
+     *
+     * @param managerId identificador del encargado a activar
+     * @throws DAOException si el encargado no existe o si ocurre un error al actualizar
+     */
     @Override
     public void activateManager(int managerId) throws DAOException {
         updateTuple(SQL_ACTIVATE_MANAGER, statement -> statement.setInt(1, managerId));
     }
 
+    /**
+     * Inactiva varios encargados de proyecto en una sola transacción por lotes.
+     *
+     * @param managerIds identificadores de los encargados a inactivar
+     * @throws DAOException si la operación por lotes falla o si ocurre un error de conexión
+     */
     @Override
     public void deactivateMultipleManagers(List<Integer> managerIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
@@ -108,6 +159,13 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         }
     }
 
+    /**
+     * Ejecuta por lotes la inactivación de los encargados indicados sobre la conexión recibida.
+     *
+     * @param connection conexión transaccional sobre la que se ejecuta el lote
+     * @param managerIds identificadores de los encargados a inactivar
+     * @throws SQLException si el lote no afecta a alguno de los encargados o si ocurre un error
+     */
     private void executeDeactivationBatch(Connection connection, List<Integer> managerIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_MANAGER)) {
             for (Integer managerId : managerIds) {
@@ -124,6 +182,13 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         }
     }
 
+    /**
+     * Construye un encargado con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return encargado con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Manager mapResultSetToManager(ResultSet resultSet) throws SQLException {
         Manager manager = new Manager();
         manager.setId(resultSet.getInt("manager_id"));
@@ -135,6 +200,13 @@ public class ManagerDAO extends BaseDAO implements IManagerDAO {
         return manager;
     }
 
+    /**
+     * Obtiene el estado del encargado tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del encargado, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;

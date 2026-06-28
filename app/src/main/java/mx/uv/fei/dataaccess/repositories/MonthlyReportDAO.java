@@ -50,11 +50,23 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
                     "WHERE practitioner_id = ? AND start_date >= ? AND end_date <= ? " +
                     "ORDER BY start_date ASC";
 
+    /**
+     * Crea el DAO de reportes mensuales con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public MonthlyReportDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un reporte mensual con estado pendiente por defecto y devuelve su identificador generado.
+     *
+     * @param report reporte con los datos a registrar
+     * @return identificador generado para el reporte, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el reporte
+     */
     @Override
     public int insertReport(MonthlyReport report) throws DAOException {
         int generatedId = -1;
@@ -84,6 +96,13 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
         return generatedId;
     }
 
+    /**
+     * Actualiza los datos de un reporte mensual, incluyendo calificación y retroalimentación.
+     *
+     * @param report   reporte con los datos modificados
+     * @param reportId identificador del reporte a actualizar
+     * @throws DAOException si el reporte no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateReport(MonthlyReport report, int reportId) throws DAOException {
         updateTuple(SQL_UPDATE_REPORT, statement -> {
@@ -99,6 +118,13 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
         });
     }
 
+    /**
+     * Recupera un reporte mensual a partir de su identificador.
+     *
+     * @param reportId identificador del reporte a recuperar
+     * @return reporte encontrado, o un {@link MonthlyReport} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public MonthlyReport getReportById(int reportId) throws DAOException {
         MonthlyReport recoveredReport = new MonthlyReport();
@@ -120,22 +146,52 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
         return recoveredReport;
     }
 
+    /**
+     * Recupera los reportes mensuales de un practicante, del más reciente al más antiguo.
+     *
+     * @param practitionerId identificador del practicante
+     * @return lista de reportes del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<MonthlyReport> getReportsByPractitioner(int practitionerId) throws DAOException {
         return recoverALL(SQL_SELECT_REPORTS_BY_PRACTITIONER, this::mapResultSetToMonthlyReport, practitionerId);
     }
 
+    /**
+     * Recupera todos los reportes mensuales entregados o evaluados.
+     *
+     * @return lista de reportes entregados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<MonthlyReport> getSubmittedReports() throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_REPORTS, this::mapResultSetToMonthlyReport);
     }
 
+    /**
+     * Recupera los reportes entregados de los practicantes a cargo de un profesor en un periodo.
+     *
+     * @param professorId identificador del profesor
+     * @param periodId    identificador del periodo escolar
+     * @return lista de reportes entregados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<MonthlyReport> getSubmittedReportsByProfessor(int professorId, int periodId) throws DAOException {
         return recoverALL(SQL_SELECT_SUBMITTED_REPORTS_BY_PROFESSOR, this::mapResultSetToMonthlyReport,
                 professorId, periodId);
     }
 
+    /**
+     * Recupera los reportes de un practicante cuyas fechas caen dentro de un rango.
+     *
+     * @param practitionerId identificador del practicante
+     * @param startDate      fecha de inicio del rango (inclusive)
+     * @param endDate        fecha de fin del rango (inclusive)
+     * @return lista de reportes dentro del rango, ordenados por fecha de inicio; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<MonthlyReport> getReportsByPractitionerInRange(int practitionerId, java.sql.Date startDate,
                                                                java.sql.Date endDate) throws DAOException {
@@ -143,6 +199,13 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
                 practitionerId, startDate, endDate);
     }
 
+    /**
+     * Construye un reporte mensual con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return reporte mensual con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private MonthlyReport mapResultSetToMonthlyReport(ResultSet resultSet) throws SQLException {
         MonthlyReport report = new MonthlyReport();
         report.setReportId(resultSet.getInt("report_id"));
@@ -158,6 +221,13 @@ public class MonthlyReportDAO extends BaseDAO implements IMonthlyReportDAO {
         return report;
     }
 
+    /**
+     * Obtiene la calificación del reporte tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return calificación del reporte, o {@code null} si aún no ha sido evaluado
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Double resolveNullableGrade(ResultSet resultSet) throws SQLException {
         double grade = resultSet.getDouble("grade");
         return resultSet.wasNull() ? null : grade;

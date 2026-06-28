@@ -100,12 +100,25 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
 
     private final IUserDAO userDAO;
 
+    /**
+     * Crea el DAO de practicantes con la fuente de conexiones y el DAO de usuarios.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     * @param userDAO            DAO de usuarios usado para los datos comunes de cuenta
+     */
     @Inject
     public PractitionerDAO(IDatabaseConnection databaseConnection, IUserDAO userDAO) {
         super(databaseConnection);
         this.userDAO = userDAO;
     }
 
+    /**
+     * Inserta un practicante creando primero su usuario base dentro de una transacción.
+     *
+     * @param practitioner practicante con los datos a registrar
+     * @return identificador generado para el practicante, o {@code -1} si la operación falla
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public int insertPractitioner(Practitioner practitioner) throws DAOException {
         int generatedId = -1;
@@ -146,6 +159,13 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un practicante con sus datos completos y su grupo actual.
+     *
+     * @param practitionerId identificador del practicante a recuperar
+     * @return practicante encontrado, o un {@link Practitioner} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Practitioner recoverPractitioner(int practitionerId) throws DAOException {
         Practitioner recoveredPractitioner = new Practitioner();
@@ -167,11 +187,24 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return recoveredPractitioner;
     }
 
+    /**
+     * Recupera todos los practicantes con sus datos completos y su grupo actual.
+     *
+     * @return lista con todos los practicantes; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> getAllPractitioners() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PRACTITIONERS, this::mapResultSetToPractitioner);
     }
 
+    /**
+     * Actualiza los datos de usuario y los datos propios de un practicante en una transacción.
+     *
+     * @param practitionerToUpdate practicante con los datos modificados
+     * @param practitionerId       identificador del practicante a actualizar
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public void updatePractitioner(Practitioner practitionerToUpdate, int practitionerId) throws DAOException {
         practitionerToUpdate.setId(practitionerId);
@@ -193,21 +226,48 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         }
     }
 
+    /**
+     * Recupera los practicantes que se han postulado pero aún no tienen proyecto asignado.
+     *
+     * @return lista de practicantes pendientes de asignación; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrievePractitionersPendingAssignment() throws DAOException {
         return recoverALL(SQL_SELECT_PRACTITIONERS_PENDING_ASSIGNMENT, this::mapResultSetToMinimalPractitioner);
     }
 
+    /**
+     * Recupera los practicantes activos que ya tienen un proyecto asignado.
+     *
+     * @return lista de practicantes asignados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrieveAssignedPractitioners() throws DAOException {
         return recoverALL(SQL_SELECT_ASSIGNED_PRACTITIONERS, this::mapResultSetToMinimalPractitioner);
     }
 
+    /**
+     * Recupera los practicantes asignados que pertenecen a los grupos de un profesor.
+     *
+     * @param professorId identificador del profesor
+     * @return lista de practicantes a cargo del profesor; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrievePractitionersByProfessor(int professorId) throws DAOException {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_PROFESSOR, this::mapResultSetToMinimalPractitioner, professorId);
     }
 
+    /**
+     * Recupera los practicantes asignados a un profesor dentro de un periodo específico.
+     *
+     * @param professorId identificador del profesor
+     * @param periodId    identificador del periodo escolar
+     * @return lista de practicantes del profesor en ese periodo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrievePractitionersByProfessorAndPeriod(int professorId, int periodId)
             throws DAOException {
@@ -215,16 +275,39 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
                 professorId, periodId);
     }
 
+    /**
+     * Recupera los practicantes activos y asignados que pertenecen a un grupo.
+     *
+     * @param groupId identificador del grupo de prácticas
+     * @return lista de practicantes asignados del grupo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrievePractitionersByGroup(int groupId) throws DAOException {
         return recoverALL(SQL_SELECT_PRACTITIONERS_BY_GROUP, this::mapResultSetToMinimalPractitioner, groupId);
     }
 
+    /**
+     * Recupera los practicantes con inscripción activa en un grupo, estén o no asignados.
+     *
+     * @param groupId identificador del grupo de prácticas
+     * @return lista de practicantes inscritos en el grupo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Practitioner> retrieveEnrolledPractitionersByGroup(int groupId) throws DAOException {
         return recoverALL(SQL_SELECT_ENROLLED_PRACTITIONERS_BY_GROUP, this::mapResultSetToMinimalPractitioner, groupId);
     }
 
+    /**
+     * Actualiza, sobre una conexión transaccional, el usuario y los datos propios del practicante.
+     *
+     * @param connection     conexión transaccional sobre la que se ejecuta la actualización
+     * @param practitioner   practicante con los datos modificados
+     * @param practitionerId identificador del practicante a actualizar
+     * @throws SQLException si ocurre un error al ejecutar las sentencias
+     * @throws DAOException si falla la actualización del usuario asociado
+     */
     private void executeUpdateTransaction(Connection connection, Practitioner practitioner, int practitionerId)
             throws SQLException, DAOException {
         userDAO.updateUser(practitioner, connection);
@@ -237,6 +320,13 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         }
     }
 
+    /**
+     * Construye un practicante con sus datos mínimos de identificación a partir de la fila actual.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return practicante con sus datos básicos
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Practitioner mapResultSetToMinimalPractitioner(ResultSet resultSet) throws SQLException {
         Practitioner practitioner = new Practitioner();
         practitioner.setId(resultSet.getInt("user_id"));
@@ -248,6 +338,13 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return practitioner;
     }
 
+    /**
+     * Construye un practicante con todos sus datos a partir de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return practicante con sus datos completos
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Practitioner mapResultSetToPractitioner(ResultSet resultSet) throws SQLException {
         Practitioner practitioner = new Practitioner();
         practitioner.setId(resultSet.getInt("user_id"));
@@ -265,16 +362,37 @@ public class PractitionerDAO extends BaseDAO implements IPractitionerDAO {
         return practitioner;
     }
 
+    /**
+     * Obtiene el estado del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;
     }
 
+    /**
+     * Obtiene el género del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return género del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
         String genderValue = resultSet.getString("gender");
         return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
     }
 
+    /**
+     * Obtiene el identificador del grupo actual tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return identificador del grupo, o {@code null} si el practicante no tiene grupo
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Integer resolveNullableGroupId(ResultSet resultSet) throws SQLException {
         int groupId = resultSet.getInt("group_id");
         return resultSet.wasNull() ? null : groupId;
