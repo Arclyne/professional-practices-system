@@ -39,12 +39,25 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
 
     private final IUserDAO userDAO;
 
+    /**
+     * Crea el DAO de profesores con la fuente de conexiones y el DAO de usuarios.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     * @param userDAO            DAO de usuarios usado para los datos comunes de cuenta
+     */
     @Inject
     public ProfessorDAO(IDatabaseConnection databaseConnection, IUserDAO userDAO) {
         super(databaseConnection);
         this.userDAO = userDAO;
     }
 
+    /**
+     * Inserta un profesor creando primero su usuario base dentro de una transacción.
+     *
+     * @param professor profesor con los datos a registrar
+     * @return identificador generado para el profesor, o {@code -1} si la operación falla
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public int insertProfessor(Professor professor) throws DAOException {
         int generatedId = -1;
@@ -83,6 +96,13 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un profesor junto con sus datos de usuario a partir de su identificador.
+     *
+     * @param professorId identificador del profesor a recuperar
+     * @return profesor encontrado, o un {@link Professor} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Professor recoverProfessor(int professorId) throws DAOException {
         Professor recoveredProfessor = new Professor();
@@ -104,11 +124,24 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         return recoveredProfessor;
     }
 
+    /**
+     * Recupera todos los profesores junto con sus datos de usuario.
+     *
+     * @return lista con todos los profesores; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Professor> getAllProfessors() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PROFESSORS, this::mapResultSetToProfessor);
     }
 
+    /**
+     * Actualiza los datos de usuario asociados a un profesor.
+     *
+     * @param professorToUpdate profesor con los datos modificados
+     * @param professorId       identificador del profesor a actualizar
+     * @throws DAOException si ocurre un error al actualizar
+     */
     @Override
     public void updateProfessor(Professor professorToUpdate, int professorId) throws DAOException {
         professorToUpdate.setId(professorId);
@@ -120,6 +153,13 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         }
     }
 
+    /**
+     * Construye un profesor con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return profesor con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Professor mapResultSetToProfessor(ResultSet resultSet) throws SQLException {
         Professor professor = new Professor();
         professor.setId(resultSet.getInt("user_id"));
@@ -136,16 +176,38 @@ public class ProfessorDAO extends BaseDAO implements IProfessorDAO {
         return professor;
     }
 
+    /**
+     * Obtiene el estado del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;
     }
 
+    /**
+     * Obtiene el género del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return género del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
         String genderValue = resultSet.getString("gender");
         return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
     }
 
+    /**
+     * Obtiene una marca de tiempo como {@link LocalDateTime} tolerando valores nulos.
+     *
+     * @param resultSet  resultado posicionado en la fila a leer
+     * @param columnName nombre de la columna de tipo marca de tiempo
+     * @return fecha y hora correspondiente, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;

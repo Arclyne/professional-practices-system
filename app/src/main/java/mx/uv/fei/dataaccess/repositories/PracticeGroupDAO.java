@@ -36,11 +36,23 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
     private static final String SQL_UPDATE_PRACTICE_GROUP =
             "UPDATE practice_group SET section = ?, professor_id = ?, period_id = ? WHERE group_id = ?";
 
+    /**
+     * Crea el DAO de grupos de práctica con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public PracticeGroupDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un nuevo grupo de práctica y devuelve su identificador generado.
+     *
+     * @param practiceGroup grupo con los datos a registrar
+     * @return identificador generado para el grupo
+     * @throws DAOException si no se inserta el grupo o si ocurre un error al guardarlo
+     */
     @Override
     public int insertPracticeGroup(PracticeGroup practiceGroup) throws DAOException {
         int generatedId = -1;
@@ -68,6 +80,13 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un grupo de práctica a partir de su identificador.
+     *
+     * @param groupId identificador del grupo a recuperar
+     * @return grupo encontrado, o un {@link PracticeGroup} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public PracticeGroup recoverPracticeGroup(int groupId) throws DAOException {
         PracticeGroup recoveredGroup = new PracticeGroup();
@@ -89,17 +108,38 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         return recoveredGroup;
     }
 
+    /**
+     * Recupera todos los grupos de práctica registrados.
+     *
+     * @return lista con todos los grupos de práctica; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<PracticeGroup> getAllPracticeGroups() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PRACTICE_GROUPS, this::mapResultSetToPracticeGroup);
     }
 
+    /**
+     * Recupera los grupos de práctica de un profesor dentro de un periodo determinado.
+     *
+     * @param professorId identificador del profesor
+     * @param periodId    identificador del periodo escolar
+     * @return lista de grupos del profesor en ese periodo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<PracticeGroup> getPracticeGroupsByProfessorAndPeriod(int professorId, int periodId) throws DAOException {
         return recoverALL(SQL_SELECT_GROUPS_BY_PROFESSOR_AND_PERIOD, this::mapResultSetToPracticeGroup,
                 professorId, periodId);
     }
 
+    /**
+     * Actualiza los datos de un grupo de práctica existente.
+     *
+     * @param practiceGroup grupo con los datos modificados
+     * @param groupId       identificador del grupo a actualizar
+     * @throws DAOException si el grupo no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updatePracticeGroup(PracticeGroup practiceGroup, int groupId) throws DAOException {
         updateTuple(SQL_UPDATE_PRACTICE_GROUP, statement -> {
@@ -110,6 +150,13 @@ public class PracticeGroupDAO extends BaseDAO implements IPracticeGroupDAO {
         });
     }
 
+    /**
+     * Construye un grupo de práctica con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return grupo de práctica con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private PracticeGroup mapResultSetToPracticeGroup(ResultSet resultSet) throws SQLException {
         PracticeGroup practiceGroup = new PracticeGroup();
         practiceGroup.setGroupId(resultSet.getInt("group_id"));

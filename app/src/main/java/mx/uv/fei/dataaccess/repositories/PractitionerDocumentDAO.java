@@ -66,11 +66,23 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
                     "SELECT 1 FROM practitioner_document d " +
                     "WHERE d.practitioner_id = ? AND d.document_type_id = t.document_type_id AND d.status = ?)";
 
+    /**
+     * Crea el DAO de documentos del expediente con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public PractitionerDocumentDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Registra un documento del expediente y devuelve su identificador generado.
+     *
+     * @param document documento con los datos a registrar
+     * @return identificador generado para el documento, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el documento
+     */
     @Override
     public int insertDocument(PractitionerDocument document) throws DAOException {
         int generatedId = -1;
@@ -98,6 +110,14 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         return generatedId;
     }
 
+    /**
+     * Reemplaza el archivo de un documento y reinicia su revisión, dejándolo en estado pendiente.
+     *
+     * @param documentId    identificador del documento a editar
+     * @param documentName  nuevo nombre del documento
+     * @param storedFileUrl nueva URL del archivo almacenado
+     * @throws DAOException si el documento no existe o si ocurre un error al actualizar
+     */
     @Override
     public void editDocument(int documentId, String documentName, String storedFileUrl) throws DAOException {
         updateTuple(SQL_EDIT_DOCUMENT, statement -> {
@@ -108,16 +128,37 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         });
     }
 
+    /**
+     * Recupera los documentos de un practicante pertenecientes a una categoría.
+     *
+     * @param practitionerId identificador del practicante
+     * @param category       categoría de documentos a recuperar
+     * @return lista de documentos de la categoría; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<PractitionerDocument> getDocumentsByPractitionerAndCategory(int practitionerId, String category) throws DAOException {
         return recoverALL(SQL_SELECT_DOCUMENTS_BY_PRACTITIONER_AND_CATEGORY, this::mapResultSetToDocument, practitionerId, category);
     }
 
+    /**
+     * Recupera los documentos de los practicantes a cargo de un profesor, con sus datos de identificación.
+     *
+     * @param professorId identificador del profesor
+     * @return lista de documentos junto con el nombre y matrícula del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<PractitionerDocument> getDocumentsByProfessor(int professorId) throws DAOException {
         return recoverALL(SQL_SELECT_DOCUMENTS_BY_PROFESSOR, this::mapResultSetToDocumentWithPractitioner, professorId);
     }
 
+    /**
+     * Marca un documento como aceptado, limpiando el comentario de revisión y fechando la revisión.
+     *
+     * @param documentId identificador del documento a aceptar
+     * @throws DAOException si el documento no existe o si ocurre un error al actualizar
+     */
     @Override
     public void acceptDocument(int documentId) throws DAOException {
         updateTuple(SQL_UPDATE_DOCUMENT_ACCEPTED, statement -> {
@@ -126,6 +167,13 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         });
     }
 
+    /**
+     * Marca un documento como rechazado, guardando el comentario de revisión y fechando la revisión.
+     *
+     * @param documentId    identificador del documento a rechazar
+     * @param reviewComment comentario que explica el motivo del rechazo
+     * @throws DAOException si el documento no existe o si ocurre un error al actualizar
+     */
     @Override
     public void rejectDocument(int documentId, String reviewComment) throws DAOException {
         updateTuple(SQL_UPDATE_DOCUMENT_REJECTED, statement -> {
@@ -135,17 +183,41 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         });
     }
 
+    /**
+     * Indica si el practicante ya tiene registrado un documento de un tipo determinado.
+     *
+     * @param practitionerId identificador del practicante
+     * @param typeCode       código del tipo de documento
+     * @return {@code true} si existe al menos un documento de ese tipo; {@code false} en caso contrario
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public boolean documentExistsForType(int practitionerId, String typeCode) throws DAOException {
         return countDocumentsForType(practitionerId, typeCode) > 0;
     }
 
+    /**
+     * Indica si el practicante tiene aceptados todos los documentos exigidos por una categoría.
+     *
+     * @param practitionerId identificador del practicante
+     * @param category       categoría de documentos a verificar
+     * @return {@code true} si no falta ningún documento aceptado; {@code false} en caso contrario
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public boolean areAllDocumentsAccepted(int practitionerId, String category) throws DAOException {
         int missingDocuments = countMissingAcceptedDocuments(practitionerId, category);
         return missingDocuments == 0;
     }
 
+    /**
+     * Cuenta los tipos de documento de una categoría que el practicante aún no tiene aceptados.
+     *
+     * @param practitionerId identificador del practicante
+     * @param category       categoría de documentos a verificar
+     * @return número de documentos requeridos que faltan por aceptar
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     private int countMissingAcceptedDocuments(int practitionerId, String category) throws DAOException {
         int missingDocuments = 0;
 
@@ -168,6 +240,14 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         return missingDocuments;
     }
 
+    /**
+     * Cuenta cuántos documentos de un tipo determinado tiene registrados el practicante.
+     *
+     * @param practitionerId identificador del practicante
+     * @param typeCode       código del tipo de documento
+     * @return número de documentos del tipo indicado
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     private int countDocumentsForType(int practitionerId, String typeCode) throws DAOException {
         int rowCount = 0;
 
@@ -189,10 +269,23 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         return rowCount;
     }
 
+    /**
+     * Determina el estado con el que se guardará un documento, usando "pendiente" por defecto.
+     *
+     * @param document documento del que se obtiene el estado
+     * @return estado del documento, o el valor por defecto si no tiene uno asignado
+     */
     private String resolveStatus(PractitionerDocument document) {
         return document.getStatus() != null ? document.getStatus() : DocumentStatus.PENDING.getDatabaseValue();
     }
 
+    /**
+     * Construye un documento con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return documento con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private PractitionerDocument mapResultSetToDocument(ResultSet resultSet) throws SQLException {
         PractitionerDocument document = new PractitionerDocument();
         document.setDocumentId(resultSet.getInt("document_id"));
@@ -209,6 +302,13 @@ public class PractitionerDocumentDAO extends BaseDAO implements IPractitionerDoc
         return document;
     }
 
+    /**
+     * Construye un documento e incorpora los datos de identificación del practicante asociado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return documento con los datos de la fila y del practicante
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private PractitionerDocument mapResultSetToDocumentWithPractitioner(ResultSet resultSet) throws SQLException {
         PractitionerDocument document = mapResultSetToDocument(resultSet);
         document.setPractitionerName(resultSet.getString("name") + " " + resultSet.getString("last_name"));

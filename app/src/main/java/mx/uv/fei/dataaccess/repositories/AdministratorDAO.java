@@ -45,12 +45,24 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
 
     private final IUserDAO userDAO;
 
+    /**
+     * Crea el DAO de administradores con la fuente de conexiones y el DAO de usuarios.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     * @param userDAO            DAO de usuarios usado para los datos comunes de cuenta
+     */
     @Inject
     public AdministratorDAO(IDatabaseConnection databaseConnection, IUserDAO userDAO) {
         super(databaseConnection);
         this.userDAO = userDAO;
     }
 
+    /**
+     * Indica si ya existe al menos un administrador registrado en el sistema.
+     *
+     * @return {@code true} si existe algún administrador; {@code false} en caso contrario
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     public boolean checkIfAdminExists() throws DAOException {
         boolean adminExists = false;
 
@@ -68,6 +80,13 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         return adminExists;
     }
 
+    /**
+     * Inserta un administrador creando primero su usuario base dentro de una transacción.
+     *
+     * @param administrator administrador con los datos a registrar
+     * @return identificador generado para el administrador, o {@code -1} si la operación falla
+     * @throws DAOException si ocurre un error y se revierte la transacción
+     */
     @Override
     public int insertAdministrator(Administrator administrator) throws DAOException {
         int generatedId = -1;
@@ -106,6 +125,13 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         return generatedId;
     }
 
+    /**
+     * Recupera un administrador junto con sus datos de usuario a partir de su identificador.
+     *
+     * @param administratorId identificador del administrador a recuperar
+     * @return administrador encontrado, o un {@link Administrator} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Administrator recoverAdministrator(int administratorId) throws DAOException {
         Administrator recoveredAdministrator = new Administrator();
@@ -127,11 +153,24 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         return recoveredAdministrator;
     }
 
+    /**
+     * Recupera todos los administradores junto con sus datos de usuario.
+     *
+     * @return lista con todos los administradores; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Administrator> getAllAdministrators() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_ADMINISTRATORS, this::mapResultSetToAdministrator);
     }
 
+    /**
+     * Actualiza los datos de usuario asociados a un administrador.
+     *
+     * @param administratorToUpdate administrador con los datos modificados
+     * @param administratorId       identificador del administrador a actualizar
+     * @throws DAOException si ocurre un error al actualizar
+     */
     @Override
     public void updateAdministrator(Administrator administratorToUpdate, int administratorId) throws DAOException {
         administratorToUpdate.setId(administratorId);
@@ -143,6 +182,13 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         }
     }
 
+    /**
+     * Construye un administrador con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return administrador con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Administrator mapResultSetToAdministrator(ResultSet resultSet) throws SQLException {
         Administrator administrator = new Administrator();
 
@@ -161,16 +207,38 @@ public class AdministratorDAO extends BaseDAO implements IAdministratorDAO {
         return administrator;
     }
 
+    /**
+     * Obtiene el estado del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;
     }
 
+    /**
+     * Obtiene el género del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return género del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
         String genderValue = resultSet.getString("gender");
         return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
     }
 
+    /**
+     * Obtiene una marca de tiempo como {@link LocalDateTime} tolerando valores nulos.
+     *
+     * @param resultSet  resultado posicionado en la fila a leer
+     * @param columnName nombre de la columna de tipo marca de tiempo
+     * @return fecha y hora correspondiente, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;

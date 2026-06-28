@@ -43,11 +43,24 @@ public class UserDAO extends BaseDAO implements IUserDAO {
     private static final String SQL_SELECT_USER_ROLE_BY_USERNAME =
             "SELECT role_name FROM user WHERE username = ?";
 
+    /**
+     * Crea el DAO de usuarios con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public UserDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un usuario dentro de una transacción gobernada por una conexión compartida.
+     *
+     * @param user             usuario con los datos a registrar
+     * @param sharedConnection conexión compartida que controla la transacción en curso
+     * @return identificador generado para el nuevo usuario, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al insertar el usuario
+     */
     @Override
     public int insertUser(User user, Connection sharedConnection) throws DAOException {
         int generatedId = -1;
@@ -76,6 +89,12 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         return generatedId;
     }
 
+    /**
+     * Marca a un usuario como inactivo y registra su fecha de baja.
+     *
+     * @param userId identificador del usuario a inactivar
+     * @throws DAOException si el usuario no existe o si ocurre un error al actualizar
+     */
     @Override
     public void deactivateUser(int userId) throws DAOException {
         updateTuple(SQL_DEACTIVATE_USER, statement -> {
@@ -83,6 +102,12 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         });
     }
 
+    /**
+     * Reactiva a un usuario y limpia su fecha de baja.
+     *
+     * @param userId identificador del usuario a reactivar
+     * @throws DAOException si el usuario no existe o si ocurre un error al actualizar
+     */
     @Override
     public void activateUser(int userId) throws DAOException {
         updateTuple(SQL_ACTIVATE_USER, statement -> {
@@ -90,6 +115,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         });
     }
 
+    /**
+     * Actualiza los datos de un usuario dentro de una transacción compartida.
+     *
+     * @param user             usuario con los datos modificados, incluido su identificador
+     * @param sharedConnection conexión compartida que controla la transacción en curso
+     * @throws DAOException si el usuario no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateUser(User user, Connection sharedConnection) throws DAOException {
         try {
@@ -109,6 +141,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         }
     }
 
+    /**
+     * Recupera el nombre del rol asignado a un usuario a partir de su nombre de usuario.
+     *
+     * @param userName nombre de usuario por el cual buscar
+     * @return nombre del rol, o {@code null} si el usuario no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public String getUserRole(String userName) throws DAOException {
         String retrievedRole = null;
@@ -130,16 +169,36 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         return retrievedRole;
     }
 
+    /**
+     * Recupera un usuario a partir de su nombre de usuario.
+     *
+     * @param userName nombre de usuario por el cual buscar
+     * @return usuario encontrado, o un {@link User} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public User getUserByUserName(String userName) throws DAOException {
         return extractUserFromQuery(SQL_SELECT_USER_BY_USERNAME, userName);
     }
 
+    /**
+     * Recupera un usuario a partir de su correo electrónico.
+     *
+     * @param email correo electrónico por el cual buscar
+     * @return usuario encontrado, o un {@link User} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public User getUserByEmail(String email) throws DAOException {
         return extractUserFromQuery(SQL_SELECT_USER_BY_EMAIL, email);
     }
 
+    /**
+     * Inactiva varios usuarios en una sola transacción por lotes, con reversión ante errores.
+     *
+     * @param userIds identificadores de los usuarios a inactivar
+     * @throws DAOException si la operación por lotes falla o si ocurre un error de conexión
+     */
     @Override
     public void deactivateMultipleUsers(List<Integer> userIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
@@ -159,6 +218,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         }
     }
 
+    /**
+     * Ejecuta por lotes la inactivación de los usuarios indicados sobre la conexión recibida.
+     *
+     * @param connection conexión transaccional sobre la que se ejecuta el lote
+     * @param userIds    identificadores de los usuarios a inactivar
+     * @throws SQLException si el lote no afecta a alguno de los usuarios o si ocurre un error
+     */
     private void executeDeactivationBatch(Connection connection, List<Integer> userIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_USER)) {
             for (Integer userId : userIds) {
@@ -175,6 +241,14 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         }
     }
 
+    /**
+     * Ejecuta una consulta de un solo parámetro y construye el usuario a partir del resultado.
+     *
+     * @param sqlStatement sentencia SQL de selección a ejecutar
+     * @param parameter    valor a enlazar como único parámetro de la consulta
+     * @return usuario mapeado, o un {@link User} vacío si no hay resultados
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     private User extractUserFromQuery(String sqlStatement, String parameter) throws DAOException {
         User retrievedUser = new User();
 
@@ -195,6 +269,13 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         return retrievedUser;
     }
 
+    /**
+     * Construye un usuario con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return usuario con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setId(resultSet.getInt("user_id"));
@@ -211,16 +292,38 @@ public class UserDAO extends BaseDAO implements IUserDAO {
         return user;
     }
 
+    /**
+     * Obtiene el estado del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return estado del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private UserStatus resolveNullableStatus(ResultSet resultSet) throws SQLException {
         String statusValue = resultSet.getString("status");
         return statusValue != null ? UserStatus.fromString(statusValue) : null;
     }
 
+    /**
+     * Obtiene el género del usuario tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return género del usuario, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Gender resolveNullableGender(ResultSet resultSet) throws SQLException {
         String genderValue = resultSet.getString("gender");
         return genderValue != null ? Gender.fromDatabaseValue(genderValue) : null;
     }
 
+    /**
+     * Obtiene una marca de tiempo como {@link LocalDateTime} tolerando valores nulos.
+     *
+     * @param resultSet  resultado posicionado en la fila a leer
+     * @param columnName nombre de la columna de tipo marca de tiempo
+     * @return fecha y hora correspondiente, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;

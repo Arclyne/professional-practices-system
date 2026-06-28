@@ -47,11 +47,24 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
                     "WHERE p.receiver_id = ? " +
                     "ORDER BY m.send_date DESC LIMIT ? OFFSET ?";
 
+    /**
+     * Crea el DAO de mensajes con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public MessageDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un mensaje con su asunto y cuerpo, y devuelve su identificador generado.
+     *
+     * @param subject asunto del mensaje
+     * @param body    cuerpo del mensaje
+     * @return identificador generado para el mensaje, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el mensaje
+     */
     @Override
     public int insertMessage(String subject, String body) throws DAOException {
         int generatedId = -1;
@@ -75,6 +88,14 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
         return generatedId;
     }
 
+    /**
+     * Registra a los participantes (emisor y receptor) de un mensaje.
+     *
+     * @param messageId  identificador del mensaje
+     * @param senderId   identificador del usuario que envía el mensaje
+     * @param receiverId identificador del usuario que recibe el mensaje
+     * @throws DAOException si ocurre un error al guardar los participantes
+     */
     @Override
     public void insertParticipant(int messageId, int senderId, int receiverId) throws DAOException {
         updateTuple(SQL_INSERT_PARTICIPANT, statement -> {
@@ -84,6 +105,13 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
         });
     }
 
+    /**
+     * Obtiene el identificador de un usuario a partir de su correo electrónico.
+     *
+     * @param email correo electrónico del usuario
+     * @return identificador del usuario, o {@code -1} si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public int getUserIdByEmail(String email) throws DAOException {
         int userId = -1;
@@ -105,16 +133,41 @@ public class MessageDAO extends BaseDAO implements IMessageDAO {
         return userId;
     }
 
+    /**
+     * Recupera de forma paginada los mensajes enviados por un usuario, del más reciente al más antiguo.
+     *
+     * @param senderId identificador del usuario emisor
+     * @param limit    número máximo de mensajes a recuperar
+     * @param offset   número de mensajes a omitir desde el inicio
+     * @return lista de mensajes enviados; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Message> getMessagesBySender(int senderId, int limit, int offset) throws DAOException {
         return recoverALL(SQL_SELECT_MESSAGES_BY_SENDER, this::mapResultSetToMessage, senderId, limit, offset);
     }
 
+    /**
+     * Recupera de forma paginada los mensajes recibidos por un usuario, del más reciente al más antiguo.
+     *
+     * @param receiverId identificador del usuario receptor
+     * @param limit      número máximo de mensajes a recuperar
+     * @param offset     número de mensajes a omitir desde el inicio
+     * @return lista de mensajes recibidos; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Message> getMessagesByReceiver(int receiverId, int limit, int offset) throws DAOException {
         return recoverALL(SQL_SELECT_MESSAGES_BY_RECEIVER, this::mapResultSetToMessage, receiverId, limit, offset);
     }
 
+    /**
+     * Construye un mensaje con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return mensaje con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Message mapResultSetToMessage(ResultSet resultSet) throws SQLException {
         Message message = new Message();
         message.setMessageId(resultSet.getInt("message_id"));

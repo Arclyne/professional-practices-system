@@ -37,11 +37,23 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
     private static final String SQL_REMOVE_FROM_REPORT =
             "UPDATE activity SET report_id = NULL WHERE activity_id = ?";
 
+    /**
+     * Crea el DAO de actividades con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public ActivityDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta una nueva actividad en la bitácora y devuelve su identificador generado.
+     *
+     * @param activity actividad con los datos a registrar
+     * @return identificador generado para la actividad, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar la actividad
+     */
     @Override
     public int insertActivity(Activity activity) throws DAOException {
         int generatedId = -1;
@@ -63,6 +75,13 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         return generatedId;
     }
 
+    /**
+     * Actualiza los datos de una actividad existente.
+     *
+     * @param activity   actividad con los datos modificados
+     * @param activityId identificador de la actividad a actualizar
+     * @throws DAOException si la actividad no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateActivity(Activity activity, int activityId) throws DAOException {
         updateTuple(SQL_UPDATE, statement -> {
@@ -75,16 +94,37 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         });
     }
 
+    /**
+     * Recupera las actividades de un practicante, de la más reciente a la más antigua.
+     *
+     * @param practitionerId identificador del practicante
+     * @return lista de actividades del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Activity> getActivitiesByPractitioner(int practitionerId) throws DAOException {
         return recoverALL(SQL_SELECT_BY_PRACTITIONER, this::mapResultSetToActivity, practitionerId);
     }
 
+    /**
+     * Recupera las actividades asociadas a un reporte, de la más antigua a la más reciente.
+     *
+     * @param reportId identificador del reporte
+     * @return lista de actividades del reporte; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Activity> getActivitiesByReport(int reportId) throws DAOException {
         return recoverALL(SQL_SELECT_BY_REPORT, this::mapResultSetToActivity, reportId);
     }
 
+    /**
+     * Asocia una actividad a un reporte.
+     *
+     * @param activityId identificador de la actividad
+     * @param reportId   identificador del reporte al que se asocia
+     * @throws DAOException si la actividad no existe o si ocurre un error al actualizar
+     */
     @Override
     public void assignActivityToReport(int activityId, int reportId) throws DAOException {
         updateTuple(SQL_ASSIGN_TO_REPORT, statement -> {
@@ -93,6 +133,12 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         });
     }
 
+    /**
+     * Desvincula una actividad del reporte al que estaba asociada.
+     *
+     * @param activityId identificador de la actividad a desvincular
+     * @throws DAOException si la actividad no existe o si ocurre un error al actualizar
+     */
     @Override
     public void removeActivityFromReport(int activityId) throws DAOException {
         updateTuple(SQL_REMOVE_FROM_REPORT, statement -> {
@@ -100,6 +146,13 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         });
     }
 
+    /**
+     * Enlaza los valores de una actividad a la sentencia de inserción.
+     *
+     * @param statement sentencia preparada sobre la que se enlazan los valores
+     * @param activity  actividad de la que se obtienen los datos
+     * @throws SQLException si ocurre un error al enlazar algún parámetro
+     */
     private void bindActivityInsertParameters(PreparedStatement statement, Activity activity) throws SQLException {
         statement.setInt(1, activity.getPractitionerId());
         statement.setString(2, activity.getTitle());
@@ -109,6 +162,13 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         statement.setInt(6, activity.getDurationHours());
     }
 
+    /**
+     * Construye una actividad con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return actividad con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Activity mapResultSetToActivity(ResultSet resultSet) throws SQLException {
         Activity activity = new Activity();
         activity.setActivityId(resultSet.getInt("activity_id"));
@@ -122,6 +182,13 @@ public class ActivityDAO extends BaseDAO implements IActivityDAO {
         return activity;
     }
 
+    /**
+     * Obtiene el identificador del reporte tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return identificador del reporte, o {@code null} si la actividad no está asociada a uno
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Integer resolveNullableReportId(ResultSet resultSet) throws SQLException {
         int reportId = resultSet.getInt("report_id");
         return resultSet.wasNull() ? null : reportId;

@@ -43,11 +43,23 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
                     "WHERE practitioner_id = ? AND status = 'Evaluado' AND grade IS NOT NULL" +
                     ") AS evaluated_grades";
 
+    /**
+     * Crea el DAO de calificaciones de practicantes con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public PractitionerGradeDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Registra una calificación de practicante y devuelve su identificador generado.
+     *
+     * @param practitionerGrade calificación con los datos a registrar
+     * @return identificador generado para la calificación, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar la calificación
+     */
     @Override
     public int insertPractitionerGrade(PractitionerGrade practitionerGrade) throws DAOException {
         int generatedId = -1;
@@ -75,6 +87,13 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         return generatedId;
     }
 
+    /**
+     * Asigna la calificación final a un registro y marca la fecha de calificación.
+     *
+     * @param gradeId    identificador de la calificación a actualizar
+     * @param finalGrade calificación final a registrar
+     * @throws DAOException si el registro no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateFinalGrade(int gradeId, double finalGrade) throws DAOException {
         updateTuple(SQL_UPDATE_FINAL_GRADE, statement -> {
@@ -83,6 +102,14 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         });
     }
 
+    /**
+     * Recupera la calificación de un practicante en un periodo determinado.
+     *
+     * @param practitionerId identificador del practicante
+     * @param period         periodo al que corresponde la calificación
+     * @return calificación encontrada, o {@code null} si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public PractitionerGrade getGradeByPractitionerAndPeriod(int practitionerId, String period) throws DAOException {
         PractitionerGrade recoveredGrade = null;
@@ -105,11 +132,25 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         return recoveredGrade;
     }
 
+    /**
+     * Recupera todas las calificaciones registradas por un profesor, de la más reciente a la más antigua.
+     *
+     * @param professorId identificador del profesor
+     * @return lista de calificaciones del profesor; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<PractitionerGrade> getGradesByProfessor(int professorId) throws DAOException {
         return recoverALL(SQL_SELECT_GRADES_BY_PROFESSOR, this::mapResultSetToPractitionerGrade, professorId);
     }
 
+    /**
+     * Calcula la calificación tentativa de un practicante como promedio de sus reportes evaluados.
+     *
+     * @param practitionerId identificador del practicante
+     * @return promedio de las calificaciones evaluadas, o {@code 0.0} si no hay ninguna
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public double calculateTentativeGrade(int practitionerId) throws DAOException {
         double tentativeGrade = 0.0;
@@ -132,6 +173,13 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         return tentativeGrade;
     }
 
+    /**
+     * Construye una calificación con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return calificación con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private PractitionerGrade mapResultSetToPractitionerGrade(ResultSet resultSet) throws SQLException {
         PractitionerGrade practitionerGrade = new PractitionerGrade();
         practitionerGrade.setGradeId(resultSet.getInt("grade_id"));
@@ -144,11 +192,26 @@ public class PractitionerGradeDAO extends BaseDAO implements IPractitionerGradeD
         return practitionerGrade;
     }
 
+    /**
+     * Obtiene la calificación final tolerando valores nulos en la columna.
+     *
+     * @param resultSet resultado posicionado en la fila a leer
+     * @return calificación final, o {@code null} si aún no ha sido asignada
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private Double resolveNullableFinalGrade(ResultSet resultSet) throws SQLException {
         double finalGrade = resultSet.getDouble("final_grade");
         return resultSet.wasNull() ? null : finalGrade;
     }
 
+    /**
+     * Obtiene una marca de tiempo como {@link java.time.LocalDateTime} tolerando valores nulos.
+     *
+     * @param resultSet  resultado posicionado en la fila a leer
+     * @param columnName nombre de la columna de tipo marca de tiempo
+     * @return fecha y hora correspondiente, o {@code null} si la columna es nula
+     * @throws SQLException si ocurre un error al leer la columna
+     */
     private java.time.LocalDateTime resolveNullableTimestamp(ResultSet resultSet, String columnName) throws SQLException {
         java.sql.Timestamp timestamp = resultSet.getTimestamp(columnName);
         return timestamp != null ? timestamp.toLocalDateTime() : null;

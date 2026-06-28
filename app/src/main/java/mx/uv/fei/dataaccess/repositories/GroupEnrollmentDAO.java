@@ -41,11 +41,23 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
             "SELECT enrollment_id, practitioner_id, group_id, period_id, opportunity_number, status " +
                     "FROM group_enrollment WHERE period_id = ?";
 
+    /**
+     * Crea el DAO de inscripciones a grupos con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public GroupEnrollmentDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta una inscripción de un practicante a un grupo y devuelve su identificador generado.
+     *
+     * @param enrollment inscripción con los datos a registrar
+     * @return identificador generado para la inscripción, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar la inscripción
+     */
     @Override
     public int insertEnrollment(GroupEnrollment enrollment) throws DAOException {
         return insertTuple(SQL_INSERT_ENROLLMENT, statement -> {
@@ -57,6 +69,14 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
         });
     }
 
+    /**
+     * Recupera la inscripción de un practicante en un periodo determinado.
+     *
+     * @param practitionerId identificador del practicante
+     * @param periodId       identificador del periodo escolar
+     * @return inscripción encontrada, o {@code null} si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public GroupEnrollment recoverEnrollmentByPractitionerAndPeriod(int practitionerId, int periodId)
             throws DAOException {
@@ -66,6 +86,13 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
         return enrollments.isEmpty() ? null : enrollments.get(0);
     }
 
+    /**
+     * Recupera la inscripción más reciente de un practicante.
+     *
+     * @param practitionerId identificador del practicante
+     * @return inscripción más reciente, o {@code null} si no tiene ninguna
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public GroupEnrollment recoverLatestEnrollment(int practitionerId) throws DAOException {
         List<GroupEnrollment> enrollments = recoverALL(SQL_SELECT_LATEST_ENROLLMENT_BY_PRACTITIONER,
@@ -74,21 +101,49 @@ public class GroupEnrollmentDAO extends BaseDAO implements IGroupEnrollmentDAO {
         return enrollments.isEmpty() ? null : enrollments.get(0);
     }
 
+    /**
+     * Recupera todas las inscripciones de un practicante.
+     *
+     * @param practitionerId identificador del practicante
+     * @return lista de inscripciones del practicante; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<GroupEnrollment> getEnrollmentsByPractitioner(int practitionerId) throws DAOException {
         return recoverALL(SQL_SELECT_ENROLLMENTS_BY_PRACTITIONER, this::mapResultSetToEnrollment, practitionerId);
     }
 
+    /**
+     * Recupera todas las inscripciones de un grupo.
+     *
+     * @param groupId identificador del grupo de prácticas
+     * @return lista de inscripciones del grupo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<GroupEnrollment> getEnrollmentsByGroup(int groupId) throws DAOException {
         return recoverALL(SQL_SELECT_ENROLLMENTS_BY_GROUP, this::mapResultSetToEnrollment, groupId);
     }
 
+    /**
+     * Recupera todas las inscripciones de un periodo escolar.
+     *
+     * @param periodId identificador del periodo escolar
+     * @return lista de inscripciones del periodo; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<GroupEnrollment> getEnrollmentsByPeriod(int periodId) throws DAOException {
         return recoverALL(SQL_SELECT_ENROLLMENTS_BY_PERIOD, this::mapResultSetToEnrollment, periodId);
     }
 
+    /**
+     * Construye una inscripción con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return inscripción con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private GroupEnrollment mapResultSetToEnrollment(ResultSet resultSet) throws SQLException {
         GroupEnrollment enrollment = new GroupEnrollment();
         enrollment.setEnrollmentId(resultSet.getInt("enrollment_id"));

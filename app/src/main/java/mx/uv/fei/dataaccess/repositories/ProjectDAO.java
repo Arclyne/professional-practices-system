@@ -56,11 +56,23 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
             "SELECT project_id, COUNT(*) AS assigned_count FROM project_postulation " +
                     "WHERE postulation_status = 'Assigned' GROUP BY project_id";
 
+    /**
+     * Crea el DAO de proyectos con la fuente de conexiones a la base de datos.
+     *
+     * @param databaseConnection proveedor de conexiones a la base de datos
+     */
     @Inject
     public ProjectDAO(IDatabaseConnection databaseConnection) {
         super(databaseConnection);
     }
 
+    /**
+     * Inserta un nuevo proyecto y devuelve su identificador generado.
+     *
+     * @param project proyecto con los datos a registrar
+     * @return identificador generado para el proyecto, o {@code -1} si no se generó
+     * @throws DAOException si ocurre un error al guardar el proyecto
+     */
     @Override
     public int insertProject(Project project) throws DAOException {
         return insertTuple(SQL_INSERT_PROJECT, statement -> {
@@ -75,6 +87,14 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         });
     }
 
+    /**
+     * Recupera un proyecto a partir de su nombre y del encargado al que pertenece.
+     *
+     * @param projectName nombre del proyecto a recuperar
+     * @param managerId   identificador del encargado del proyecto
+     * @return proyecto encontrado, o un {@link Project} vacío si no existe
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Project recoverProject(String projectName, int managerId) throws DAOException {
         Project recoveredProject = new Project();
@@ -97,11 +117,24 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         return recoveredProject;
     }
 
+    /**
+     * Recupera todos los proyectos registrados.
+     *
+     * @return lista con todos los proyectos; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Project> getAllProjects() throws DAOException {
         return recoverALL(SQL_SELECT_ALL_PROJECTS, this::mapResultSetToProject);
     }
 
+    /**
+     * Actualiza los datos de un proyecto existente.
+     *
+     * @param projectToUpdate proyecto con los datos modificados
+     * @param projectId       identificador del proyecto a actualizar
+     * @throws DAOException si el proyecto no existe o si ocurre un error al actualizar
+     */
     @Override
     public void updateProject(Project projectToUpdate, int projectId) throws DAOException {
         updateTuple(SQL_UPDATE_PROJECT, statement -> {
@@ -117,11 +150,23 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         });
     }
 
+    /**
+     * Recupera los proyectos activos que todavía tienen cupo disponible para practicantes.
+     *
+     * @return lista de proyectos con capacidad disponible; vacía si no hay registros
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public List<Project> getAvailableProjectsWithCapacity() throws DAOException {
         return recoverALL(SQL_SELECT_AVAILABLE_PROJECTS_WITH_CAPACITY, this::mapResultSetToProject);
     }
 
+    /**
+     * Inactiva varios proyectos en una sola transacción por lotes.
+     *
+     * @param projectIds identificadores de los proyectos a inactivar
+     * @throws DAOException si la operación por lotes falla o si ocurre un error de conexión
+     */
     @Override
     public void deactivateMultipleProjects(List<Integer> projectIds) throws DAOException {
         try (Connection connection = databaseConnection.getConnection()) {
@@ -141,11 +186,23 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         }
     }
 
+    /**
+     * Marca un proyecto como activo.
+     *
+     * @param projectId identificador del proyecto a activar
+     * @throws DAOException si el proyecto no existe o si ocurre un error al actualizar
+     */
     @Override
     public void activateProject(int projectId) throws DAOException {
         updateTuple(SQL_ACTIVATE_PROJECT, statement -> statement.setInt(1, projectId));
     }
 
+    /**
+     * Obtiene, por proyecto, la cantidad de practicantes con postulación asignada.
+     *
+     * @return mapa de identificador de proyecto a número de practicantes asignados
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Map<Integer, Integer> getAssignedCountsByProject() throws DAOException {
         Map<Integer, Integer> assignedCountsByProject = new HashMap<>();
@@ -164,6 +221,13 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         return assignedCountsByProject;
     }
 
+    /**
+     * Recupera el proyecto que tiene asignado un practicante.
+     *
+     * @param practitionerId identificador del practicante
+     * @return proyecto asignado, o un {@link Project} vacío si no tiene ninguno
+     * @throws DAOException si ocurre un error al consultar la base de datos
+     */
     @Override
     public Project getAssignedProjectByPractitioner(int practitionerId) throws DAOException {
         Project assignedProject = new Project();
@@ -185,6 +249,13 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         return assignedProject;
     }
 
+    /**
+     * Ejecuta por lotes la inactivación de los proyectos indicados sobre la conexión recibida.
+     *
+     * @param connection conexión transaccional sobre la que se ejecuta el lote
+     * @param projectIds identificadores de los proyectos a inactivar
+     * @throws SQLException si el lote no afecta a alguno de los proyectos o si ocurre un error
+     */
     private void executeDeactivationBatch(Connection connection, List<Integer> projectIds) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_DEACTIVATE_PROJECT)) {
             for (Integer projectId : projectIds) {
@@ -201,6 +272,13 @@ public class ProjectDAO extends BaseDAO implements IProjectDAO {
         }
     }
 
+    /**
+     * Construye un proyecto con los valores de la fila actual del resultado.
+     *
+     * @param resultSet resultado posicionado en la fila a mapear
+     * @return proyecto con los datos de la fila
+     * @throws SQLException si ocurre un error al leer alguna columna
+     */
     private Project mapResultSetToProject(ResultSet resultSet) throws SQLException {
         Project project = new Project();
         project.setProjectId(resultSet.getInt("project_id"));
