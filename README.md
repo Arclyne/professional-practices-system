@@ -62,7 +62,13 @@ professional-practices-system/
 
 ### Base de datos
 
-Edita `app/src/main/resources/database.properties`. El archivo tiene una sección por perfil:
+Las credenciales no se suben al repositorio. Copia la plantilla y escribe tus datos:
+
+```bash
+cp app/src/main/resources/database.properties.example app/src/main/resources/database.properties
+```
+
+`database.properties` está en `.gitignore`, así que nunca se sube. El archivo tiene una sección por perfil:
 
 ```properties
 # Perfil: net (producción — base de datos remota, requiere SSL)
@@ -94,7 +100,13 @@ mysql -u root -p < database/<archivo>.sql
 
 ### Correo electrónico
 
-Edita `app/src/main/resources/mail.properties`:
+Copia la plantilla y escribe el correo del sistema y su contraseña de aplicación:
+
+```bash
+cp app/src/main/resources/mail.properties.example app/src/main/resources/mail.properties
+```
+
+`mail.properties` también está en `.gitignore`:
 
 ```properties
 mail.smtp.auth=true

@@ -12,6 +12,7 @@ import java.util.Properties;
 public class FileConfigLoader {
 
     private static final String PROFILE_KEY_SEPARATOR = ".";
+    private static final String EXAMPLE_FILE_SUFFIX = ".example";
 
     public Properties loadProperties(String fileName) {
         Properties properties = new Properties();
@@ -41,7 +42,8 @@ public class FileConfigLoader {
     private InputStream getRequiredResourceStream(String fileName) {
         InputStream inputStream = FileConfigLoader.class.getClassLoader().getResourceAsStream(fileName);
         if (inputStream == null) {
-            throw new IllegalArgumentException("The configuration file was not found: " + fileName);
+            throw new IllegalArgumentException("The configuration file was not found: " + fileName
+                    + ". Create it in app/src/main/resources from " + fileName + EXAMPLE_FILE_SUFFIX);
         }
         return inputStream;
     }

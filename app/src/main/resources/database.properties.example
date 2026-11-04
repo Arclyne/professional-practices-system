@@ -1,0 +1,15 @@
+net.db.url=jdbc:mysql://<host>:<puerto>/professional-practices-system?sslMode=REQUIRED
+net.db.user=<usuario>
+net.db.password=<contraseña>
+
+ssh.db.url=jdbc:mysql://localhost:3307/profesionalPractice
+ssh.db.user=<usuario>
+ssh.db.password=<contraseña>
+
+test.db.url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=USER,ROLE,YEAR
+test.db.user=sa
+test.db.password=
+
+local.db.url=jdbc:mysql://localhost:3306/professional-practices-system
+local.db.user=<usuario>
+local.db.password=<contraseña>
