@@ -25,3 +25,6 @@ app/app/
 *.log
 
 repomix-output.xml
+# Configuración local con credenciales (usa los archivos .example como plantilla)
+app/src/main/resources/database.properties
+app/src/main/resources/mail.properties
